@@ -25,7 +25,6 @@
 - [Sobre o Projeto](#sobre-o-projeto)
 - [Funcionalidades](#funcionalidades)
 - [Construído com](#construído-com)
-- [Screenshots](#screenshots)
 - [Como Começar](#como-começar)
 - [Licença](#licença)
 - [Autor](#autor)
@@ -51,8 +50,6 @@ O aplicativo complementa a plataforma web, expandindo o alcance das lojas virtua
 
 - **[Flutter](https://flutter.dev/)** – Toolkit de UI do Google para criar aplicativos nativos multiplataforma.
 - **[Dart](https://dart.dev/)** – Linguagem de programação otimizada para performance e produtividade no Flutter.
-
-## Screenshots
 
 ## Como Começar
 

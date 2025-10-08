@@ -31,7 +31,6 @@ Uma solução SaaS completa e escalável para pequenos empreendedores criarem e 
 - [Público-Alvo](#público-alvo)
 - [Funcionalidades](#funcionalidades)
 - [Contruído com](#contruído-com)
-- [Screenshots](#screenshots)
 - [Controle de Acesso](#controle-de-acesso)
 - [Como Começar](#como-começar)
 - [Licença](#licença)
@@ -153,8 +152,6 @@ Oferecemos planos de assinatura flexíveis para atender às diversas necessidade
 
 - **[Flutter](https://flutter.dev/)** – A UI toolkit by Google for building beautiful, natively compiled applications for mobile, web, and desktop from a single codebase.
 - **[Dart](https://dart.dev/)** – The programming language used for Flutter, optimized for building fast apps on any platform.
-
-## Screenshots
 
 ## Controle de Acesso
 
