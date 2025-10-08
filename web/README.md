@@ -1,36 +1,117 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<br>
+<div align="center">
+  <img src="https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js">
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
+  <img src="https://img.shields.io/badge/Shadcn%2FUI-000000?style=for-the-badge&logo=shadcn-ui&logoColor=white" alt="Shadcn/UI">
+</div>
+<br>
 
-## Getting Started
+<h1 align="center">Sistema SaaS de Lojas Virtuais – Frontend Web</h1>
 
-First, run the development server:
+<p align="center">
+  A interface web principal para o Sistema SaaS de Lojas Virtuais, construída com Next.js e TypeScript.
+  <br>
+  <a href="#sobre-o-projeto"><strong>Explore a documentação »</strong></a>
+  <br>
+  <br>
+  <a href="https://github.com/dariomatias-dev/my_commerce">Repositório Principal</a> · 
+  <a href="https://github.com/dariomatias-dev/my_commerce/issues">Reportar Bug</a> · 
+  <a href="https://github.com/dariomatias-dev/my_commerce/issues">Solicitar Recurso</a>
+</p>
+
+## Sumário
+
+- [Sobre o Projeto](#sobre-o-projeto)
+- [Funcionalidades](#funcionalidades)
+- [Construído com](#construído-com)
+- [Como Começar](#como-começar)
+- [Licença](#licença)
+- [Autor](#autor)
+
+## Sobre o Projeto
+
+Esta pasta contém o código-fonte do frontend web do **Sistema SaaS de Lojas Virtuais**.  
+Ele serve como a interface principal para os assinantes (proprietários de lojas) gerenciarem suas lojas virtuais, produtos, pedidos e configurações de personalização.
+
+Desenvolvido com **Next.js**, **TypeScript** e **Tailwind CSS**, o objetivo é oferecer uma experiência de usuário fluida, responsiva e performática.
+
+A aplicação web é o ponto de interação onde os empreendedores podem criar e configurar suas lojas, visualizar dados de vendas e engajamento, e aplicar personalizações visuais sem a necessidade de conhecimento técnico em código.
+
+## Funcionalidades
+
+- **Autenticação de Usuários**: Cadastro e login seguros para assinantes.
+- **Dashboard Personalizado**: Área administrativa para gerenciar:
+  - Criação e edição de lojas.
+  - Gestão completa de produtos e categorias.
+  - Personalização do layout (cores, fontes, banners).
+  - Visualização de estatísticas de vendas e engajamento.
+  - Histórico de vendas e transações.
+  - Controle de envio e logística.
+- **Gestão de Assinaturas**: Escolha e gerenciamento de planos de assinatura.
+- **Design Responsivo**: Interface adaptada para desktop, tablet e mobile.
+- **Integração com API**: Comunicação com o backend para persistência e recuperação de dados.
+
+## Construído com
+
+- **[TypeScript](https://www.typescriptlang.org/)** – Superset do JavaScript com tipagem estática opcional.
+- **[Next.js](https://nextjs.org/)** – Framework moderno baseado em React para desenvolvimento escalável.
+- **[Tailwind CSS](https://tailwindcss.com/)** – Framework CSS utilitário para estilização rápida e responsiva.
+- **[Shadcn/UI](https://ui.shadcn.com/)** – Componentes reutilizáveis construídos com Radix UI e Tailwind CSS.
+
+## Como Começar
+
+### Pré-requisitos
+
+Certifique-se de ter as seguintes ferramentas instaladas:
+
+- **Node.js** (versão LTS recomendada)
+- **pnpm** (gerenciador de pacotes)
+
+### Instalação
+
+1. **Clonar o repositório principal**
+
+   ```bash
+   git clone https://github.com/dariomatias-dev/my_commerce.git
+
+   cd my_commerce
+   ```
+
+2. **Entrar na pasta do frontend web**
+
+   ```bash
+   cd web
+   ```
+
+3. **Instalar dependências**
+
+   ```bash
+   pnpm install
+   ```
+
+### Executar o projeto
+
+Inicie o servidor de desenvolvimento:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra [http://localhost:3000](http://localhost:3000) no navegador.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Certifique-se de que o backend esteja em execução para funcionamento completo.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Licença
 
-## Learn More
+Distribuído sob a **Licença MIT**. Veja o arquivo [LICENSE](../LICENSE) para mais informações.
 
-To learn more about Next.js, take a look at the following resources:
+## Autor
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Desenvolvido por **Dário Matias**:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Portfolio**: [dariomatias-dev](https://dariomatias-dev.com)
+- **GitHub**: [dariomatias-dev](https://github.com/dariomatias-dev)
+- **Email**: [matiasdario75@gmail.com](mailto:matiasdario75@gmail.com)
+- **Instagram**: [@dariomatias_dev](https://instagram.com/dariomatias_dev)
+- **LinkedIn**: [linkedin.com/in/dariomatias-dev](https://linkedin.com/in/dariomatias-dev)
