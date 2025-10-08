@@ -157,9 +157,9 @@ Oferecemos planos de assinatura flexíveis para atender às diversas necessidade
 
 O sistema implementa um controle de acesso baseado em perfis para garantir a segurança e a segregação de funcionalidades:
 
-- User: Perfil para clientes finais que interagem com as lojas.
-- Subscriber: Usuários com assinatura ativa, que são proprietários das lojas e gerenciam seus negócios.
-- Admin: Administrador do sistema, com controle total sobre usuários, assinaturas, lojas e conteúdo.
+- **User**: Perfil para clientes finais que interagem com as lojas.
+- **Subscriber**: Usuários com assinatura ativa, que são proprietários das lojas e gerenciam seus negócios.
+- **Admin**: Administrador do sistema, com controle total sobre usuários, assinaturas, lojas e conteúdo.
 
 ## Como Começar
 
