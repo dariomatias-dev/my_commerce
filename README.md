@@ -19,19 +19,19 @@ Uma solução SaaS completa e escalável para pequenos empreendedores criarem e 
 <a href="#sobre-o-projeto"><strong>Explore a documentação »</strong></a>
 <br>
 <br>
-<a href="https://my-commerce-dariomatias-dev.vercel.app/">Ver Demo</a> ·
-<a href="#">Reportar Bug</a> ·
-<a href="#">Solicitar Funcionalidade</a>
+<a href="https://my-commerce-dariomatias-dev.vercel.app">Ver Demo</a> ·
+<a href="https://github.com/dariomatias-dev/my_commerce/issues">Reportar Bug</a> ·
+<a href="https://github.com/dariomatias-dev/my_commerce/issues">Solicitar Funcionalidade</a>
 </p>
 
 ## Sumário
 
 - [Sobre o Projeto](#sobre-o-projeto)
-- [Funcionalidades](#funcionalidades)
+- [Documentações do Sistema](#documentações-do-sistema)
 - [Público-Alvo](#público-alvo)
+- [Funcionalidades](#funcionalidades)
 - [Contruído com](#contruído-com)
 - [Screenshots](#screenshots)
-- [Planos de Assinatura](#planos-de-assinatura)
 - [Controle de Acesso](#controle-de-acesso)
 - [Como Começar](#como-começar)
 - [Licença](#licença)
@@ -43,9 +43,24 @@ O Sistema SaaS de Lojas Virtuais é uma plataforma desenvolvida para capacitar p
 
 Este projeto visa simplificar a entrada no e-commerce para quem não possui conhecimentos técnicos avançados, permitindo que qualquer assinante crie e gerencie sua própria loja com facilidade.
 
+## Documentações do Sistema
+
+O **Sistema SaaS de Lojas Virtuais** é composto por três módulos principais: Backend, Frontend Web e Aplicativo Mobile. Cada módulo possui seu próprio README detalhando instalação, execução, pré-requisitos e funcionalidades específicas.
+
+Para facilitar a navegação e consulta, utilize os links abaixo:
+
+| Módulo                           | Descrição                                                                                                                                                                                                                                          | Link para README                                 |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| **Backend** (`api`)              | API RESTful desenvolvida em **Java** e **Spring Boot**, responsável pela lógica de negócio, persistência de dados e comunicação com os clientes web e mobile. Inclui autenticação, gestão de usuários, lojas, produtos e processamento de pedidos. | [Leia o README do Backend](./api/README.md)      |
+| **Frontend Web** (`web`)         | Interface web construída com **Next.js**, **TypeScript** e **Tailwind CSS**, permitindo que os assinantes gerenciem suas lojas, produtos e pedidos de forma intuitiva e responsiva.                                                                | [Leia o README do Frontend Web](./web/README.md) |
+| **Aplicativo Mobile** (`mobile`) | Aplicativo móvel desenvolvido com **Flutter** e **Dart**, voltado para clientes finais, permitindo navegação por lojas, pesquisa de produtos, gestão de favoritos e acompanhamento de pedidos.                                                     | [Leia o README do Mobile](./mobile/README.md)    |
+
+**Observação:** Antes de iniciar o Frontend ou Mobile, certifique-se de que o **Backend** esteja rodando corretamente e que o banco de dados PostgreSQL esteja ativo (via Docker), para garantir que todos os módulos funcionem de forma integrada.
+
 ## Público-Alvo
 
 Nosso público-alvo são pequenos empreendedores, autônomos e negócios locais que buscam uma solução descomplicada para:
+
 - Criar sua própria loja online.
 - Gerenciar produtos e vendas de forma intuitiva.
 - Personalizar a aparência da sua loja sem código.
@@ -57,12 +72,14 @@ Nosso público-alvo são pequenos empreendedores, autônomos e negócios locais 
 Oferecemos planos de assinatura flexíveis para atender às diversas necessidades dos nossos clientes:
 
 - Gratuito (Starter)
+
   - 1 loja limitada.
   - Até 20 produtos.
   - Layout simples.
   - Estatísticas básicas.
 
 - Pro
+
   - Até 3 lojas.
   - Produtos ilimitados.
   - Layouts personalizados.
@@ -78,7 +95,9 @@ Oferecemos planos de assinatura flexíveis para atender às diversas necessidade
   - Suporte prioritário.
 
 ## Funcionalidades
+
 - Para o Assinante (Usuário / Proprietário da Loja)
+
   - Autenticação: Cadastro e login seguro (e-mail e senha).
   - Gestão de Assinatura: Escolha e validação do plano de assinatura.
   - Dashboard Personalizado:
@@ -92,6 +111,7 @@ Oferecemos planos de assinatura flexíveis para atender às diversas necessidade
     - Notificações por e-mail ou push sobre vendas e estoque baixo.
 
 - Para a Loja (Criada pelo Assinante)
+
   - Configuração Básica: Definição de nome, banner e logotipo.
   - Engajamento: Mensagens de boas-vindas e promoções.
   - Personalização Visual: Cores, fontes e layout.
@@ -99,6 +119,7 @@ Oferecemos planos de assinatura flexíveis para atender às diversas necessidade
   - Nome, descrição, preço, estoque, status (disponível/indisponível), imagens.
 
 - Para o Cliente Final
+
   - Navegação: Navegar por lojas e produtos.
   - Pesquisa e Filtros: Filtrar produtos por categorias.
   - Favoritos: Favoritar produtos.
@@ -138,6 +159,7 @@ Oferecemos planos de assinatura flexíveis para atender às diversas necessidade
 ## Controle de Acesso
 
 O sistema implementa um controle de acesso baseado em perfis para garantir a segurança e a segregação de funcionalidades:
+
 - User: Perfil para clientes finais que interagem com as lojas.
 - Subscriber: Usuários com assinatura ativa, que são proprietários das lojas e gerenciam seus negócios.
 - Admin: Administrador do sistema, com controle total sobre usuários, assinaturas, lojas e conteúdo.
@@ -165,7 +187,7 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
 
    ```bash
    git clone https://github.com/dariomatias-dev/my_commerce.git
-   
+
    cd my_commerce
    ```
 
@@ -175,7 +197,7 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
 
    ```bash
    cd api
-   
+
    ./mvnw clean install
    ./mvnw spring-boot:run
    ```
@@ -186,7 +208,7 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
 
    ```bash
    cd web
-   
+
    pnpm install
    ```
 
@@ -204,7 +226,7 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
 
    ```bash
    cd mobile
-   
+
    flutter pub get
    ```
 
