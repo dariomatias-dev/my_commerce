@@ -4,6 +4,7 @@ import com.dariomatias.my_commerce.dto.ApiResponse;
 import com.dariomatias.my_commerce.dto.SignupRequest;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<User>> signup(@RequestBody SignupRequest request) {
+    public ResponseEntity<ApiResponse<User>> signup(@RequestBody @Valid SignupRequest request) {
         ApiResponse<User> response = authService.registerUser(request);
         return ResponseEntity.status(response.getCode()).body(response);
     }
