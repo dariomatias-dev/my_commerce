@@ -1,5 +1,6 @@
 package com.dariomatias.my_commerce.service;
 
+import com.dariomatias.my_commerce.dto.ApiResponse;
 import com.dariomatias.my_commerce.dto.SignupRequest;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.UserRepository;
@@ -17,9 +18,9 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User registerUser(SignupRequest request) {
+    public ApiResponse<User> registerUser(SignupRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("E-mail já está em uso.");
+            return ApiResponse.error(409, "Email já está em uso");
         }
 
         User user = new User();
@@ -30,6 +31,6 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
 
-        return savedUser;
+        return ApiResponse.success(201, "Usuário cadastrado com sucesso", savedUser);
     }
 }
