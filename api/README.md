@@ -23,6 +23,7 @@
 
 - [Sobre o Projeto](#sobre-o-projeto)
 - [Funcionalidades](#funcionalidades)
+- [Rotas da API](#rotas-da-api)
 - [Contruído com](#contruído-com)
 - [Como Começar](#como-começar)
   - [Pré-requisitos](#pré-requisitos)
@@ -50,6 +51,148 @@ As principais funcionalidades expostas por esta API incluem:
 - **Controle de Envio e Logística**: Gerenciamento de endereços, frete e prazos de entrega.
 - **Relatórios e Métricas**: Geração de dados para dashboards e relatórios gerenciais sobre vendas, engajamento, assinantes ativos e produtos populares.
 - **Moderação de Conteúdo**: Ferramentas para administradores moderarem lojas e produtos.
+
+## Rotas da API
+
+### **Rotas de Autenticação**
+
+#### **Login**
+
+- **Endpoint**: `POST /api/auth/login`
+- **Objetivo**: Autenticar o usuário com suas credenciais (e-mail e senha).
+
+**Corpo da Requisição**:
+
+```json
+{
+  "email": "email@gmail.com",
+  "password": "password123"
+}
+```
+
+**Respostas**:
+
+- **200 OK**: Retorna um token JWT válido.
+- **401 Unauthorized**: E-mail ou senha incorretos.
+
+#### **Cadastro de Usuário**
+
+- **Endpoint**: `POST /api/auth/signup`
+- **Objetivo**: Registrar um novo usuário no sistema.
+
+**Corpo da Requisição**:
+
+```json
+{
+  "name": "User Name",
+  "email": "username@gmail.com",
+  "password": "password123"
+}
+```
+
+**Respostas**:
+
+- **201 Created**: Usuário registrado com sucesso.
+- **400 Bad Request**: Dados inválidos ou e-mail já registrado.
+- **409 Conflict**: O e-mail informado já está em uso.
+
+#### **Verificação de E-mail**
+
+- **Endpoint**: `GET /api/auth/verify-email/{token}`
+- **Objetivo**: Verificar o e-mail do usuário após o cadastro.
+
+**Parâmetros de URL**:
+
+- `token`: Token de verificação enviado ao e-mail do usuário.
+
+**Respostas**:
+
+- **200 OK**: E-mail verificado com sucesso.
+- **400 Bad Request**: Token inválido ou expirado.
+
+#### **Reenvio de E-mail de Verificação**
+
+- **Endpoint**: `POST /api/auth/resend-verification-email`
+- **Objetivo**: Reenviar o e-mail de verificação para o usuário.
+
+**Corpo da Requisição**:
+
+```json
+{
+  "email": "email@gmail.com"
+}
+```
+
+**Respostas**:
+
+- **200 OK**: E-mail de verificação reenviado com sucesso.
+- **404 Not Found**: E-mail não encontrado.
+
+#### **Logout**
+
+- **Endpoint**: `POST /api/auth/logout`
+- **Objetivo**: Deslogar o usuário da aplicação.
+
+**Cabeçalhos**:
+
+```
+Authorization: Bearer jwt_token
+```
+
+**Respostas**:
+
+- **200 OK**: Logout realizado com sucesso.
+- **401 Unauthorized**: Token inválido ou expirado.
+
+#### **Recuperação de Senha**
+
+- **Endpoint**: `POST /api/auth/recover-password`
+- **Objetivo**: Solicitar recuperação de senha, enviando um link para o e-mail informado.
+
+**Corpo da Requisição**:
+
+```json
+{
+  "email": "email@gmail.com"
+}
+```
+
+**Respostas**:
+
+- **200 OK**: E-mail de recuperação enviado com sucesso.
+- **404 Not Found**: E-mail não encontrado.
+
+#### **Verificação de Token**
+
+- **Endpoint**: `GET /api/auth/verify-token`
+- **Objetivo**: Verificar a validade de um token JWT.
+
+**Cabeçalhos**:
+
+```
+Authorization: Bearer jwt_token
+```
+
+**Respostas**:
+
+- **200 OK**: Token válido.
+- **401 Unauthorized**: Token inválido ou expirado.
+
+#### **Renovação de Token**
+
+- **Endpoint**: `POST /api/auth/refresh-token`
+- **Objetivo**: Renovar um token JWT expirado.
+
+**Cabeçalhos**:
+
+```
+Authorization: Bearer jwt_token_expirado
+```
+
+**Respostas**:
+
+- **200 OK**: Token renovado com sucesso.
+- **401 Unauthorized**: Token inválido ou expirado.
 
 ## Contruído com
 
