@@ -38,9 +38,11 @@ Uma solução SaaS completa e escalável para pequenos empreendedores criarem e 
 
 ## Sobre o Projeto
 
-O Sistema SaaS de Lojas Virtuais é uma plataforma desenvolvida para capacitar pequenos empreendedores, autônomos e negócios locais a estabelecerem sua presença online de forma rápida, simples e acessível. A plataforma oferece uma solução completa para criação, configuração e gestão de lojas virtuais, com foco em personalização, gestão de produtos e análise de desempenho, tudo isso através de um modelo de assinatura escalável.
+O Sistema SaaS de Lojas Virtuais é uma plataforma desenvolvida para capacitar pequenos empreendedores, autônomos e negócios locais a estabelecerem sua presença online de forma rápida, simples e acessível. A plataforma oferece uma solução completa para criação, configuração e gestão de lojas virtuais, com foco em personalização, gestão de produtos e análise de desempenho, por meio de um modelo de assinatura escalável.
 
-Este projeto visa simplificar a entrada no e-commerce para quem não possui conhecimentos técnicos avançados, permitindo que qualquer assinante crie e gerencie sua própria loja com facilidade.
+A plataforma visa simplificar a criação de uma loja virtual para quem não possui conhecimentos técnicos avançados, permitindo que qualquer assinante crie e gerencie sua própria loja com facilidade.
+
+Este projeto está sendo desenvolvido como parte das disciplinas: Desenvolvimento de Aplicações Web II (DAW II), Banco de Dados II (BD II) e Análise e Projeto de Sistemas (APS).
 
 ## Documentações do Sistema
 
@@ -157,9 +159,9 @@ Oferecemos planos de assinatura flexíveis para atender às diversas necessidade
 
 O sistema implementa um controle de acesso baseado em perfis para garantir a segurança e a segregação de funcionalidades:
 
-- User: Perfil para clientes finais que interagem com as lojas.
-- Subscriber: Usuários com assinatura ativa, que são proprietários das lojas e gerenciam seus negócios.
-- Admin: Administrador do sistema, com controle total sobre usuários, assinaturas, lojas e conteúdo.
+- **User**: Perfil para clientes finais que interagem com as lojas.
+- **Subscriber**: Usuários com assinatura ativa, que são proprietários das lojas e gerenciam seus negócios.
+- **Admin**: Administrador do sistema, com controle total sobre usuários, assinaturas, lojas e conteúdo.
 
 ## Como Começar
 

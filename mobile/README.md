@@ -26,6 +26,10 @@
 - [Funcionalidades](#funcionalidades)
 - [Construído com](#construído-com)
 - [Como Começar](#como-começar)
+  - [Pré-requisitos](#pré-requisitos)
+  - [Instalação](#instalação)
+  - [Executar o Projeto](#executar-o-projeto)
+  - [Criação e Instalação do APK via Terminal](#criação-e-instalação-do-apk-via-terminal)
 - [Licença](#licença)
 - [Autor](#autor)
 
@@ -83,15 +87,94 @@ Certifique-se de ter as seguintes ferramentas instaladas:
    flutter pub get
    ```
 
-### Executar o projeto
+### Executar o Projeto
 
-Para rodar o aplicativo em um emulador ou dispositivo:
+Para rodar o aplicativo em um emulador ou dispositivo conectado:
 
 ```bash
 flutter run
 ```
 
 Certifique-se de que o backend esteja rodando para que o aplicativo possa se comunicar corretamente.
+
+### Criação e Instalação do APK via Terminal
+
+Siga os passos abaixo para gerar o **APK** do aplicativo e instalá-lo em um dispositivo ou emulador Android.
+
+#### Gerando o APK
+
+No Flutter, você pode gerar o APK em **modo release** ou **modo debug**.
+
+##### APK de Release
+
+Para gerar o APK de **release**, otimizado para distribuição:
+
+```bash
+flutter build apk --release
+```
+
+O APK será gerado em:
+
+```
+build/app/outputs/flutter-apk/app-release.apk
+```
+
+##### APK de Debug
+
+Para gerar o APK de **debug**, usado para testes rápidos:
+
+```bash
+flutter build apk --debug
+```
+
+O APK será gerado em:
+
+```
+build/app/outputs/flutter-apk/app-debug.apk
+```
+
+#### Instalando o APK no Dispositivo
+
+##### Usando Flutter
+
+1. Verifique se o dispositivo está conectado:
+
+```bash
+flutter devices
+```
+
+2. Instale o APK:
+
+```bash
+flutter install
+```
+
+Observação: O comando `flutter install` instala a versão mais recente do APK no dispositivo conectado.
+
+##### Usando ADB
+
+Se preferir usar o **ADB** diretamente:
+
+```bash
+adb install -r build/app/outputs/flutter-apk/app-release.apk
+```
+
+* O parâmetro `-r` reinstala o APK caso uma versão anterior já exista.
+* Para instalar o APK de debug, substitua pelo `app-debug.apk`.
+
+#### Executando o Aplicativo
+
+Após a instalação, abra o aplicativo normalmente ou execute pelo terminal:
+
+```bash
+flutter run --release
+```
+
+Para testes em modo debug:
+
+```bash
+flutter run --debug
+```
 
 ## Licença
 
