@@ -264,6 +264,116 @@ Para criar e iniciar o contêiner do PostgreSQL usando o Docker Compose, siga as
 
 **Observação:** O parâmetro `-d` executa o contêiner em **segundo plano**, permitindo que você continue usando o terminal normalmente.
 
+#### Comandos Úteis do Docker
+
+Após iniciar o contêiner, é importante conhecer alguns comandos básicos para monitorar, gerenciar e manter o ambiente Docker.
+
+##### **Verificar contêineres em execução**
+
+Lista apenas os contêineres **ativos**:
+
+```bash
+docker ps
+```
+
+##### **Listar todos os contêineres (ativos e parados)**
+
+Lista todos os contêineres existentes, inclusive os que estão parados:
+
+```bash
+docker ps -a
+```
+
+##### **Parar o contêiner**
+
+Interrompe a execução do contêiner:
+
+```bash
+docker stop nome_ou_id_do_conteiner
+```
+
+**Exemplo:**
+
+```bash
+docker stop my_commerce_db
+```
+
+##### **Iniciar o contêiner parado**
+
+Inicia novamente um contêiner que já foi criado anteriormente:
+
+```bash
+docker start nome_ou_id_do_conteiner
+```
+
+**Exemplo:**
+
+```bash
+docker start my_commerce_db
+```
+
+##### **Remover o contêiner**
+
+Remove um contêiner existente (deve estar parado):
+
+```bash
+docker rm nome_ou_id_do_conteiner
+```
+
+**Exemplo:**
+
+```bash
+docker rm my_commerce_db
+```
+
+##### **Verificar logs do contêiner**
+
+Exibe os logs gerados pelo PostgreSQL, útil para depuração:
+
+```bash
+docker logs nome_ou_id_do_conteiner
+```
+
+**Exemplo:**
+
+```bash
+docker logs my_commerce_db
+```
+
+##### **Acessar o terminal do contêiner**
+
+Permite entrar dentro do contêiner e executar comandos diretamente no banco:
+
+```bash
+docker exec -it nome_ou_id_do_conteiner bash
+```
+
+**Exemplo:**
+
+```bash
+docker exec -it my_commerce_db bash
+```
+
+Dentro do contêiner, é possível acessar o banco com:
+
+```bash
+psql -U nome_do_usuario -d nome_do_banco
+```
+
+**Exemplo:**
+
+```bash
+psql -U admin -d my_commerce_db
+```
+
+##### **Recriar o contêiner**
+
+Se houver alterações no `docker-compose.yml` ou no `.env`, você pode recriar o contêiner:
+
+```bash
+docker compose up -d --force-recreate
+```
+
 ### Rodando o Projeto
 
 1. **Compile e Execute a Aplicação Spring Boot**
