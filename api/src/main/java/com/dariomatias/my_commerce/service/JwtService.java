@@ -1,8 +1,5 @@
 package com.dariomatias.my_commerce.service;
 
-import com.dariomatias.my_commerce.dto.RefreshTokenResponse;
-import com.dariomatias.my_commerce.model.RefreshToken;
-import com.dariomatias.my_commerce.model.User;
 import org.springframework.stereotype.Component;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Jwts;
@@ -10,6 +7,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
 import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Component
 public class JwtService {
@@ -60,10 +59,19 @@ public class JwtService {
         }
     }
 
-    public RefreshTokenResponse generateTokens(User user) {
-        String accessToken = generateAccessToken(user.getEmail());
-        String refreshToken = generateRefreshToken(user.getEmail());
+    public boolean isTokenExpired(String token) {
+        try {
+            Date expiration = Jwts.parserBuilder()
+                    .setSigningKey(secretKey.getBytes())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getExpiration();
 
-        return new RefreshTokenResponse(accessToken, refreshTokenValue);
+            LocalDateTime expiryDateTime = LocalDateTime.ofInstant(expiration.toInstant(), ZoneId.systemDefault());
+            return expiryDateTime.isBefore(LocalDateTime.now());
+        } catch (Exception e) {
+            return true;
+        }
     }
 }

@@ -13,26 +13,27 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final EmailVerificationTokenRepository tokenRepository;
+    private final EmailVerificationTokenRepository emailVerificationTokenRepository;
     private final EmailService emailService;
     private final RefreshTokenService refreshTokenService;
     private final JwtService jwtService;
 
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
-                       EmailVerificationTokenRepository tokenRepository,
+                       EmailVerificationTokenRepository emailVerificationTokenRepository,
                        EmailService emailService,
                        RefreshTokenService refreshTokenService,
                        JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.tokenRepository = tokenRepository;
+        this.emailVerificationTokenRepository = emailVerificationTokenRepository;
         this.emailService = emailService;
         this.refreshTokenService = refreshTokenService;
         this.jwtService = jwtService;
@@ -49,9 +50,7 @@ public class AuthService {
             return ApiResponse.error(403, "E-mail não verificado");
         }
 
-        RefreshTokenResponse tokens = generateTokensForUser(user);
-
-        return ApiResponse.success(200, "Login realizado com sucesso", tokens);
+        return ApiResponse.success(200, "Login realizado com sucesso", generateTokensForUser(user));
     }
 
     public ApiResponse<User> registerUser(SignupRequest request) {
@@ -66,14 +65,13 @@ public class AuthService {
         user.setEnabled(false);
 
         User savedUser = userRepository.save(user);
-
         String token = UUID.randomUUID().toString();
         EmailVerificationToken verificationToken = new EmailVerificationToken(
                 savedUser,
                 token,
                 LocalDateTime.now().plusHours(24)
         );
-        tokenRepository.save(verificationToken);
+        emailVerificationTokenRepository.save(verificationToken);
 
         try {
             emailService.sendVerificationEmail(savedUser.getEmail(), token);
@@ -81,86 +79,38 @@ public class AuthService {
             return ApiResponse.error(500, "Erro ao enviar e-mail de verificação");
         }
 
-        return ApiResponse.success(201, "Usuário cadastrado com sucesso. Verifique seu e-mail.", savedUser);
+        return ApiResponse.success(201, "Usuário cadastrado com sucesso. Verifique seu e-mail", savedUser);
     }
 
     public ApiResponse<String> verifyEmail(String token) {
-        Optional<EmailVerificationToken> optionalToken = tokenRepository.findByToken(token);
-
-        if (optionalToken.isEmpty()) {
-            return ApiResponse.error(400, "Token inválido");
-        }
-
-        EmailVerificationToken verificationToken = optionalToken.get();
-
-        if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            return ApiResponse.error(400, "Token expirado");
-        }
-
-        User user = verificationToken.getUser();
-        user.setEnabled(true);
-        userRepository.save(user);
-        tokenRepository.delete(verificationToken);
-
-        return ApiResponse.success(200, "E-mail verificado com sucesso!", null);
+        return validateToken(token, user -> {
+            user.setEnabled(true);
+            userRepository.save(user);
+        });
     }
 
     public ApiResponse<String> resendVerificationEmail(String email) {
         Optional<User> userOpt = userRepository.findByEmail(email);
-        if (userOpt.isEmpty()) {
-            return ApiResponse.error(404, "Usuário não encontrado");
-        }
+        if (userOpt.isEmpty()) return ApiResponse.error(404, "Usuário não encontrado");
 
         User user = userOpt.get();
-        if (user.isEnabled()) {
-            return ApiResponse.error(400, "E-mail já verificado");
-        }
+        if (user.isEnabled()) return ApiResponse.error(400, "E-mail já verificado");
 
-        String token = UUID.randomUUID().toString();
-        EmailVerificationToken verificationToken = new EmailVerificationToken(
-                user,
-                token,
-                LocalDateTime.now().plusHours(24)
-        );
-        tokenRepository.save(verificationToken);
-
-        try {
-            emailService.sendVerificationEmail(email, token);
-        } catch (MessagingException e) {
-            return ApiResponse.error(500, "Erro ao enviar e-mail de verificação");
-        }
+        ApiResponse<String> response = sendVerificationEmail(user);
+        if (!response.isSuccess()) return response;
 
         return ApiResponse.success(200, "E-mail de verificação reenviado com sucesso", null);
     }
 
     public ApiResponse<String> recoverPassword(String email) {
         Optional<User> userOpt = userRepository.findByEmail(email);
-        if (userOpt.isEmpty()) {
-            return ApiResponse.error(404, "Usuário não encontrado");
-        }
+        if (userOpt.isEmpty()) return ApiResponse.error(404, "Usuário não encontrado");
 
         User user = userOpt.get();
-        String token = UUID.randomUUID().toString();
-
-        Optional<EmailVerificationToken> existingTokenOpt = tokenRepository.findByUserId(user.getId());
-        EmailVerificationToken recoveryToken;
-
-        if (existingTokenOpt.isPresent()) {
-            recoveryToken = existingTokenOpt.get();
-            recoveryToken.setToken(token);
-            recoveryToken.setExpiryDate(LocalDateTime.now().plusHours(1));
-        } else {
-            recoveryToken = new EmailVerificationToken(
-                    user,
-                    token,
-                    LocalDateTime.now().plusHours(1)
-            );
-        }
-
-        tokenRepository.save(recoveryToken);
+        EmailVerificationToken token = createOrUpdateToken(user, 1);
 
         try {
-            emailService.sendPasswordRecoveryEmail(email, token);
+            emailService.sendPasswordRecoveryEmail(user.getEmail(), token.getToken());
         } catch (MessagingException e) {
             return ApiResponse.error(500, "Erro ao enviar e-mail de recuperação de senha");
         }
@@ -169,41 +119,24 @@ public class AuthService {
     }
 
     public ApiResponse<String> resetPassword(ResetPasswordRequest request) {
-        Optional<EmailVerificationToken> optionalToken = tokenRepository.findByToken(request.getToken());
-        if (optionalToken.isEmpty()) {
-            return ApiResponse.error(400, "Token inválido");
-        }
-
-        EmailVerificationToken recoveryToken = optionalToken.get();
-
-        if (recoveryToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            return ApiResponse.error(400, "Token expirado");
-        }
-
-        User user = recoveryToken.getUser();
-        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        userRepository.save(user);
-        tokenRepository.delete(recoveryToken);
-
-        return ApiResponse.success(200, "Senha redefinida com sucesso", null);
+        return validateToken(request.getToken(), user -> {
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            userRepository.save(user);
+        });
     }
 
     public ApiResponse<RefreshTokenResponse> refreshToken(String refreshTokenStr) {
         Optional<RefreshToken> optionalToken = refreshTokenService.findByToken(refreshTokenStr);
-        if (optionalToken.isEmpty()) {
-            return ApiResponse.error(401, "Refresh token inválido");
-        }
+        if (optionalToken.isEmpty()) return ApiResponse.error(401, "Refresh token inválido");
 
         RefreshToken refreshToken = optionalToken.get();
         if (refreshTokenService.isExpired(refreshToken)) {
             refreshTokenService.deleteByUser(refreshToken.getUser());
+
             return ApiResponse.error(401, "Refresh token expirado");
         }
 
-        User user = refreshToken.getUser();
-        RefreshTokenResponse tokens = generateTokensForUser(user);
-
-        return ApiResponse.success(200, "Tokens atualizados com sucesso", tokens);
+        return ApiResponse.success(200, "Tokens atualizados com sucesso", generateTokensForUser(refreshToken.getUser()));
     }
 
     private RefreshTokenResponse generateTokensForUser(User user) {
@@ -211,5 +144,45 @@ public class AuthService {
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
         return new RefreshTokenResponse(accessToken, refreshToken.getToken());
+    }
+
+    private ApiResponse<String> sendVerificationEmail(User user) {
+        EmailVerificationToken token = createOrUpdateToken(user, 24);
+
+        try {
+            emailService.sendVerificationEmail(user.getEmail(), token.getToken());
+            return ApiResponse.success(200, "E-mail de verificação enviado com sucesso", null);
+        } catch (MessagingException e) {
+            return ApiResponse.error(500, "Erro ao enviar e-mail de verificação");
+        }
+    }
+
+    private EmailVerificationToken createOrUpdateToken(User user, int hoursValid) {
+        Optional<EmailVerificationToken> existingTokenOpt = emailVerificationTokenRepository.findByUserId(user.getId());
+
+        EmailVerificationToken token;
+        if (existingTokenOpt.isPresent()) {
+            token = existingTokenOpt.get();
+            token.setToken(UUID.randomUUID().toString());
+            token.setExpiryDate(LocalDateTime.now().plusHours(hoursValid));
+        } else {
+            token = new EmailVerificationToken(user, UUID.randomUUID().toString(), LocalDateTime.now().plusHours(hoursValid));
+        }
+
+        return emailVerificationTokenRepository.save(token);
+    }
+
+    private ApiResponse<String> validateToken(String tokenStr, Consumer<User> action) {
+        EmailVerificationToken emailVerificationToken = emailVerificationTokenRepository.findByToken(tokenStr)
+                .orElse(null);
+
+        if (emailVerificationToken == null) return ApiResponse.error(400, "Token inválido");
+        if (jwtService.isTokenExpired(emailVerificationToken.getToken())) return ApiResponse.error(400, "Token expirado");
+
+        action.accept(emailVerificationToken.getUser());
+
+        emailVerificationTokenRepository.delete(emailVerificationToken);
+
+        return ApiResponse.success(200, "Operação realizada com sucesso", null);
     }
 }

@@ -53,4 +53,8 @@ public class ApiResponse<T> {
     public List<FieldError> getErrors() {
         return errors;
     }
+
+    public boolean isSuccess() {
+        return "success".equalsIgnoreCase(this.status);
+    }
 }
