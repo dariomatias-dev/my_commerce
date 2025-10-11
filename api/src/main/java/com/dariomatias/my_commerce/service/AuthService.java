@@ -49,14 +49,10 @@ public class AuthService {
             return ApiResponse.error(403, "E-mail não verificado");
         }
 
-        String accessToken = jwtService.generateAccessToken(user.getEmail());
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+        RefreshTokenResponse tokens = generateTokensForUser(user);
 
-        RefreshTokenResponse response = new RefreshTokenResponse(accessToken, refreshToken.getToken());
-
-        return ApiResponse.success(200, "Login realizado com sucesso", response);
+        return ApiResponse.success(200, "Login realizado com sucesso", tokens);
     }
-
 
     public ApiResponse<User> registerUser(SignupRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -194,24 +190,26 @@ public class AuthService {
 
     public ApiResponse<RefreshTokenResponse> refreshToken(String refreshTokenStr) {
         Optional<RefreshToken> optionalToken = refreshTokenService.findByToken(refreshTokenStr);
-
         if (optionalToken.isEmpty()) {
             return ApiResponse.error(401, "Refresh token inválido");
         }
 
         RefreshToken refreshToken = optionalToken.get();
-
         if (refreshTokenService.isExpired(refreshToken)) {
             refreshTokenService.deleteByUser(refreshToken.getUser());
             return ApiResponse.error(401, "Refresh token expirado");
         }
 
         User user = refreshToken.getUser();
-        String newAccessToken = jwtService.generateAccessToken(user.getEmail());
-        RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user);
+        RefreshTokenResponse tokens = generateTokensForUser(user);
 
-        RefreshTokenResponse refreshTokenResponse = new RefreshTokenResponse(newAccessToken, newRefreshToken.getToken());
+        return ApiResponse.success(200, "Tokens atualizados com sucesso", tokens);
+    }
 
-        return ApiResponse.success(200, "Tokens atualizados com sucesso", refreshTokenResponse);
+    private RefreshTokenResponse generateTokensForUser(User user) {
+        String accessToken = jwtService.generateAccessToken(user.getEmail());
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+
+        return new RefreshTokenResponse(accessToken, refreshToken.getToken());
     }
 }

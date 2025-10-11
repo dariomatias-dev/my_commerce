@@ -20,7 +20,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<RefreshTokenResponse>> login(@Valid @RequestBody LoginRequest request) {
         ApiResponse<RefreshTokenResponse> response = authService.login(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(response.getCode()).body(response);
     }
 
     @PostMapping("/signup")
@@ -57,6 +57,6 @@ public class AuthController {
     @PostMapping("/refresh-token")
     public ResponseEntity<ApiResponse<RefreshTokenResponse>> refreshToken(@RequestBody RefreshTokenRequest request) {
         ApiResponse<RefreshTokenResponse> response = authService.refreshToken(request.getRefreshToken());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(response.getCode()).body(response);
     }
 }

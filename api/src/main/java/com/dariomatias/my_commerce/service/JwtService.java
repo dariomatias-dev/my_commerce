@@ -1,10 +1,13 @@
 package com.dariomatias.my_commerce.service;
 
+import com.dariomatias.my_commerce.dto.RefreshTokenResponse;
+import com.dariomatias.my_commerce.model.RefreshToken;
+import com.dariomatias.my_commerce.model.User;
+import org.springframework.stereotype.Component;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
@@ -55,5 +58,12 @@ public class JwtService {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public RefreshTokenResponse generateTokens(User user) {
+        String accessToken = generateAccessToken(user.getEmail());
+        String refreshToken = generateRefreshToken(user.getEmail());
+
+        return new RefreshTokenResponse(accessToken, refreshTokenValue);
     }
 }
