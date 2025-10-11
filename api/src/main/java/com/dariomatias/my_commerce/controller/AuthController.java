@@ -2,6 +2,7 @@ package com.dariomatias.my_commerce.controller;
 
 import com.dariomatias.my_commerce.dto.ApiResponse;
 import com.dariomatias.my_commerce.dto.LoginRequest;
+import com.dariomatias.my_commerce.dto.ResetPasswordRequest;
 import com.dariomatias.my_commerce.dto.SignupRequest;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.service.AuthService;
@@ -45,6 +46,13 @@ public class AuthController {
     @PostMapping("/recover-password")
     public ResponseEntity<ApiResponse<String>> recoverPassword(@RequestParam String email) {
         ApiResponse<String> response = authService.recoverPassword(email);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<String>> resetPassword(
+            @Valid @RequestBody ResetPasswordRequest request) {
+        ApiResponse<String> response = authService.resetPassword(request);
         return ResponseEntity.status(response.getCode()).body(response);
     }
 }

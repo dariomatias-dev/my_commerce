@@ -166,4 +166,24 @@ public class AuthService {
 
         return ApiResponse.success(200, "E-mail de recuperação de senha enviado com sucesso", null);
     }
+
+    public ApiResponse<String> resetPassword(ResetPasswordRequest request) {
+        Optional<EmailVerificationToken> optionalToken = tokenRepository.findByToken(request.getToken());
+        if (optionalToken.isEmpty()) {
+            return ApiResponse.error(400, "Token inválido");
+        }
+
+        EmailVerificationToken recoveryToken = optionalToken.get();
+
+        if (recoveryToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+            return ApiResponse.error(400, "Token expirado");
+        }
+
+        User user = recoveryToken.getUser();
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+        tokenRepository.delete(recoveryToken);
+
+        return ApiResponse.success(200, "Senha redefinida com sucesso", null);
+    }
 }
