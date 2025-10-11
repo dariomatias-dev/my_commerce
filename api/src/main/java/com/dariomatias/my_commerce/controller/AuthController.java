@@ -29,21 +29,21 @@ public class AuthController {
         return ResponseEntity.status(response.getCode()).body(response);
     }
 
-    @GetMapping("/verify-email")
-    public ResponseEntity<ApiResponse<String>> verifyEmail(@RequestParam("token") String token) {
-        ApiResponse<String> response = authService.verifyEmail(token);
+    @PostMapping("/verify-email")
+    public ResponseEntity<ApiResponse<String>> verifyEmail(@RequestBody @Valid VerifyEmailRequest request) {
+        ApiResponse<String> response = authService.verifyEmail(request.getToken());
         return ResponseEntity.status(response.getCode()).body(response);
     }
 
     @PostMapping("/resend-verification-email")
-    public ResponseEntity<ApiResponse<String>> resendVerificationEmail(@RequestParam String email) {
-        ApiResponse<String> response = authService.resendVerificationEmail(email);
+    public ResponseEntity<ApiResponse<String>> resendVerificationEmail(@RequestBody @Valid ResendVerificationEmailRequest request) {
+        ApiResponse<String> response = authService.resendVerificationEmail(request.getEmail());
         return ResponseEntity.status(response.getCode()).body(response);
     }
 
     @PostMapping("/recover-password")
-    public ResponseEntity<ApiResponse<String>> recoverPassword(@RequestParam String email) {
-        ApiResponse<String> response = authService.recoverPassword(email);
+    public ResponseEntity<ApiResponse<String>> recoverPassword(@RequestBody @Valid RecoverPasswordRequest request) {
+        ApiResponse<String> response = authService.recoverPassword(request.getEmail());
         return ResponseEntity.status(response.getCode()).body(response);
     }
 
