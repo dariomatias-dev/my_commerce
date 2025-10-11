@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -176,11 +177,14 @@ public class AuthService {
         EmailVerificationToken emailVerificationToken = emailVerificationTokenRepository.findByToken(tokenStr)
                 .orElse(null);
 
-        if (emailVerificationToken == null) return ApiResponse.error(400, "Token inválido");
-        if (jwtService.isTokenExpired(emailVerificationToken.getToken())) return ApiResponse.error(400, "Token expirado");
+        if (emailVerificationToken == null)
+            return ApiResponse.error(400, "Token inválido");
+
+        LocalDateTime expiryDate = emailVerificationToken.getExpiryDate();
+        if (expiryDate.isBefore(LocalDateTime.now()))
+            return ApiResponse.error(400, "Token expirado");
 
         action.accept(emailVerificationToken.getUser());
-
         emailVerificationTokenRepository.delete(emailVerificationToken);
 
         return ApiResponse.success(200, "Operação realizada com sucesso", null);
