@@ -7,8 +7,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
 import java.util.Date;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 @Component
 public class JwtService {
@@ -56,22 +54,6 @@ public class JwtService {
             return true;
         } catch (Exception e) {
             return false;
-        }
-    }
-
-    public boolean isTokenExpired(String token) {
-        try {
-            Date expiration = Jwts.parserBuilder()
-                    .setSigningKey(secretKey.getBytes())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody()
-                    .getExpiration();
-
-            LocalDateTime expiryDateTime = LocalDateTime.ofInstant(expiration.toInstant(), ZoneId.systemDefault());
-            return expiryDateTime.isBefore(LocalDateTime.now());
-        } catch (Exception e) {
-            return true;
         }
     }
 }
