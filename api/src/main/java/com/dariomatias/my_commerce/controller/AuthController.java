@@ -53,4 +53,10 @@ public class AuthController {
         ApiResponse<String> response = authService.resetPassword(request);
         return ResponseEntity.status(response.getCode()).body(response);
     }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<ApiResponse<RefreshTokenResponse>> refreshToken(@RequestBody RefreshTokenRequest request) {
+        ApiResponse<RefreshTokenResponse> response = authService.refreshToken(request.getRefreshToken());
+        return ResponseEntity.ok(response);
+    }
 }

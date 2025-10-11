@@ -191,4 +191,27 @@ public class AuthService {
 
         return ApiResponse.success(200, "Senha redefinida com sucesso", null);
     }
+
+    public ApiResponse<RefreshTokenResponse> refreshToken(String refreshTokenStr) {
+        Optional<RefreshToken> optionalToken = refreshTokenService.findByToken(refreshTokenStr);
+
+        if (optionalToken.isEmpty()) {
+            return ApiResponse.error(401, "Refresh token inválido");
+        }
+
+        RefreshToken refreshToken = optionalToken.get();
+
+        if (refreshTokenService.isExpired(refreshToken)) {
+            refreshTokenService.deleteByUser(refreshToken.getUser());
+            return ApiResponse.error(401, "Refresh token expirado");
+        }
+
+        User user = refreshToken.getUser();
+        String newAccessToken = jwtService.generateAccessToken(user.getEmail());
+        RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user);
+
+        RefreshTokenResponse refreshTokenResponse = new RefreshTokenResponse(newAccessToken, newRefreshToken.getToken());
+
+        return ApiResponse.success(200, "Tokens atualizados com sucesso", refreshTokenResponse);
+    }
 }
