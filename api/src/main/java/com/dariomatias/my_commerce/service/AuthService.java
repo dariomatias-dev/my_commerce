@@ -2,6 +2,7 @@ package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.ApiResponse;
 import com.dariomatias.my_commerce.dto.LoginRequest;
+import com.dariomatias.my_commerce.dto.ResetPasswordRequest;
 import com.dariomatias.my_commerce.dto.SignupRequest;
 import com.dariomatias.my_commerce.model.EmailVerificationToken;
 import com.dariomatias.my_commerce.model.User;
@@ -139,11 +140,22 @@ public class AuthService {
 
         User user = userOpt.get();
         String token = UUID.randomUUID().toString();
-        EmailVerificationToken recoveryToken = new EmailVerificationToken(
-                user,
-                token,
-                LocalDateTime.now().plusHours(1)
-        );
+
+        Optional<EmailVerificationToken> existingTokenOpt = tokenRepository.findByUserId(user.getId());
+        EmailVerificationToken recoveryToken;
+
+        if (existingTokenOpt.isPresent()) {
+            recoveryToken = existingTokenOpt.get();
+            recoveryToken.setToken(token);
+            recoveryToken.setExpiryDate(LocalDateTime.now().plusHours(1));
+        } else {
+            recoveryToken = new EmailVerificationToken(
+                    user,
+                    token,
+                    LocalDateTime.now().plusHours(1)
+            );
+        }
+
         tokenRepository.save(recoveryToken);
 
         try {
