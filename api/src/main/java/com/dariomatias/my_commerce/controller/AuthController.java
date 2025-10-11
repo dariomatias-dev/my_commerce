@@ -1,6 +1,7 @@
 package com.dariomatias.my_commerce.controller;
 
 import com.dariomatias.my_commerce.dto.ApiResponse;
+import com.dariomatias.my_commerce.dto.LoginRequest;
 import com.dariomatias.my_commerce.dto.SignupRequest;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.service.AuthService;
@@ -16,6 +17,11 @@ public class AuthController {
 
     public AuthController(AuthService authService) {
         this.authService = authService;
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<String>> login(@Valid @RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
     }
 
     @PostMapping("/signup")

@@ -1,11 +1,13 @@
 package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.ApiResponse;
+import com.dariomatias.my_commerce.dto.LoginRequest;
 import com.dariomatias.my_commerce.dto.SignupRequest;
 import com.dariomatias.my_commerce.model.EmailVerificationToken;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.EmailVerificationTokenRepository;
 import com.dariomatias.my_commerce.repository.UserRepository;
+import com.dariomatias.my_commerce.security.JwtUtil;
 import jakarta.mail.MessagingException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,15 +23,18 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationTokenRepository tokenRepository;
     private final EmailService emailService;
+    private final JwtUtil jwtUtil;
 
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        EmailVerificationTokenRepository tokenRepository,
-                       EmailService emailService) {
+                       EmailService emailService,
+                       JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenRepository = tokenRepository;
         this.emailService = emailService;
+        this.jwtUtil = jwtUtil;
     }
 
     public ApiResponse<User> registerUser(SignupRequest request) {
@@ -78,9 +83,23 @@ public class AuthService {
         User user = verificationToken.getUser();
         user.setEnabled(true);
         userRepository.save(user);
-
         tokenRepository.delete(verificationToken);
 
         return ApiResponse.success(200, "E-mail verificado com sucesso!", null);
+    }
+
+    public ApiResponse<String> login(LoginRequest request) {
+        Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
+        if (userOpt.isEmpty() || !passwordEncoder.matches(request.getPassword(), userOpt.get().getPassword())) {
+            return ApiResponse.error(401, "Credenciais inválidas");
+        }
+
+        User user = userOpt.get();
+        if (!user.isEnabled()) {
+            return ApiResponse.error(403, "E-mail não verificado");
+        }
+
+        String token = jwtUtil.generateToken(user.getEmail());
+        return ApiResponse.success(200, "Login realizado com sucesso", token);
     }
 }
