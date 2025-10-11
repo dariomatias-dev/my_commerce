@@ -1,9 +1,6 @@
 package com.dariomatias.my_commerce.controller;
 
-import com.dariomatias.my_commerce.dto.ApiResponse;
-import com.dariomatias.my_commerce.dto.LoginRequest;
-import com.dariomatias.my_commerce.dto.ResetPasswordRequest;
-import com.dariomatias.my_commerce.dto.SignupRequest;
+import com.dariomatias.my_commerce.dto.*;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.service.AuthService;
 import jakarta.validation.Valid;
@@ -21,8 +18,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<String>> login(@Valid @RequestBody LoginRequest request) {
-        return ResponseEntity.ok(authService.login(request));
+    public ResponseEntity<ApiResponse<RefreshTokenResponse>> login(@Valid @RequestBody LoginRequest request) {
+        ApiResponse<RefreshTokenResponse> response = authService.login(request);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/signup")

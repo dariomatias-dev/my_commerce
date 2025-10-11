@@ -1,14 +1,11 @@
 package com.dariomatias.my_commerce.service;
 
-import com.dariomatias.my_commerce.dto.ApiResponse;
-import com.dariomatias.my_commerce.dto.LoginRequest;
-import com.dariomatias.my_commerce.dto.ResetPasswordRequest;
-import com.dariomatias.my_commerce.dto.SignupRequest;
+import com.dariomatias.my_commerce.dto.*;
 import com.dariomatias.my_commerce.model.EmailVerificationToken;
+import com.dariomatias.my_commerce.model.RefreshToken;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.EmailVerificationTokenRepository;
 import com.dariomatias.my_commerce.repository.UserRepository;
-import com.dariomatias.my_commerce.security.JwtUtil;
 import jakarta.mail.MessagingException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,21 +21,24 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationTokenRepository tokenRepository;
     private final EmailService emailService;
-    private final JwtUtil jwtUtil;
+    private final RefreshTokenService refreshTokenService;
+    private final JwtService jwtService;
 
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        EmailVerificationTokenRepository tokenRepository,
                        EmailService emailService,
-                       JwtUtil jwtUtil) {
+                       RefreshTokenService refreshTokenService,
+                       JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenRepository = tokenRepository;
         this.emailService = emailService;
-        this.jwtUtil = jwtUtil;
+        this.refreshTokenService = refreshTokenService;
+        this.jwtService = jwtService;
     }
 
-    public ApiResponse<String> login(LoginRequest request) {
+    public ApiResponse<RefreshTokenResponse> login(LoginRequest request) {
         Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
         if (userOpt.isEmpty() || !passwordEncoder.matches(request.getPassword(), userOpt.get().getPassword())) {
             return ApiResponse.error(401, "Credenciais inválidas");
@@ -49,9 +49,14 @@ public class AuthService {
             return ApiResponse.error(403, "E-mail não verificado");
         }
 
-        String token = jwtUtil.generateToken(user.getEmail());
-        return ApiResponse.success(200, "Login realizado com sucesso", token);
+        String accessToken = jwtService.generateAccessToken(user.getEmail());
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+
+        RefreshTokenResponse response = new RefreshTokenResponse(accessToken, refreshToken.getToken());
+
+        return ApiResponse.success(200, "Login realizado com sucesso", response);
     }
+
 
     public ApiResponse<User> registerUser(SignupRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {

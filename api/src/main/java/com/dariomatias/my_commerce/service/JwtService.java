@@ -1,4 +1,4 @@
-package com.dariomatias.my_commerce.security;
+package com.dariomatias.my_commerce.service;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Jwts;
@@ -9,15 +9,24 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Component
-public class JwtUtil {
+public class JwtService {
 
     private final Dotenv dotenv = Dotenv.load();
     private final String secretKey = dotenv.get("JWT_SECRET");
-    private final long expirationTime = Long.parseLong(dotenv.get("JWT_EXPIRATION_MS", "86400000"));
+    private final long accessTokenExpiration = Long.parseLong(dotenv.get("JWT_ACCESS_EXPIRATION_MS", "86400000"));
+    private final long refreshTokenExpiration = Long.parseLong(dotenv.get("JWT_REFRESH_EXPIRATION_MS", "604800000"));
 
-    public String generateToken(String email) {
+    public String generateAccessToken(String email) {
+        return generateToken(email, accessTokenExpiration);
+    }
+
+    public String generateRefreshToken(String email) {
+        return generateToken(email, refreshTokenExpiration);
+    }
+
+    private String generateToken(String email, long expirationMs) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expirationTime);
+        Date expiryDate = new Date(now.getTime() + expirationMs);
 
         return Jwts.builder()
                 .setSubject(email)
