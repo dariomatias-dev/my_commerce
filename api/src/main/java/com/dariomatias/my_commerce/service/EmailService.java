@@ -73,4 +73,23 @@ public class EmailService {
         String content = createEmailTemplate("Bem-vindo ao My Commerce!", bodyContent);
         sendEmail(to, subject, content);
     }
+
+    public void sendPasswordRecoveryEmail(String to, String token) throws MessagingException {
+        String subject = "Recuperação de Senha";
+        String link = "http://localhost:8080/reset-password?token=" + token;
+        String bodyContent = """
+                <p>Olá,</p>
+                <p>Recebemos uma solicitação para redefinir sua senha. Clique no botão abaixo para criar uma nova senha:</p>
+                <p style="text-align:center; margin:40px 0;">
+                    <a href="%s" style="background-color:#4CAF50; color:white; padding:15px 30px; text-decoration:none; border-radius:8px; font-weight:bold; box-shadow:0 4px 10px rgba(0,0,0,0.1); display:inline-block;">
+                        Redefinir Senha
+                    </a>
+                </p>
+                <p>Se você não solicitou esta alteração, apenas ignore este e-mail.</p>
+                <p>Atenciosamente,<br/><strong>Equipe My Commerce</strong></p>
+                """.formatted(link);
+
+        String content = createEmailTemplate("Recuperação de Senha", bodyContent);
+        sendEmail(to, subject, content);
+    }
 }

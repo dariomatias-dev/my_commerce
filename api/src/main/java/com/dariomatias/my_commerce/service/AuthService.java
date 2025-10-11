@@ -105,21 +105,15 @@ public class AuthService {
 
     public ApiResponse<String> resendVerificationEmail(String email) {
         Optional<User> userOpt = userRepository.findByEmail(email);
-
         if (userOpt.isEmpty()) {
             return ApiResponse.error(404, "Usuário não encontrado");
         }
 
         User user = userOpt.get();
-
         if (user.isEnabled()) {
-            return ApiResponse.error(400, "Usuário já verificado");
+            return ApiResponse.error(400, "E-mail já verificado");
         }
 
-        // Remove token antigo, se existir
-        tokenRepository.findByUser(user).ifPresent(tokenRepository::delete);
-
-        // Cria novo token
         String token = UUID.randomUUID().toString();
         EmailVerificationToken verificationToken = new EmailVerificationToken(
                 user,
@@ -129,11 +123,35 @@ public class AuthService {
         tokenRepository.save(verificationToken);
 
         try {
-            emailService.sendVerificationEmail(user.getEmail(), token);
+            emailService.sendVerificationEmail(email, token);
         } catch (MessagingException e) {
             return ApiResponse.error(500, "Erro ao enviar e-mail de verificação");
         }
 
         return ApiResponse.success(200, "E-mail de verificação reenviado com sucesso", null);
+    }
+
+    public ApiResponse<String> recoverPassword(String email) {
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            return ApiResponse.error(404, "Usuário não encontrado");
+        }
+
+        User user = userOpt.get();
+        String token = UUID.randomUUID().toString();
+        EmailVerificationToken recoveryToken = new EmailVerificationToken(
+                user,
+                token,
+                LocalDateTime.now().plusHours(1)
+        );
+        tokenRepository.save(recoveryToken);
+
+        try {
+            emailService.sendPasswordRecoveryEmail(email, token);
+        } catch (MessagingException e) {
+            return ApiResponse.error(500, "Erro ao enviar e-mail de recuperação de senha");
+        }
+
+        return ApiResponse.success(200, "E-mail de recuperação de senha enviado com sucesso", null);
     }
 }

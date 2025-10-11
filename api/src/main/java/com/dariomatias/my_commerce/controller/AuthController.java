@@ -25,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<User>> signup(@RequestBody @Valid SignupRequest request) {
+    public ResponseEntity<ApiResponse<User>> signup(@Valid @RequestBody SignupRequest request) {
         ApiResponse<User> response = authService.registerUser(request);
         return ResponseEntity.status(response.getCode()).body(response);
     }
@@ -36,9 +36,15 @@ public class AuthController {
         return ResponseEntity.status(response.getCode()).body(response);
     }
 
-    @GetMapping("/resend-verification-email")
+    @PostMapping("/resend-verification-email")
     public ResponseEntity<ApiResponse<String>> resendVerificationEmail(@RequestParam String email) {
         ApiResponse<String> response = authService.resendVerificationEmail(email);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
+
+    @PostMapping("/recover-password")
+    public ResponseEntity<ApiResponse<String>> recoverPassword(@RequestParam String email) {
+        ApiResponse<String> response = authService.recoverPassword(email);
         return ResponseEntity.status(response.getCode()).body(response);
     }
 }
