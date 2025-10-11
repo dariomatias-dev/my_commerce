@@ -98,12 +98,16 @@ As principais funcionalidades expostas por esta API incluem:
 
 #### **Verificação de E-mail**
 
-- **Endpoint**: `GET /api/auth/verify-email/{token}`
+- **Endpoint**: `POST /api/auth/verify-email`
 - **Objetivo**: Verificar o e-mail do usuário após o cadastro.
 
-**Parâmetros de URL**:
+**Corpo da Requisição**:
 
-- `token`: Token de verificação enviado ao e-mail do usuário.
+```json
+{
+  "token": "token_value"
+}
+```
 
 **Respostas**:
 
@@ -128,22 +132,6 @@ As principais funcionalidades expostas por esta API incluem:
 - **200 OK**: E-mail de verificação reenviado com sucesso.
 - **404 Not Found**: E-mail não encontrado.
 
-#### **Logout**
-
-- **Endpoint**: `POST /api/auth/logout`
-- **Objetivo**: Deslogar o usuário da aplicação.
-
-**Cabeçalhos**:
-
-```
-Authorization: Bearer jwt_token
-```
-
-**Respostas**:
-
-- **200 OK**: Logout realizado com sucesso.
-- **401 Unauthorized**: Token inválido ou expirado.
-
 #### **Recuperação de Senha**
 
 - **Endpoint**: `POST /api/auth/recover-password`
@@ -162,31 +150,36 @@ Authorization: Bearer jwt_token
 - **200 OK**: E-mail de recuperação enviado com sucesso.
 - **404 Not Found**: E-mail não encontrado.
 
-#### **Verificação de Token**
+#### **Resetar Senha**
 
-- **Endpoint**: `GET /api/auth/verify-token`
-- **Objetivo**: Verificar a validade de um token JWT.
+- **Endpoint**: `POST /api/auth/reset-password`
+- **Objetivo**: Resetar a senha do usuário.
 
-**Cabeçalhos**:
+**Corpo da Requisição**:
 
-```
-Authorization: Bearer jwt_token
+```json
+{
+    "token": "token_value",
+    "newPassword": "password123"
+}
 ```
 
 **Respostas**:
 
-- **200 OK**: Token válido.
-- **401 Unauthorized**: Token inválido ou expirado.
+- **200 OK**: Operação realizada com sucesso.
+- **400 Bad Request**: Token inválido ou Token expirado.
 
 #### **Renovação de Token**
 
 - **Endpoint**: `POST /api/auth/refresh-token`
 - **Objetivo**: Renovar um token JWT expirado.
 
-**Cabeçalhos**:
+**Corpo da Requisição**:
 
-```
-Authorization: Bearer jwt_token_expirado
+```json
+{
+  "refreshToken": "refresh_token_jwt"
+}
 ```
 
 **Respostas**:
