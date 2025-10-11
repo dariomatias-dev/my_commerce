@@ -37,6 +37,21 @@ public class AuthService {
         this.jwtUtil = jwtUtil;
     }
 
+    public ApiResponse<String> login(LoginRequest request) {
+        Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
+        if (userOpt.isEmpty() || !passwordEncoder.matches(request.getPassword(), userOpt.get().getPassword())) {
+            return ApiResponse.error(401, "Credenciais inválidas");
+        }
+
+        User user = userOpt.get();
+        if (!user.isEnabled()) {
+            return ApiResponse.error(403, "E-mail não verificado");
+        }
+
+        String token = jwtUtil.generateToken(user.getEmail());
+        return ApiResponse.success(200, "Login realizado com sucesso", token);
+    }
+
     public ApiResponse<User> registerUser(SignupRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             return ApiResponse.error(409, "Email já está em uso");
@@ -88,18 +103,37 @@ public class AuthService {
         return ApiResponse.success(200, "E-mail verificado com sucesso!", null);
     }
 
-    public ApiResponse<String> login(LoginRequest request) {
-        Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
-        if (userOpt.isEmpty() || !passwordEncoder.matches(request.getPassword(), userOpt.get().getPassword())) {
-            return ApiResponse.error(401, "Credenciais inválidas");
+    public ApiResponse<String> resendVerificationEmail(String email) {
+        Optional<User> userOpt = userRepository.findByEmail(email);
+
+        if (userOpt.isEmpty()) {
+            return ApiResponse.error(404, "Usuário não encontrado");
         }
 
         User user = userOpt.get();
-        if (!user.isEnabled()) {
-            return ApiResponse.error(403, "E-mail não verificado");
+
+        if (user.isEnabled()) {
+            return ApiResponse.error(400, "Usuário já verificado");
         }
 
-        String token = jwtUtil.generateToken(user.getEmail());
-        return ApiResponse.success(200, "Login realizado com sucesso", token);
+        // Remove token antigo, se existir
+        tokenRepository.findByUser(user).ifPresent(tokenRepository::delete);
+
+        // Cria novo token
+        String token = UUID.randomUUID().toString();
+        EmailVerificationToken verificationToken = new EmailVerificationToken(
+                user,
+                token,
+                LocalDateTime.now().plusHours(24)
+        );
+        tokenRepository.save(verificationToken);
+
+        try {
+            emailService.sendVerificationEmail(user.getEmail(), token);
+        } catch (MessagingException e) {
+            return ApiResponse.error(500, "Erro ao enviar e-mail de verificação");
+        }
+
+        return ApiResponse.success(200, "E-mail de verificação reenviado com sucesso", null);
     }
 }

@@ -35,4 +35,10 @@ public class AuthController {
         ApiResponse<String> response = authService.verifyEmail(token);
         return ResponseEntity.status(response.getCode()).body(response);
     }
+
+    @GetMapping("/resend-verification-email")
+    public ResponseEntity<ApiResponse<String>> resendVerificationEmail(@RequestParam String email) {
+        ApiResponse<String> response = authService.resendVerificationEmail(email);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
 }
