@@ -65,8 +65,8 @@ As principais funcionalidades expostas por esta API incluem:
 
 ```json
 {
-  "email": "email@gmail.com",
-  "password": "password123"
+  "email": "johndoe@gmail.com",
+  "password": "StrongPass123!"
 }
 ```
 
@@ -84,9 +84,9 @@ As principais funcionalidades expostas por esta API incluem:
 
 ```json
 {
-  "name": "User Name",
-  "email": "username@gmail.com",
-  "password": "password123"
+  "name": "John Doe",
+  "email": "johndoe@gmail.com",
+  "password": "StrongPass123!"
 }
 ```
 
@@ -105,7 +105,7 @@ As principais funcionalidades expostas por esta API incluem:
 
 ```json
 {
-  "token": "token_value"
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNjE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
 }
 ```
 
@@ -123,7 +123,7 @@ As principais funcionalidades expostas por esta API incluem:
 
 ```json
 {
-  "email": "email@gmail.com"
+  "email": "johndoe@gmail.com"
 }
 ```
 
@@ -141,7 +141,7 @@ As principais funcionalidades expostas por esta API incluem:
 
 ```json
 {
-  "email": "email@gmail.com"
+  "email": "johndoe@gmail.com"
 }
 ```
 
@@ -159,8 +159,8 @@ As principais funcionalidades expostas por esta API incluem:
 
 ```json
 {
-    "token": "token_value",
-    "newPassword": "password123"
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNjE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+  "newPassword": "StrongPass123!"
 }
 ```
 
@@ -169,16 +169,16 @@ As principais funcionalidades expostas por esta API incluem:
 - **200 OK**: Operação realizada com sucesso.
 - **400 Bad Request**: Token inválido ou Token expirado.
 
-#### **Renovação de Token**
+#### **Renovação de Tokens**
 
 - **Endpoint**: `POST /api/auth/refresh-token`
-- **Objetivo**: Renovar um token JWT expirado.
+- **Objetivo**: Renovar os tokens JWT do usuário.
 
 **Corpo da Requisição**:
 
 ```json
 {
-  "refreshToken": "refresh_token_jwt"
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidHlwIjoiUmVmcmVzaCIsImlhdCI6MTYxNjIzOTAyMn0.V4c3pVQhRZkN5e1R1DsQJmGJp2O2Yc5W6lGJzD8zT3Q"
 }
 ```
 
