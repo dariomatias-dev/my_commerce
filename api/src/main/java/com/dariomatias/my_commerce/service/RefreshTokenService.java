@@ -3,12 +3,10 @@ package com.dariomatias.my_commerce.service;
 import com.dariomatias.my_commerce.model.RefreshToken;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.RefreshTokenRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class RefreshTokenService {
@@ -26,7 +24,7 @@ public class RefreshTokenService {
 
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setUser(user);
-        refreshToken.setToken(jwtService.generateRefreshToken(user.getEmail()));
+        refreshToken.setToken(jwtService.generateRefreshToken(user));
         refreshToken.setExpiryDate(LocalDateTime.now().plusSeconds(
                 Long.parseLong(System.getenv().getOrDefault("JWT_REFRESH_EXPIRATION_MS", "604800000")) / 1000
         ));

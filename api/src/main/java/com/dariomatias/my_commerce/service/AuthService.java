@@ -11,7 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -141,7 +140,7 @@ public class AuthService {
     }
 
     private RefreshTokenResponse generateTokensForUser(User user) {
-        String accessToken = jwtService.generateAccessToken(user.getEmail());
+        String accessToken = jwtService.generateAccessToken(user);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
         return new RefreshTokenResponse(accessToken, refreshToken.getToken());
