@@ -1,8 +1,8 @@
 package com.dariomatias.my_commerce.security;
 
+import com.dariomatias.my_commerce.dto.ApiResponse;
 import com.dariomatias.my_commerce.service.JwtService;
 import com.dariomatias.my_commerce.service.UserService;
-import com.dariomatias.my_commerce.model.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,7 +41,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (jwtService.validateToken(token)) {
                 String userId = jwtService.getIdFromToken(token);
-                User user = userService.getUserById(UUID.fromString(userId));
+                var apiResponse = userService.getUserById(UUID.fromString(userId));
+                var user = apiResponse != null ? apiResponse.getData() : null;
+
+                if (user == null) {
+                    response.setContentType("application/json");
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write(
+                            new com.fasterxml.jackson.databind.ObjectMapper()
+                                    .writeValueAsString(ApiResponse.error(401, "Token inválido ou usuário deletado"))
+                    );
+                    return;
+                }
 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         user,

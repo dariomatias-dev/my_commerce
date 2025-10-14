@@ -1,64 +1,67 @@
 package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.ApiResponse;
-import com.dariomatias.my_commerce.dto.SignupRequest;
-import com.dariomatias.my_commerce.model.EmailVerificationToken;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.EmailVerificationTokenRepository;
+import com.dariomatias.my_commerce.repository.RefreshTokenRepository;
 import com.dariomatias.my_commerce.repository.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import jakarta.mail.MessagingException;
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final EmailVerificationTokenRepository tokenRepository;
-    private final EmailService emailService;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final EmailVerificationTokenRepository emailVerificationTokenRepository;
 
     public UserService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder,
-                       EmailVerificationTokenRepository tokenRepository,
-                       EmailService emailService) {
+                       RefreshTokenRepository refreshTokenRepository,
+                       EmailVerificationTokenRepository emailVerificationTokenRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.tokenRepository = tokenRepository;
-        this.emailService = emailService;
+        this.refreshTokenRepository = refreshTokenRepository;
+        this.emailVerificationTokenRepository = emailVerificationTokenRepository;
     }
 
-    public ApiResponse<User> registerUser(SignupRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            return ApiResponse.error(409, "Email já está em uso");
-        }
+    public ApiResponse<List<User>> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return ApiResponse.success(200, "Usuários obtidos com sucesso.", users);
+    }
 
-        User user = new User();
-        user.setName(request.getName());
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setEnabled(false);
+    public ApiResponse<User> getUserById(UUID id) {
+        return userRepository.findById(id)
+                .map(user -> ApiResponse.success(200, "Usuário obtido com sucesso.", user))
+                .orElse(ApiResponse.error(404, "Usuário não encontrado."));
+    }
 
-        User savedUser = userRepository.save(user);
+    public ApiResponse<User> updateUser(UUID id, User updatedUser) {
+        return userRepository.findById(id)
+                .map(user -> {
+                    if (updatedUser.getName() != null)
+                        user.setName(updatedUser.getName());
+                    if (updatedUser.getEmail() != null)
+                        user.setEmail(updatedUser.getEmail());
+                    if (updatedUser.getPassword() != null)
+                        user.setPassword(updatedUser.getPassword());
 
-        String token = UUID.randomUUID().toString();
-        EmailVerificationToken verificationToken = new EmailVerificationToken(
-                savedUser,
-                token,
-                LocalDateTime.now().plusHours(24)
-        );
+                    userRepository.save(user);
+                    return ApiResponse.success(200, "Usuário atualizado com sucesso.", user);
+                })
+                .orElse(ApiResponse.error(404, "Usuário não encontrado."));
+    }
 
-        tokenRepository.save(verificationToken);
+    @Transactional
+    public ApiResponse<Void> deleteUser(UUID id) {
+        if (!userRepository.existsById(id))
+            return ApiResponse.error(404, "Usuário não encontrado");
 
-        try {
-            emailService.sendVerificationEmail(savedUser.getEmail(), token);
-        } catch (MessagingException e) {
-            return ApiResponse.error(500, "Erro ao enviar e-mail de verificação");
-        }
+        refreshTokenRepository.deleteByUserId(id);
+        emailVerificationTokenRepository.deleteByUserId(id);
+        userRepository.deleteById(id);
 
-        return ApiResponse.success(201, "Usuário cadastrado com sucesso. Verifique seu e-mail.", savedUser);
+        return ApiResponse.success(204, "Usuário excluído com sucesso", null);
     }
 }
