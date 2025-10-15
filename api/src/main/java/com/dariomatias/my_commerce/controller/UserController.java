@@ -22,43 +22,45 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<User>>> getAllUsers() {
-        ApiResponse<List<User>> response = userService.getAllUsers();
-        return ResponseEntity.status(response.getCode()).body(response);
+        List<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(ApiResponse.success("Usuários obtidos com sucesso.", users));
     }
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<User>> getCurrentUser(@AuthenticationPrincipal User user) {
-        ApiResponse<User> response = userService.getUserById(user.getId());
-        return ResponseEntity.status(response.getCode()).body(response);
+        User currentUser = userService.getUserById(user.getId());
+        return ResponseEntity.ok(ApiResponse.success("Usuário obtido com sucesso.", currentUser));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<User>> getUserById(@PathVariable UUID id) {
-        ApiResponse<User> response = userService.getUserById(id);
-        return ResponseEntity.status(response.getCode()).body(response);
+        User user = userService.getUserById(id);
+        return ResponseEntity.ok(ApiResponse.success("Usuário obtido com sucesso.", user));
     }
 
     @PatchMapping("/me")
-    public ResponseEntity<ApiResponse<User>> updateCurrentUser(@AuthenticationPrincipal User user, @RequestBody User updatedUser) {
-        ApiResponse<User> response = userService.updateUser(user.getId(), updatedUser);
-        return ResponseEntity.status(response.getCode()).body(response);
+    public ResponseEntity<ApiResponse<User>> updateCurrentUser(@AuthenticationPrincipal User user,
+                                                               @RequestBody User updatedUser) {
+        User updated = userService.updateUser(user.getId(), updatedUser);
+        return ResponseEntity.ok(ApiResponse.success("Usuário atualizado com sucesso.", updated));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<User>> updateUser(@PathVariable UUID id, @RequestBody User updatedUser) {
-        ApiResponse<User> response = userService.updateUser(id, updatedUser);
-        return ResponseEntity.status(response.getCode()).body(response);
+    public ResponseEntity<ApiResponse<User>> updateUser(@PathVariable UUID id,
+                                                        @RequestBody User updatedUser) {
+        User updated = userService.updateUser(id, updatedUser);
+        return ResponseEntity.ok(ApiResponse.success("Usuário atualizado com sucesso.", updated));
     }
 
     @DeleteMapping("/me")
     public ResponseEntity<ApiResponse<Void>> deleteCurrentUser(@AuthenticationPrincipal User user) {
-        ApiResponse<Void> response = userService.deleteUser(user.getId());
-        return ResponseEntity.status(response.getCode()).body(response);
+        userService.deleteUser(user.getId());
+        return ResponseEntity.ok(ApiResponse.success("Usuário excluído com sucesso", null));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable UUID id) {
-        ApiResponse<Void> response = userService.deleteUser(id);
-        return ResponseEntity.status(response.getCode()).body(response);
+        userService.deleteUser(id);
+        return ResponseEntity.ok(ApiResponse.success("Usuário excluído com sucesso", null));
     }
 }

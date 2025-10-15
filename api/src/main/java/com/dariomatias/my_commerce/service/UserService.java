@@ -1,12 +1,13 @@
 package com.dariomatias.my_commerce.service;
 
-import com.dariomatias.my_commerce.dto.ApiResponse;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.EmailVerificationTokenRepository;
 import com.dariomatias.my_commerce.repository.RefreshTokenRepository;
 import com.dariomatias.my_commerce.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,18 +27,16 @@ public class UserService {
         this.emailVerificationTokenRepository = emailVerificationTokenRepository;
     }
 
-    public ApiResponse<List<User>> getAllUsers() {
-        List<User> users = userRepository.findAll();
-        return ApiResponse.success(200, "Usuários obtidos com sucesso.", users);
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
-    public ApiResponse<User> getUserById(UUID id) {
+    public User getUserById(UUID id) {
         return userRepository.findById(id)
-                .map(user -> ApiResponse.success(200, "Usuário obtido com sucesso.", user))
-                .orElse(ApiResponse.error(404, "Usuário não encontrado."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado."));
     }
 
-    public ApiResponse<User> updateUser(UUID id, User updatedUser) {
+    public User updateUser(UUID id, User updatedUser) {
         return userRepository.findById(id)
                 .map(user -> {
                     if (updatedUser.getName() != null)
@@ -47,21 +46,19 @@ public class UserService {
                     if (updatedUser.getPassword() != null)
                         user.setPassword(updatedUser.getPassword());
 
-                    userRepository.save(user);
-                    return ApiResponse.success(200, "Usuário atualizado com sucesso.", user);
+                    return userRepository.save(user);
                 })
-                .orElse(ApiResponse.error(404, "Usuário não encontrado."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado."));
     }
 
     @Transactional
-    public ApiResponse<Void> deleteUser(UUID id) {
-        if (!userRepository.existsById(id))
-            return ApiResponse.error(404, "Usuário não encontrado");
+    public void deleteUser(UUID id) {
+        if (!userRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado");
+        }
 
         refreshTokenRepository.deleteByUserId(id);
         emailVerificationTokenRepository.deleteByUserId(id);
         userRepository.deleteById(id);
-
-        return ApiResponse.success(204, "Usuário excluído com sucesso", null);
     }
 }

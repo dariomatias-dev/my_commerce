@@ -1,18 +1,21 @@
 package com.dariomatias.my_commerce.security;
 
 import com.dariomatias.my_commerce.dto.ApiResponse;
+import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.service.JwtService;
 import com.dariomatias.my_commerce.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,6 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserService userService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public JwtAuthenticationFilter(JwtService jwtService, UserService userService) {
         this.jwtService = jwtService;
@@ -41,15 +45,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (jwtService.validateToken(token)) {
                 String userId = jwtService.getIdFromToken(token);
-                var apiResponse = userService.getUserById(UUID.fromString(userId));
-                var user = apiResponse != null ? apiResponse.getData() : null;
+                User user = null;
 
-                if (user == null) {
+                try {
+                    user = userService.getUserById(UUID.fromString(userId));
+                } catch (ResponseStatusException ex) {
                     response.setContentType("application/json");
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.getWriter().write(
-                            new com.fasterxml.jackson.databind.ObjectMapper()
-                                    .writeValueAsString(ApiResponse.error(401, "Token inválido ou usuário deletado"))
+                            objectMapper.writeValueAsString(
+                                    ApiResponse.error(401, "Token inválido ou usuário deletado")
+                            )
                     );
                     return;
                 }
