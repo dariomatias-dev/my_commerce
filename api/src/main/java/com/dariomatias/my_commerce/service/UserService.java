@@ -41,10 +41,6 @@ public class UserService {
                 .map(user -> {
                     if (updatedUser.getName() != null)
                         user.setName(updatedUser.getName());
-                    if (updatedUser.getEmail() != null)
-                        user.setEmail(updatedUser.getEmail());
-                    if (updatedUser.getPassword() != null)
-                        user.setPassword(updatedUser.getPassword());
 
                     return userRepository.save(user);
                 })
