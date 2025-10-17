@@ -56,7 +56,7 @@ As principais funcionalidades expostas por esta API incluem:
 
 Para consultar todos os endpoints da API, incluindo **Autenticação, Usuários, Lojas, Produtos, Pedidos e Relatórios**, veja a documentação das rotas:
 
-- **Documentação de Rotas da API**: [`api-routes.md`](../docs/api-routes.md)
+- **Documentação de Rotas da API**: [`api-routes.md`](../docs/api-routes/README.md)
 
 Essa documentação contém informações detalhadas sobre cada endpoint, incluindo objetivo, parâmetros de entrada, exemplos de request/response e códigos de status retornados.
 
