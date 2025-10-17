@@ -2,8 +2,8 @@ package com.dariomatias.my_commerce.security;
 
 import com.dariomatias.my_commerce.dto.ApiResponse;
 import com.dariomatias.my_commerce.model.User;
+import com.dariomatias.my_commerce.repository.UserRepository;
 import com.dariomatias.my_commerce.service.JwtService;
-import com.dariomatias.my_commerce.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,12 +24,12 @@ import java.util.UUID;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public JwtAuthenticationFilter(JwtService jwtService, UserService userService) {
+    public JwtAuthenticationFilter(JwtService jwtService, UserRepository userRepository) {
         this.jwtService = jwtService;
-        this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -40,16 +39,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
+        System.out.println(authHeader);
+
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
 
             if (jwtService.validateToken(token)) {
                 String userId = jwtService.getIdFromToken(token);
-                User user = null;
+                User user = userRepository.findById(UUID.fromString(userId)).orElse(null);
 
-                try {
-                    user = userService.getUserById(UUID.fromString(userId));
-                } catch (ResponseStatusException ex) {
+                if (user == null) {
                     response.setContentType("application/json");
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.getWriter().write(

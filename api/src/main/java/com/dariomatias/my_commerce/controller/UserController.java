@@ -1,6 +1,7 @@
 package com.dariomatias.my_commerce.controller;
 
 import com.dariomatias.my_commerce.dto.ApiResponse;
+import com.dariomatias.my_commerce.dto.PasswordUpdateRequest;
 import com.dariomatias.my_commerce.dto.user.UserResponse;
 import com.dariomatias.my_commerce.dto.user.AdminUserResponse;
 import com.dariomatias.my_commerce.model.User;
@@ -56,6 +57,13 @@ public class UserController {
                                                                      @RequestBody User updatedUser) {
         User updated = userService.updateUser(id, updatedUser);
         return ResponseEntity.ok(ApiResponse.success("Usuário atualizado com sucesso.", AdminUserResponse.from(updated)));
+    }
+
+    @PostMapping("/me/change-password")
+    public ResponseEntity<ApiResponse<Void>> changePassword(@AuthenticationPrincipal User user,
+                                                            @RequestBody PasswordUpdateRequest request) {
+        userService.changePassword(user.getId(), request);
+        return ResponseEntity.ok(ApiResponse.success("Senha atualizada com sucesso", null));
     }
 
     @DeleteMapping("/me")
