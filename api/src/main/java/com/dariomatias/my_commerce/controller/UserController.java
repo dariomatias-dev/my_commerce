@@ -6,14 +6,15 @@ import com.dariomatias.my_commerce.dto.user.AdminUserResponse;
 import com.dariomatias.my_commerce.dto.user.UserResponse;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -27,11 +28,13 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsers() {
-        List<UserResponse> users = userService.getAllUsers()
-                .stream()
-                .map(UserResponse::from)
-                .collect(Collectors.toList());
+    public ResponseEntity<ApiResponse<Page<AdminUserResponse>>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<AdminUserResponse> users = userService.getAllUsers(pageable)
+                .map(AdminUserResponse::from);
         return ResponseEntity.ok(ApiResponse.success("Usuários obtidos com sucesso.", users));
     }
 
