@@ -9,8 +9,17 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.stream.Collectors;
 
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.http.ResponseEntity;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(AccessDeniedException ex) {
+        ApiResponse<Void> response = ApiResponse.error(403, "Acesso negado: você não possui permissão para acessar este recurso");
+        return ResponseEntity.status(403).body(response);
+    }
 
     @ExceptionHandler(ResponseStatusException.class)
     public ApiResponse<String> handleResponseStatusException(ResponseStatusException ex) {
