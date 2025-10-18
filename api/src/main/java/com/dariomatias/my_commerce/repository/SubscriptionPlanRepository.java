@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface SubscriptionPlanRepository extends JpaRepository<SubscriptionPlan, UUID> { }
+public interface SubscriptionPlanRepository extends JpaRepository<SubscriptionPlan, UUID> {
+    boolean existsByName(String name);
+}
