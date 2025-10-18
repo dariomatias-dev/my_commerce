@@ -14,19 +14,9 @@ public class CategoryRequestDTO {
 
     public CategoryRequestDTO() {}
 
-    public UUID getStoreId() {
-        return storeId;
-    }
+    public UUID getStoreId() { return storeId; }
+    public void setStoreId(UUID storeId) { this.storeId = storeId; }
 
-    public void setStoreId(UUID storeId) {
-        this.storeId = storeId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 }
