@@ -90,6 +90,10 @@ public class Store {
         return isActive;
     }
 
+    public void setActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -101,5 +105,4 @@ public class Store {
     public User getOwner() {
         return owner;
     }
-
 }
