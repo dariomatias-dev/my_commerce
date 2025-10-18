@@ -1,4 +1,4 @@
-package com.dariomatias.my_commerce.dto;
+package com.dariomatias.my_commerce.dto.refresh_token;
 
 public class RefreshTokenResponse {
     private String accessToken;

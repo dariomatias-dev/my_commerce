@@ -1,6 +1,8 @@
 package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.*;
+import com.dariomatias.my_commerce.dto.refresh_token.RefreshTokenRequest;
+import com.dariomatias.my_commerce.dto.refresh_token.RefreshTokenResponse;
 import com.dariomatias.my_commerce.model.EmailVerificationToken;
 import com.dariomatias.my_commerce.model.RefreshToken;
 import com.dariomatias.my_commerce.model.User;
