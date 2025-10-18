@@ -5,7 +5,7 @@ import com.dariomatias.my_commerce.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
+import jakarta.transaction.Transactional;
 
 @Component
 public class UserSeed {
@@ -18,25 +18,19 @@ public class UserSeed {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Transactional
     public void createUsers() {
         for (int i = 1; i <= 20; i++) {
             String email = "user" + i + "@gmail.com";
-            String name = "Usuário " + i;
-            String password = "password" + i;
-
-            Optional<User> existingUser = userRepository.findByEmail(email);
-            if (existingUser.isPresent()) {
-                continue;
+            if (!userRepository.existsByEmail(email)) {
+                User user = new User();
+                user.setName("Usuário " + i);
+                user.setEmail(email);
+                user.setPassword(passwordEncoder.encode("password" + i));
+                user.setRole("USER");
+                user.setEnabled(true);
+                userRepository.save(user);
             }
-
-            User user = new User();
-            user.setName(name);
-            user.setEmail(email);
-            user.setPassword(passwordEncoder.encode(password));
-            user.setRole("USER");
-            user.setEnabled(true);
-
-            userRepository.save(user);
         }
     }
 }
