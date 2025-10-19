@@ -54,11 +54,13 @@ public class Store {
     private Boolean isActive;
 
     @Getter
+    @Setter
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Getter
+    @Setter
     @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime updatedAt;
@@ -69,5 +71,13 @@ public class Store {
     @JoinColumn(name = "owner_id")
     private User owner;
 
+    @Setter
+    @Transient
+    private UUID ownerId;
+
     public Store() {}
+
+    public UUID getOwnerId() {
+        return owner != null ? owner.getId() : ownerId;
+    }
 }
