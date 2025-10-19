@@ -1,6 +1,7 @@
 package com.dariomatias.my_commerce.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -10,99 +11,63 @@ import java.util.UUID;
 @Entity
 @Table(name = "stores")
 public class Store {
+
+    @Getter
     @Setter
     @Id
     @GeneratedValue
     private UUID id;
 
+    @Getter
     @Setter
     @Column(nullable = false)
     private String name;
 
+    @Getter
     @Setter
     @Column(nullable = false, unique = true)
     private String slug;
 
+    @Getter
     @Setter
     @Column(nullable = false)
     private String description;
 
+    @Getter
     @Setter
     @Column(nullable = false)
     private String bannerUrl;
 
+    @Getter
     @Setter
     @Column(nullable = false)
     private String logoUrl;
 
+    @Getter
     @Setter
     @Column(nullable = false)
     private String themeColor;
 
+    @Getter
     @Setter
     @Column(nullable = false)
     private Boolean isActive;
 
+    @Getter
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Getter
     @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @Getter
     @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "owner_id")
     private User owner;
 
     public Store() {}
-
-    public UUID getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getSlug() {
-        return slug;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getBannerUrl() {
-        return bannerUrl;
-    }
-
-    public String getLogoUrl() {
-        return logoUrl;
-    }
-
-    public String getThemeColor() {
-        return themeColor;
-    }
-
-    public Boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setActive(Boolean isActive) {
-        this.isActive = isActive;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public User getOwner() {
-        return owner;
-    }
 }

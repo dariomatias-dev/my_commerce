@@ -1,6 +1,7 @@
 package com.dariomatias.my_commerce.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -12,56 +13,48 @@ import java.util.UUID;
 @Table(name = "subscriptions")
 public class Subscription {
 
+    @Getter
     @Setter
     @Id
     @GeneratedValue
     private UUID id;
 
+    @Getter
     @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Getter
     @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "plan_id")
     private SubscriptionPlan plan;
 
+    @Getter
     @Setter
     @Column(nullable = false)
     private LocalDateTime startDate;
 
+    @Getter
     @Setter
     @Column(nullable = false)
     private LocalDateTime endDate;
 
+    @Getter
     @Setter
     @Column(nullable = false)
     private Boolean isActive;
 
+    @Getter
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Getter
     @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
     public Subscription() {}
-
-    public UUID getId() { return id; }
-
-    public User getUser() { return user; }
-
-    public SubscriptionPlan getPlan() { return plan; }
-
-    public LocalDateTime getStartDate() { return startDate; }
-
-    public LocalDateTime getEndDate() { return endDate; }
-
-    public Boolean getIsActive() { return isActive; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
 }

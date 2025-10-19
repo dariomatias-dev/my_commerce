@@ -1,6 +1,8 @@
 package com.dariomatias.my_commerce.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
@@ -10,6 +12,8 @@ import java.util.UUID;
 @Table(name = "users")
 public class User {
 
+    @Getter
+    @Setter
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
@@ -19,49 +23,33 @@ public class User {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
+    @Getter
+    @Setter
     @Column(nullable = false)
     private String name;
 
+    @Getter
+    @Setter
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Getter
+    @Setter
     @Column(nullable = false)
     private String password;
 
+    @Getter
+    @Setter
     @Column(nullable = false, length = 20)
     private String role = "USER";
 
+    @Getter
+    @Setter
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Getter
+    @Setter
     @Column(name = "enabled", nullable = false)
     private boolean enabled = false;
-
-    public UUID getId() { return id; }
-
-    public void setId(UUID id) { this.id = id; }
-
-    public String getName() { return name; }
-
-    public void setName(String name) { this.name = name; }
-
-    public String getEmail() { return email; }
-
-    public void setEmail(String email) { this.email = email; }
-
-    public String getPassword() { return password; }
-
-    public void setPassword(String password) { this.password = password; }
-
-    public String getRole() { return role; }
-
-    public void setRole(String role) { this.role = role; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public boolean isEnabled() { return enabled; }
-
-    public void setEnabled(boolean enabled) { this.enabled = enabled; }
 }

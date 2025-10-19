@@ -34,7 +34,7 @@ public class StoreSeed {
             store.setBannerUrl("https://via.placeholder.com/800x200");
             store.setLogoUrl("https://via.placeholder.com/150");
             store.setThemeColor("#" + Integer.toHexString((int) (Math.random() * 0xFFFFFF)));
-            store.setActive(true);
+            store.setIsActive(true);
             store.setOwner(users.isEmpty() ? null : users.get(i % users.size()));
 
             storeRepository.save(store);
