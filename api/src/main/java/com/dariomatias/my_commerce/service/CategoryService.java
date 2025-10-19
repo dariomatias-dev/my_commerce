@@ -2,9 +2,7 @@ package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.category.CategoryRequestDTO;
 import com.dariomatias.my_commerce.model.Category;
-import com.dariomatias.my_commerce.model.Store;
-import com.dariomatias.my_commerce.repository.CategoryRepository;
-import com.dariomatias.my_commerce.repository.StoreRepository;
+import com.dariomatias.my_commerce.repository.adapter.CategoryAdapter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -18,52 +16,44 @@ import java.util.UUID;
 @Transactional
 public class CategoryService {
 
-    private final CategoryRepository categoryRepository;
-    private final StoreRepository storeRepository;
+    private final CategoryAdapter categoryAdapter;
 
-    public CategoryService(CategoryRepository categoryRepository, StoreRepository storeRepository) {
-        this.categoryRepository = categoryRepository;
-        this.storeRepository = storeRepository;
+    public CategoryService(CategoryAdapter categoryAdapter) {
+        this.categoryAdapter = categoryAdapter;
     }
 
     public Category create(CategoryRequestDTO request) {
-        Store store = storeRepository.findById(request.getStoreId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
-
         Category category = new Category();
-        category.setStore(store);
         category.setName(request.getName());
+        category.setStoreId(request.getStoreId());
 
-        return categoryRepository.save(category);
+        return categoryAdapter.save(category);
     }
 
     public Page<Category> getAll(Pageable pageable) {
-        return categoryRepository.findAll(pageable);
+        return categoryAdapter.findAll(pageable);
     }
 
     public Page<Category> getAllByStore(UUID storeId, Pageable pageable) {
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
-        return categoryRepository.findAllByStore(store, pageable);
+        return categoryAdapter.findAllByStore(storeId, pageable);
     }
 
     public Category getById(UUID id) {
-        return categoryRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada"));
+        Category category = categoryAdapter.findById(id);
+        if (category == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada");
+
+        return category;
     }
 
     public Category update(UUID id, CategoryRequestDTO request) {
         Category category = getById(id);
+        if (request.getName() != null) category.setName(request.getName());
 
-        if (request.getName() != null) {
-            category.setName(request.getName());
-        }
-
-        return categoryRepository.save(category);
+        return categoryAdapter.update(category);
     }
 
     public void delete(UUID id) {
-        Category category = getById(id);
-        categoryRepository.delete(category);
+        getById(id);
+        categoryAdapter.delete(id);
     }
 }
