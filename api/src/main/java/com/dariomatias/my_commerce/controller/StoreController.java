@@ -35,7 +35,7 @@ public class StoreController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Page<StoreResponseDTO>>> getAll(
             @AuthenticationPrincipal User user,
             @RequestParam(defaultValue = "0") int page,
@@ -47,7 +47,6 @@ public class StoreController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<StoreResponseDTO>> getById(@AuthenticationPrincipal User user,
                                                                  @PathVariable UUID id) {
         Store entity = service.getById(id, user);

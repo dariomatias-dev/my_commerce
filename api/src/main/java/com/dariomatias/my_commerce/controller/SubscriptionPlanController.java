@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -24,6 +25,7 @@ public class SubscriptionPlanController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<SubscriptionPlanResponseDTO>> create(@RequestBody SubscriptionPlanRequestDTO request) {
         SubscriptionPlan plan = service.create(request);
         return ResponseEntity.ok(ApiResponse.success("Plano criado com sucesso", SubscriptionPlanResponseDTO.from(plan)));
@@ -47,6 +49,7 @@ public class SubscriptionPlanController {
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<SubscriptionPlanResponseDTO>> update(
             @PathVariable UUID id,
             @RequestBody SubscriptionPlanRequestDTO request
@@ -56,6 +59,7 @@ public class SubscriptionPlanController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         service.delete(id);
         return ResponseEntity.ok(ApiResponse.success("Plano excluído com sucesso", null));

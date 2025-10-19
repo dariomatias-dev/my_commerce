@@ -25,6 +25,7 @@ public class CategoryController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<CategoryResponseDTO>> create(@RequestBody CategoryRequestDTO request) {
         Category category = service.create(request);
         return ResponseEntity.ok(ApiResponse.success("Categoria criada com sucesso", CategoryResponseDTO.from(category)));
@@ -61,6 +62,7 @@ public class CategoryController {
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<CategoryResponseDTO>> update(@PathVariable UUID id,
                                                                    @RequestBody CategoryRequestDTO request) {
         Category category = service.update(id, request);
@@ -68,6 +70,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         service.delete(id);
         return ResponseEntity.ok(ApiResponse.success("Categoria excluída com sucesso", null));
