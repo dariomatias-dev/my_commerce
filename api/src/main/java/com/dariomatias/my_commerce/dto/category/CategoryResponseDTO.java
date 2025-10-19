@@ -25,7 +25,7 @@ public class CategoryResponseDTO {
     public static CategoryResponseDTO from(Category category) {
         return new CategoryResponseDTO(
                 category.getId(),
-                category.getStore().getId(),
+                category.getStoreId(),
                 category.getName(),
                 category.getCreatedAt(),
                 category.getUpdatedAt()
