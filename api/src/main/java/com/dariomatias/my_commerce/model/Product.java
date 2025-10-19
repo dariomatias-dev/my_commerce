@@ -65,14 +65,32 @@ public class Product {
     private List<String> images;
 
     @Getter
+    @Setter
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Getter
+    @Setter
     @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @Setter
+    @Transient
+    private UUID storeId;
+
+    @Setter
+    @Transient
+    private UUID categoryId;
+
     public Product() {}
+
+    public UUID getStoreId() {
+        return store != null ? store.getId() : storeId;
+    }
+
+    public UUID getCategoryId() {
+        return category != null ? category.getId() : categoryId;
+    }
 }
