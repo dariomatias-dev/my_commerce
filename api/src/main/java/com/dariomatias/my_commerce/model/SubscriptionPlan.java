@@ -46,11 +46,13 @@ public class SubscriptionPlan {
     private BigDecimal price;
 
     @Getter
+    @Setter
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Getter
+    @Setter
     @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime updatedAt;
