@@ -1,23 +1,19 @@
 # **Produtos** (`/api/products/*`)
 
-Conjunto de endpoints responsáveis pelo **gerenciamento de produtos** no sistema.
+Conjunto de endpoints responsáveis pelo **gerenciamento de produtos**.
 Permitem que usuários autenticados (assinantes ou administradores) **criem, visualizem, atualizem e excluam** produtos vinculados às suas lojas.
 
 Cada produto pertence a uma loja e a uma categoria, podendo conter múltiplas imagens.
 
----
-
 ## **Funcionalidades**
 
-- **Criar produto** – Cria um novo produto vinculado a uma loja do usuário autenticado.
-- **Listar produtos** – Lista todos os produtos disponíveis.
-- **Listar produtos por loja** – Retorna produtos específicos de uma loja.
-- **Listar produtos por categoria** – Retorna produtos pertencentes a uma categoria.
-- **Obter produto por ID** – Retorna os detalhes de um produto específico.
-- **Atualizar produto** – Atualiza os dados de um produto existente.
-- **Excluir produto** – Remove um produto existente do sistema.
-
-Todos os endpoints utilizam o caminho base `/api/products/*` e seguem o padrão de resposta `ApiResponse<T>`.
+- **Criar produto** (`POST /api/products`) – Cria um novo produto vinculado a uma loja do usuário autenticado.
+- **Listar produtos** (`GET /api/products`) – Lista todos os produtos disponíveis.
+- **Listar produtos por loja** (`GET /api/products/store/{storeId}`) – Retorna produtos específicos de uma loja.
+- **Listar produtos por categoria** (`GET /api/products/category/{categoryId}`) – Retorna produtos pertencentes a uma categoria.
+- **Obter produto por ID** (`GET /api/products/{id}`) – Retorna os detalhes de um produto específico.
+- **Atualizar produto** (`PATCH /api/products/{id}`) – Atualiza os dados de um produto existente.
+- **Excluir produto** (`DELETE /api/products/{id}`) – Remove um produto existente do sistema.
 
 ---
 

@@ -5,17 +5,13 @@ Permitem que administradores **criem, visualizem, atualizem e excluam** planos d
 
 Cada plano possui **nome, preço, limites de lojas e produtos**, além de **recursos opcionais**.
 
----
-
 ## **Funcionalidades**
 
-- **Criar plano de assinatura** – Cria um novo plano com limites e recursos definidos.
-- **Listar planos de assinatura** – Lista todos os planos disponíveis.
-- **Obter plano por ID** – Retorna os detalhes de um plano específico.
-- **Atualizar plano de assinatura** – Atualiza os dados de um plano existente.
-- **Excluir plano de assinatura** – Remove um plano existente do sistema.
-
-Todos os endpoints utilizam o caminho base `/api/subscription-plans/*` e seguem o padrão de resposta `ApiResponse<T>`.
+- **Criar plano de assinatura** (`POST /api/subscription-plans`) – Cria um novo plano com limites e recursos definidos.
+- **Listar planos de assinatura** (`GET /api/subscription-plans`) – Lista todos os planos disponíveis.
+- **Obter plano por ID** (`GET /api/subscription-plans/{id}`) – Retorna os detalhes de um plano específico.
+- **Atualizar plano de assinatura** (`PATCH /api/subscription-plans/{id}`) – Atualiza os dados de um plano existente.
+- **Excluir plano de assinatura** (`DELETE /api/subscription-plans/{id}`) – Remove um plano existente do sistema.
 
 ---
 

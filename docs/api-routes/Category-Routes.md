@@ -1,22 +1,18 @@
 # **Categorias** (`/api/categories/*`)
 
-Conjunto de endpoints responsáveis pelo **gerenciamento de categorias** de produtos no sistema.
+Conjunto de endpoints responsáveis pelo **gerenciamento de categorias** de produtos.
 Permitem que administradores ou usuários autorizados **criem, visualizem, atualizem e excluam** categorias vinculadas a lojas.
 
 Cada categoria pertence a uma loja e possui um nome único dentro da loja.
 
----
-
 ## **Funcionalidades**
 
-- **Criar categoria** – Cria uma nova categoria vinculada a uma loja.
-- **Listar categorias** – Lista todas as categorias (paginadas).
-- **Listar categorias por loja** – Retorna categorias específicas de uma loja.
-- **Obter categoria por ID** – Retorna os detalhes de uma categoria específica.
-- **Atualizar categoria** – Atualiza os dados de uma categoria existente.
-- **Excluir categoria** – Remove uma categoria existente do sistema.
-
-Todos os endpoints utilizam o caminho base `/api/categories/*` e seguem o padrão de resposta `ApiResponse<T>`.
+- **Criar categoria** (`POST /api/categories`) – Cria uma nova categoria vinculada a uma loja.
+- **Listar categorias** (`GET /api/categories`) – Lista todas as categorias do sistema (paginadas).
+- **Listar categorias por loja** (`GET /api/categories/store/{storeId}`) – Retorna categorias específicas de uma loja.
+- **Obter categoria por ID** (`GET /api/categories/{id}`) – Retorna os detalhes de uma categoria específica.
+- **Atualizar categoria** (`PATCH /api/categories/{id}`) – Atualiza os dados de uma categoria existente.
+- **Excluir categoria** (`DELETE /api/categories/{id}`) – Remove uma categoria existente do sistema.
 
 ---
 

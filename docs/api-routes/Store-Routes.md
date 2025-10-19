@@ -1,22 +1,18 @@
 # **Lojas** (`/api/stores/*`)
 
-Conjunto de endpoints responsáveis pelo **gerenciamento das lojas** no sistema.
+Conjunto de endpoints responsáveis pelo **gerenciamento das lojas**.
 Permitem que usuários autenticados (assinantes e administradores) **criem, visualizem, atualizem e excluam** suas lojas.
 
 Cada loja possui informações visuais (banner, logo, cor-tema) e dados de controle de status (`isActive`).
 
----
-
 ## **Funcionalidades**
 
-- **Criar loja** – Cria uma nova loja vinculada ao usuário autenticado.
-- **Listar lojas** – Lista todas as lojas visíveis para o usuário autenticado.
-- **Obter loja por ID** – Retorna os detalhes de uma loja específica.
-- **Obter loja por slug** – Retorna os detalhes de uma loja a partir de seu identificador público.
-- **Atualizar loja** – Atualiza parcialmente os dados de uma loja existente.
-- **Excluir loja** – Remove uma loja existente do sistema.
-
-Todos os endpoints utilizam o caminho base `/api/stores/*` e seguem o padrão de resposta `ApiResponse<T>` para consistência e clareza.
+- **Criar loja** (`POST /api/stores`) – Cria uma nova loja vinculada ao usuário autenticado.
+- **Listar lojas** (`GET /api/stores`) – Lista todas as lojas visíveis para o usuário autenticado.
+- **Obter loja por ID** (`GET /api/stores/{id}`) – Retorna os detalhes de uma loja específica.
+- **Obter loja por slug** (`GET /api/stores/slug/{slug}`) – Retorna os detalhes de uma loja a partir de seu identificador público.
+- **Atualizar loja** (`PATCH /api/stores/{id}`) – Atualiza parcialmente os dados de uma loja existente.
+- **Excluir loja** (`DELETE /api/stores/{id}`) – Remove uma loja existente do sistema.
 
 ---
 

@@ -1,19 +1,17 @@
 # **Usuários** (`/api/users/*`)
 
-Conjunto de endpoints para gerenciamento das operações relacionadas aos usuários do sistema.
+Conjunto de endpoints responsáveis pelo **gerenciamento dos usuários**.
 
-## Funcionalidades
+## **Funcionalidades**
 
-- **GET /api/users** – Listar todos os usuários com paginação (somente para administradores).
-- **GET /api/users/{id}** – Obter detalhes de um usuário específico (somente para administradores).
-- **PATCH /api/users/{id}** – Atualizar dados de um usuário específico (somente para administradores).
-- **DELETE /api/users/{id}** – Deletar um usuário específico (somente para administradores).
-- **GET /api/users/me** – Consultar dados do próprio usuário autenticado.
-- **PATCH /api/users/me** – Atualizar dados do próprio usuário autenticado.
-- **POST /api/users/me/change-password** – Alterar a senha do próprio usuário.
-- **DELETE /api/users/me** – Deletar a própria conta.
-
-Todos os endpoints de usuários utilizam o caminho base `/api/users/*` e seguem o padrão de resposta `ApiResponse<T>` para consistência e clareza.
+- **Listar usuários** (`GET /api/users`) – Lista todos os usuários com paginação (restrito a administradores).
+- **Obter usuário por ID** (`GET /api/users/{id}`) – Retorna os detalhes de um usuário específico (restrito a administradores).
+- **Atualizar usuário por ID** (`PATCH /api/users/{id}`) – Atualiza os dados de um usuário específico (restrito a administradores).
+- **Excluir usuário por ID** (`DELETE /api/users/{id}`) – Remove um usuário específico do sistema (restrito a administradores).
+- **Consultar próprio usuário** (`GET /api/users/me`) – Retorna os dados do usuário autenticado.
+- **Atualizar próprio usuário** (`PATCH /api/users/me`) – Atualiza os dados do usuário autenticado.
+- **Alterar senha própria** (`POST /api/users/me/change-password`) – Permite alterar a senha do usuário autenticado.
+- **Excluir própria conta** (`DELETE /api/users/me`) – Remove a própria conta do sistema.
 
 ---
 

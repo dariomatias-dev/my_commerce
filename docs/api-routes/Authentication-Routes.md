@@ -1,18 +1,16 @@
 # **Autenticação** (`/api/auth/*`)
 
-Conjunto de endpoints de autenticação para gerenciamento do acesso dos usuários ao sistema.
+Conjunto de endpoints responsáveis pelo **gerenciamento do acesso e autenticação dos usuários**.
 
-## Funcionalidades
+## **Funcionalidades**
 
-- **Login** – Autenticar usuários e fornecer tokens JWT.
-- **Signup** – Registrar novos usuários.
-- **Verify Email** – Confirmar e validar endereços de e-mail.
-- **Resend Verification Email** – Reenviar e-mail de verificação para usuários não confirmados.
-- **Recover Password** – Solicitar recuperação de senha.
-- **Reset Password** – Resetar senha mediante token válido.
-- **Refresh Token** – Renovar tokens JWT de acesso.
-
-Todos os endpoints de autenticação utilizam o caminho base `/api/auth/*` e seguem o padrão de resposta `ApiResponse<T>` para consistência e clareza.
+- **Login** (`POST /api/auth/login`) – Autentica o usuário e fornece tokens JWT.
+- **Signup** (`POST /api/auth/signup`) – Registra um novo usuário.
+- **Verify Email** (`POST /api/auth/verify-email`) – Verifica e confirma o e-mail do usuário após cadastro.
+- **Resend Verification Email** (`POST /api/auth/resend-verification-email`) – Reenvia e-mail de verificação para usuários não confirmados.
+- **Recover Password** (`POST /api/auth/recover-password`) – Solicita recuperação de senha.
+- **Reset Password** (`POST /api/auth/reset-password`) – Reseta a senha usando token válido.
+- **Refresh Token** (`POST /api/auth/refresh-token`) – Renova tokens JWT de acesso.
 
 ---
 
@@ -41,7 +39,7 @@ Todos os endpoints de autenticação utilizam o caminho base `/api/auth/*` e seg
 ## **Cadastro de Usuário (Signup)**
 
 - **Endpoint**: `POST /api/auth/signup`
-- **Objetivo**: Registrar um novo usuário no sistema.
+- **Objetivo**: Registrar um novo usuário.
 - **Autorização**: Livre acesso (não requer autenticação).
 
 **Request Body**:

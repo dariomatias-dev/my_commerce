@@ -5,18 +5,14 @@ Permitem que assinantes e administradores **criem, visualizem, atualizem e exclu
 
 Cada assinatura está associada a um **usuário** e a um **plano de assinatura**, possuindo datas de início e fim, além de indicar se está ativa.
 
----
-
 ## **Funcionalidades**
 
-- **Criar assinatura** – Cria uma nova assinatura vinculada a um usuário e a um plano.
-- **Listar assinaturas** – Lista todas as assinaturas do sistema (restrito a administradores).
-- **Listar assinaturas por usuário** – Retorna assinaturas específicas de um usuário.
-- **Obter assinatura por ID** – Retorna os detalhes de uma assinatura específica.
-- **Atualizar assinatura** – Atualiza os dados de uma assinatura existente.
-- **Excluir assinatura** – Remove uma assinatura existente do sistema (restrito a administradores).
-
-Todos os endpoints utilizam o caminho base `/api/subscriptions/*` e seguem o padrão de resposta `ApiResponse<T>`.
+- **Criar assinatura** (`POST /api/subscriptions`) – Cria uma nova assinatura vinculada a um usuário e a um plano.
+- **Listar assinaturas** (`GET /api/subscriptions`) – Lista todas as assinaturas do sistema (restrito a administradores).
+- **Listar assinaturas por usuário** (`GET /api/subscriptions/user/{userId}`) – Retorna assinaturas específicas de um usuário.
+- **Obter assinatura por ID** (`GET /api/subscriptions/{id}`) – Retorna os detalhes de uma assinatura específica.
+- **Atualizar assinatura** (`PATCH /api/subscriptions/{id}`) – Atualiza os dados de uma assinatura existente.
+- **Excluir assinatura** (`DELETE /api/subscriptions/{id}`) – Remove uma assinatura existente do sistema (restrito a administradores).
 
 ---
 
