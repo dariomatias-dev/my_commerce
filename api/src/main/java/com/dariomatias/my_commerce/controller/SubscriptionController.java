@@ -43,6 +43,7 @@ public class SubscriptionController {
     }
 
     @GetMapping("/user/{userId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<Page<SubscriptionResponseDTO>>> getAllByUser(
             @PathVariable UUID userId,
             @RequestParam(defaultValue = "0") int page,
@@ -55,12 +56,14 @@ public class SubscriptionController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> getById(@PathVariable UUID id) {
         Subscription subscription = service.getById(id);
         return ResponseEntity.ok(ApiResponse.success("Assinatura obtida com sucesso", SubscriptionResponseDTO.from(subscription)));
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> update(@PathVariable UUID id,
                                                                        @RequestBody SubscriptionRequestDTO request) {
         Subscription subscription = service.update(id, request);
@@ -68,6 +71,7 @@ public class SubscriptionController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         service.delete(id);
         return ResponseEntity.ok(ApiResponse.success("Assinatura excluída com sucesso", null));

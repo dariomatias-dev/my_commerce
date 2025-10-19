@@ -82,3 +82,4 @@ As rotas da API estão organizadas em grupos funcionais, cada grupo com document
 - **Rotas de Produtos**: [Product Routes](Product-Routes.md)
 - **Rotas de Categorias**: [Category Routes](Category-Routes.md)
 - **Rotas de Planos de Assinatura**: [Subscription Plan Routes](Subscription-Plan-Routes.md)
+- **Rotas de Assinaturas**: [Subscription Routes](Subscription-Routes.md)
