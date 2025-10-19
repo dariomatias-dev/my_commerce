@@ -3,8 +3,8 @@ package com.dariomatias.my_commerce.service;
 import com.dariomatias.my_commerce.dto.stores.StoreRequestDTO;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.User;
-import com.dariomatias.my_commerce.repository.StoreRepository;
 import com.dariomatias.my_commerce.repository.UserRepository;
+import com.dariomatias.my_commerce.repository.adapter.StoreAdapter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -19,11 +19,11 @@ import java.util.UUID;
 @Transactional
 public class StoreService {
 
-    private final StoreRepository storeRepository;
+    private final StoreAdapter storeAdapter;
     private final UserRepository userRepository;
 
-    public StoreService(StoreRepository storeRepository, UserRepository userRepository) {
-        this.storeRepository = storeRepository;
+    public StoreService(StoreAdapter storeAdapter, UserRepository userRepository) {
+        this.storeAdapter = storeAdapter;
         this.userRepository = userRepository;
     }
 
@@ -41,32 +41,34 @@ public class StoreService {
         entity.setIsActive(request.getIsActive() != null ? request.getIsActive() : true);
         entity.setOwner(owner);
 
-        return storeRepository.save(entity);
+        return storeAdapter.save(entity);
     }
 
     public Page<Store> getAll(User user, Pageable pageable) {
         if ("ADMIN".equals(user.getRole())) {
-            return storeRepository.findAll(pageable);
+            return storeAdapter.findAll(pageable);
         }
-        return storeRepository.findAllByOwnerId(user.getId(), pageable);
+        return storeAdapter.findAllByOwner(user, pageable);
     }
 
     public Store getById(UUID id, User user) {
-        if ("ADMIN".equals(user.getRole())) {
-            return storeRepository.findById(id)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
+        Store entity = storeAdapter.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
+
+        if (!"ADMIN".equals(user.getRole()) && !entity.getOwner().getEmail().equals(user.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
         }
-        return storeRepository.findByIdAndOwnerId(id, user.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada ou não é sua"));
+
+        return entity;
     }
 
     public Store getBySlug(String slug) {
-        return storeRepository.findBySlug(slug)
+        return storeAdapter.findBySlug(slug)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
     }
 
     public Store update(UUID id, StoreRequestDTO request, User user) {
-        Store entity = storeRepository.findById(id)
+        Store entity = storeAdapter.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
 
         if (!"ADMIN".equals(user.getRole()) && !entity.getOwner().getEmail().equals(user.getEmail())) {
@@ -83,18 +85,18 @@ public class StoreService {
         if (request.getThemeColor() != null) entity.setThemeColor(request.getThemeColor());
         if (request.getIsActive() != null) entity.setIsActive(request.getIsActive());
 
-        return storeRepository.save(entity);
+        return storeAdapter.update(entity);
     }
 
     public void delete(UUID id, User user) {
-        Store entity = storeRepository.findById(id)
+        Store entity = storeAdapter.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
 
         if (!"ADMIN".equals(user.getRole()) && !entity.getOwner().getEmail().equals(user.getEmail())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
         }
 
-        storeRepository.delete(entity);
+        storeAdapter.delete(id);
     }
 
     private String generateSlug(String name) {

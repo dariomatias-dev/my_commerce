@@ -46,7 +46,7 @@ public class StoreResponseDTO {
                 store.getLogoUrl(),
                 store.getThemeColor(),
                 store.getIsActive(),
-                store.getOwner().getId(),
+                store.getOwnerId(),
                 store.getCreatedAt(),
                 store.getUpdatedAt()
         );
