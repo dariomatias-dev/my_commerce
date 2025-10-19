@@ -24,8 +24,8 @@ public class ProductResponseDTO {
     public static ProductResponseDTO from(Product product) {
         ProductResponseDTO dto = new ProductResponseDTO();
         dto.id = product.getId();
-        dto.storeId = product.getStore().getId();
-        dto.categoryId = product.getCategory().getId();
+        dto.storeId = product.getStoreId();
+        dto.categoryId = product.getCategoryId();
         dto.name = product.getName();
         dto.description = product.getDescription();
         dto.price = product.getPrice();

@@ -5,9 +5,9 @@ import com.dariomatias.my_commerce.model.Product;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.Category;
 import com.dariomatias.my_commerce.model.User;
-import com.dariomatias.my_commerce.repository.ProductRepository;
 import com.dariomatias.my_commerce.repository.StoreRepository;
 import com.dariomatias.my_commerce.repository.CategoryRepository;
+import com.dariomatias.my_commerce.repository.adapter.ProductAdapter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -21,14 +21,14 @@ import java.util.UUID;
 @Transactional
 public class ProductService {
 
-    private final ProductRepository productRepository;
+    private final ProductAdapter productAdapter;
     private final StoreRepository storeRepository;
     private final CategoryRepository categoryRepository;
 
-    public ProductService(ProductRepository productRepository,
+    public ProductService(ProductAdapter productAdapter,
                           StoreRepository storeRepository,
                           CategoryRepository categoryRepository) {
-        this.productRepository = productRepository;
+        this.productAdapter = productAdapter;
         this.storeRepository = storeRepository;
         this.categoryRepository = categoryRepository;
     }
@@ -54,28 +54,26 @@ public class ProductService {
         product.setActive(request.getActive());
         product.setImages(request.getImages());
 
-        return productRepository.save(product);
+        return productAdapter.save(product);
     }
 
     public Page<Product> getAll(Pageable pageable) {
-        return productRepository.findAll(pageable);
+        return productAdapter.findAll(pageable);
     }
 
     public Page<Product> getAllByStore(UUID storeId, Pageable pageable) {
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
-        return productRepository.findAllByStore(store, pageable);
+        return productAdapter.findAllByStore(storeId, pageable);
     }
 
     public Page<Product> getAllByCategory(UUID categoryId, Pageable pageable) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada"));
-        return productRepository.findAllByCategory(category, pageable);
+        return productAdapter.findAllByCategory(categoryId, pageable);
     }
 
     public Product getById(UUID id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
+        Product product = productAdapter.findById(id);
+        if (product == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado");
+        return product;
     }
 
     public Product update(User user, UUID id, ProductRequestDTO request) {
@@ -92,7 +90,7 @@ public class ProductService {
         if (request.getActive() != null) product.setActive(request.getActive());
         if (request.getImages() != null) product.setImages(request.getImages());
 
-        return productRepository.save(product);
+        return productAdapter.update(product);
     }
 
     public void delete(User user, UUID id) {
@@ -102,6 +100,6 @@ public class ProductService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
         }
 
-        productRepository.delete(product);
+        productAdapter.delete(id);
     }
 }
