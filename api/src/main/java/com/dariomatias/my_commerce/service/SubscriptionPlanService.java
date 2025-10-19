@@ -2,7 +2,7 @@ package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.subscription_plan.SubscriptionPlanRequestDTO;
 import com.dariomatias.my_commerce.model.SubscriptionPlan;
-import com.dariomatias.my_commerce.repository.SubscriptionPlanRepository;
+import com.dariomatias.my_commerce.repository.adapter.SubscriptionPlanAdapter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -16,10 +16,10 @@ import java.util.UUID;
 @Transactional
 public class SubscriptionPlanService {
 
-    private final SubscriptionPlanRepository repository;
+    private final SubscriptionPlanAdapter adapter;
 
-    public SubscriptionPlanService(SubscriptionPlanRepository repository) {
-        this.repository = repository;
+    public SubscriptionPlanService(SubscriptionPlanAdapter adapter) {
+        this.adapter = adapter;
     }
 
     public SubscriptionPlan create(SubscriptionPlanRequestDTO request) {
@@ -29,32 +29,29 @@ public class SubscriptionPlanService {
         plan.setMaxProducts(request.getMaxProducts());
         plan.setFeatures(request.getFeatures());
         plan.setPrice(request.getPrice());
-        return repository.save(plan);
+        return adapter.save(plan);
     }
 
     public Page<SubscriptionPlan> getAll(Pageable pageable) {
-        return repository.findAll(pageable);
+        return adapter.findAll(pageable);
     }
 
     public SubscriptionPlan getById(UUID id) {
-        return repository.findById(id)
+        return adapter.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Plano não encontrado"));
     }
 
     public SubscriptionPlan update(UUID id, SubscriptionPlanRequestDTO request) {
         SubscriptionPlan plan = getById(id);
-
         if (request.getName() != null) plan.setName(request.getName());
         if (request.getMaxStores() != null) plan.setMaxStores(request.getMaxStores());
         if (request.getMaxProducts() != null) plan.setMaxProducts(request.getMaxProducts());
         if (request.getFeatures() != null) plan.setFeatures(request.getFeatures());
         if (request.getPrice() != null) plan.setPrice(request.getPrice());
-
-        return repository.save(plan);
+        return adapter.update(plan);
     }
 
     public void delete(UUID id) {
-        SubscriptionPlan plan = getById(id);
-        repository.delete(plan);
+        adapter.delete(id);
     }
 }
