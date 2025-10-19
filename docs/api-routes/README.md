@@ -79,3 +79,4 @@ As rotas da API estão organizadas em grupos funcionais, cada grupo com document
 - **Rotas de Autenticação**: [Authentication Routes](Authentication-Routes.md)
 - **Rotas de Usuários**: [Users Routes](Users-Routes.md)
 - **Rotas de Lojas**: [Stores Routes](Stores-Routes.md)
+- **Rotas de Produtos**: [Product Routes](Product-Routes.md)
