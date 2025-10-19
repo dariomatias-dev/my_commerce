@@ -24,7 +24,7 @@ Todos os endpoints utilizam o caminho base `/api/stores/*` e seguem o padrão de
 
 - **Endpoint**: `POST /api/stores`
 - **Objetivo**: Criar uma nova loja vinculada ao usuário autenticado.
-- **Autorização**: `ROLE_ADMIN`, `ROLE_SUBSCRIBER`
+- **Autorização**: Assinantes (`ROLE_SUBSCRIBER`) e Administradores (`ROLE_ADMIN`).
 
 **Request Body**:
 
@@ -75,7 +75,7 @@ Todos os endpoints utilizam o caminho base `/api/stores/*` e seguem o padrão de
 
 - **Endpoint**: `GET /api/stores`
 - **Objetivo**: Listar as lojas visíveis para o usuário autenticado.
-- **Autorização**: `ROLE_ADMIN`, `ROLE_SUBSCRIBER`
+- **Autorização**: Administradores (`ROLE_ADMIN`).
 
 **Query Parameters**:
 
@@ -146,7 +146,7 @@ Todos os endpoints utilizam o caminho base `/api/stores/*` e seguem o padrão de
 
 - **Endpoint**: `GET /api/stores/{id}`
 - **Objetivo**: Obter detalhes de uma loja pelo seu ID.
-- **Autorização**: `ROLE_ADMIN`, `ROLE_SUBSCRIBER`
+- **Autorização**: Assinantes (`ROLE_SUBSCRIBER`) e Administradores (`ROLE_ADMIN`).
 
 **Path Parameters**:
 
@@ -186,7 +186,7 @@ Todos os endpoints utilizam o caminho base `/api/stores/*` e seguem o padrão de
 
 - **Endpoint**: `GET /api/stores/slug/{slug}`
 - **Objetivo**: Obter detalhes de uma loja pública pelo seu `slug`.
-- **Autorização**: `ROLE_ADMIN`, `ROLE_SUBSCRIBER` (pode ser aberto futuramente)
+- **Autorização**: Livre acesso (não requer autenticação).
 
 **Path Parameters**:
 
@@ -203,7 +203,7 @@ Todos os endpoints utilizam o caminho base `/api/stores/*` e seguem o padrão de
 
 - **Endpoint**: `PATCH /api/stores/{id}`
 - **Objetivo**: Atualizar parcialmente os dados de uma loja existente.
-- **Autorização**: `ROLE_ADMIN`, `ROLE_SUBSCRIBER`
+- **Autorização**: Assinantes (`ROLE_SUBSCRIBER`) e Administradores (`ROLE_ADMIN`).
 
 **Path Parameters**:
 
@@ -234,7 +234,7 @@ Todos os endpoints utilizam o caminho base `/api/stores/*` e seguem o padrão de
 
 - **Endpoint**: `DELETE /api/stores/{id}`
 - **Objetivo**: Excluir uma loja existente.
-- **Autorização**: `ROLE_ADMIN`, `ROLE_SUBSCRIBER`
+- **Autorização**: Assinantes (`ROLE_SUBSCRIBER`) e Administradores (`ROLE_ADMIN`).
 
 **Path Parameters**:
 

@@ -20,6 +20,7 @@ Todos os endpoints de autenticação utilizam o caminho base `/api/auth/*` e seg
 
 - **Endpoint**: `POST /api/auth/login`
 - **Objetivo**: Autenticar o usuário com suas credenciais.
+- **Autorização**: Livre acesso (não requer autenticação).
 
 **Request Body**:
 
@@ -41,6 +42,7 @@ Todos os endpoints de autenticação utilizam o caminho base `/api/auth/*` e seg
 
 - **Endpoint**: `POST /api/auth/signup`
 - **Objetivo**: Registrar um novo usuário no sistema.
+- **Autorização**: Livre acesso (não requer autenticação).
 
 **Request Body**:
 
@@ -64,6 +66,7 @@ Todos os endpoints de autenticação utilizam o caminho base `/api/auth/*` e seg
 
 - **Endpoint**: `POST /api/auth/verify-email`
 - **Objetivo**: Verificar o e-mail do usuário após o cadastro.
+- **Autorização**: Livre acesso (não requer autenticação).
 
 **Request Body**:
 
@@ -84,6 +87,7 @@ Todos os endpoints de autenticação utilizam o caminho base `/api/auth/*` e seg
 
 - **Endpoint**: `POST /api/auth/resend-verification-email`
 - **Objetivo**: Reenviar o e-mail de verificação para o usuário.
+- **Autorização**: Livre acesso (não requer autenticação).
 
 **Request Body**:
 
@@ -104,6 +108,7 @@ Todos os endpoints de autenticação utilizam o caminho base `/api/auth/*` e seg
 
 - **Endpoint**: `POST /api/auth/recover-password`
 - **Objetivo**: Solicitar recuperação de senha, enviando um link para o e-mail informado.
+- **Autorização**: Qualquer usuário autenticado.
 
 **Request Body**:
 
@@ -124,6 +129,7 @@ Todos os endpoints de autenticação utilizam o caminho base `/api/auth/*` e seg
 
 - **Endpoint**: `POST /api/auth/reset-password`
 - **Objetivo**: Resetar a senha do usuário.
+- **Autorização**: Qualquer usuário autenticado.
 
 **Request Body**:
 
@@ -145,6 +151,7 @@ Todos os endpoints de autenticação utilizam o caminho base `/api/auth/*` e seg
 
 - **Endpoint**: `POST /api/auth/refresh-token`
 - **Objetivo**: Renovar os tokens JWT do usuário.
+- **Autorização**: Qualquer usuário autenticado.
 
 **Request Body**:
 

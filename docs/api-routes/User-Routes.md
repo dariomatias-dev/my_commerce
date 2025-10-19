@@ -21,7 +21,7 @@ Todos os endpoints de usuários utilizam o caminho base `/api/users/*` e seguem 
 
 - **Endpoint**: `GET /api/users`
 - **Objetivo**: Obter uma lista paginada de todos os usuários.
-- **Autorização**: Somente administradores.
+- **Autorização**: Administradores (`ROLE_ADMIN`).
 
 **Query Parameters**:
 
@@ -38,7 +38,7 @@ Todos os endpoints de usuários utilizam o caminho base `/api/users/*` e seguem 
 
 - **Endpoint**: `GET /api/users/{id}`
 - **Objetivo**: Obter detalhes de um usuário específico pelo ID.
-- **Autorização**: Somente administradores.
+- **Autorização**: Administradores (`ROLE_ADMIN`).
 
 **Path Parameters**:
 
@@ -55,7 +55,7 @@ Todos os endpoints de usuários utilizam o caminho base `/api/users/*` e seguem 
 
 - **Endpoint**: `PATCH /api/users/{id}`
 - **Objetivo**: Atualizar dados de um usuário existente.
-- **Autorização**: Somente administradores.
+- **Autorização**: Administradores (`ROLE_ADMIN`).
 
 **Request Body**:
 
@@ -76,7 +76,7 @@ Todos os endpoints de usuários utilizam o caminho base `/api/users/*` e seguem 
 
 - **Endpoint**: `DELETE /api/users/{id}`
 - **Objetivo**: Deletar um usuário específico.
-- **Autorização**: Somente administradores.
+- **Autorização**: Administradores (`ROLE_ADMIN`).
 
 **Responses**:
 

@@ -77,6 +77,7 @@ Garantindo consistência, previsibilidade e clareza, alinhado às melhores prát
 As rotas da API estão organizadas em grupos funcionais, cada grupo com documentação dedicada aos seus endpoints:
 
 - **Rotas de Autenticação**: [Authentication Routes](Authentication-Routes.md)
-- **Rotas de Usuários**: [Users Routes](Users-Routes.md)
-- **Rotas de Lojas**: [Stores Routes](Stores-Routes.md)
+- **Rotas de Usuários**: [User Routes](User-Routes.md)
+- **Rotas de Lojas**: [Store Routes](Store-Routes.md)
 - **Rotas de Produtos**: [Product Routes](Product-Routes.md)
+- **Rotas de Categorias**: [Category Routes](Category-Routes.md)

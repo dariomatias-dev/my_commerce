@@ -113,7 +113,7 @@ Todos os endpoints utilizam o caminho base `/api/categories/*` e seguem o padrã
 
 - **Endpoint**: `GET /api/categories/store/{storeId}`
 - **Objetivo**: Listar todas as categorias de uma loja específica (paginadas).
-- **Autorização**: Livre acesso.
+- **Autorização**: Livre acesso (não requer autenticação).
 
 **Path Parameters**:
 
@@ -165,7 +165,7 @@ Todos os endpoints utilizam o caminho base `/api/categories/*` e seguem o padrã
 
 - **Endpoint**: `GET /api/categories/{id}`
 - **Objetivo**: Obter os detalhes de uma categoria específica.
-- **Autorização**: Livre acesso.
+- **Autorização**: Livre acesso (não requer autenticação).
 
 **Path Parameters**:
 
