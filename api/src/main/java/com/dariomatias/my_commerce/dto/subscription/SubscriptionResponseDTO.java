@@ -33,8 +33,8 @@ public class SubscriptionResponseDTO {
     public static SubscriptionResponseDTO from(Subscription subscription) {
         return new SubscriptionResponseDTO(
                 subscription.getId(),
-                subscription.getUser().getId(),
-                subscription.getPlan().getId(),
+                subscription.getUserId(),
+                subscription.getPlanId(),
                 subscription.getStartDate(),
                 subscription.getEndDate(),
                 subscription.getIsActive(),
