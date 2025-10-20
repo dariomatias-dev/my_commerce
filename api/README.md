@@ -31,6 +31,7 @@
   - [Configuração do Banco de Dados com Docker](#configuração-do-banco-de-dados-com-docker)
   - [Rodando o Projeto](#rodando-o-projeto)
   - [Populando o Banco de Dados](#populando-o-banco-de-dados)
+  - [Uso de Repositórios JDBC](#uso-de-repositórios-jdbc)
 - [Licença](#licença)
 - [Autor](#autor)
 
@@ -297,6 +298,38 @@ O arquivo `Run<ClassName>Seed.java` é responsável por chamar a seed correspond
    ```bash
    ./mvnw exec:java -Dexec.mainClass="com.dariomatias.my_commerce.seed.user.RunUserSeed"
    ```
+
+### Uso de Repositórios JDBC
+
+O projeto oferece suporte tanto a **JPA** quanto a **JDBC** para acessar o banco de dados. Por padrão, a aplicação utiliza **JPA**, mas é possível alternar para JDBC.
+
+#### Habilitando o JDBC
+
+Para utilizar os repositórios baseados em JDBC:
+
+1. Abra o arquivo `application.properties` localizado em:
+
+```
+api/src/main/resources/application.properties
+```
+
+2. Localize a propriedade `app.useJdbc` e altere o valor para `true`:
+
+```properties
+app.useJdbc=true
+```
+
+**Nota:** Quando `app.useJdbc` está definido como `false`, a aplicação utiliza os repositórios JPA como padrão. Ao definir como `true`, a aplicação passa a utilizar os repositórios implementados com JDBC.
+
+#### Como os Repositórios Funcionam
+
+- **JPA**: Utiliza o `Spring Data JPA` e mapeamento de entidades com `@Entity` para persistência automática.
+- **JDBC**: Utiliza consultas SQL diretas com `JdbcTemplate` para acessar os dados, garantindo maior controle sobre as queries e potencialmente melhor performance em algumas operações.
+
+#### Considerações
+
+- Certifique-se de que todas as tabelas e colunas estejam devidamente configuradas no PostgreSQL, pois os repositórios JDBC dependem da estrutura exata do banco.
+- Ao alternar entre JPA e JDBC, não é necessário alterar a lógica do serviço ou dos controllers, pois a aplicação seleciona automaticamente a implementação com base na propriedade `app.useJdbc`.
 
 ## Licença
 
