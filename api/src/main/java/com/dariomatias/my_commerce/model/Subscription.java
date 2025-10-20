@@ -47,14 +47,32 @@ public class Subscription {
     private Boolean isActive;
 
     @Getter
+    @Setter
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Getter
+    @Setter
     @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @Setter
+    @Transient
+    private UUID userId;
+
+    @Setter
+    @Transient
+    private UUID planId;
+
     public Subscription() {}
+
+    public UUID getUserId() {
+        return user != null ? user.getId() : userId;
+    }
+
+    public UUID getPlanId() {
+        return plan != null ? plan.getId() : planId;
+    }
 }
