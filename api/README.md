@@ -30,6 +30,7 @@
   - [Instalação](#instalação)
   - [Configuração do Banco de Dados com Docker](#configuração-do-banco-de-dados-com-docker)
   - [Rodando o Projeto](#rodando-o-projeto)
+  - [Populando o Banco de Dados](#populando-o-banco-de-dados)
 - [Licença](#licença)
 - [Autor](#autor)
 
@@ -253,6 +254,49 @@ docker compose up -d --force-recreate
    ```
 
    A aplicação estará disponível em `http://localhost:8080` (porta padrão do Spring Boot, a menos que configurado de outra forma).
+
+### Populando o Banco de Dados
+
+O projeto inclui **scripts de seed** para popular automaticamente o banco de dados com dados iniciais de desenvolvimento e teste.
+
+#### Estrutura das Seeds
+
+As seeds estão localizadas em:
+
+```
+api/src/main/java/com/dariomatias/my_commerce/seed
+```
+
+Cada **subpasta representa uma tabela**, e contém as classes responsáveis por inserir os registros dessa tabela.
+Exemplo:
+
+```
+seed/
+ └── user/
+      ├── RunUserSeed.java
+      └── UserSeed.java
+```
+
+#### Como Funcionam
+
+Cada seed é executada de forma independente e utiliza o contexto do **Spring Boot**, permitindo acesso a repositórios, serviços e demais componentes configurados no projeto.
+O arquivo `Run<ClassName>Seed.java` é responsável por chamar a seed correspondente.
+
+#### Executando uma Seed
+
+1. Certifique-se de que o **banco de dados PostgreSQL** esteja em execução.
+2. Navegue até o diretório `api`.
+3. Execute a seed desejado com o comando:
+
+   ```bash
+   ./mvnw exec:java -Dexec.mainClass="com.dariomatias.my_commerce.seed.<nome_da_tabela>.Run<ClassName>Seed"
+   ```
+
+   **Exemplo:**
+
+   ```bash
+   ./mvnw exec:java -Dexec.mainClass="com.dariomatias.my_commerce.seed.user.RunUserSeed"
+   ```
 
 ## Licença
 
