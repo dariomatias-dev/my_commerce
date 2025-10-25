@@ -4,7 +4,7 @@ import com.dariomatias.my_commerce.dto.PasswordUpdateRequest;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.EmailVerificationTokenRepository;
 import com.dariomatias.my_commerce.repository.RefreshTokenRepository;
-import com.dariomatias.my_commerce.repository.UserRepository;
+import com.dariomatias.my_commerce.repository.adapter.UserAdapter;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,42 +18,43 @@ import java.util.UUID;
 @Service
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final UserAdapter userAdapter;
     private final RefreshTokenRepository refreshTokenRepository;
     private final EmailVerificationTokenRepository emailVerificationTokenRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository,
+    public UserService(UserAdapter userAdapter,
                        RefreshTokenRepository refreshTokenRepository,
                        EmailVerificationTokenRepository emailVerificationTokenRepository,
                        PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
+        this.userAdapter = userAdapter;
         this.refreshTokenRepository = refreshTokenRepository;
         this.emailVerificationTokenRepository = emailVerificationTokenRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     public Page<User> getAllUsers(Pageable pageable) {
-        return userRepository.findAll(pageable);
+        return userAdapter.findAll(pageable);
     }
 
     public User getUserById(UUID id) {
-        return userRepository.findById(id)
+        return userAdapter.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
     }
 
     public User updateUser(UUID id, User updatedUser) {
-        return userRepository.findById(id)
+        return userAdapter.findById(id)
                 .map(user -> {
                     if (updatedUser.getName() != null)
                         user.setName(updatedUser.getName());
-                    return userRepository.save(user);
+                    userAdapter.update(user);
+                    return user;
                 })
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
     }
 
     public void changePassword(UUID userId, PasswordUpdateRequest request) {
-        User user = userRepository.findById(userId)
+        User user = userAdapter.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
@@ -61,16 +62,16 @@ public class UserService {
         }
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        userRepository.save(user);
+        userAdapter.save(user);
     }
 
     @Transactional
     public void deleteUser(UUID id) {
-        if (!userRepository.existsById(id)) {
+        if (!userAdapter.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado");
         }
         refreshTokenRepository.deleteByUserId(id);
         emailVerificationTokenRepository.deleteByUserId(id);
-        userRepository.deleteById(id);
+        userAdapter.delete(id);
     }
 }
