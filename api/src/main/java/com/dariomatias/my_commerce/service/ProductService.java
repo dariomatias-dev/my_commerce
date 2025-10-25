@@ -70,10 +70,8 @@ public class ProductService {
     }
 
     public Product getById(UUID id) {
-        Product product = productAdapter.findById(id);
-        if (product == null)
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado");
-        return product;
+        return productAdapter.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
     }
 
     public Product update(User user, UUID id, ProductRequestDTO request) {

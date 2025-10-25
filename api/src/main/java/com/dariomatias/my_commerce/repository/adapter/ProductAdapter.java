@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -79,10 +80,10 @@ public class ProductAdapter {
         }
     }
 
-    public Product findById(UUID id) {
+    public Optional<Product> findById(UUID id) {
         return useJdbc
-                ? productJdbcRepository.findById(id).orElse(null)
-                : productRepository.findById(id).orElse(null);
+                ? productJdbcRepository.findById(id)
+                : productRepository.findById(id);
     }
 
     public Product update(Product product) {
