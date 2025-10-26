@@ -5,6 +5,7 @@ import com.dariomatias.my_commerce.model.Subscription;
 import com.dariomatias.my_commerce.model.SubscriptionPlan;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.adapter.SubscriptionAdapter;
+import com.dariomatias.my_commerce.repository.adapter.SubscriptionPlanAdapter;
 import com.dariomatias.my_commerce.repository.adapter.UserAdapter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,37 +22,39 @@ public class SubscriptionService {
 
     private final SubscriptionAdapter adapter;
     private final UserAdapter userAdapter;
+    private final SubscriptionPlanAdapter planAdapter;
 
-    public SubscriptionService(SubscriptionAdapter adapter, UserAdapter userAdapter) {
+    public SubscriptionService(SubscriptionAdapter adapter, UserAdapter userAdapter, SubscriptionPlanAdapter planAdapter) {
         this.adapter = adapter;
         this.userAdapter = userAdapter;
+        this.planAdapter = planAdapter;
     }
 
     public Subscription create(SubscriptionRequestDTO request) {
-        Subscription s = new Subscription();
-        User u = new User();
-        u.setId(request.getUserId());
-        SubscriptionPlan p = new SubscriptionPlan();
-        p.setId(request.getPlanId());
-        s.setUser(u);
-        s.setPlan(p);
-        s.setUserId(request.getUserId());
-        s.setPlanId(request.getPlanId());
-        s.setStartDate(request.getStartDate());
-        s.setEndDate(request.getEndDate());
-        s.setIsActive(request.getIsActive());
-        return adapter.save(s);
+        Subscription subscription = new Subscription();
+        subscription.setUser(getUserOrThrow(request.getUserId()));
+        subscription.setPlan(getPlanOrThrow(request.getPlanId()));
+        subscription.setUserId(request.getUserId());
+        subscription.setPlanId(request.getPlanId());
+        subscription.setStartDate(request.getStartDate());
+        subscription.setEndDate(request.getEndDate());
+        subscription.setIsActive(request.getIsActive());
+        return adapter.save(subscription);
     }
 
-    public Page<Subscription> getAll(Pageable pageable) {
-        return adapter.findAll(pageable);
-    }
+    public Subscription update(UUID id, SubscriptionRequestDTO request) {
+        Subscription subscription = getById(id);
 
-    public Page<Subscription> getAllByUser(UUID userId, Pageable pageable) {
-        User user = userAdapter.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+        if (request.getUserId() != null) subscription.setUser(getUserOrThrow(request.getUserId()));
+        if (request.getPlanId() != null) subscription.setPlan(getPlanOrThrow(request.getPlanId()));
+        if (request.getStartDate() != null) subscription.setStartDate(request.getStartDate());
+        if (request.getEndDate() != null) subscription.setEndDate(request.getEndDate());
+        if (request.getIsActive() != null) subscription.setIsActive(request.getIsActive());
 
-        return adapter.findAllByUser(user, pageable);
+        subscription.setUserId(subscription.getUser().getId());
+        subscription.setPlanId(subscription.getPlan().getId());
+
+        return adapter.update(subscription);
     }
 
     public Subscription getById(UUID id) {
@@ -59,28 +62,25 @@ public class SubscriptionService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Assinatura não encontrada"));
     }
 
-    public Subscription update(UUID id, SubscriptionRequestDTO request) {
-        Subscription s = getById(id);
-        if (request.getUserId() != null) {
-            User u = new User();
-            u.setId(request.getUserId());
-            s.setUser(u);
-            s.setUserId(request.getUserId());
-        }
-        if (request.getPlanId() != null) {
-            SubscriptionPlan p = new SubscriptionPlan();
-            p.setId(request.getPlanId());
-            s.setPlan(p);
-            s.setPlanId(request.getPlanId());
-        }
-        if (request.getStartDate() != null) s.setStartDate(request.getStartDate());
-        if (request.getEndDate() != null) s.setEndDate(request.getEndDate());
-        if (request.getIsActive() != null) s.setIsActive(request.getIsActive());
+    public Page<Subscription> getAll(Pageable pageable) {
+        return adapter.findAll(pageable);
+    }
 
-        return adapter.update(s);
+    public Page<Subscription> getAllByUser(UUID userId, Pageable pageable) {
+        return adapter.findAllByUser(getUserOrThrow(userId), pageable);
     }
 
     public void delete(UUID id) {
         adapter.delete(id);
+    }
+
+    private User getUserOrThrow(UUID userId) {
+        return userAdapter.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+    }
+
+    private SubscriptionPlan getPlanOrThrow(UUID planId) {
+        return planAdapter.findById(planId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Plano de assinatura não encontrado"));
     }
 }
