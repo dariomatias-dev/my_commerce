@@ -2,7 +2,9 @@ package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.category.CategoryRequestDTO;
 import com.dariomatias.my_commerce.model.Category;
+import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.repository.adapter.CategoryAdapter;
+import com.dariomatias.my_commerce.repository.adapter.StoreAdapter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -17,16 +19,18 @@ import java.util.UUID;
 public class CategoryService {
 
     private final CategoryAdapter categoryAdapter;
+    private final StoreAdapter storeAdapter;
 
-    public CategoryService(CategoryAdapter categoryAdapter) {
+    public CategoryService(CategoryAdapter categoryAdapter, StoreAdapter storeAdapter) {
         this.categoryAdapter = categoryAdapter;
+        this.storeAdapter = storeAdapter;
     }
 
     public Category create(CategoryRequestDTO request) {
+        Store store = getStoreOrThrow(request.getStoreId());
         Category category = new Category();
         category.setName(request.getName());
-        category.setStoreId(request.getStoreId());
-
+        category.setStoreId(store.getId());
         return categoryAdapter.save(category);
     }
 
@@ -35,6 +39,7 @@ public class CategoryService {
     }
 
     public Page<Category> getAllByStore(UUID storeId, Pageable pageable) {
+        getStoreOrThrow(storeId);
         return categoryAdapter.findAllByStore(storeId, pageable);
     }
 
@@ -46,12 +51,16 @@ public class CategoryService {
     public Category update(UUID id, CategoryRequestDTO request) {
         Category category = getById(id);
         if (request.getName() != null) category.setName(request.getName());
-
         return categoryAdapter.update(category);
     }
 
     public void delete(UUID id) {
         getById(id);
         categoryAdapter.delete(id);
+    }
+
+    private Store getStoreOrThrow(UUID storeId) {
+        return storeAdapter.findById(storeId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
     }
 }
