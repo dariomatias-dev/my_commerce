@@ -28,38 +28,29 @@ public class StoreService {
     }
 
     public Store create(UUID ownerId, StoreRequestDTO request) {
-        User owner = userAdapter.findById(ownerId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+        User owner = getUserById(ownerId);
 
-        Store entity = new Store();
-        entity.setName(request.getName());
-        entity.setSlug(generateSlug(request.getName()));
-        entity.setDescription(request.getDescription());
-        entity.setBannerUrl(request.getBannerUrl());
-        entity.setLogoUrl(request.getLogoUrl());
-        entity.setThemeColor(request.getThemeColor());
-        entity.setIsActive(request.getIsActive() != null ? request.getIsActive() : true);
-        entity.setOwner(owner);
+        Store store = new Store();
+        store.setName(request.getName());
+        store.setSlug(generateSlug(request.getName()));
+        store.setDescription(request.getDescription());
+        store.setBannerUrl(request.getBannerUrl());
+        store.setLogoUrl(request.getLogoUrl());
+        store.setThemeColor(request.getThemeColor());
+        store.setIsActive(request.getIsActive() != null ? request.getIsActive() : true);
+        store.setOwner(owner);
 
-        return storeAdapter.save(entity);
+        return storeAdapter.save(store);
     }
 
     public Page<Store> getAll(User user, Pageable pageable) {
-        if ("ADMIN".equals(user.getRole())) {
-            return storeAdapter.findAll(pageable);
-        }
-        return storeAdapter.findAllByOwner(user, pageable);
+        return "ADMIN".equals(user.getRole()) ? storeAdapter.findAll(pageable) : storeAdapter.findAllByOwner(user, pageable);
     }
 
     public Store getById(UUID id, User user) {
-        Store entity = storeAdapter.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
-
-        if (!"ADMIN".equals(user.getRole()) && !entity.getOwner().getEmail().equals(user.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
-        }
-
-        return entity;
+        Store store = getStoreById(id);
+        checkAccess(store, user);
+        return store;
     }
 
     public Store getBySlug(String slug) {
@@ -68,35 +59,42 @@ public class StoreService {
     }
 
     public Store update(UUID id, StoreRequestDTO request, User user) {
-        Store entity = storeAdapter.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
+        Store store = getStoreById(id);
+        checkAccess(store, user);
 
-        if (!"ADMIN".equals(user.getRole()) && !entity.getOwner().getEmail().equals(user.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
+        if (request.getName() != null && !request.getName().equals(store.getName())) {
+            store.setName(request.getName());
+            store.setSlug(generateSlug(request.getName()));
         }
+        if (request.getDescription() != null) store.setDescription(request.getDescription());
+        if (request.getBannerUrl() != null) store.setBannerUrl(request.getBannerUrl());
+        if (request.getLogoUrl() != null) store.setLogoUrl(request.getLogoUrl());
+        if (request.getThemeColor() != null) store.setThemeColor(request.getThemeColor());
+        if (request.getIsActive() != null) store.setIsActive(request.getIsActive());
 
-        if (request.getName() != null && !entity.getName().equals(request.getName())) {
-            entity.setName(request.getName());
-            entity.setSlug(generateSlug(request.getName()));
-        }
-        if (request.getDescription() != null) entity.setDescription(request.getDescription());
-        if (request.getBannerUrl() != null) entity.setBannerUrl(request.getBannerUrl());
-        if (request.getLogoUrl() != null) entity.setLogoUrl(request.getLogoUrl());
-        if (request.getThemeColor() != null) entity.setThemeColor(request.getThemeColor());
-        if (request.getIsActive() != null) entity.setIsActive(request.getIsActive());
-
-        return storeAdapter.update(entity);
+        return storeAdapter.update(store);
     }
 
     public void delete(UUID id, User user) {
-        Store entity = storeAdapter.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
+        Store store = getStoreById(id);
+        checkAccess(store, user);
+        storeAdapter.delete(id);
+    }
 
-        if (!"ADMIN".equals(user.getRole()) && !entity.getOwner().getEmail().equals(user.getEmail())) {
+    private User getUserById(UUID id) {
+        return userAdapter.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+    }
+
+    private Store getStoreById(UUID id) {
+        return storeAdapter.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
+    }
+
+    private void checkAccess(Store store, User user) {
+        if (!"ADMIN".equals(user.getRole()) && !store.getOwner().getEmail().equals(user.getEmail())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
         }
-
-        storeAdapter.delete(id);
     }
 
     private String generateSlug(String name) {
