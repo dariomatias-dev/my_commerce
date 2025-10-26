@@ -75,7 +75,7 @@ public class OrderItemController {
             @PathVariable UUID id,
             @RequestBody OrderItemRequestDTO request
     ) {
-        OrderItem item = service.update(id, request.getOrderId(), request.getProductId(), request.getQuantity(), request.getPrice());
+        OrderItem item = service.update(id, request);
         return ResponseEntity.ok(ApiResponse.success("Item atualizado com sucesso", OrderItemResponseDTO.from(item)));
     }
 

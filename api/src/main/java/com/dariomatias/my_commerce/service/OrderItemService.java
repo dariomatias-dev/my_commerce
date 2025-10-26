@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
@@ -34,23 +33,12 @@ public class OrderItemService {
     }
 
     public OrderItem create(OrderItemRequestDTO request) {
-        Order order = orderAdapter.findById(request.getOrderId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
-        Product product = productAdapter.findById(request.getProductId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
-
         OrderItem item = new OrderItem();
-        item.setOrder(order);
-        item.setProduct(product);
+        item.setOrder(getOrderOrThrow(request.getOrderId()));
+        item.setProduct(getProductOrThrow(request.getProductId()));
         item.setQuantity(request.getQuantity());
         item.setPrice(request.getPrice());
-
         return itemAdapter.save(item);
-    }
-
-    public OrderItem getById(UUID id) {
-        return itemAdapter.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item não encontrado"));
     }
 
     public Page<OrderItem> getAll(Pageable pageable) {
@@ -58,39 +46,38 @@ public class OrderItemService {
     }
 
     public Page<OrderItem> getAllByOrder(UUID orderId, Pageable pageable) {
-        Order order = orderAdapter.findById(orderId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
-        return itemAdapter.findAllByOrder(order, pageable);
+        return itemAdapter.findAllByOrder(getOrderOrThrow(orderId), pageable);
     }
 
     public Page<OrderItem> getAllByProduct(UUID productId, Pageable pageable) {
-        Product product = productAdapter.findById(productId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
-        return itemAdapter.findAllByProduct(product, pageable);
+        return itemAdapter.findAllByProduct(getProductOrThrow(productId), pageable);
     }
 
-    public OrderItem update(UUID id, UUID orderId, UUID productId, Integer quantity, BigDecimal price) {
+    public OrderItem getById(UUID id) {
+        return itemAdapter.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item não encontrado"));
+    }
+
+    public OrderItem update(UUID id, OrderItemRequestDTO request) {
         OrderItem item = getById(id);
-
-        if (orderId != null) {
-            Order order = orderAdapter.findById(orderId)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
-            item.setOrder(order);
-        }
-
-        if (productId != null) {
-            Product product = productAdapter.findById(productId)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
-            item.setProduct(product);
-        }
-
-        if (quantity != null) item.setQuantity(quantity);
-        if (price != null) item.setPrice(price);
-
+        if (request.getOrderId() != null) item.setOrder(getOrderOrThrow(request.getOrderId()));
+        if (request.getProductId() != null) item.setProduct(getProductOrThrow(request.getProductId()));
+        if (request.getQuantity() != null) item.setQuantity(request.getQuantity());
+        if (request.getPrice() != null) item.setPrice(request.getPrice());
         return itemAdapter.update(item);
     }
 
     public void delete(UUID id) {
         itemAdapter.delete(id);
+    }
+
+    private Order getOrderOrThrow(UUID orderId) {
+        return orderAdapter.findById(orderId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
+    }
+
+    private Product getProductOrThrow(UUID productId) {
+        return productAdapter.findById(productId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
     }
 }
