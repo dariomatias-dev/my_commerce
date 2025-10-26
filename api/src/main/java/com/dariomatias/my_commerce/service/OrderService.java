@@ -41,15 +41,6 @@ public class OrderService {
         return orderAdapter.save(order);
     }
 
-    public Order update(UUID id, OrderRequestDTO request) {
-        Order order = getById(id);
-        if (request.getStoreId() != null) order.setStore(getStoreOrThrow(request.getStoreId()));
-        if (request.getUserId() != null) order.setUser(getUserOrThrow(request.getUserId()));
-        if (request.getTotalAmount() != null) order.setTotalAmount(request.getTotalAmount());
-        if (request.getStatus() != null) order.setStatus(request.getStatus());
-        return orderAdapter.update(order);
-    }
-
     public Order getById(UUID id) {
         return orderAdapter.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
@@ -65,6 +56,15 @@ public class OrderService {
 
     public Page<Order> getAllByStore(UUID storeId, Pageable pageable) {
         return orderAdapter.findAllByStore(getStoreOrThrow(storeId), pageable);
+    }
+
+    public Order update(UUID id, OrderRequestDTO request) {
+        Order order = getById(id);
+        if (request.getStoreId() != null) order.setStore(getStoreOrThrow(request.getStoreId()));
+        if (request.getUserId() != null) order.setUser(getUserOrThrow(request.getUserId()));
+        if (request.getTotalAmount() != null) order.setTotalAmount(request.getTotalAmount());
+        if (request.getStatus() != null) order.setStatus(request.getStatus());
+        return orderAdapter.update(order);
     }
 
     public void delete(UUID id) {

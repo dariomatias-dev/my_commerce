@@ -42,6 +42,19 @@ public class SubscriptionService {
         return adapter.save(subscription);
     }
 
+    public Page<Subscription> getAll(Pageable pageable) {
+        return adapter.findAll(pageable);
+    }
+
+    public Page<Subscription> getAllByUser(UUID userId, Pageable pageable) {
+        return adapter.findAllByUser(getUserOrThrow(userId), pageable);
+    }
+
+    public Subscription getById(UUID id) {
+        return adapter.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Assinatura não encontrada"));
+    }
+
     public Subscription update(UUID id, SubscriptionRequestDTO request) {
         Subscription subscription = getById(id);
 
@@ -55,19 +68,6 @@ public class SubscriptionService {
         subscription.setPlanId(subscription.getPlan().getId());
 
         return adapter.update(subscription);
-    }
-
-    public Subscription getById(UUID id) {
-        return adapter.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Assinatura não encontrada"));
-    }
-
-    public Page<Subscription> getAll(Pageable pageable) {
-        return adapter.findAll(pageable);
-    }
-
-    public Page<Subscription> getAllByUser(UUID userId, Pageable pageable) {
-        return adapter.findAllByUser(getUserOrThrow(userId), pageable);
     }
 
     public void delete(UUID id) {

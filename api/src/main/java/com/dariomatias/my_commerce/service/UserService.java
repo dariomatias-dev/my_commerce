@@ -33,23 +33,23 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Page<User> getAllUsers(Pageable pageable) {
+    public Page<User> getAll(Pageable pageable) {
         return userAdapter.findAll(pageable);
     }
 
-    public User getUserById(UUID id) {
-        return findUser(id);
+    public User getById(UUID id) {
+        return getUserOrThrow(id);
     }
 
-    public User updateUser(UUID id, User updatedUser) {
-        User user = findUser(id);
+    public User update(UUID id, User updatedUser) {
+        User user = getUserOrThrow(id);
         if (updatedUser.getName() != null) user.setName(updatedUser.getName());
         userAdapter.update(user);
         return user;
     }
 
     public void changePassword(UUID userId, PasswordUpdateRequest request) {
-        User user = findUser(userId);
+        User user = getUserOrThrow(userId);
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Senha atual é incorreta");
         }
@@ -58,14 +58,14 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(UUID id) {
-        findUser(id);
+    public void delete(UUID id) {
+        getUserOrThrow(id);
         refreshTokenRepository.deleteByUserId(id);
         emailVerificationTokenRepository.deleteByUserId(id);
         userAdapter.delete(id);
     }
 
-    private User findUser(UUID id) {
+    private User getUserOrThrow(UUID id) {
         return userAdapter.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
     }

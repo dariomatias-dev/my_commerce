@@ -57,7 +57,7 @@ public class AuthService {
         return generateTokensForUser(user);
     }
 
-    public User registerUser(SignupRequest request) {
+    public User register(SignupRequest request) {
         Optional<User> userByEmail = userAdapter.findByEmail(request.getEmail());
         if (userByEmail.isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já está em uso");

@@ -27,7 +27,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<User>> signup(@Valid @RequestBody SignupRequest request) {
-        User user = authService.registerUser(request);
+        User user = authService.register(request);
         return ResponseEntity.status(201).body(ApiResponse.success("Usuário cadastrado com sucesso. Verifique seu e-mail", user));
     }
 

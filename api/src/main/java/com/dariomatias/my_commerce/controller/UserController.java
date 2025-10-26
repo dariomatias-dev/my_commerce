@@ -33,7 +33,7 @@ public class UserController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<AdminUserResponse> users = userService.getAllUsers(pageable)
+        Page<AdminUserResponse> users = userService.getAll(pageable)
                 .map(AdminUserResponse::from);
         return ResponseEntity.ok(ApiResponse.success("Usuários obtidos com sucesso.", users));
     }
@@ -41,7 +41,7 @@ public class UserController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<AdminUserResponse>> getUserById(@PathVariable UUID id) {
-        User user = userService.getUserById(id);
+        User user = userService.getById(id);
         return ResponseEntity.ok(ApiResponse.success("Usuário obtido com sucesso.", AdminUserResponse.from(user)));
     }
 
@@ -49,27 +49,27 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<AdminUserResponse>> updateUser(@PathVariable UUID id,
                                                                      @RequestBody User updatedUser) {
-        User updated = userService.updateUser(id, updatedUser);
+        User updated = userService.update(id, updatedUser);
         return ResponseEntity.ok(ApiResponse.success("Usuário atualizado com sucesso.", AdminUserResponse.from(updated)));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable UUID id) {
-        userService.deleteUser(id);
+        userService.delete(id);
         return ResponseEntity.ok(ApiResponse.success("Usuário excluído com sucesso", null));
     }
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser(@AuthenticationPrincipal User user) {
-        User currentUser = userService.getUserById(user.getId());
+        User currentUser = userService.getById(user.getId());
         return ResponseEntity.ok(ApiResponse.success("Usuário obtido com sucesso.", UserResponse.from(currentUser)));
     }
 
     @PatchMapping("/me")
     public ResponseEntity<ApiResponse<UserResponse>> updateCurrentUser(@AuthenticationPrincipal User user,
                                                                        @RequestBody User updatedUser) {
-        User updated = userService.updateUser(user.getId(), updatedUser);
+        User updated = userService.update(user.getId(), updatedUser);
         return ResponseEntity.ok(ApiResponse.success("Usuário atualizado com sucesso.", UserResponse.from(updated)));
     }
 
@@ -82,7 +82,7 @@ public class UserController {
 
     @DeleteMapping("/me")
     public ResponseEntity<ApiResponse<Void>> deleteCurrentUser(@AuthenticationPrincipal User user) {
-        userService.deleteUser(user.getId());
+        userService.delete(user.getId());
         return ResponseEntity.ok(ApiResponse.success("Usuário excluído com sucesso", null));
     }
 }
