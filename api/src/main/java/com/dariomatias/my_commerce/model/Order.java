@@ -17,7 +17,12 @@ public class Order {
     @Getter
     @Setter
     @Id
-    @GeneratedValue
+    @GeneratedValue(generator = "UUID")
+    @org.hibernate.annotations.GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    @Column(updatable = false, nullable = false)
     private UUID id;
 
     @Getter
@@ -41,21 +46,6 @@ public class Order {
     @Setter
     @Column(nullable = false, length = 20)
     private String status = "PENDING";
-
-    @Getter
-    @Setter
-    @Column
-    private String shippingAddress;
-
-    @Getter
-    @Setter
-    @Column
-    private String shippingMethod;
-
-    @Getter
-    @Setter
-    @Column
-    private BigDecimal shippingCost;
 
     @Getter
     @Setter

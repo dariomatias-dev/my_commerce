@@ -78,10 +78,7 @@ public class OrderController {
                 request.getStoreId(),
                 request.getUserId(),
                 request.getTotalAmount(),
-                request.getStatus(),
-                request.getShippingAddress(),
-                request.getShippingMethod(),
-                request.getShippingCost()
+                request.getStatus()
         );
         return ResponseEntity.ok(ApiResponse.success("Pedido atualizado com sucesso", OrderResponseDTO.from(order)));
     }

@@ -16,9 +16,6 @@ public class OrderRequestDTO {
     private BigDecimal totalAmount;
 
     private String status;
-    private String shippingAddress;
-    private String shippingMethod;
-    private BigDecimal shippingCost;
 
     public UUID getStoreId() { return storeId; }
     public void setStoreId(UUID storeId) { this.storeId = storeId; }
@@ -31,13 +28,4 @@ public class OrderRequestDTO {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
-
-    public String getShippingAddress() { return shippingAddress; }
-    public void setShippingAddress(String shippingAddress) { this.shippingAddress = shippingAddress; }
-
-    public String getShippingMethod() { return shippingMethod; }
-    public void setShippingMethod(String shippingMethod) { this.shippingMethod = shippingMethod; }
-
-    public BigDecimal getShippingCost() { return shippingCost; }
-    public void setShippingCost(BigDecimal shippingCost) { this.shippingCost = shippingCost; }
 }

@@ -44,9 +44,6 @@ public class OrderSeed {
             order.setStore(store);
             order.setTotalAmount(BigDecimal.valueOf(random.nextDouble() * 500 + 50));
             order.setStatus("PENDING");
-            order.setShippingAddress("Rua Aleatória, " + (random.nextInt(200) + 1) + ", Cidade " + i);
-            order.setShippingMethod(random.nextBoolean() ? "PAC" : "SEDEX");
-            order.setShippingCost(BigDecimal.valueOf(random.nextDouble() * 50 + 10));
 
             orderRepository.save(order);
         }

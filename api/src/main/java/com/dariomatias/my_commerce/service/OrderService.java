@@ -44,9 +44,6 @@ public class OrderService {
         order.setUser(user);
         order.setTotalAmount(request.getTotalAmount());
         order.setStatus(request.getStatus() != null ? request.getStatus() : "PENDING");
-        order.setShippingAddress(request.getShippingAddress());
-        order.setShippingMethod(request.getShippingMethod());
-        order.setShippingCost(request.getShippingCost());
 
         return orderAdapter.save(order);
     }
@@ -72,9 +69,7 @@ public class OrderService {
         return orderAdapter.findAllByStore(store, pageable);
     }
 
-    public Order update(UUID id, UUID storeId, UUID userId, BigDecimal totalAmount,
-                        String status, String shippingAddress,
-                        String shippingMethod, BigDecimal shippingCost) {
+    public Order update(UUID id, UUID storeId, UUID userId, BigDecimal totalAmount, String status) {
         Order order = getById(id);
 
         if (storeId != null) {
@@ -91,9 +86,6 @@ public class OrderService {
 
         if (totalAmount != null) order.setTotalAmount(totalAmount);
         if (status != null) order.setStatus(status);
-        if (shippingAddress != null) order.setShippingAddress(shippingAddress);
-        if (shippingMethod != null) order.setShippingMethod(shippingMethod);
-        if (shippingCost != null) order.setShippingCost(shippingCost);
 
         return orderAdapter.update(order);
     }

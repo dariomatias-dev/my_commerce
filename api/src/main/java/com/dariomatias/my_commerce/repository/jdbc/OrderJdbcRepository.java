@@ -29,9 +29,6 @@ public class OrderJdbcRepository {
         order.setId(UUID.fromString(rs.getString("id")));
         order.setTotalAmount(rs.getBigDecimal("total_amount"));
         order.setStatus(rs.getString("status"));
-        order.setShippingAddress(rs.getString("shipping_address"));
-        order.setShippingMethod(rs.getString("shipping_method"));
-        order.setShippingCost(rs.getBigDecimal("shipping_cost"));
         order.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         order.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
 
@@ -49,16 +46,13 @@ public class OrderJdbcRepository {
     public Order save(Order order) {
         if (order.getId() == null) order.setId(UUID.randomUUID());
         String sql = "INSERT INTO orders (id, store_id, user_id, total_amount, status, shipping_address, shipping_method, shipping_cost, created_at, updated_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+                "VALUES (?, ?, ?, ?, ?, NOW(), NOW())";
         jdbcTemplate.update(sql,
                 order.getId(),
                 order.getStore().getId(),
                 order.getUser().getId(),
                 order.getTotalAmount(),
-                order.getStatus(),
-                order.getShippingAddress(),
-                order.getShippingMethod(),
-                order.getShippingCost()
+                order.getStatus()
         );
         return order;
     }
@@ -85,13 +79,10 @@ public class OrderJdbcRepository {
     }
 
     public void update(Order order) {
-        String sql = "UPDATE orders SET total_amount = ?, status = ?, shipping_address = ?, shipping_method = ?, shipping_cost = ?, updated_at = NOW() WHERE id = ?";
+        String sql = "UPDATE orders SET total_amount = ?, status = ?, updated_at = NOW() WHERE id = ?";
         jdbcTemplate.update(sql,
                 order.getTotalAmount(),
                 order.getStatus(),
-                order.getShippingAddress(),
-                order.getShippingMethod(),
-                order.getShippingCost(),
                 order.getId()
         );
     }
