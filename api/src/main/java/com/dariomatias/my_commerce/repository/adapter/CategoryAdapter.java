@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -56,10 +57,10 @@ public class CategoryAdapter {
         else categoryRepository.deleteById(id);
     }
 
-    public Category findById(UUID id) {
+    public Optional<Category> findById(UUID id) {
         return useJdbc
-                ? categoryJdbcRepository.findById(id).orElse(null)
-                : categoryRepository.findById(id).orElse(null);
+                ? categoryJdbcRepository.findById(id)
+                : categoryRepository.findById(id);
     }
 
     public Page<Category> findAll(Pageable pageable) {

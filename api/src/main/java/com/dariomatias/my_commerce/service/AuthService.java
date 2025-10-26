@@ -6,7 +6,7 @@ import com.dariomatias.my_commerce.model.EmailVerificationToken;
 import com.dariomatias.my_commerce.model.RefreshToken;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.EmailVerificationTokenRepository;
-import com.dariomatias.my_commerce.repository.UserRepository;
+import com.dariomatias.my_commerce.repository.adapter.UserAdapter;
 import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,20 +21,20 @@ import java.util.function.Consumer;
 @Service
 public class AuthService {
 
-    private final UserRepository userRepository;
+    private final UserAdapter userAdapter;
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationTokenRepository emailVerificationTokenRepository;
     private final EmailService emailService;
     private final RefreshTokenService refreshTokenService;
     private final JwtService jwtService;
 
-    public AuthService(UserRepository userRepository,
+    public AuthService(UserAdapter userAdapter,
                        PasswordEncoder passwordEncoder,
                        EmailVerificationTokenRepository emailVerificationTokenRepository,
                        EmailService emailService,
                        RefreshTokenService refreshTokenService,
                        JwtService jwtService) {
-        this.userRepository = userRepository;
+        this.userAdapter = userAdapter;
         this.passwordEncoder = passwordEncoder;
         this.emailVerificationTokenRepository = emailVerificationTokenRepository;
         this.emailService = emailService;
@@ -43,7 +43,7 @@ public class AuthService {
     }
 
     public RefreshTokenResponse login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userAdapter.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciais inválidas"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
@@ -58,7 +58,8 @@ public class AuthService {
     }
 
     public User registerUser(SignupRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        Optional<User> userByEmail = userAdapter.findByEmail(request.getEmail());
+        if (userByEmail.isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já está em uso");
         }
 
@@ -68,7 +69,7 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEnabled(false);
 
-        User savedUser = userRepository.save(user);
+        User savedUser = userAdapter.save(user);
         try {
             sendVerificationEmail(savedUser);
         } catch (MessagingException e) {
@@ -81,12 +82,12 @@ public class AuthService {
     public void verifyEmail(String token) {
         validateToken(token, user -> {
             user.setEnabled(true);
-            userRepository.save(user);
+            userAdapter.save(user);
         });
     }
 
     public void resendVerificationEmail(String email) {
-        User user = userRepository.findByEmail(email)
+        User user = userAdapter.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
         if (user.isEnabled()) {
@@ -101,7 +102,7 @@ public class AuthService {
     }
 
     public void recoverPassword(String email) {
-        User user = userRepository.findByEmail(email)
+        User user = userAdapter.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
         EmailVerificationToken token = createOrUpdateToken(user, 1);
@@ -115,7 +116,7 @@ public class AuthService {
     public void resetPassword(ResetPasswordRequest request) {
         validateToken(request.getToken(), user -> {
             user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-            userRepository.save(user);
+            userAdapter.save(user);
         });
     }
 

@@ -5,9 +5,9 @@ import com.dariomatias.my_commerce.model.Product;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.Category;
 import com.dariomatias.my_commerce.model.User;
-import com.dariomatias.my_commerce.repository.StoreRepository;
-import com.dariomatias.my_commerce.repository.CategoryRepository;
+import com.dariomatias.my_commerce.repository.adapter.CategoryAdapter;
 import com.dariomatias.my_commerce.repository.adapter.ProductAdapter;
+import com.dariomatias.my_commerce.repository.adapter.StoreAdapter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -22,26 +22,26 @@ import java.util.UUID;
 public class ProductService {
 
     private final ProductAdapter productAdapter;
-    private final StoreRepository storeRepository;
-    private final CategoryRepository categoryRepository;
+    private final StoreAdapter storeAdapter;
+    private final CategoryAdapter categoryAdapter;
 
     public ProductService(ProductAdapter productAdapter,
-                          StoreRepository storeRepository,
-                          CategoryRepository categoryRepository) {
+                          StoreAdapter storeAdapter,
+                          CategoryAdapter categoryAdapter) {
         this.productAdapter = productAdapter;
-        this.storeRepository = storeRepository;
-        this.categoryRepository = categoryRepository;
+        this.storeAdapter = storeAdapter;
+        this.categoryAdapter = categoryAdapter;
     }
 
     public Product create(User user, ProductRequestDTO request) {
-        Store store = storeRepository.findById(request.getStoreId())
+        Store store = storeAdapter.findById(request.getStoreId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
 
         if (!"ADMIN".equals(user.getRole()) && !store.getOwner().getId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
         }
 
-        Category category = categoryRepository.findById(request.getCategoryId())
+        Category category = categoryAdapter.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada"));
 
         Product product = new Product();

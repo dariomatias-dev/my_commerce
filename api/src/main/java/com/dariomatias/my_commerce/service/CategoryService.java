@@ -39,10 +39,8 @@ public class CategoryService {
     }
 
     public Category getById(UUID id) {
-        Category category = categoryAdapter.findById(id);
-        if (category == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada");
-
-        return category;
+        return categoryAdapter.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada"));
     }
 
     public Category update(UUID id, CategoryRequestDTO request) {

@@ -3,8 +3,8 @@ package com.dariomatias.my_commerce.service;
 import com.dariomatias.my_commerce.dto.stores.StoreRequestDTO;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.User;
-import com.dariomatias.my_commerce.repository.UserRepository;
 import com.dariomatias.my_commerce.repository.adapter.StoreAdapter;
+import com.dariomatias.my_commerce.repository.adapter.UserAdapter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -20,15 +20,15 @@ import java.util.UUID;
 public class StoreService {
 
     private final StoreAdapter storeAdapter;
-    private final UserRepository userRepository;
+    private final UserAdapter userAdapter;
 
-    public StoreService(StoreAdapter storeAdapter, UserRepository userRepository) {
+    public StoreService(StoreAdapter storeAdapter, UserAdapter userAdapter) {
         this.storeAdapter = storeAdapter;
-        this.userRepository = userRepository;
+        this.userAdapter = userAdapter;
     }
 
     public Store create(UUID ownerId, StoreRequestDTO request) {
-        User owner = userRepository.findById(ownerId)
+        User owner = userAdapter.findById(ownerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
         Store entity = new Store();

@@ -4,8 +4,8 @@ import com.dariomatias.my_commerce.dto.subscription.SubscriptionRequestDTO;
 import com.dariomatias.my_commerce.model.Subscription;
 import com.dariomatias.my_commerce.model.SubscriptionPlan;
 import com.dariomatias.my_commerce.model.User;
-import com.dariomatias.my_commerce.repository.UserRepository;
 import com.dariomatias.my_commerce.repository.adapter.SubscriptionAdapter;
+import com.dariomatias.my_commerce.repository.adapter.UserAdapter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -20,11 +20,11 @@ import java.util.UUID;
 public class SubscriptionService {
 
     private final SubscriptionAdapter adapter;
-    private final UserRepository userRepository;
+    private final UserAdapter userAdapter;
 
-    public SubscriptionService(SubscriptionAdapter adapter, UserRepository userRepository) {
+    public SubscriptionService(SubscriptionAdapter adapter, UserAdapter userAdapter) {
         this.adapter = adapter;
-        this.userRepository = userRepository;
+        this.userAdapter = userAdapter;
     }
 
     public Subscription create(SubscriptionRequestDTO request) {
@@ -48,8 +48,9 @@ public class SubscriptionService {
     }
 
     public Page<Subscription> getAllByUser(UUID userId, Pageable pageable) {
-        User user = userRepository.findById(userId)
+        User user = userAdapter.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+
         return adapter.findAllByUser(user, pageable);
     }
 
@@ -75,6 +76,7 @@ public class SubscriptionService {
         if (request.getStartDate() != null) s.setStartDate(request.getStartDate());
         if (request.getEndDate() != null) s.setEndDate(request.getEndDate());
         if (request.getIsActive() != null) s.setIsActive(request.getIsActive());
+
         return adapter.update(s);
     }
 
