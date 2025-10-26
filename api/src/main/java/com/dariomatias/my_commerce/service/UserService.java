@@ -38,40 +38,35 @@ public class UserService {
     }
 
     public User getUserById(UUID id) {
-        return userAdapter.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+        return findUser(id);
     }
 
     public User updateUser(UUID id, User updatedUser) {
-        return userAdapter.findById(id)
-                .map(user -> {
-                    if (updatedUser.getName() != null)
-                        user.setName(updatedUser.getName());
-                    userAdapter.update(user);
-                    return user;
-                })
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+        User user = findUser(id);
+        if (updatedUser.getName() != null) user.setName(updatedUser.getName());
+        userAdapter.update(user);
+        return user;
     }
 
     public void changePassword(UUID userId, PasswordUpdateRequest request) {
-        User user = userAdapter.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
-
+        User user = findUser(userId);
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Senha atual é incorreta");
         }
-
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userAdapter.save(user);
     }
 
     @Transactional
     public void deleteUser(UUID id) {
-        if (!userAdapter.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado");
-        }
+        findUser(id);
         refreshTokenRepository.deleteByUserId(id);
         emailVerificationTokenRepository.deleteByUserId(id);
         userAdapter.delete(id);
+    }
+
+    private User findUser(UUID id) {
+        return userAdapter.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
     }
 }
