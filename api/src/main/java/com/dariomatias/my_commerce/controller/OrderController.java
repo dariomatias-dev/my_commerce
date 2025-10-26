@@ -74,12 +74,7 @@ public class OrderController {
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<OrderResponseDTO>> update(@PathVariable UUID id,
                                                                 @RequestBody OrderRequestDTO request) {
-        Order order = service.update(id,
-                request.getStoreId(),
-                request.getUserId(),
-                request.getTotalAmount(),
-                request.getStatus()
-        );
+        Order order = service.update(id, request);
         return ResponseEntity.ok(ApiResponse.success("Pedido atualizado com sucesso", OrderResponseDTO.from(order)));
     }
 

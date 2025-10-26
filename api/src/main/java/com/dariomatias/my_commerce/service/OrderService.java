@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
@@ -34,18 +33,21 @@ public class OrderService {
     }
 
     public Order create(OrderRequestDTO request) {
-        Store store = storeAdapter.findById(request.getStoreId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
-        User user = userAdapter.findById(request.getUserId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
-
         Order order = new Order();
-        order.setStore(store);
-        order.setUser(user);
+        order.setStore(getStoreOrThrow(request.getStoreId()));
+        order.setUser(getUserOrThrow(request.getUserId()));
         order.setTotalAmount(request.getTotalAmount());
         order.setStatus(request.getStatus() != null ? request.getStatus() : "PENDING");
-
         return orderAdapter.save(order);
+    }
+
+    public Order update(UUID id, OrderRequestDTO request) {
+        Order order = getById(id);
+        if (request.getStoreId() != null) order.setStore(getStoreOrThrow(request.getStoreId()));
+        if (request.getUserId() != null) order.setUser(getUserOrThrow(request.getUserId()));
+        if (request.getTotalAmount() != null) order.setTotalAmount(request.getTotalAmount());
+        if (request.getStatus() != null) order.setStatus(request.getStatus());
+        return orderAdapter.update(order);
     }
 
     public Order getById(UUID id) {
@@ -58,39 +60,24 @@ public class OrderService {
     }
 
     public Page<Order> getAllByUser(UUID userId, Pageable pageable) {
-        User user = userAdapter.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
-        return orderAdapter.findAllByUser(user, pageable);
+        return orderAdapter.findAllByUser(getUserOrThrow(userId), pageable);
     }
 
     public Page<Order> getAllByStore(UUID storeId, Pageable pageable) {
-        Store store = storeAdapter.findById(storeId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
-        return orderAdapter.findAllByStore(store, pageable);
-    }
-
-    public Order update(UUID id, UUID storeId, UUID userId, BigDecimal totalAmount, String status) {
-        Order order = getById(id);
-
-        if (storeId != null) {
-            Store store = storeAdapter.findById(storeId)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
-            order.setStore(store);
-        }
-
-        if (userId != null) {
-            User user = userAdapter.findById(userId)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
-            order.setUser(user);
-        }
-
-        if (totalAmount != null) order.setTotalAmount(totalAmount);
-        if (status != null) order.setStatus(status);
-
-        return orderAdapter.update(order);
+        return orderAdapter.findAllByStore(getStoreOrThrow(storeId), pageable);
     }
 
     public void delete(UUID id) {
         orderAdapter.delete(id);
+    }
+
+    private Store getStoreOrThrow(UUID storeId) {
+        return storeAdapter.findById(storeId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
+    }
+
+    private User getUserOrThrow(UUID userId) {
+        return userAdapter.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
     }
 }
