@@ -31,15 +31,9 @@ public class FavoriteService {
     }
 
     public Favorite create(FavoriteRequestDTO request) {
-        User user = userAdapter.findById(request.getUserId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
-        Product product = productAdapter.findById(request.getProductId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
-
         Favorite favorite = new Favorite();
-        favorite.setUser(user);
-        favorite.setProduct(product);
-
+        favorite.setUser(getUserOrThrow(request.getUserId()));
+        favorite.setProduct(getProductOrThrow(request.getProductId()));
         return favoriteAdapter.save(favorite);
     }
 
@@ -48,15 +42,11 @@ public class FavoriteService {
     }
 
     public Page<Favorite> getAllByUser(UUID userId, Pageable pageable) {
-        User user = userAdapter.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
-        return favoriteAdapter.findAllByUser(user, pageable);
+        return favoriteAdapter.findAllByUser(getUserOrThrow(userId), pageable);
     }
 
     public Page<Favorite> getAllByProduct(UUID productId, Pageable pageable) {
-        Product product = productAdapter.findById(productId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
-        return favoriteAdapter.findAllByProduct(product, pageable);
+        return favoriteAdapter.findAllByProduct(getProductOrThrow(productId), pageable);
     }
 
     public Favorite getById(UUID id) {
@@ -66,5 +56,15 @@ public class FavoriteService {
 
     public void delete(UUID id) {
         favoriteAdapter.delete(id);
+    }
+
+    private User getUserOrThrow(UUID userId) {
+        return userAdapter.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+    }
+
+    private Product getProductOrThrow(UUID productId) {
+        return productAdapter.findById(productId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
     }
 }
