@@ -1,7 +1,8 @@
 package com.dariomatias.my_commerce.model;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.GenericGenerator;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -10,10 +11,10 @@ import java.util.UUID;
 @Table(name = "refresh_tokens")
 public class RefreshToken {
 
+    @Getter
+    @Setter
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(name = "id", updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @OneToOne
