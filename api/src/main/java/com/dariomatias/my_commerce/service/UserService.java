@@ -3,11 +3,11 @@ package com.dariomatias.my_commerce.service;
 import com.dariomatias.my_commerce.dto.PasswordUpdateRequest;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.EmailVerificationTokenRepository;
-import com.dariomatias.my_commerce.repository.RefreshTokenRepository;
 import com.dariomatias.my_commerce.repository.adapter.UserAdapter;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,16 +19,16 @@ import java.util.UUID;
 public class UserService {
 
     private final UserAdapter userAdapter;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
     private final EmailVerificationTokenRepository emailVerificationTokenRepository;
     private final PasswordEncoder passwordEncoder;
 
     public UserService(UserAdapter userAdapter,
-                       RefreshTokenRepository refreshTokenRepository,
+                       RedisTemplate<String, Object> redisTemplate,
                        EmailVerificationTokenRepository emailVerificationTokenRepository,
                        PasswordEncoder passwordEncoder) {
         this.userAdapter = userAdapter;
-        this.refreshTokenRepository = refreshTokenRepository;
+        this.redisTemplate = redisTemplate;
         this.emailVerificationTokenRepository = emailVerificationTokenRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -60,7 +60,9 @@ public class UserService {
     @Transactional
     public void delete(UUID id) {
         getUserOrThrow(id);
-        refreshTokenRepository.deleteByUserId(id);
+        redisTemplate.keys("*").stream()
+                .filter(key -> id.toString().equals(redisTemplate.opsForValue().get(key)))
+                .forEach(redisTemplate::delete);
         emailVerificationTokenRepository.deleteByUserId(id);
         userAdapter.delete(id);
     }
