@@ -1,5 +1,6 @@
 package com.dariomatias.my_commerce.seed.admin_user;
 
+import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.UserRepository;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -40,7 +41,7 @@ public class AdminUserSeed {
         admin.setName("Administrador");
         admin.setEmail(adminEmail);
         admin.setPassword(passwordEncoder.encode(adminPassword));
-        admin.setRole("ADMIN");
+        admin.setRole(UserRole.ADMIN);
         admin.setEnabled(true);
 
         userRepository.save(admin);

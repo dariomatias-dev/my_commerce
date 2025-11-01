@@ -1,5 +1,6 @@
 package com.dariomatias.my_commerce.repository.jdbc;
 
+import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -28,8 +29,8 @@ public class UserJdbcRepository {
         user.setId(UUID.fromString(rs.getString("id")));
         user.setName(rs.getString("name"));
         user.setEmail(rs.getString("email"));
-        user.setPassword(rs.getString("password"));
-        user.setRole(rs.getString("role"));
+        String roleStr = rs.getString("role");
+        user.setRole(UserRole.valueOf(roleStr));
         user.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         user.setEnabled(rs.getBoolean("enabled"));
         return user;
@@ -38,7 +39,7 @@ public class UserJdbcRepository {
     public User save(User user) {
         if (user.getId() == null) user.setId(UUID.randomUUID());
         if (user.getAudit().getCreatedAt() == null) user.getAudit().setCreatedAt(LocalDateTime.now());
-        if (user.getRole() == null) user.setRole("USER");
+        if (user.getRole() == null) user.setRole(UserRole.USER);
         String sql = "INSERT INTO users (id, name, email, password, role, created_at, enabled) VALUES (?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
                 user.getId(),

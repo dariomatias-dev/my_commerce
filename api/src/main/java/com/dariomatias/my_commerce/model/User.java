@@ -1,5 +1,6 @@
 package com.dariomatias.my_commerce.model;
 
+import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.shared.AuditMetadata;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -34,12 +35,13 @@ public class User {
 
     @Getter
     @Setter
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private String role = "USER";
+    private UserRole role = UserRole.USER;
 
     @Getter
     @Setter
-    @Column(name = "enabled", nullable = false)
+    @Column(nullable = false)
     private boolean enabled = false;
 
     @Getter

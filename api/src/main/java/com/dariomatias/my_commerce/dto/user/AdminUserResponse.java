@@ -1,5 +1,6 @@
 package com.dariomatias.my_commerce.dto.user;
 
+import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.User;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -9,13 +10,13 @@ public class AdminUserResponse {
     private UUID id;
     private String name;
     private String email;
-    private String role;
+    private UserRole role;
     private boolean enabled;
     private LocalDateTime createdAt;
 
     public AdminUserResponse() {}
 
-    public AdminUserResponse(UUID id, String name, String email, String role, boolean enabled, LocalDateTime createdAt) {
+    public AdminUserResponse(UUID id, String name, String email, UserRole role, boolean enabled, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -44,8 +45,8 @@ public class AdminUserResponse {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public UserRole getRole() { return role; }
+    public void setRole(UserRole role) { this.role = role; }
 
     public boolean isEnabled() { return enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }

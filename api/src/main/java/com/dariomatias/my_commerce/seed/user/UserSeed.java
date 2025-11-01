@@ -1,5 +1,6 @@
 package com.dariomatias.my_commerce.seed.user;
 
+import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +28,7 @@ public class UserSeed {
                 user.setName("Usuário " + i);
                 user.setEmail(email);
                 user.setPassword(passwordEncoder.encode("password" + i));
-                user.setRole("USER");
+                user.setRole(UserRole.USER);
                 user.setEnabled(true);
                 userRepository.save(user);
             }

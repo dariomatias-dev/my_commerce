@@ -1,5 +1,6 @@
 package com.dariomatias.my_commerce.dto.user;
 
+import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.User;
 import java.util.UUID;
 
@@ -8,12 +9,12 @@ public class UserResponse {
     private UUID id;
     private String name;
     private String email;
-    private String role;
+    private UserRole role;
     private boolean enabled;
 
     public UserResponse() {}
 
-    public UserResponse(UUID id, String name, String email, String role, boolean enabled) {
+    public UserResponse(UUID id, String name, String email, UserRole role, boolean enabled) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -40,8 +41,8 @@ public class UserResponse {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public UserRole getRole() { return role; }
+    public void setRole(UserRole role) { this.role = role; }
 
     public boolean isEnabled() { return enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
