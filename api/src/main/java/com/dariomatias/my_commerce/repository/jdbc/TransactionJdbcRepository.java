@@ -30,16 +30,16 @@ public class TransactionJdbcRepository {
         transaction.setPaymentMethod(rs.getString("payment_method"));
         transaction.setAmount(rs.getBigDecimal("amount"));
         transaction.setStatus(rs.getString("status"));
-        transaction.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-        transaction.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+        transaction.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        transaction.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
         return transaction;
     }
 
     public Transaction save(Transaction transaction) {
         if (transaction.getId() == null) transaction.setId(UUID.randomUUID());
         LocalDateTime now = LocalDateTime.now();
-        transaction.setCreatedAt(now);
-        transaction.setUpdatedAt(now);
+        transaction.getAudit().setCreatedAt(now);
+        transaction.getAudit().setUpdatedAt(now);
 
         String sql = "INSERT INTO transactions (id, order_id, payment_method, amount, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
@@ -48,21 +48,21 @@ public class TransactionJdbcRepository {
                 transaction.getPaymentMethod(),
                 transaction.getAmount(),
                 transaction.getStatus(),
-                transaction.getCreatedAt(),
-                transaction.getUpdatedAt()
+                transaction.getAudit().getCreatedAt(),
+                transaction.getAudit().getUpdatedAt()
         );
 
         return transaction;
     }
 
     public void update(Transaction transaction) {
-        transaction.setUpdatedAt(LocalDateTime.now());
+        transaction.getAudit().setUpdatedAt(LocalDateTime.now());
         String sql = "UPDATE transactions SET payment_method = ?, amount = ?, status = ?, updated_at = ? WHERE id = ?";
         jdbcTemplate.update(sql,
                 transaction.getPaymentMethod(),
                 transaction.getAmount(),
                 transaction.getStatus(),
-                transaction.getUpdatedAt(),
+                transaction.getAudit().getUpdatedAt(),
                 transaction.getId()
         );
     }

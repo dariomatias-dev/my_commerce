@@ -27,8 +27,8 @@ public class CategoryResponseDTO {
                 category.getId(),
                 category.getStoreId(),
                 category.getName(),
-                category.getCreatedAt(),
-                category.getUpdatedAt()
+                category.getAudit().getCreatedAt(),
+                category.getAudit().getUpdatedAt()
         );
     }
 

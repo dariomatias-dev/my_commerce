@@ -28,8 +28,8 @@ public class CategoryJdbcRepository {
         category.setId(UUID.fromString(rs.getString("id")));
         category.setName(rs.getString("name"));
         category.setStoreId(UUID.fromString(rs.getString("store_id")));
-        category.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-        category.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+        category.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        category.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
         return category;
     }
 
@@ -38,29 +38,29 @@ public class CategoryJdbcRepository {
             category.setId(UUID.randomUUID());
         }
         LocalDateTime now = LocalDateTime.now();
-        category.setCreatedAt(now);
-        category.setUpdatedAt(now);
+        category.getAudit().setCreatedAt(now);
+        category.getAudit().setUpdatedAt(now);
 
         String sql = "INSERT INTO categories (id, name, store_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
                 category.getId(),
                 category.getName(),
                 category.getStoreId(),
-                category.getCreatedAt(),
-                category.getUpdatedAt()
+                category.getAudit().getCreatedAt(),
+                category.getAudit().getUpdatedAt()
         );
 
         return category;
     }
 
     public void update(Category category) {
-        category.setUpdatedAt(LocalDateTime.now());
+        category.getAudit().setUpdatedAt(LocalDateTime.now());
 
         String sql = "UPDATE categories SET name = ?, store_id = ?, updated_at = ? WHERE id = ?";
         jdbcTemplate.update(sql,
                 category.getName(),
                 category.getStoreId(),
-                category.getUpdatedAt(),
+                category.getAudit().getUpdatedAt(),
                 category.getId()
         );
     }

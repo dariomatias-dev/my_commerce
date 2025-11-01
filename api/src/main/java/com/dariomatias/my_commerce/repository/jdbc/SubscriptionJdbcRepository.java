@@ -38,8 +38,8 @@ public class SubscriptionJdbcRepository {
         s.setStartDate(rs.getTimestamp("start_date").toLocalDateTime());
         s.setEndDate(rs.getTimestamp("end_date").toLocalDateTime());
         s.setIsActive(rs.getBoolean("is_active"));
-        s.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-        s.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+        s.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        s.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
         return s;
     };
 
@@ -61,8 +61,8 @@ public class SubscriptionJdbcRepository {
                 .addValue("updated_at", now);
         jdbc.update(sql, params);
         s.setId(id);
-        s.setCreatedAt(now);
-        s.setUpdatedAt(now);
+        s.getAudit().setCreatedAt(now);
+        s.getAudit().setUpdatedAt(now);
         return s;
     }
 
@@ -113,7 +113,7 @@ public class SubscriptionJdbcRepository {
                 .addValue("is_active", s.getIsActive())
                 .addValue("updated_at", now);
         jdbc.update(sql, params);
-        s.setUpdatedAt(now);
+        s.getAudit().setUpdatedAt(now);
     }
 
     public void deleteById(UUID id) {

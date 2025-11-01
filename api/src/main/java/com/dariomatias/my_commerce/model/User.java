@@ -1,10 +1,10 @@
 package com.dariomatias.my_commerce.model;
 
+import com.dariomatias.my_commerce.model.shared.AuditMetadata;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -39,11 +39,11 @@ public class User {
 
     @Getter
     @Setter
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "enabled", nullable = false)
+    private boolean enabled = false;
 
     @Getter
     @Setter
-    @Column(name = "enabled", nullable = false)
-    private boolean enabled = false;
+    @Embedded
+    private AuditMetadata audit = new AuditMetadata();
 }

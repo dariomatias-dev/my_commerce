@@ -35,8 +35,8 @@ public class OrderItemResponseDTO {
                 item.getProductId(),
                 item.getQuantity(),
                 item.getPrice(),
-                item.getCreatedAt(),
-                item.getUpdatedAt()
+                item.getAudit().getCreatedAt(),
+                item.getAudit().getUpdatedAt()
         );
     }
 

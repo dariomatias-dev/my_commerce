@@ -35,8 +35,8 @@ public class TransactionResponseDTO {
                 transaction.getPaymentMethod(),
                 transaction.getAmount(),
                 transaction.getStatus(),
-                transaction.getCreatedAt(),
-                transaction.getUpdatedAt()
+                transaction.getAudit().getCreatedAt(),
+                transaction.getAudit().getUpdatedAt()
         );
     }
 

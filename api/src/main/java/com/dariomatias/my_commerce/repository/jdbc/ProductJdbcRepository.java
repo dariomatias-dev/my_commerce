@@ -30,8 +30,8 @@ public class ProductJdbcRepository {
         p.setPrice(rs.getDouble("price"));
         p.setStock(rs.getInt("stock"));
         p.setActive(rs.getBoolean("active"));
-        p.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-        p.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+        p.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        p.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
         p.setImages(findImagesByProductId(p.getId()));
         return p;
     };
@@ -70,8 +70,8 @@ public class ProductJdbcRepository {
         }
 
         product.setId(id);
-        product.setCreatedAt(now);
-        product.setUpdatedAt(now);
+        product.getAudit().setCreatedAt(now);
+        product.getAudit().setUpdatedAt(now);
 
         return product;
     }
@@ -150,7 +150,7 @@ public class ProductJdbcRepository {
             saveImages(product.getId(), product.getImages());
         }
 
-        product.setUpdatedAt(now);
+        product.getAudit().setUpdatedAt(now);
     }
 
     public void delete(UUID id) {

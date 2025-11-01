@@ -18,17 +18,20 @@ public class Favorite {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

@@ -47,8 +47,8 @@ public class StoreResponseDTO {
                 store.getThemeColor(),
                 store.getIsActive(),
                 store.getOwnerId(),
-                store.getCreatedAt(),
-                store.getUpdatedAt()
+                store.getAudit().getCreatedAt(),
+                store.getAudit().getUpdatedAt()
         );
     }
 

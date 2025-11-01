@@ -38,8 +38,8 @@ public class SubscriptionResponseDTO {
                 subscription.getStartDate(),
                 subscription.getEndDate(),
                 subscription.getIsActive(),
-                subscription.getCreatedAt(),
-                subscription.getUpdatedAt()
+                subscription.getAudit().getCreatedAt(),
+                subscription.getAudit().getUpdatedAt()
         );
     }
 

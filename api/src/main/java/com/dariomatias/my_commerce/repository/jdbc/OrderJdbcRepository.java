@@ -27,8 +27,8 @@ public class OrderJdbcRepository {
         order.setId(UUID.fromString(rs.getString("id")));
         order.setTotalAmount(rs.getBigDecimal("total_amount"));
         order.setStatus(rs.getString("status"));
-        order.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-        order.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+        order.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        order.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
 
         Store store = new Store();
         store.setId(UUID.fromString(rs.getString("store_id")));
@@ -62,8 +62,8 @@ public class OrderJdbcRepository {
         jdbc.update(sql, params);
 
         order.setId(id);
-        order.setCreatedAt(now);
-        order.setUpdatedAt(now);
+        order.getAudit().setCreatedAt(now);
+        order.getAudit().setUpdatedAt(now);
         return order;
     }
 
@@ -113,7 +113,7 @@ public class OrderJdbcRepository {
                 .addValue("updated_at", now);
 
         jdbc.update(sql, params);
-        order.setUpdatedAt(now);
+        order.getAudit().setUpdatedAt(now);
     }
 
     public void deleteById(UUID id) {

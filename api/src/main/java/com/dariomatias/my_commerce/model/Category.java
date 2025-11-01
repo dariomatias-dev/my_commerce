@@ -1,11 +1,9 @@
 package com.dariomatias.my_commerce.model;
 
+import com.dariomatias.my_commerce.model.shared.AuditMetadata;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -31,15 +29,8 @@ public class Category {
 
     @Getter
     @Setter
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Getter
-    @Setter
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
+    @Embedded
+    private AuditMetadata audit = new AuditMetadata();
 
     @Setter
     @Transient

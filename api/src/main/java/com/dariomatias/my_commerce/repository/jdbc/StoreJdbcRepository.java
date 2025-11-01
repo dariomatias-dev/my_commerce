@@ -31,8 +31,8 @@ public class StoreJdbcRepository {
         store.setThemeColor(rs.getString("theme_color"));
         store.setIsActive(rs.getBoolean("is_active"));
         store.setOwnerId(UUID.fromString(rs.getString("owner_id")));
-        store.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-        store.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+        store.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        store.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
         return store;
     };
 
@@ -61,8 +61,8 @@ public class StoreJdbcRepository {
         jdbc.update(sql, params);
 
         store.setId(id);
-        store.setCreatedAt(now);
-        store.setUpdatedAt(now);
+        store.getAudit().setCreatedAt(now);
+        store.getAudit().setUpdatedAt(now);
 
         return store;
     }
@@ -122,7 +122,7 @@ public class StoreJdbcRepository {
                 .addValue("updated_at", now);
 
         jdbc.update(sql, params);
-        store.setUpdatedAt(now);
+        store.getAudit().setUpdatedAt(now);
     }
 
     public void delete(UUID id) {

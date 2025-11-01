@@ -32,8 +32,8 @@ public class ProductResponseDTO {
         dto.stock = product.getStock();
         dto.active = product.getActive();
         dto.images = product.getImages();
-        dto.createdAt = product.getCreatedAt();
-        dto.updatedAt = product.getUpdatedAt();
+        dto.createdAt = product.getAudit().getCreatedAt();
+        dto.updatedAt = product.getAudit().getUpdatedAt();
         return dto;
     }
 

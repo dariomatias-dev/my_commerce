@@ -30,8 +30,8 @@ public class OrderItemJdbcRepository {
         item.setId(UUID.fromString(rs.getString("id")));
         item.setQuantity(rs.getInt("quantity"));
         item.setPrice(rs.getBigDecimal("price"));
-        item.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-        item.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+        item.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        item.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
 
         Order order = new Order();
         order.setId(UUID.fromString(rs.getString("order_id")));
@@ -49,8 +49,8 @@ public class OrderItemJdbcRepository {
             item.setId(UUID.randomUUID());
         }
         LocalDateTime now = LocalDateTime.now();
-        item.setCreatedAt(now);
-        item.setUpdatedAt(now);
+        item.getAudit().setCreatedAt(now);
+        item.getAudit().setUpdatedAt(now);
 
         String sql = "INSERT INTO order_items (id, order_id, product_id, quantity, price, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
@@ -59,8 +59,8 @@ public class OrderItemJdbcRepository {
                 item.getProduct().getId(),
                 item.getQuantity(),
                 item.getPrice(),
-                item.getCreatedAt(),
-                item.getUpdatedAt()
+                item.getAudit().getCreatedAt(),
+                item.getAudit().getUpdatedAt()
         );
 
         return item;
@@ -88,12 +88,12 @@ public class OrderItemJdbcRepository {
     }
 
     public void update(OrderItem item) {
-        item.setUpdatedAt(LocalDateTime.now());
+        item.getAudit().setUpdatedAt(LocalDateTime.now());
         String sql = "UPDATE order_items SET quantity = ?, price = ?, updated_at = ? WHERE id = ?";
         jdbcTemplate.update(sql,
                 item.getQuantity(),
                 item.getPrice(),
-                item.getUpdatedAt(),
+                item.getAudit().getUpdatedAt(),
                 item.getId()
         );
     }

@@ -28,8 +28,8 @@ public class SubscriptionPlanJdbcRepository {
         plan.setMaxProducts(rs.getInt("max_products"));
         plan.setFeatures(rs.getString("features"));
         plan.setPrice(rs.getBigDecimal("price"));
-        plan.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-        plan.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+        plan.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        plan.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
         return plan;
     };
 
@@ -55,8 +55,8 @@ public class SubscriptionPlanJdbcRepository {
         jdbc.update(sql, params);
 
         plan.setId(id);
-        plan.setCreatedAt(now);
-        plan.setUpdatedAt(now);
+        plan.getAudit().setCreatedAt(now);
+        plan.getAudit().setUpdatedAt(now);
         return plan;
     }
 
@@ -97,7 +97,7 @@ public class SubscriptionPlanJdbcRepository {
                 .addValue("updated_at", now);
 
         jdbc.update(sql, params);
-        plan.setUpdatedAt(now);
+        plan.getAudit().setUpdatedAt(now);
     }
 
     public void delete(UUID id) {

@@ -38,8 +38,8 @@ public class SubscriptionPlanResponseDTO {
                 plan.getMaxProducts(),
                 plan.getFeatures(),
                 plan.getPrice(),
-                plan.getCreatedAt(),
-                plan.getUpdatedAt()
+                plan.getAudit().getCreatedAt(),
+                plan.getAudit().getUpdatedAt()
         );
     }
 

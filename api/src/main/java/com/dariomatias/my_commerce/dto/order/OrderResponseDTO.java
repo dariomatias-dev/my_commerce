@@ -36,8 +36,8 @@ public class OrderResponseDTO {
                 order.getUserId(),
                 order.getTotalAmount(),
                 order.getStatus(),
-                order.getCreatedAt(),
-                order.getUpdatedAt()
+                order.getAudit().getCreatedAt(),
+                order.getAudit().getUpdatedAt()
         );
     }
 

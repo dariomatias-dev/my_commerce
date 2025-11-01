@@ -31,7 +31,7 @@ public class AdminUserResponse {
                 user.getEmail(),
                 user.getRole(),
                 user.isEnabled(),
-                user.getCreatedAt()
+                user.getAudit().getCreatedAt()
         );
     }
 

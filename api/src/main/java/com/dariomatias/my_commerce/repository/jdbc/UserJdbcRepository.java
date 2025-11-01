@@ -30,14 +30,14 @@ public class UserJdbcRepository {
         user.setEmail(rs.getString("email"));
         user.setPassword(rs.getString("password"));
         user.setRole(rs.getString("role"));
-        user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        user.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         user.setEnabled(rs.getBoolean("enabled"));
         return user;
     }
 
     public User save(User user) {
         if (user.getId() == null) user.setId(UUID.randomUUID());
-        if (user.getCreatedAt() == null) user.setCreatedAt(LocalDateTime.now());
+        if (user.getAudit().getCreatedAt() == null) user.getAudit().setCreatedAt(LocalDateTime.now());
         if (user.getRole() == null) user.setRole("USER");
         String sql = "INSERT INTO users (id, name, email, password, role, created_at, enabled) VALUES (?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
@@ -46,7 +46,7 @@ public class UserJdbcRepository {
                 user.getEmail(),
                 user.getPassword(),
                 user.getRole(),
-                user.getCreatedAt(),
+                user.getAudit().getCreatedAt(),
                 user.isEnabled()
         );
         return user;
