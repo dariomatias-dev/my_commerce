@@ -1,5 +1,6 @@
 package com.dariomatias.my_commerce.dto.transaction;
 
+import com.dariomatias.my_commerce.enums.PaymentMethod;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,9 +15,8 @@ public class TransactionRequestDTO {
     @NotNull(message = "O ID do pedido é obrigatório.")
     private UUID orderId;
 
-    @NotBlank(message = "O método de pagamento é obrigatório.")
-    @Size(max = 50, message = "O método de pagamento deve ter no máximo 50 caracteres.")
-    private String paymentMethod;
+    @NotNull(message = "O método de pagamento é obrigatório.")
+    private PaymentMethod paymentMethod;
 
     @NotNull(message = "O valor é obrigatório.")
     @DecimalMin(value = "0.01", message = "O valor deve ser maior que zero.")

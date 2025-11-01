@@ -1,7 +1,6 @@
 package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.transaction.TransactionRequestDTO;
-import com.dariomatias.my_commerce.enums.PaymentMethod;
 import com.dariomatias.my_commerce.model.Transaction;
 import com.dariomatias.my_commerce.repository.adapter.TransactionAdapter;
 import org.springframework.data.domain.Page;
@@ -31,7 +30,7 @@ public class TransactionService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Método de pagamento é obrigatório");
         }
 
-        transaction.setPaymentMethod(PaymentMethod.valueOf(request.getPaymentMethod().toUpperCase()));
+        transaction.setPaymentMethod(request.getPaymentMethod());
         transaction.setAmount(request.getAmount());
 
         return transactionAdapter.save(transaction);
@@ -56,7 +55,7 @@ public class TransactionService {
         Transaction transaction = getById(id);
 
         if (request.getPaymentMethod() != null) {
-            transaction.setPaymentMethod(PaymentMethod.valueOf(request.getPaymentMethod().toUpperCase()));
+            transaction.setPaymentMethod(request.getPaymentMethod());
         }
 
         if (request.getAmount() != null) {
