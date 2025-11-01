@@ -1,5 +1,7 @@
 package com.dariomatias.my_commerce.model;
 
+import com.dariomatias.my_commerce.enums.PaymentMethod;
+import com.dariomatias.my_commerce.enums.TransactionStatus;
 import com.dariomatias.my_commerce.model.shared.AuditMetadata;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -26,8 +28,9 @@ public class Transaction {
 
     @Getter
     @Setter
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private String paymentMethod;
+    private PaymentMethod paymentMethod;
 
     @Getter
     @Setter
@@ -36,8 +39,9 @@ public class Transaction {
 
     @Getter
     @Setter
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private String status = "PENDING";
+    private TransactionStatus status = TransactionStatus.PENDING;
 
     @Getter
     @Setter

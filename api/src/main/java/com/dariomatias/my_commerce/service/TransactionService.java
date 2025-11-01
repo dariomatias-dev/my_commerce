@@ -1,6 +1,7 @@
 package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.transaction.TransactionRequestDTO;
+import com.dariomatias.my_commerce.enums.PaymentMethod;
 import com.dariomatias.my_commerce.model.Transaction;
 import com.dariomatias.my_commerce.repository.adapter.TransactionAdapter;
 import org.springframework.data.domain.Page;
@@ -25,9 +26,14 @@ public class TransactionService {
     public Transaction create(TransactionRequestDTO request) {
         Transaction transaction = new Transaction();
         transaction.setOrderId(request.getOrderId());
-        transaction.setPaymentMethod(request.getPaymentMethod());
+
+        if (request.getPaymentMethod() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Método de pagamento é obrigatório");
+        }
+
+        transaction.setPaymentMethod(PaymentMethod.valueOf(request.getPaymentMethod().toUpperCase()));
         transaction.setAmount(request.getAmount());
-        transaction.setStatus(request.getStatus() != null ? request.getStatus() : "PENDING");
+
         return transactionAdapter.save(transaction);
     }
 
@@ -48,9 +54,15 @@ public class TransactionService {
 
     public Transaction update(UUID id, TransactionRequestDTO request) {
         Transaction transaction = getById(id);
-        if (request.getPaymentMethod() != null) transaction.setPaymentMethod(request.getPaymentMethod());
-        if (request.getAmount() != null) transaction.setAmount(request.getAmount());
-        if (request.getStatus() != null) transaction.setStatus(request.getStatus());
+
+        if (request.getPaymentMethod() != null) {
+            transaction.setPaymentMethod(PaymentMethod.valueOf(request.getPaymentMethod().toUpperCase()));
+        }
+
+        if (request.getAmount() != null) {
+            transaction.setAmount(request.getAmount());
+        }
+
         return transactionAdapter.update(transaction);
     }
 

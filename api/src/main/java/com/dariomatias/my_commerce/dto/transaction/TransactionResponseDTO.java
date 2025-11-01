@@ -32,9 +32,9 @@ public class TransactionResponseDTO {
         return new TransactionResponseDTO(
                 transaction.getId(),
                 transaction.getOrderId(),
-                transaction.getPaymentMethod(),
+                transaction.getPaymentMethod() != null ? transaction.getPaymentMethod().name() : null,
                 transaction.getAmount(),
-                transaction.getStatus(),
+                transaction.getStatus() != null ? transaction.getStatus().name() : null,
                 transaction.getAudit().getCreatedAt(),
                 transaction.getAudit().getUpdatedAt()
         );
@@ -44,11 +44,15 @@ public class TransactionResponseDTO {
 
     public UUID getOrderId() { return orderId; }
 
-    public String getPaymentMethod() { return paymentMethod; }
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
 
     public BigDecimal getAmount() { return amount; }
 
-    public String getStatus() { return status; }
+    public String getStatus() {
+        return status;
+    }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
 

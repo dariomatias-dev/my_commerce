@@ -1,5 +1,7 @@
 package com.dariomatias.my_commerce.seed.transaction;
 
+import com.dariomatias.my_commerce.enums.PaymentMethod;
+import com.dariomatias.my_commerce.enums.TransactionStatus;
 import com.dariomatias.my_commerce.model.Order;
 import com.dariomatias.my_commerce.model.Transaction;
 import com.dariomatias.my_commerce.repository.OrderRepository;
@@ -28,8 +30,8 @@ public class TransactionSeed {
         List<Order> orders = orderRepository.findAll();
         if (orders.isEmpty()) return;
 
-        String[] paymentMethods = {"CREDIT_CARD", "PIX", "BOLETO"};
-        String[] statuses = {"PENDING", "PAID", "CANCELLED"};
+        PaymentMethod[] paymentMethods = PaymentMethod.values();
+        TransactionStatus[] statuses = TransactionStatus.values();
 
         for (int i = 1; i <= 50; i++) {
             Order order = orders.get(random.nextInt(orders.size()));

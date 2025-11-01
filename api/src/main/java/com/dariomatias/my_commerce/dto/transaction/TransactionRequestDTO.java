@@ -21,11 +21,4 @@ public class TransactionRequestDTO {
     @NotNull(message = "O valor é obrigatório.")
     @DecimalMin(value = "0.01", message = "O valor deve ser maior que zero.")
     private BigDecimal amount;
-
-    @NotBlank(message = "O status é obrigatório.")
-    @Pattern(
-            regexp = "^(pending|paid|failed|refunded)$",
-            message = "Status inválido. Use: pending, paid, failed ou refunded."
-    )
-    private String status;
 }

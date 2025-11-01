@@ -1,5 +1,7 @@
 package com.dariomatias.my_commerce.repository.jdbc;
 
+import com.dariomatias.my_commerce.enums.PaymentMethod;
+import com.dariomatias.my_commerce.enums.TransactionStatus;
 import com.dariomatias.my_commerce.model.Transaction;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -27,11 +29,18 @@ public class TransactionJdbcRepository {
         Transaction transaction = new Transaction();
         transaction.setId(UUID.fromString(rs.getString("id")));
         transaction.setOrderId(UUID.fromString(rs.getString("order_id")));
-        transaction.setPaymentMethod(rs.getString("payment_method"));
+
+        String paymentStr = rs.getString("payment_method");
+        transaction.setPaymentMethod(paymentStr != null ? PaymentMethod.valueOf(paymentStr) : null);
+
         transaction.setAmount(rs.getBigDecimal("amount"));
-        transaction.setStatus(rs.getString("status"));
+
+        String statusStr = rs.getString("status");
+        transaction.setStatus(statusStr != null ? TransactionStatus.valueOf(statusStr) : TransactionStatus.PENDING);
+
         transaction.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         transaction.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+
         return transaction;
     }
 
@@ -45,9 +54,9 @@ public class TransactionJdbcRepository {
         jdbcTemplate.update(sql,
                 transaction.getId(),
                 transaction.getOrderId(),
-                transaction.getPaymentMethod(),
+                transaction.getPaymentMethod() != null ? transaction.getPaymentMethod().name() : null,
                 transaction.getAmount(),
-                transaction.getStatus(),
+                transaction.getStatus() != null ? transaction.getStatus().name() : null,
                 transaction.getAudit().getCreatedAt(),
                 transaction.getAudit().getUpdatedAt()
         );
@@ -59,9 +68,9 @@ public class TransactionJdbcRepository {
         transaction.getAudit().setUpdatedAt(LocalDateTime.now());
         String sql = "UPDATE transactions SET payment_method = ?, amount = ?, status = ?, updated_at = ? WHERE id = ?";
         jdbcTemplate.update(sql,
-                transaction.getPaymentMethod(),
+                transaction.getPaymentMethod() != null ? transaction.getPaymentMethod().name() : null,
                 transaction.getAmount(),
-                transaction.getStatus(),
+                transaction.getStatus() != null ? transaction.getStatus().name() : null,
                 transaction.getAudit().getUpdatedAt(),
                 transaction.getId()
         );
