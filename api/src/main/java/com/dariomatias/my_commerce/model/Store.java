@@ -4,6 +4,7 @@ import com.dariomatias.my_commerce.model.shared.AuditMetadata;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -49,7 +50,12 @@ public class Store {
     @Getter
     @Setter
     @Column(nullable = false)
-    private Boolean isActive;
+    private Boolean isActive = true;
+
+    @Getter
+    @Setter
+    @Column
+    private LocalDateTime deletedAt;
 
     @Getter
     @Setter
@@ -59,16 +65,31 @@ public class Store {
     @Getter
     @Setter
     @ManyToOne(optional = false)
-    @JoinColumn(name = "owner_id")
-    private User owner;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Setter
     @Transient
-    private UUID ownerId;
+    private UUID userId;
 
     public Store() {}
 
-    public UUID getOwnerId() {
-        return owner != null ? owner.getId() : ownerId;
+    public UUID getUserId() {
+        return user != null ? user.getId() : userId;
+    }
+
+    public boolean isDeleted() {
+        return deletedAt != null;
+    }
+
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
+        this.isActive = false;
+        this.name = "Deleted Store";
+        this.slug = UUID.randomUUID().toString();
+        this.description = "";
+        this.bannerUrl = "";
+        this.logoUrl = "";
+        this.themeColor = "";
     }
 }
