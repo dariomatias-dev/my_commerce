@@ -45,6 +45,18 @@ public class StoreController {
         return ResponseEntity.ok(ApiResponse.success("Lojas obtidas com sucesso", entities));
     }
 
+    @GetMapping("/user/{userId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
+    public ResponseEntity<ApiResponse<Page<StoreResponseDTO>>> getByUser(
+            @PathVariable UUID userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<StoreResponseDTO> entities = service.getAllByUser(userId, pageable).map(StoreResponseDTO::from);
+        return ResponseEntity.ok(ApiResponse.success("Lojas do usuário obtidas com sucesso", entities));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<StoreResponseDTO>> getById(@AuthenticationPrincipal User user,
                                                                  @PathVariable UUID id) {

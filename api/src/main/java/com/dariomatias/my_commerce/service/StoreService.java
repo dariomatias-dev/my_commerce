@@ -48,6 +48,11 @@ public class StoreService {
         return storeAdapter.findAll(pageable);
     }
 
+    public Page<Store> getAllByUser(UUID userId, Pageable pageable) {
+        User user = getUserById(userId);
+        return storeAdapter.findAllByUser(user, pageable);
+    }
+
     public Store getById(UUID id, User user) {
         Store store = getStoreById(id);
         checkAccess(store, user);

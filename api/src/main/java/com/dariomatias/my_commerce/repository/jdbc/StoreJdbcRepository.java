@@ -114,6 +114,14 @@ public class StoreJdbcRepository {
                 .addValue("limit", limit), mapper);
     }
 
+    public List<Store> findAllByUserId(UUID userId, int offset, int limit) {
+        String sql = "SELECT * FROM stores WHERE user_id = :user_id AND deleted_at IS NULL ORDER BY created_at DESC OFFSET :offset LIMIT :limit";
+        return jdbc.query(sql, new MapSqlParameterSource()
+                .addValue("user_id", userId)
+                .addValue("offset", offset)
+                .addValue("limit", limit), mapper);
+    }
+
     public void deactivateByUserId(UUID userId) {
         String sql = "UPDATE stores SET deleted_at = :deleted_at, is_active = false, updated_at = :updated_at WHERE user_id = :user_id";
         LocalDateTime now = LocalDateTime.now();

@@ -67,6 +67,16 @@ public class StoreAdapter {
         }
     }
 
+    public Page<Store> findAllByUser(User user, Pageable pageable) {
+        if (useJdbc) {
+            int offset = pageable.getPageNumber() * pageable.getPageSize();
+            List<Store> list = storeJdbcRepository.findAllByUserId(user.getId(), offset, pageable.getPageSize());
+            return new PageImpl<>(list, pageable, list.size());
+        } else {
+            return storeRepository.findAllByUser(user, pageable);
+        }
+    }
+
     public Optional<Store> findById(UUID id) {
         return useJdbc ? storeJdbcRepository.findById(id) : storeRepository.findById(id);
     }
