@@ -5,7 +5,9 @@ import com.dariomatias.my_commerce.model.shared.AuditMetadata;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -48,4 +50,21 @@ public class User {
     @Setter
     @Embedded
     private AuditMetadata audit = new AuditMetadata();
+
+    @Getter
+    @Setter
+    @Column
+    private LocalDateTime deletedAt;
+
+    public boolean isDeleted() {
+        return deletedAt != null;
+    }
+
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
+        this.enabled = false;
+        this.name = "Deleted User";
+        this.email = UUID.randomUUID() + "@deleted.com";
+        this.password = new BCryptPasswordEncoder().encode(UUID.randomUUID().toString());
+    }
 }
