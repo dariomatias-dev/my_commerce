@@ -2,9 +2,7 @@ package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.*;
 import com.dariomatias.my_commerce.dto.refresh_token.RefreshTokenResponse;
-import com.dariomatias.my_commerce.model.EmailVerificationToken;
 import com.dariomatias.my_commerce.model.User;
-import com.dariomatias.my_commerce.repository.EmailVerificationTokenRepository;
 import com.dariomatias.my_commerce.repository.adapter.UserAdapter;
 import jakarta.mail.MessagingException;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -13,8 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -24,20 +20,20 @@ public class AuthService {
 
     private final UserAdapter userAdapter;
     private final PasswordEncoder passwordEncoder;
-    private final EmailVerificationTokenRepository emailVerificationTokenRepository;
     private final EmailService emailService;
     private final JwtService jwtService;
     private final RedisTemplate<String, Object> redisTemplate;
 
+    private static final String VERIFICATION_PREFIX = "email_verification:";
+    private static final String PASSWORD_RECOVERY_PREFIX = "password_recovery:";
+
     public AuthService(UserAdapter userAdapter,
                        PasswordEncoder passwordEncoder,
-                       EmailVerificationTokenRepository emailVerificationTokenRepository,
                        EmailService emailService,
                        RedisTemplate<String, Object> redisTemplate,
                        JwtService jwtService) {
         this.userAdapter = userAdapter;
         this.passwordEncoder = passwordEncoder;
-        this.emailVerificationTokenRepository = emailVerificationTokenRepository;
         this.emailService = emailService;
         this.redisTemplate = redisTemplate;
         this.jwtService = jwtService;
@@ -56,10 +52,8 @@ public class AuthService {
     }
 
     public User register(SignupRequest request) {
-        Optional<User> userByEmail = userAdapter.findByEmail(request.getEmail());
-        if (userByEmail.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já está em uso");
-        }
+        userAdapter.findByEmail(request.getEmail())
+                .ifPresent(u -> { throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já está em uso"); });
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
@@ -75,7 +69,7 @@ public class AuthService {
     }
 
     public void verifyEmail(String token) {
-        validateToken(token, user -> {
+        validateToken(VERIFICATION_PREFIX + token, user -> {
             user.setEnabled(true);
             userAdapter.save(user);
         });
@@ -94,19 +88,28 @@ public class AuthService {
         }
     }
 
+    private void sendVerificationEmail(User user) throws MessagingException {
+        String token = UUID.randomUUID().toString();
+
+        redisTemplate.opsForValue().set(VERIFICATION_PREFIX + token, user.getId().toString(), 24, TimeUnit.HOURS);
+        
+        emailService.sendVerificationEmail(user.getEmail(), token);
+    }
+
     public void recoverPassword(String email) {
         User user = userAdapter.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
-        EmailVerificationToken token = createOrUpdateToken(user, 1);
+        String token = UUID.randomUUID().toString();
+        redisTemplate.opsForValue().set(PASSWORD_RECOVERY_PREFIX + token, user.getId().toString(), 1, TimeUnit.HOURS);
         try {
-            emailService.sendPasswordRecoveryEmail(user.getEmail(), token.getToken());
+            emailService.sendPasswordRecoveryEmail(user.getEmail(), token);
         } catch (MessagingException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao enviar e-mail de recuperação");
         }
     }
 
     public void resetPassword(ResetPasswordRequest request) {
-        validateToken(request.getToken(), user -> {
+        validateToken(PASSWORD_RECOVERY_PREFIX + request.getToken(), user -> {
             user.setPassword(passwordEncoder.encode(request.getNewPassword()));
             userAdapter.save(user);
         });
@@ -131,28 +134,14 @@ public class AuthService {
         return new RefreshTokenResponse(accessToken, refreshToken);
     }
 
-    private void sendVerificationEmail(User user) throws MessagingException {
-        EmailVerificationToken token = createOrUpdateToken(user, 24);
-        emailService.sendVerificationEmail(user.getEmail(), token.getToken());
-    }
-
-    private EmailVerificationToken createOrUpdateToken(User user, int hoursValid) {
-        Optional<EmailVerificationToken> existingTokenOpt = emailVerificationTokenRepository.findByUserId(user.getId());
-        EmailVerificationToken token = existingTokenOpt.orElseGet(() ->
-                new EmailVerificationToken(user, UUID.randomUUID().toString(), LocalDateTime.now().plusHours(hoursValid))
-        );
-        token.setToken(UUID.randomUUID().toString());
-        token.setExpiryDate(LocalDateTime.now().plusHours(hoursValid));
-        return emailVerificationTokenRepository.save(token);
-    }
-
-    private void validateToken(String tokenStr, Consumer<User> action) {
-        EmailVerificationToken emailVerificationToken = emailVerificationTokenRepository.findByToken(tokenStr)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token inválido"));
-        if (emailVerificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token expirado");
+    private void validateToken(String redisKey, Consumer<User> action) {
+        String userIdStr = (String) redisTemplate.opsForValue().get(redisKey);
+        if (userIdStr == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token inválido ou expirado");
         }
-        action.accept(emailVerificationToken.getUser());
-        emailVerificationTokenRepository.delete(emailVerificationToken);
+        User user = userAdapter.findById(UUID.fromString(userIdStr))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário não encontrado"));
+        action.accept(user);
+        redisTemplate.delete(redisKey);
     }
 }

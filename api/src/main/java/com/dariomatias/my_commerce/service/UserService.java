@@ -2,7 +2,6 @@ package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.PasswordUpdateRequest;
 import com.dariomatias.my_commerce.model.User;
-import com.dariomatias.my_commerce.repository.EmailVerificationTokenRepository;
 import com.dariomatias.my_commerce.repository.adapter.UserAdapter;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -20,16 +19,13 @@ public class UserService {
 
     private final UserAdapter userAdapter;
     private final RedisTemplate<String, Object> redisTemplate;
-    private final EmailVerificationTokenRepository emailVerificationTokenRepository;
     private final PasswordEncoder passwordEncoder;
 
     public UserService(UserAdapter userAdapter,
                        RedisTemplate<String, Object> redisTemplate,
-                       EmailVerificationTokenRepository emailVerificationTokenRepository,
                        PasswordEncoder passwordEncoder) {
         this.userAdapter = userAdapter;
         this.redisTemplate = redisTemplate;
-        this.emailVerificationTokenRepository = emailVerificationTokenRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -63,7 +59,6 @@ public class UserService {
         redisTemplate.keys("*").stream()
                 .filter(key -> id.toString().equals(redisTemplate.opsForValue().get(key)))
                 .forEach(redisTemplate::delete);
-        emailVerificationTokenRepository.deleteByUserId(id);
         userAdapter.delete(id);
     }
 
