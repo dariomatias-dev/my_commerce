@@ -14,46 +14,46 @@ import java.util.UUID;
 @Table(name = "users")
 public class User {
 
-    @Getter
-    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Getter
+    @Setter
     private UUID id;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false, unique = true)
     @Getter
     @Setter
-    @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private String password;
 
-    @Getter
-    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
+    @Getter
+    @Setter
     private UserRole role = UserRole.USER;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private boolean enabled = false;
 
+    @Embedded
     @Getter
     @Setter
-    @Embedded
     private AuditMetadata audit = new AuditMetadata();
 
+    @Column
     @Getter
     @Setter
-    @Column
     private LocalDateTime deletedAt;
 
     public boolean isDeleted() {

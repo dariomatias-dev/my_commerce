@@ -12,40 +12,40 @@ import java.util.UUID;
 @Table(name = "subscription_plans")
 public class SubscriptionPlan {
 
-    @Getter
-    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Getter
+    @Setter
     private UUID id;
 
+    @Column(nullable = false, unique = true)
     @Getter
     @Setter
-    @Column(nullable = false, unique = true)
     private String name;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private Integer maxStores;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private Integer maxProducts;
 
+    @Column(columnDefinition = "TEXT")
     @Getter
     @Setter
-    @Column(columnDefinition = "TEXT")
     private String features;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private BigDecimal price;
 
+    @Embedded
     @Getter
     @Setter
-    @Embedded
     private AuditMetadata audit = new AuditMetadata();
 
     public SubscriptionPlan() {}

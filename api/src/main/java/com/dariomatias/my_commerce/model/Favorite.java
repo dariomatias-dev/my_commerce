@@ -12,36 +12,36 @@ import java.util.UUID;
 @Table(name = "favorites")
 public class Favorite {
 
-    @Getter
-    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Getter
+    @Setter
     private UUID id;
 
-    @Getter
-    @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")
+    @Getter
+    @Setter
     private User user;
 
-    @Getter
-    @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "product_id")
-    private Product product;
-
     @Getter
     @Setter
+    private Product product;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
+    @Getter
+    @Setter
     private LocalDateTime createdAt;
 
-    @Setter
     @Transient
+    @Setter
     private UUID userId;
 
-    @Setter
     @Transient
+    @Setter
     private UUID productId;
 
     public UUID getUserId() {

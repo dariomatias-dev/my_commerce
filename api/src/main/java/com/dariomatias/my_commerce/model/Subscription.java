@@ -12,50 +12,50 @@ import java.util.UUID;
 @Table(name = "subscriptions")
 public class Subscription {
 
-    @Getter
-    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Getter
+    @Setter
     private UUID id;
 
-    @Getter
-    @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")
+    @Getter
+    @Setter
     private User user;
 
-    @Getter
-    @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "plan_id")
+    @Getter
+    @Setter
     private SubscriptionPlan plan;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private LocalDateTime startDate;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private LocalDateTime endDate;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private Boolean isActive;
 
+    @Embedded
     @Getter
     @Setter
-    @Embedded
     private AuditMetadata audit = new AuditMetadata();
 
-    @Setter
     @Transient
+    @Setter
     private UUID userId;
 
-    @Setter
     @Transient
+    @Setter
     private UUID planId;
 
     public Subscription() {}

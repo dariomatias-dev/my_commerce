@@ -11,20 +11,20 @@ import java.util.UUID;
 @Table(name = "stores")
 public class Store {
 
-    @Getter
-    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Getter
+    @Setter
     private UUID id;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false, unique = true)
     @Getter
     @Setter
-    @Column(nullable = false, unique = true)
     private String slug;
 
     @Getter
@@ -32,44 +32,44 @@ public class Store {
     @Column(nullable = false)
     private String description;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private String bannerUrl;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private String logoUrl;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private String themeColor;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private Boolean isActive = true;
 
+    @Column
     @Getter
     @Setter
-    @Column
     private LocalDateTime deletedAt;
 
+    @Embedded
     @Getter
     @Setter
-    @Embedded
     private AuditMetadata audit = new AuditMetadata();
 
-    @Getter
-    @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")
+    @Getter
+    @Setter
     private User user;
 
-    @Setter
     @Transient
+    @Setter
     private UUID userId;
 
     public Store() {}

@@ -13,45 +13,45 @@ import java.util.UUID;
 @Table(name = "orders")
 public class Order {
 
-    @Getter
-    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Getter
+    @Setter
     private UUID id;
 
-    @Getter
-    @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "store_id")
+    @Getter
+    @Setter
     private Store store;
 
-    @Getter
-    @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")
+    @Getter
+    @Setter
     private User user;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private BigDecimal totalAmount;
 
+    @Column(nullable = false, length = 20)
     @Getter
     @Setter
-    @Column(nullable = false, length = 20)
     private String status = "PENDING";
 
+    @Embedded
     @Getter
     @Setter
-    @Embedded
     private AuditMetadata audit = new AuditMetadata();
 
-    @Setter
     @Transient
+    @Setter
     private UUID storeId;
 
-    @Setter
     @Transient
+    @Setter
     private UUID userId;
 
     public Order() {}

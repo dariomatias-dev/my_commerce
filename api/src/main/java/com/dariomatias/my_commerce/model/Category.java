@@ -10,30 +10,30 @@ import java.util.UUID;
 @Table(name = "categories")
 public class Category {
 
-    @Getter
-    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Getter
+    @Setter
     private UUID id;
 
-    @Getter
-    @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "store_id")
+    @Getter
+    @Setter
     private Store store;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private String name;
 
+    @Embedded
     @Getter
     @Setter
-    @Embedded
     private AuditMetadata audit = new AuditMetadata();
 
-    @Setter
     @Transient
+    @Setter
     private UUID storeId;
 
     public Category() {}

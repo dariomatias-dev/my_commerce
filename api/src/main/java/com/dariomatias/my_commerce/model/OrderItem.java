@@ -12,45 +12,45 @@ import java.util.UUID;
 @Table(name = "order_items")
 public class OrderItem {
 
-    @Getter
-    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Getter
+    @Setter
     private UUID id;
 
-    @Getter
-    @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "order_id")
+    @Getter
+    @Setter
     private Order order;
 
-    @Getter
-    @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "product_id")
+    @Getter
+    @Setter
     private Product product;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private Integer quantity;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private BigDecimal price;
 
+    @Embedded
     @Getter
     @Setter
-    @Embedded
     private AuditMetadata audit = new AuditMetadata();
 
-    @Setter
     @Transient
+    @Setter
     private UUID orderId;
 
-    @Setter
     @Transient
+    @Setter
     private UUID productId;
 
     public OrderItem() {}

@@ -14,42 +14,42 @@ import java.util.UUID;
 @Table(name = "transactions")
 public class Transaction {
 
-    @Getter
-    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Getter
+    @Setter
     private UUID id;
 
-    @Getter
-    @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "order_id")
+    @Getter
+    @Setter
     private Order order;
 
-    @Getter
-    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
+    @Getter
+    @Setter
     private PaymentMethod paymentMethod;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private BigDecimal amount;
 
-    @Getter
-    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private TransactionStatus status = TransactionStatus.PENDING;
-
     @Getter
     @Setter
+    private TransactionStatus status = TransactionStatus.PENDING;
+
     @Embedded
+    @Getter
+    @Setter
     private AuditMetadata audit = new AuditMetadata();
 
-    @Setter
     @Transient
+    @Setter
     private UUID orderId;
 
     public Transaction() {}

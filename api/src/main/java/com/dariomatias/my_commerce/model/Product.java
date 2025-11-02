@@ -13,67 +13,67 @@ import java.util.UUID;
 @Table(name = "products")
 public class Product {
 
-    @Getter
-    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Getter
+    @Setter
     private UUID id;
 
-    @Getter
-    @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "store_id")
+    @Getter
+    @Setter
     private Store store;
 
-    @Getter
-    @Setter
     @ManyToOne(optional = false)
     @JoinColumn(name = "category_id")
+    @Getter
+    @Setter
     private Category category;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false, columnDefinition = "TEXT")
     @Getter
     @Setter
-    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private Double price;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private Integer stock;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private Boolean active;
 
-    @Getter
-    @Setter
     @ElementCollection
     @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
     @Column(name = "image_url")
-    private List<String> images;
-
     @Getter
     @Setter
+    private List<String> images;
+
     @Embedded
+    @Getter
+    @Setter
     private AuditMetadata audit = new AuditMetadata();
 
-    @Setter
     @Transient
+    @Setter
     private UUID storeId;
 
-    @Setter
     @Transient
+    @Setter
     private UUID categoryId;
 
     public Product() {}
