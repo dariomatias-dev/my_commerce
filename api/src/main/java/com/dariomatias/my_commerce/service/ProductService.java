@@ -37,7 +37,7 @@ public class ProductService {
         Store store = storeAdapter.findById(request.getStoreId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
 
-        if (!"ADMIN".equals(user.getRole()) && !store.getOwner().getId().equals(user.getId())) {
+        if (!"ADMIN".equals(user.getRole()) && !store.getUser().getId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
         }
 
@@ -77,7 +77,7 @@ public class ProductService {
     public Product update(User user, UUID id, ProductRequestDTO request) {
         Product product = getById(id);
 
-        if (!"ADMIN".equals(user.getRole()) && !product.getStore().getOwner().getId().equals(user.getId())) {
+        if (!"ADMIN".equals(user.getRole()) && !product.getStore().getUser().getId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
         }
 
@@ -94,7 +94,7 @@ public class ProductService {
     public void delete(User user, UUID id) {
         Product product = getById(id);
 
-        if (!"ADMIN".equals(user.getRole()) && !product.getStore().getOwner().getId().equals(user.getId())) {
+        if (!"ADMIN".equals(user.getRole()) && !product.getStore().getUser().getId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
         }
 

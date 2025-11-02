@@ -67,16 +67,6 @@ public class StoreAdapter {
         }
     }
 
-    public Page<Store> findAllByOwner(User user, Pageable pageable) {
-        if (useJdbc) {
-            int offset = pageable.getPageNumber() * pageable.getPageSize();
-            List<Store> list = storeJdbcRepository.findAllByOwnerId(user.getId(), offset, pageable.getPageSize());
-            return new PageImpl<>(list, pageable, list.size());
-        } else {
-            return storeRepository.findAllByOwnerId(user.getId(), pageable);
-        }
-    }
-
     public Optional<Store> findById(UUID id) {
         return useJdbc ? storeJdbcRepository.findById(id) : storeRepository.findById(id);
     }
@@ -86,7 +76,17 @@ public class StoreAdapter {
     }
 
     public void delete(UUID id) {
-        if (useJdbc) storeJdbcRepository.delete(id);
-        else storeRepository.deleteById(id);
+        Store store;
+        if (useJdbc) {
+            store = storeJdbcRepository.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
+            store.delete();
+            storeJdbcRepository.update(store);
+        } else {
+            store = storeRepository.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
+            store.delete();
+            storeRepository.save(store);
+        }
     }
 }

@@ -30,7 +30,9 @@ public class StoreJdbcRepository {
         store.setLogoUrl(rs.getString("logo_url"));
         store.setThemeColor(rs.getString("theme_color"));
         store.setIsActive(rs.getBoolean("is_active"));
-        store.setOwnerId(UUID.fromString(rs.getString("owner_id")));
+        store.setDeletedAt(rs.getTimestamp("deleted_at") != null
+                ? rs.getTimestamp("deleted_at").toLocalDateTime()
+                : null);
         store.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         store.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
         return store;
@@ -39,12 +41,10 @@ public class StoreJdbcRepository {
     public Store save(Store store) {
         LocalDateTime now = LocalDateTime.now();
         UUID id = UUID.randomUUID();
-
         String sql = """
-            INSERT INTO stores (id, name, slug, description, banner_url, logo_url, theme_color, is_active, owner_id, created_at, updated_at)
-            VALUES (:id, :name, :slug, :description, :banner_url, :logo_url, :theme_color, :is_active, :owner_id, :created_at, :updated_at)
+            INSERT INTO stores (id, name, slug, description, banner_url, logo_url, theme_color, is_active, deleted_at, user_id, created_at, updated_at)
+            VALUES (:id, :name, :slug, :description, :banner_url, :logo_url, :theme_color, :is_active, :deleted_at, :user_id, :created_at, :updated_at)
         """;
-
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id)
                 .addValue("name", store.getName())
@@ -54,49 +54,19 @@ public class StoreJdbcRepository {
                 .addValue("logo_url", store.getLogoUrl())
                 .addValue("theme_color", store.getThemeColor())
                 .addValue("is_active", store.getIsActive())
-                .addValue("owner_id", store.getOwner().getId())
+                .addValue("deleted_at", store.getDeletedAt())
+                .addValue("user_id", store.getUser().getId())
                 .addValue("created_at", now)
                 .addValue("updated_at", now);
-
         jdbc.update(sql, params);
-
         store.setId(id);
         store.getAudit().setCreatedAt(now);
         store.getAudit().setUpdatedAt(now);
-
         return store;
-    }
-
-    public List<Store> findAll(int offset, int limit) {
-        String sql = "SELECT * FROM stores ORDER BY created_at DESC OFFSET :offset LIMIT :limit";
-        return jdbc.query(sql, new MapSqlParameterSource()
-                .addValue("offset", offset)
-                .addValue("limit", limit), mapper);
-    }
-
-    public List<Store> findAllByOwnerId(UUID ownerId, int offset, int limit) {
-        String sql = "SELECT * FROM stores WHERE owner_id = :owner_id ORDER BY created_at DESC OFFSET :offset LIMIT :limit";
-        return jdbc.query(sql, new MapSqlParameterSource()
-                .addValue("owner_id", ownerId)
-                .addValue("offset", offset)
-                .addValue("limit", limit), mapper);
-    }
-
-    public Optional<Store> findById(UUID id) {
-        String sql = "SELECT * FROM stores WHERE id = :id";
-        List<Store> list = jdbc.query(sql, new MapSqlParameterSource("id", id), mapper);
-        return list.stream().findFirst();
-    }
-
-    public Optional<Store> findBySlug(String slug) {
-        String sql = "SELECT * FROM stores WHERE slug = :slug";
-        List<Store> list = jdbc.query(sql, new MapSqlParameterSource("slug", slug), mapper);
-        return list.stream().findFirst();
     }
 
     public void update(Store store) {
         LocalDateTime now = LocalDateTime.now();
-
         String sql = """
             UPDATE stores
             SET name = :name,
@@ -106,10 +76,10 @@ public class StoreJdbcRepository {
                 logo_url = :logo_url,
                 theme_color = :theme_color,
                 is_active = :is_active,
+                deleted_at = :deleted_at,
                 updated_at = :updated_at
             WHERE id = :id
         """;
-
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", store.getId())
                 .addValue("name", store.getName())
@@ -119,14 +89,37 @@ public class StoreJdbcRepository {
                 .addValue("logo_url", store.getLogoUrl())
                 .addValue("theme_color", store.getThemeColor())
                 .addValue("is_active", store.getIsActive())
+                .addValue("deleted_at", store.getDeletedAt())
                 .addValue("updated_at", now);
-
         jdbc.update(sql, params);
         store.getAudit().setUpdatedAt(now);
     }
 
-    public void delete(UUID id) {
-        String sql = "DELETE FROM stores WHERE id = :id";
-        jdbc.update(sql, new MapSqlParameterSource("id", id));
+    public Optional<Store> findById(UUID id) {
+        String sql = "SELECT * FROM stores WHERE id = :id AND deleted_at IS NULL";
+        List<Store> list = jdbc.query(sql, new MapSqlParameterSource("id", id), mapper);
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+    }
+
+    public Optional<Store> findBySlug(String slug) {
+        String sql = "SELECT * FROM stores WHERE slug = :slug AND deleted_at IS NULL";
+        List<Store> list = jdbc.query(sql, new MapSqlParameterSource("slug", slug), mapper);
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+    }
+
+    public List<Store> findAll(int offset, int limit) {
+        String sql = "SELECT * FROM stores WHERE deleted_at IS NULL ORDER BY created_at DESC OFFSET :offset LIMIT :limit";
+        return jdbc.query(sql, new MapSqlParameterSource()
+                .addValue("offset", offset)
+                .addValue("limit", limit), mapper);
+    }
+
+    public void deactivateByUserId(UUID userId) {
+        String sql = "UPDATE stores SET deleted_at = :deleted_at, is_active = false, updated_at = :updated_at WHERE user_id = :user_id";
+        LocalDateTime now = LocalDateTime.now();
+        jdbc.update(sql, new MapSqlParameterSource()
+                .addValue("user_id", userId)
+                .addValue("deleted_at", now)
+                .addValue("updated_at", now));
     }
 }

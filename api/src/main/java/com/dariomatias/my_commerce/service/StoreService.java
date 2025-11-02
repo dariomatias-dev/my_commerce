@@ -1,6 +1,7 @@
 package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.stores.StoreRequestDTO;
+import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.adapter.StoreAdapter;
@@ -27,8 +28,8 @@ public class StoreService {
         this.userAdapter = userAdapter;
     }
 
-    public Store create(UUID ownerId, StoreRequestDTO request) {
-        User owner = getUserById(ownerId);
+    public Store create(UUID userId, StoreRequestDTO request) {
+        User user = getUserById(userId);
 
         Store store = new Store();
         store.setName(request.getName());
@@ -38,13 +39,13 @@ public class StoreService {
         store.setLogoUrl(request.getLogoUrl());
         store.setThemeColor(request.getThemeColor());
         store.setIsActive(request.getIsActive() != null ? request.getIsActive() : true);
-        store.setOwner(owner);
+        store.setUser(user);
 
         return storeAdapter.save(store);
     }
 
-    public Page<Store> getAll(User user, Pageable pageable) {
-        return "ADMIN".equals(user.getRole()) ? storeAdapter.findAll(pageable) : storeAdapter.findAllByOwner(user, pageable);
+    public Page<Store> getAll(Pageable pageable) {
+        return storeAdapter.findAll(pageable);
     }
 
     public Store getById(UUID id, User user) {
@@ -92,7 +93,9 @@ public class StoreService {
     }
 
     private void checkAccess(Store store, User user) {
-        if (!"ADMIN".equals(user.getRole()) && !store.getOwner().getEmail().equals(user.getEmail())) {
+        if (user.getRole() != UserRole.ADMIN &&
+                (store.getUser() == null || store.getUser().getEmail() == null ||
+                        !store.getUser().getEmail().equalsIgnoreCase(user.getEmail()))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
         }
     }

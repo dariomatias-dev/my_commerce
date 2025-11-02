@@ -37,12 +37,11 @@ public class StoreController {
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Page<StoreResponseDTO>>> getAll(
-            @AuthenticationPrincipal User user,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<StoreResponseDTO> entities = service.getAll(user, pageable).map(StoreResponseDTO::from);
+        Page<StoreResponseDTO> entities = service.getAll(pageable).map(StoreResponseDTO::from);
         return ResponseEntity.ok(ApiResponse.success("Lojas obtidas com sucesso", entities));
     }
 

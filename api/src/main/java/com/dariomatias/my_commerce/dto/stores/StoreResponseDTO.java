@@ -14,15 +14,16 @@ public class StoreResponseDTO {
     private String logoUrl;
     private String themeColor;
     private Boolean isActive;
-    private UUID ownerId;
+    private UUID userId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
 
     public StoreResponseDTO() {}
 
     public StoreResponseDTO(UUID id, String name, String slug, String description, String bannerUrl,
-                            String logoUrl, String themeColor, Boolean isActive, UUID ownerId,
-                            LocalDateTime createdAt, LocalDateTime updatedAt) {
+                            String logoUrl, String themeColor, Boolean isActive, UUID userId,
+                            LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         this.id = id;
         this.name = name;
         this.slug = slug;
@@ -31,9 +32,10 @@ public class StoreResponseDTO {
         this.logoUrl = logoUrl;
         this.themeColor = themeColor;
         this.isActive = isActive;
-        this.ownerId = ownerId;
+        this.userId = userId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
     }
 
     public static StoreResponseDTO from(Store store) {
@@ -46,9 +48,10 @@ public class StoreResponseDTO {
                 store.getLogoUrl(),
                 store.getThemeColor(),
                 store.getIsActive(),
-                store.getOwnerId(),
+                store.getUserId(),
                 store.getAudit().getCreatedAt(),
-                store.getAudit().getUpdatedAt()
+                store.getAudit().getUpdatedAt(),
+                store.getDeletedAt()
         );
     }
 
@@ -76,12 +79,15 @@ public class StoreResponseDTO {
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
 
-    public UUID getOwnerId() { return ownerId; }
-    public void setOwnerId(UUID ownerId) { this.ownerId = ownerId; }
+    public UUID getUserId() { return userId; }
+    public void setUserId(UUID userId) { this.userId = userId; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public LocalDateTime getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
 }
