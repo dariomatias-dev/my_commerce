@@ -40,8 +40,9 @@ public class UserAdapter {
     }
 
     public void delete(UUID id) {
-        if (useJdbc) userJdbcRepository.delete(id);
-        else userRepository.deleteById(id);
+        User user = findById(id).orElseThrow();
+        user.delete();
+        update(user);
     }
 
     public boolean existsById(UUID id) {

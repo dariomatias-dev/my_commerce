@@ -77,31 +77,21 @@ public class UserJdbcRepository {
     }
 
     public void update(User user) {
-        String sql = "UPDATE users SET name = ?, email = ?, password = ?, role = ?, enabled = ? WHERE id = ?";
+        String sql = "UPDATE users SET name = ?, email = ?, password = ?, role = ?, enabled = ?, deleted_at = ? WHERE id = ?";
         jdbcTemplate.update(sql,
                 user.getName(),
                 user.getEmail(),
                 user.getPassword(),
                 user.getRole(),
                 user.isEnabled(),
+                user.getDeletedAt(),
                 user.getId()
         );
     }
 
     public void delete(UUID userId) {
-        String deleteStores = "DELETE FROM stores WHERE owner_id = ?";
-        jdbcTemplate.update(deleteStores, userId);
-
-        String deleteSubscriptions = "DELETE FROM subscriptions WHERE user_id = ?";
-        jdbcTemplate.update(deleteSubscriptions, userId);
-
-        String deleteRefreshTokens = "DELETE FROM refresh_tokens WHERE user_id = ?";
-        jdbcTemplate.update(deleteRefreshTokens, userId);
-
-        String deleteEmailTokens = "DELETE FROM email_verification_token WHERE user_id = ?";
-        jdbcTemplate.update(deleteEmailTokens, userId);
-
-        String deleteUser = "DELETE FROM users WHERE id = ?";
-        jdbcTemplate.update(deleteUser, userId);
+        User user = findById(userId).orElseThrow();
+        user.delete();
+        update(user);
     }
 }

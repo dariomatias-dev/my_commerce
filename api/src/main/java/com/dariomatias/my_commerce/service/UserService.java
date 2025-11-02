@@ -55,11 +55,12 @@ public class UserService {
 
     @Transactional
     public void delete(UUID id) {
-        getUserOrThrow(id);
+        User user = getUserOrThrow(id);
+        user.delete();
         redisTemplate.keys("*").stream()
                 .filter(key -> id.toString().equals(redisTemplate.opsForValue().get(key)))
                 .forEach(redisTemplate::delete);
-        userAdapter.delete(id);
+        userAdapter.update(user);
     }
 
     private User getUserOrThrow(UUID id) {
