@@ -35,16 +35,6 @@ public class Store {
     @Column(nullable = false)
     @Getter
     @Setter
-    private String bannerUrl;
-
-    @Column(nullable = false)
-    @Getter
-    @Setter
-    private String logoUrl;
-
-    @Column(nullable = false)
-    @Getter
-    @Setter
     private String themeColor;
 
     @Column(nullable = false)
@@ -52,15 +42,15 @@ public class Store {
     @Setter
     private Boolean isActive = true;
 
-    @Column
-    @Getter
-    @Setter
-    private LocalDateTime deletedAt;
-
     @Embedded
     @Getter
     @Setter
     private AuditMetadata audit = new AuditMetadata();
+
+    @Column
+    @Getter
+    @Setter
+    private LocalDateTime deletedAt;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")
@@ -88,8 +78,6 @@ public class Store {
         this.name = "Deleted Store";
         this.slug = UUID.randomUUID().toString();
         this.description = "";
-        this.bannerUrl = "";
-        this.logoUrl = "";
         this.themeColor = "";
     }
 }

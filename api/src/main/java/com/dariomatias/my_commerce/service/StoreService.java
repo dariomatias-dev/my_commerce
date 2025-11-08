@@ -59,8 +59,6 @@ public class StoreService {
         store.setName(request.getName());
         store.setSlug(slug);
         store.setDescription(request.getDescription());
-        store.setBannerUrl(bannerUrl);
-        store.setLogoUrl(logoUrl);
         store.setThemeColor(request.getThemeColor());
         store.setIsActive(true);
         store.setUser(user);
@@ -105,13 +103,11 @@ public class StoreService {
         if (logo != null && !logo.isEmpty()) {
             String objectName = folder + "logo.jpeg";
             minioService.uploadFile(BUCKET_NAME, objectName, logo);
-            store.setLogoUrl("/" + objectName);
         }
 
         if (banner != null && !banner.isEmpty()) {
             String objectName = folder + "banner.jpeg";
             minioService.uploadFile(BUCKET_NAME, objectName, banner);
-            store.setBannerUrl("/" + objectName);
         }
 
         return storeAdapter.update(store);

@@ -31,8 +31,6 @@ public class StoreSeed {
             store.setName("Loja " + i);
             store.setSlug(slug);
             store.setDescription("Descrição da Loja " + i);
-            store.setBannerUrl("https://via.placeholder.com/800x200");
-            store.setLogoUrl("https://via.placeholder.com/150");
             store.setThemeColor("#" + Integer.toHexString((int) (Math.random() * 0xFFFFFF)));
             store.setIsActive(true);
             store.setUser(users.isEmpty() ? null : users.get(i % users.size()));

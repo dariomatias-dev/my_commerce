@@ -10,8 +10,6 @@ public class StoreResponseDTO {
     private String name;
     private String slug;
     private String description;
-    private String bannerUrl;
-    private String logoUrl;
     private String themeColor;
     private Boolean isActive;
     private UUID userId;
@@ -21,15 +19,12 @@ public class StoreResponseDTO {
 
     public StoreResponseDTO() {}
 
-    public StoreResponseDTO(UUID id, String name, String slug, String description, String bannerUrl,
-                            String logoUrl, String themeColor, Boolean isActive, UUID userId,
+    public StoreResponseDTO(UUID id, String name, String slug, String description, String themeColor, Boolean isActive, UUID userId,
                             LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         this.id = id;
         this.name = name;
         this.slug = slug;
         this.description = description;
-        this.bannerUrl = bannerUrl;
-        this.logoUrl = logoUrl;
         this.themeColor = themeColor;
         this.isActive = isActive;
         this.userId = userId;
@@ -44,8 +39,6 @@ public class StoreResponseDTO {
                 store.getName(),
                 store.getSlug(),
                 store.getDescription(),
-                store.getBannerUrl(),
-                store.getLogoUrl(),
                 store.getThemeColor(),
                 store.getIsActive(),
                 store.getUserId(),
@@ -66,12 +59,6 @@ public class StoreResponseDTO {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
-
-    public String getBannerUrl() { return bannerUrl; }
-    public void setBannerUrl(String bannerUrl) { this.bannerUrl = bannerUrl; }
-
-    public String getLogoUrl() { return logoUrl; }
-    public void setLogoUrl(String logoUrl) { this.logoUrl = logoUrl; }
 
     public String getThemeColor() { return themeColor; }
     public void setThemeColor(String themeColor) { this.themeColor = themeColor; }

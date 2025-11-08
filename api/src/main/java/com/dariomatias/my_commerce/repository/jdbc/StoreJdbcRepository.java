@@ -26,8 +26,6 @@ public class StoreJdbcRepository {
         store.setName(rs.getString("name"));
         store.setSlug(rs.getString("slug"));
         store.setDescription(rs.getString("description"));
-        store.setBannerUrl(rs.getString("banner_url"));
-        store.setLogoUrl(rs.getString("logo_url"));
         store.setThemeColor(rs.getString("theme_color"));
         store.setIsActive(rs.getBoolean("is_active"));
         store.setDeletedAt(rs.getTimestamp("deleted_at") != null
@@ -42,7 +40,7 @@ public class StoreJdbcRepository {
         LocalDateTime now = LocalDateTime.now();
         UUID id = UUID.randomUUID();
         String sql = """
-            INSERT INTO stores (id, name, slug, description, banner_url, logo_url, theme_color, is_active, deleted_at, user_id, created_at, updated_at)
+            INSERT INTO stores (id, name, slug, description, theme_color, is_active, deleted_at, user_id, created_at, updated_at)
             VALUES (:id, :name, :slug, :description, :banner_url, :logo_url, :theme_color, :is_active, :deleted_at, :user_id, :created_at, :updated_at)
         """;
         MapSqlParameterSource params = new MapSqlParameterSource()
@@ -50,8 +48,6 @@ public class StoreJdbcRepository {
                 .addValue("name", store.getName())
                 .addValue("slug", store.getSlug())
                 .addValue("description", store.getDescription())
-                .addValue("banner_url", store.getBannerUrl())
-                .addValue("logo_url", store.getLogoUrl())
                 .addValue("theme_color", store.getThemeColor())
                 .addValue("is_active", store.getIsActive())
                 .addValue("deleted_at", store.getDeletedAt())
@@ -72,8 +68,6 @@ public class StoreJdbcRepository {
             SET name = :name,
                 slug = :slug,
                 description = :description,
-                banner_url = :banner_url,
-                logo_url = :logo_url,
                 theme_color = :theme_color,
                 is_active = :is_active,
                 deleted_at = :deleted_at,
@@ -85,8 +79,6 @@ public class StoreJdbcRepository {
                 .addValue("name", store.getName())
                 .addValue("slug", store.getSlug())
                 .addValue("description", store.getDescription())
-                .addValue("banner_url", store.getBannerUrl())
-                .addValue("logo_url", store.getLogoUrl())
                 .addValue("theme_color", store.getThemeColor())
                 .addValue("is_active", store.getIsActive())
                 .addValue("deleted_at", store.getDeletedAt())
