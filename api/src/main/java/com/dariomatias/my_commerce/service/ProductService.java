@@ -1,6 +1,7 @@
 package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.product.ProductRequestDTO;
+import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.Product;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.Category;
@@ -37,7 +38,7 @@ public class ProductService {
         Store store = storeAdapter.findById(request.getStoreId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
 
-        if (!"ADMIN".equals(user.getRole()) && !store.getUser().getId().equals(user.getId())) {
+        if (!user.getRole().equals(UserRole.ADMIN) && !store.getUser().getId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
         }
 
@@ -77,7 +78,7 @@ public class ProductService {
     public Product update(User user, UUID id, ProductRequestDTO request) {
         Product product = getById(id);
 
-        if (!"ADMIN".equals(user.getRole()) && !product.getStore().getUser().getId().equals(user.getId())) {
+        if (!user.getRole().equals(UserRole.ADMIN) && !product.getStore().getUser().getId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
         }
 
@@ -94,7 +95,7 @@ public class ProductService {
     public void delete(User user, UUID id) {
         Product product = getById(id);
 
-        if (!"ADMIN".equals(user.getRole()) && !product.getStore().getUser().getId().equals(user.getId())) {
+        if (!user.getRole().equals(UserRole.ADMIN) && !product.getStore().getUser().getId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
         }
 
