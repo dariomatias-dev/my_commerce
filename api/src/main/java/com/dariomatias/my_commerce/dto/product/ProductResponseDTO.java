@@ -2,7 +2,6 @@ package com.dariomatias.my_commerce.dto.product;
 
 import com.dariomatias.my_commerce.model.Product;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 public class ProductResponseDTO {
@@ -15,7 +14,6 @@ public class ProductResponseDTO {
     private Double price;
     private Integer stock;
     private Boolean active;
-    private List<String> images;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -31,7 +29,6 @@ public class ProductResponseDTO {
         dto.price = product.getPrice();
         dto.stock = product.getStock();
         dto.active = product.getActive();
-        dto.images = product.getImages();
         dto.createdAt = product.getAudit().getCreatedAt();
         dto.updatedAt = product.getAudit().getUpdatedAt();
         return dto;
@@ -60,9 +57,6 @@ public class ProductResponseDTO {
 
     public Boolean getActive() { return active; }
     public void setActive(Boolean active) { this.active = active; }
-
-    public List<String> getImages() { return images; }
-    public void setImages(List<String> images) { this.images = images; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

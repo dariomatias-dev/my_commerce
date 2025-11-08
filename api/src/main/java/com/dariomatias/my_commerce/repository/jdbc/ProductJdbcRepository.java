@@ -32,15 +32,8 @@ public class ProductJdbcRepository {
         p.setActive(rs.getBoolean("active"));
         p.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         p.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
-        p.setImages(findImagesByProductId(p.getId()));
         return p;
     };
-
-    private List<String> findImagesByProductId(UUID productId) {
-        String sql = "SELECT image_url FROM product_images WHERE product_id = :product_id";
-        return jdbc.query(sql, new MapSqlParameterSource("product_id", productId),
-                (rs, rowNum) -> rs.getString("image_url"));
-    }
 
     public Product save(Product product) {
         UUID id = UUID.randomUUID();
@@ -65,24 +58,11 @@ public class ProductJdbcRepository {
 
         jdbc.update(sql, params);
 
-        if (product.getImages() != null && !product.getImages().isEmpty()) {
-            saveImages(id, product.getImages());
-        }
-
         product.setId(id);
         product.getAudit().setCreatedAt(now);
         product.getAudit().setUpdatedAt(now);
 
         return product;
-    }
-
-    private void saveImages(UUID productId, List<String> images) {
-        String sql = "INSERT INTO product_images (product_id, image_url) VALUES (:product_id, :image_url)";
-        for (String image : images) {
-            jdbc.update(sql, new MapSqlParameterSource()
-                    .addValue("product_id", productId)
-                    .addValue("image_url", image));
-        }
     }
 
     public List<Product> findAll(int offset, int limit) {
@@ -143,20 +123,10 @@ public class ProductJdbcRepository {
 
         jdbc.update(sql, params);
 
-        String deleteImages = "DELETE FROM product_images WHERE product_id = :product_id";
-        jdbc.update(deleteImages, new MapSqlParameterSource("product_id", product.getId()));
-
-        if (product.getImages() != null && !product.getImages().isEmpty()) {
-            saveImages(product.getId(), product.getImages());
-        }
-
         product.getAudit().setUpdatedAt(now);
     }
 
     public void delete(UUID id) {
-        String deleteImages = "DELETE FROM product_images WHERE product_id = :product_id";
-        jdbc.update(deleteImages, new MapSqlParameterSource("product_id", id));
-
         String sql = "DELETE FROM products WHERE id = :id";
         jdbc.update(sql, new MapSqlParameterSource("id", id));
     }

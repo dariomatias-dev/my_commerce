@@ -43,7 +43,6 @@ public class ProductSeed {
             product.setPrice(49.90 + i);
             product.setStock(20 + i);
             product.setActive(true);
-            product.setImages(List.of("https://picsum.photos/seed/" + (i + 3) + "/400"));
 
             productRepository.save(product);
         }

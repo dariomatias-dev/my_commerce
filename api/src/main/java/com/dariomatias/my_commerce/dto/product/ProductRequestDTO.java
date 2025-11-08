@@ -1,7 +1,6 @@
 package com.dariomatias.my_commerce.dto.product;
 
 import jakarta.validation.constraints.*;
-import java.util.List;
 import java.util.UUID;
 
 public class ProductRequestDTO {
@@ -31,9 +30,6 @@ public class ProductRequestDTO {
     @NotNull(message = "O campo active é obrigatório")
     private Boolean active;
 
-    @NotNull(message = "A lista de imagens não pode ser nula")
-    private List<@NotBlank(message = "A URL da imagem não pode ser vazia") String> images;
-
     public UUID getStoreId() { return storeId; }
     public void setStoreId(UUID storeId) { this.storeId = storeId; }
 
@@ -54,7 +50,4 @@ public class ProductRequestDTO {
 
     public Boolean getActive() { return active; }
     public void setActive(Boolean active) { this.active = active; }
-
-    public List<String> getImages() { return images; }
-    public void setImages(List<String> images) { this.images = images; }
 }

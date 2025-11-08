@@ -105,11 +105,7 @@ public class ProductService {
             for (int i = 0; i < images.length; i++) {
                 String objectName = folder + "image_" + (i + 1) + ".jpeg";
                 minioService.uploadFile(BUCKET_NAME, objectName, images[i]);
-                request.getImages().add(objectName);
             }
-            product.setImages(request.getImages());
-        } else if (request.getImages() != null) {
-            product.setImages(request.getImages());
         }
 
         return productAdapter.update(product);

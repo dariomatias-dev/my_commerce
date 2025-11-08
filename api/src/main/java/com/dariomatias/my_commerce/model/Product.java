@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -55,13 +53,6 @@ public class Product {
     @Getter
     @Setter
     private Boolean active;
-
-    @ElementCollection
-    @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
-    @Column(name = "image_url")
-    @Getter
-    @Setter
-    private List<String> images;
 
     @Embedded
     @Getter
