@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -28,18 +29,19 @@ public class StoreController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<StoreResponseDTO>> create(@AuthenticationPrincipal User user,
-                                                                @RequestBody StoreRequestDTO request) {
-        Store entity = service.create(user.getId(), request);
+    public ResponseEntity<ApiResponse<StoreResponseDTO>> create(
+            @AuthenticationPrincipal User user,
+            @RequestPart("data") StoreRequestDTO request,
+            @RequestPart(value = "logo") MultipartFile logo,
+            @RequestPart(value = "banner") MultipartFile banner) {
+        Store entity = service.create(user.getId(), request, logo, banner);
         return ResponseEntity.ok(ApiResponse.success("Loja criada com sucesso", StoreResponseDTO.from(entity)));
     }
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Page<StoreResponseDTO>>> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
+    public ResponseEntity<ApiResponse<Page<StoreResponseDTO>>> getAll(@RequestParam(defaultValue = "0") int page,
+                                                                      @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<StoreResponseDTO> entities = service.getAll(pageable).map(StoreResponseDTO::from);
         return ResponseEntity.ok(ApiResponse.success("Lojas obtidas com sucesso", entities));
@@ -47,19 +49,16 @@ public class StoreController {
 
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<Page<StoreResponseDTO>>> getByUser(
-            @PathVariable UUID userId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
+    public ResponseEntity<ApiResponse<Page<StoreResponseDTO>>> getByUser(@PathVariable UUID userId,
+                                                                         @RequestParam(defaultValue = "0") int page,
+                                                                         @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<StoreResponseDTO> entities = service.getAllByUser(userId, pageable).map(StoreResponseDTO::from);
         return ResponseEntity.ok(ApiResponse.success("Lojas do usuário obtidas com sucesso", entities));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<StoreResponseDTO>> getById(@AuthenticationPrincipal User user,
-                                                                 @PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<StoreResponseDTO>> getById(@AuthenticationPrincipal User user, @PathVariable UUID id) {
         Store entity = service.getById(id, user);
         return ResponseEntity.ok(ApiResponse.success("Loja obtida com sucesso", StoreResponseDTO.from(entity)));
     }
@@ -75,15 +74,16 @@ public class StoreController {
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<StoreResponseDTO>> update(@AuthenticationPrincipal User user,
                                                                 @PathVariable UUID id,
-                                                                @RequestBody StoreRequestDTO request) {
-        Store entity = service.update(id, request, user);
+                                                                @RequestPart("data") StoreRequestDTO request,
+                                                                @RequestPart(value = "logo", required = false) MultipartFile logo,
+                                                                @RequestPart(value = "banner", required = false) MultipartFile banner) {
+        Store entity = service.update(id, request, user, logo, banner);
         return ResponseEntity.ok(ApiResponse.success("Loja atualizada com sucesso", StoreResponseDTO.from(entity)));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<Void>> delete(@AuthenticationPrincipal User user,
-                                                    @PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<Void>> delete(@AuthenticationPrincipal User user, @PathVariable UUID id) {
         service.delete(id, user);
         return ResponseEntity.ok(ApiResponse.success("Loja excluída com sucesso", null));
     }
