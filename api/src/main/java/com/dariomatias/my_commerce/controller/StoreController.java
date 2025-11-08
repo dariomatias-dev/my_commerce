@@ -74,7 +74,7 @@ public class StoreController {
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<StoreResponseDTO>> update(@AuthenticationPrincipal User user,
                                                                 @PathVariable UUID id,
-                                                                @RequestPart("data") StoreRequestDTO request,
+                                                                @RequestPart(value = "data", required = false) StoreRequestDTO request,
                                                                 @RequestPart(value = "logo", required = false) MultipartFile logo,
                                                                 @RequestPart(value = "banner", required = false) MultipartFile banner) {
         Store entity = service.update(id, request, user, logo, banner);

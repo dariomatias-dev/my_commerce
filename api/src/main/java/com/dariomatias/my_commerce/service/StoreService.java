@@ -6,6 +6,7 @@ import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.adapter.StoreAdapter;
 import com.dariomatias.my_commerce.repository.adapter.UserAdapter;
+import com.dariomatias.my_commerce.util.SlugUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -14,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.text.Normalizer;
 import java.util.UUID;
 
 @Service
@@ -35,24 +35,20 @@ public class StoreService {
 
     public Store create(UUID userId, StoreRequestDTO request, MultipartFile logo, MultipartFile banner) {
         User user = getUserById(userId);
-        String slug = generateSlug(request.getName());
+        String slug = SlugUtil.generateSlug(request.getName());
 
         minioService.createBucket(BUCKET_NAME);
 
         String folder = slug + "/";
-        String logoUrl = null;
-        String bannerUrl = null;
 
         if (logo != null && !logo.isEmpty()) {
             String objectName = folder + "logo.jpeg";
             minioService.uploadFile(BUCKET_NAME, objectName, logo);
-            logoUrl = "/" + objectName;
         }
 
         if (banner != null && !banner.isEmpty()) {
             String objectName = folder + "banner.jpeg";
             minioService.uploadFile(BUCKET_NAME, objectName, banner);
-            bannerUrl = "/" + objectName;
         }
 
         Store store = new Store();
@@ -90,13 +86,15 @@ public class StoreService {
         Store store = getStoreById(id);
         checkAccess(user, store.getUser().getId());
 
-        if (request.getName() != null && !request.getName().equals(store.getName())) {
-            store.setName(request.getName());
-            store.setSlug(generateSlug(request.getName()));
-        }
+        if (request != null) {
+            if (request.getName() != null && !request.getName().equals(store.getName())) {
+                store.setName(request.getName());
+                store.setSlug(SlugUtil.generateSlug((request.getName())));
+            }
 
-        if (request.getDescription() != null) store.setDescription(request.getDescription());
-        if (request.getThemeColor() != null) store.setThemeColor(request.getThemeColor());
+            if (request.getDescription() != null) store.setDescription(request.getDescription());
+            if (request.getThemeColor() != null) store.setThemeColor(request.getThemeColor());
+        }
 
         String folder = store.getSlug() + "/";
 
@@ -117,8 +115,10 @@ public class StoreService {
         Store store = getStoreById(id);
         checkAccess(user, store.getUser().getId());
 
-        storeAdapter.delete(id);
         String folder = store.getSlug() + "/";
+
+        storeAdapter.delete(id);
+
         minioService.deleteFolder(BUCKET_NAME, folder);
     }
 
@@ -136,13 +136,5 @@ public class StoreService {
         if (!UserRole.ADMIN.equals(user.getRole()) && !ownerId.equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
         }
-    }
-
-    private String generateSlug(String name) {
-        return Normalizer.normalize(name, Normalizer.Form.NFD)
-                .replaceAll("[^\\p{ASCII}]", "")
-                .toLowerCase()
-                .replaceAll("[^a-z0-9]+", "-")
-                .replaceAll("^-|-$", "");
     }
 }
