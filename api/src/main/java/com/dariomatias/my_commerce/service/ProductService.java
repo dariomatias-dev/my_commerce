@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
@@ -25,16 +26,20 @@ public class ProductService {
     private final ProductAdapter productAdapter;
     private final StoreAdapter storeAdapter;
     private final CategoryAdapter categoryAdapter;
+    private final MinioService minioService;
+    private static final String BUCKET_NAME = "stores";
 
     public ProductService(ProductAdapter productAdapter,
                           StoreAdapter storeAdapter,
-                          CategoryAdapter categoryAdapter) {
+                          CategoryAdapter categoryAdapter,
+                          MinioService minioService) {
         this.productAdapter = productAdapter;
         this.storeAdapter = storeAdapter;
         this.categoryAdapter = categoryAdapter;
+        this.minioService = minioService;
     }
 
-    public Product create(User user, ProductRequestDTO request) {
+    public Product create(User user, ProductRequestDTO request, MultipartFile[] images) {
         Store store = storeAdapter.findById(request.getStoreId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
 
@@ -53,7 +58,14 @@ public class ProductService {
         product.setPrice(request.getPrice());
         product.setStock(request.getStock());
         product.setActive(request.getActive());
-        product.setImages(request.getImages());
+
+        if (images != null && images.length > 0) {
+            String folder = store.getSlug() + "/products/" + product.getName() + "/";
+            for (int i = 0; i < images.length; i++) {
+                String objectName = folder + "image_" + (i + 1) + ".jpeg";
+                minioService.uploadFile(BUCKET_NAME, objectName, images[i]);
+            }
+        }
 
         return productAdapter.save(product);
     }
@@ -75,7 +87,7 @@ public class ProductService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
     }
 
-    public Product update(User user, UUID id, ProductRequestDTO request) {
+    public Product update(User user, UUID id, ProductRequestDTO request, MultipartFile[] images) {
         Product product = getById(id);
 
         if (!user.getRole().equals(UserRole.ADMIN) && !product.getStore().getUser().getId().equals(user.getId())) {
@@ -87,7 +99,18 @@ public class ProductService {
         if (request.getPrice() != null) product.setPrice(request.getPrice());
         if (request.getStock() != null) product.setStock(request.getStock());
         if (request.getActive() != null) product.setActive(request.getActive());
-        if (request.getImages() != null) product.setImages(request.getImages());
+
+        if (images != null && images.length > 0) {
+            String folder = product.getStore().getSlug() + "/products/" + product.getName() + "/";
+            for (int i = 0; i < images.length; i++) {
+                String objectName = folder + "image_" + (i + 1) + ".jpeg";
+                minioService.uploadFile(BUCKET_NAME, objectName, images[i]);
+                request.getImages().add(objectName);
+            }
+            product.setImages(request.getImages());
+        } else if (request.getImages() != null) {
+            product.setImages(request.getImages());
+        }
 
         return productAdapter.update(product);
     }
