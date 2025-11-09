@@ -10,6 +10,7 @@ public class ProductResponseDTO {
     private UUID storeId;
     private UUID categoryId;
     private String name;
+    private String slug;
     private String description;
     private Double price;
     private Integer stock;
@@ -25,6 +26,7 @@ public class ProductResponseDTO {
         dto.storeId = product.getStoreId();
         dto.categoryId = product.getCategoryId();
         dto.name = product.getName();
+        dto.slug = product.getSlug();
         dto.description = product.getDescription();
         dto.price = product.getPrice();
         dto.stock = product.getStock();
@@ -45,6 +47,9 @@ public class ProductResponseDTO {
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
+    public String getSlug() { return slug; }
+    public void setSlug(String slug) { this.slug = slug; }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }

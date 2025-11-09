@@ -26,6 +26,7 @@ public class ProductJdbcRepository {
         p.setStoreId(UUID.fromString(rs.getString("store_id")));
         p.setCategoryId(UUID.fromString(rs.getString("category_id")));
         p.setName(rs.getString("name"));
+        p.setSlug(rs.getString("slug"));
         p.setDescription(rs.getString("description"));
         p.setPrice(rs.getDouble("price"));
         p.setStock(rs.getInt("stock"));
@@ -40,8 +41,8 @@ public class ProductJdbcRepository {
         LocalDateTime now = LocalDateTime.now();
 
         String sql = """
-            INSERT INTO products (id, store_id, category_id, name, description, price, stock, active, created_at, updated_at)
-            VALUES (:id, :store_id, :category_id, :name, :description, :price, :stock, :active, :created_at, :updated_at)
+            INSERT INTO products (id, store_id, category_id, name, slug, description, price, stock, active, created_at, updated_at)
+            VALUES (:id, :store_id, :category_id, :name, :slug, :description, :price, :stock, :active, :created_at, :updated_at)
         """;
 
         MapSqlParameterSource params = new MapSqlParameterSource()
@@ -49,6 +50,7 @@ public class ProductJdbcRepository {
                 .addValue("store_id", product.getStoreId())
                 .addValue("category_id", product.getCategoryId())
                 .addValue("name", product.getName())
+                .addValue("slug", product.getSlug())
                 .addValue("description", product.getDescription())
                 .addValue("price", product.getPrice())
                 .addValue("stock", product.getStock())
@@ -102,6 +104,7 @@ public class ProductJdbcRepository {
             SET store_id = :store_id,
                 category_id = :category_id,
                 name = :name,
+                slug = :slug,
                 description = :description,
                 price = :price,
                 stock = :stock,
@@ -115,6 +118,7 @@ public class ProductJdbcRepository {
                 .addValue("store_id", product.getStoreId())
                 .addValue("category_id", product.getCategoryId())
                 .addValue("name", product.getName())
+                .addValue("slug", product.getSlug())
                 .addValue("description", product.getDescription())
                 .addValue("price", product.getPrice())
                 .addValue("stock", product.getStock())

@@ -30,8 +30,8 @@ public class ProductController {
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<ProductResponseDTO>> create(@AuthenticationPrincipal User user,
-                                                                  @RequestPart("data") ProductRequestDTO request,
-                                                                  @RequestPart(value = "images", required = false) MultipartFile[] images) {
+                                                                  @RequestPart(value = "data") ProductRequestDTO request,
+                                                                  @RequestPart(value = "images") MultipartFile[] images) {
         Product product = service.create(user, request, images);
         return ResponseEntity.ok(ApiResponse.success("Produto criado com sucesso", ProductResponseDTO.from(product)));
     }
@@ -74,7 +74,7 @@ public class ProductController {
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<ProductResponseDTO>> update(@AuthenticationPrincipal User user,
                                                                   @PathVariable UUID id,
-                                                                  @RequestPart("data") ProductRequestDTO request,
+                                                                  @RequestPart(value = "data", required = false) ProductRequestDTO request,
                                                                   @RequestPart(value = "images", required = false) MultipartFile[] images) {
         Product product = service.update(user, id, request, images);
         return ResponseEntity.ok(ApiResponse.success("Produto atualizado com sucesso", ProductResponseDTO.from(product)));

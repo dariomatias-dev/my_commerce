@@ -9,6 +9,7 @@ import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.adapter.CategoryAdapter;
 import com.dariomatias.my_commerce.repository.adapter.ProductAdapter;
 import com.dariomatias.my_commerce.repository.adapter.StoreAdapter;
+import com.dariomatias.my_commerce.util.SlugUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -54,13 +55,14 @@ public class ProductService {
         product.setStore(store);
         product.setCategory(category);
         product.setName(request.getName());
+        product.setSlug(SlugUtil.generateSlug(request.getName()));
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setStock(request.getStock());
         product.setActive(request.getActive());
 
         if (images != null && images.length > 0) {
-            String folder = store.getSlug() + "/products/" + product.getName() + "/";
+            String folder = store.getSlug() + "/products/" + product.getSlug() + "/";
             for (int i = 0; i < images.length; i++) {
                 String objectName = folder + "image_" + (i + 1) + ".jpeg";
                 minioService.uploadFile(BUCKET_NAME, objectName, images[i]);
@@ -94,14 +96,17 @@ public class ProductService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
         }
 
-        if (request.getName() != null) product.setName(request.getName());
+        if (request.getName() != null) {
+            product.setName(request.getName());
+            product.setSlug(SlugUtil.generateSlug(request.getName()));
+        }
         if (request.getDescription() != null) product.setDescription(request.getDescription());
         if (request.getPrice() != null) product.setPrice(request.getPrice());
         if (request.getStock() != null) product.setStock(request.getStock());
         if (request.getActive() != null) product.setActive(request.getActive());
 
         if (images != null && images.length > 0) {
-            String folder = product.getStore().getSlug() + "/products/" + product.getName() + "/";
+            String folder = product.getStore().getSlug() + "/products/" + product.getSlug() + "/";
             for (int i = 0; i < images.length; i++) {
                 String objectName = folder + "image_" + (i + 1) + ".jpeg";
                 minioService.uploadFile(BUCKET_NAME, objectName, images[i]);

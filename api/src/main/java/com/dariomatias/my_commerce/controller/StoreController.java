@@ -31,7 +31,7 @@ public class StoreController {
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<StoreResponseDTO>> create(
             @AuthenticationPrincipal User user,
-            @RequestPart("data") StoreRequestDTO request,
+            @RequestPart(value = "data") StoreRequestDTO request,
             @RequestPart(value = "logo") MultipartFile logo,
             @RequestPart(value = "banner") MultipartFile banner) {
         Store entity = service.create(user.getId(), request, logo, banner);

@@ -34,6 +34,11 @@ public class Product {
     @Setter
     private String name;
 
+    @Column(nullable = false, unique = true)
+    @Getter
+    @Setter
+    private String slug;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     @Getter
     @Setter
