@@ -80,6 +80,12 @@ public class ProductAdapter {
         }
     }
 
+    public Optional<Product> findBySlug(String slug) {
+        return useJdbc
+                ? productJdbcRepository.findBySlug(slug)
+                : productRepository.findBySlug(slug);
+    }
+
     public Optional<Product> findById(UUID id) {
         return useJdbc
                 ? productJdbcRepository.findById(id)

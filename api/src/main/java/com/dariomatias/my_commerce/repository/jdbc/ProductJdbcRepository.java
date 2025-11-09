@@ -90,6 +90,12 @@ public class ProductJdbcRepository {
                 .addValue("limit", limit), mapper);
     }
 
+    public Optional<Product> findBySlug(String slug) {
+        String sql = "SELECT * FROM products WHERE slug = :slug";
+        List<Product> list = jdbc.query(sql, new MapSqlParameterSource("slug", slug), mapper);
+        return list.stream().findFirst();
+    }
+
     public Optional<Product> findById(UUID id) {
         String sql = "SELECT * FROM products WHERE id = :id";
         List<Product> list = jdbc.query(sql, new MapSqlParameterSource("id", id), mapper);

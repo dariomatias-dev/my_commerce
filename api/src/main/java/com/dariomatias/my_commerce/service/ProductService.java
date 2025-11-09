@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -55,11 +56,19 @@ public class ProductService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A categoria não pertence à loja informada");
         }
 
+        String productSlug = SlugUtil.generateSlug(request.getName());
+
+        Optional<Product> productOptional = productAdapter.findBySlug(productSlug);
+
+        if (productOptional.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um produto com este nome na loja");
+        }
+
         Product product = new Product();
         product.setStore(store);
         product.setCategory(category);
         product.setName(request.getName());
-        product.setSlug(SlugUtil.generateSlug(request.getName()));
+        product.setSlug(productSlug);
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setStock(request.getStock());
@@ -80,6 +89,11 @@ public class ProductService {
 
     public Page<Product> getAllByCategory(UUID categoryId, Pageable pageable) {
         return productAdapter.findAllByCategory(categoryId, pageable);
+    }
+
+    public Product getBySlug(String slug) {
+        return productAdapter.findBySlug(slug)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
     }
 
     public Product getById(UUID id) {
@@ -106,10 +120,19 @@ public class ProductService {
             product.setCategory(category);
         }
 
-        if (request.getName() != null) {
+        if (request.getName() != null && !request.getName().equals(product.getName())) {
+            String productSlug = SlugUtil.generateSlug(request.getName());
+
+            Optional<Product> productOptional = productAdapter.findBySlug(productSlug);
+
+            if (productOptional.isPresent()) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um produto com este nome na loja");
+            }
+
             product.setName(request.getName());
-            product.setSlug(SlugUtil.generateSlug(request.getName()));
+            product.setSlug(productSlug);
         }
+
         if (request.getDescription() != null) product.setDescription(request.getDescription());
         if (request.getPrice() != null) product.setPrice(request.getPrice());
         if (request.getStock() != null) product.setStock(request.getStock());
