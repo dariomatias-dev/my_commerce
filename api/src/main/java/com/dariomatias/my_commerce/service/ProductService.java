@@ -44,12 +44,16 @@ public class ProductService {
         Store store = storeAdapter.findById(request.getStoreId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
 
-        if (!user.getRole().equals(UserRole.ADMIN) && !store.getUser().getId().equals(user.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
+        if (!user.getRole().equals(UserRole.ADMIN) && !store.getUserId().equals(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "A loja não pertence ao usuário");
         }
 
         Category category = categoryAdapter.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada"));
+
+        if (!category.getStoreId().equals(store.getId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A categoria não pertence à loja informada");
+        }
 
         Product product = new Product();
         product.setStore(store);
@@ -61,13 +65,7 @@ public class ProductService {
         product.setStock(request.getStock());
         product.setActive(request.getActive());
 
-        if (images != null && images.length > 0) {
-            String folder = store.getSlug() + "/products/" + product.getSlug() + "/";
-            for (int i = 0; i < images.length; i++) {
-                String objectName = folder + "image_" + (i + 1) + ".jpeg";
-                minioService.uploadFile(BUCKET_NAME, objectName, images[i]);
-            }
-        }
+        uploadProductImages(store, product, images);
 
         return productAdapter.save(product);
     }
@@ -91,9 +89,21 @@ public class ProductService {
 
     public Product update(User user, UUID id, ProductRequestDTO request, MultipartFile[] images) {
         Product product = getById(id);
+        Store store = product.getStore();
 
-        if (!user.getRole().equals(UserRole.ADMIN) && !product.getStore().getUser().getId().equals(user.getId())) {
+        if (!user.getRole().equals(UserRole.ADMIN) && !store.getUserId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
+        }
+
+        if (request.getCategoryId() != null) {
+            Category category = categoryAdapter.findById(request.getCategoryId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada"));
+
+            if (!category.getStoreId().equals(store.getId())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A categoria não pertence à loja do produto");
+            }
+
+            product.setCategory(category);
         }
 
         if (request.getName() != null) {
@@ -105,13 +115,7 @@ public class ProductService {
         if (request.getStock() != null) product.setStock(request.getStock());
         if (request.getActive() != null) product.setActive(request.getActive());
 
-        if (images != null && images.length > 0) {
-            String folder = product.getStore().getSlug() + "/products/" + product.getSlug() + "/";
-            for (int i = 0; i < images.length; i++) {
-                String objectName = folder + "image_" + (i + 1) + ".jpeg";
-                minioService.uploadFile(BUCKET_NAME, objectName, images[i]);
-            }
-        }
+        uploadProductImages(store, product, images);
 
         return productAdapter.update(product);
     }
@@ -124,5 +128,16 @@ public class ProductService {
         }
 
         productAdapter.delete(id);
+    }
+
+    private void uploadProductImages(Store store, Product product, MultipartFile[] images) {
+        if (images == null || images.length == 0) return;
+
+        String folder = store.getSlug() + "/products/" + product.getSlug() + "/";
+
+        for (int i = 0; i < images.length; i++) {
+            String objectName = folder + "image_" + (i + 1) + ".jpeg";
+            minioService.uploadFile(BUCKET_NAME, objectName, images[i]);
+        }
     }
 }

@@ -34,7 +34,7 @@ public class Product {
     @Setter
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     @Getter
     @Setter
     private String slug;
