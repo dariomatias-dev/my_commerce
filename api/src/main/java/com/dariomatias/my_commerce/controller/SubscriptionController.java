@@ -4,12 +4,14 @@ import com.dariomatias.my_commerce.dto.ApiResponse;
 import com.dariomatias.my_commerce.dto.subscription.SubscriptionRequestDTO;
 import com.dariomatias.my_commerce.dto.subscription.SubscriptionResponseDTO;
 import com.dariomatias.my_commerce.model.Subscription;
+import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.service.SubscriptionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -25,9 +27,13 @@ public class SubscriptionController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> create(@RequestBody SubscriptionRequestDTO request) {
-        Subscription subscription = service.create(request);
-        return ResponseEntity.ok(ApiResponse.success("Assinatura criada com sucesso", SubscriptionResponseDTO.from(subscription)));
+    public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> create(
+            @AuthenticationPrincipal User user,
+            @RequestBody SubscriptionRequestDTO request) {
+        Subscription subscription = service.create(user, request);
+        return ResponseEntity.ok(
+                ApiResponse.success("Assinatura criada com sucesso", SubscriptionResponseDTO.from(subscription))
+        );
     }
 
     @GetMapping
@@ -39,7 +45,9 @@ public class SubscriptionController {
         Pageable pageable = PageRequest.of(page, size);
         Page<SubscriptionResponseDTO> subscriptions = service.getAll(pageable)
                 .map(SubscriptionResponseDTO::from);
-        return ResponseEntity.ok(ApiResponse.success("Assinaturas obtidas com sucesso", subscriptions));
+        return ResponseEntity.ok(
+                ApiResponse.success("Assinaturas obtidas com sucesso", subscriptions)
+        );
     }
 
     @GetMapping("/user/{userId}")
@@ -52,22 +60,30 @@ public class SubscriptionController {
         Pageable pageable = PageRequest.of(page, size);
         Page<SubscriptionResponseDTO> subscriptions = service.getAllByUser(userId, pageable)
                 .map(SubscriptionResponseDTO::from);
-        return ResponseEntity.ok(ApiResponse.success("Assinaturas do usuário obtidas com sucesso", subscriptions));
+        return ResponseEntity.ok(
+                ApiResponse.success("Assinaturas do usuário obtidas com sucesso", subscriptions)
+        );
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> getById(@PathVariable UUID id) {
         Subscription subscription = service.getById(id);
-        return ResponseEntity.ok(ApiResponse.success("Assinatura obtida com sucesso", SubscriptionResponseDTO.from(subscription)));
+        return ResponseEntity.ok(
+                ApiResponse.success("Assinatura obtida com sucesso", SubscriptionResponseDTO.from(subscription))
+        );
     }
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> update(@PathVariable UUID id,
-                                                                       @RequestBody SubscriptionRequestDTO request) {
+    public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> update(
+            @PathVariable UUID id,
+            @RequestBody SubscriptionRequestDTO request
+    ) {
         Subscription subscription = service.update(id, request);
-        return ResponseEntity.ok(ApiResponse.success("Assinatura atualizada com sucesso", SubscriptionResponseDTO.from(subscription)));
+        return ResponseEntity.ok(
+                ApiResponse.success("Assinatura atualizada com sucesso", SubscriptionResponseDTO.from(subscription))
+        );
     }
 
     @DeleteMapping("/{id}")

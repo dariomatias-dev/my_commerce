@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -30,15 +31,21 @@ public class SubscriptionService {
         this.planAdapter = planAdapter;
     }
 
-    public Subscription create(SubscriptionRequestDTO request) {
+    public Subscription create(User user, SubscriptionRequestDTO request) {
+        SubscriptionPlan plan = getPlanOrThrow(request.getPlanId());
+
+        LocalDateTime start = LocalDateTime.now();
+        LocalDateTime end = start.plusDays(30);
+
         Subscription subscription = new Subscription();
-        subscription.setUser(getUserOrThrow(request.getUserId()));
-        subscription.setPlan(getPlanOrThrow(request.getPlanId()));
-        subscription.setUserId(request.getUserId());
-        subscription.setPlanId(request.getPlanId());
-        subscription.setStartDate(request.getStartDate());
-        subscription.setEndDate(request.getEndDate());
-        subscription.setIsActive(request.getIsActive());
+        subscription.setUser(user);
+        subscription.setPlan(plan);
+        subscription.setUserId(user.getId());
+        subscription.setPlanId(plan.getId());
+        subscription.setStartDate(start);
+        subscription.setEndDate(end);
+        subscription.setIsActive(true);
+
         return adapter.save(subscription);
     }
 
@@ -58,14 +65,15 @@ public class SubscriptionService {
     public Subscription update(UUID id, SubscriptionRequestDTO request) {
         Subscription subscription = getById(id);
 
-        if (request.getUserId() != null) subscription.setUser(getUserOrThrow(request.getUserId()));
-        if (request.getPlanId() != null) subscription.setPlan(getPlanOrThrow(request.getPlanId()));
-        if (request.getStartDate() != null) subscription.setStartDate(request.getStartDate());
-        if (request.getEndDate() != null) subscription.setEndDate(request.getEndDate());
-        if (request.getIsActive() != null) subscription.setIsActive(request.getIsActive());
-
-        subscription.setUserId(subscription.getUser().getId());
-        subscription.setPlanId(subscription.getPlan().getId());
+        if (request.getPlanId() != null) {
+            SubscriptionPlan newPlan = getPlanOrThrow(request.getPlanId());
+            subscription.setPlan(newPlan);
+            subscription.setPlanId(newPlan.getId());
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime end = start.plusDays(30);
+            subscription.setStartDate(start);
+            subscription.setEndDate(end);
+        }
 
         return adapter.update(subscription);
     }
