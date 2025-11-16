@@ -70,6 +70,38 @@ public class SubscriptionService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Assinatura não encontrada"));
     }
 
+    public Subscription changePlan(User user, SubscriptionRequestDTO request) {
+        Page<Subscription> subscriptions = adapter.findAllByUser(user, Pageable.unpaged());
+
+        Subscription active = subscriptions.stream()
+                .filter(Subscription::getIsActive)
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nenhuma assinatura ativa encontrada"));
+
+        if (active.getPlanId().equals(request.getPlanId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O usuário já está nesse plano");
+        }
+
+        active.setIsActive(false);
+        adapter.update(active);
+
+        SubscriptionPlan plan = getPlanOrThrow(request.getPlanId());
+
+        LocalDateTime start = LocalDateTime.now();
+        LocalDateTime end = start.plusDays(30);
+
+        Subscription newSubscription = new Subscription();
+        newSubscription.setUser(user);
+        newSubscription.setPlan(plan);
+        newSubscription.setUserId(user.getId());
+        newSubscription.setPlanId(plan.getId());
+        newSubscription.setStartDate(start);
+        newSubscription.setEndDate(end);
+        newSubscription.setIsActive(true);
+
+        return adapter.save(newSubscription);
+    }
+
     public void delete(UUID id) {
         adapter.delete(id);
     }

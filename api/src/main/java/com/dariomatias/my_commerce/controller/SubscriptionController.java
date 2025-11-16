@@ -74,6 +74,18 @@ public class SubscriptionController {
         );
     }
 
+    @PatchMapping("/change-plan")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
+    public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> changePlan(
+            @AuthenticationPrincipal User user,
+            @RequestBody SubscriptionRequestDTO request
+    ) {
+        Subscription subscription = service.changePlan(user, request);
+        return ResponseEntity.ok(
+                ApiResponse.success("Plano alterado com sucesso", SubscriptionResponseDTO.from(subscription))
+        );
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
