@@ -74,18 +74,6 @@ public class SubscriptionController {
         );
     }
 
-    @PatchMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> update(
-            @PathVariable UUID id,
-            @RequestBody SubscriptionRequestDTO request
-    ) {
-        Subscription subscription = service.update(id, request);
-        return ResponseEntity.ok(
-                ApiResponse.success("Assinatura atualizada com sucesso", SubscriptionResponseDTO.from(subscription))
-        );
-    }
-
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
