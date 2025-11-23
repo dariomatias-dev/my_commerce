@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -18,6 +19,7 @@ import java.util.function.Consumer;
 @Service
 public class AuthService {
 
+    private final AuditLogService auditLogService;
     private final UserAdapter userAdapter;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
@@ -31,24 +33,39 @@ public class AuthService {
                        PasswordEncoder passwordEncoder,
                        EmailService emailService,
                        RedisTemplate<String, Object> redisTemplate,
-                       JwtService jwtService) {
+                       JwtService jwtService,
+                       AuditLogService auditLogService) {
         this.userAdapter = userAdapter;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.redisTemplate = redisTemplate;
         this.jwtService = jwtService;
+        this.auditLogService = auditLogService;
     }
 
     public RefreshTokenResponse login(LoginRequest request) {
         User user = userAdapter.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciais inválidas"));
+
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            logLoginAttempt(user.getId().toString(), "failure");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciais inválidas");
         }
+
         if (!user.isEnabled()) {
+            logLoginAttempt(user.getId().toString(), "failure");
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "E-mail não verificado");
         }
+
+        logLoginAttempt(user.getId().toString(), "success");
         return generateTokensForUser(user);
+    }
+
+    private void logLoginAttempt(String userId, String result) {
+        Map<String, Object> details = Map.of(
+                "action", "login"
+        );
+        auditLogService.log(userId, "login", result, details);
     }
 
     public User register(SignupRequest request) {
