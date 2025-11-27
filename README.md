@@ -32,6 +32,7 @@ Uma solução SaaS completa e escalável para pequenos empreendedores criarem e 
 - [Funcionalidades](#funcionalidades)
 - [Contruído com](#contruído-com)
 - [Controle de Acesso](#controle-de-acesso)
+- [Perfis de Usuários do Sistema](#perfis-de-usuários-do-sistema)
 - [Como Começar](#como-começar)
 - [Licença](#licença)
 - [Autor](#autor)
@@ -162,6 +163,52 @@ O sistema implementa um controle de acesso baseado em perfis para garantir a seg
 - **User**: Perfil para clientes finais que interagem com as lojas.
 - **Subscriber**: Usuários com assinatura ativa, que são proprietários das lojas e gerenciam seus negócios.
 - **Admin**: Administrador do sistema, com controle total sobre usuários, assinaturas, lojas e conteúdo.
+
+## Perfis de Usuários do Sistema
+
+A plataforma opera com diferentes perfis de usuários, cada um definido por responsabilidades, permissões e níveis específicos de acesso. A seguir, são apresentados os papéis existentes.
+
+### Usuário (Visitante)
+
+Indivíduo que acessa a plataforma sem possuir uma assinatura.  
+Seu acesso é limitado às seguintes ações:
+
+- Navegar por produtos e categorias.
+- Visualizar lojas disponíveis.
+- Navegar pelo catálogo de produtos.
+
+Não possui permissão para realizar compras, criar lojas ou acessar funcionalidades administrativas.
+
+### Cliente Final
+
+Usuário que acessa uma loja com a finalidade de realizar compras.  
+Pode executar ações como:
+
+- Adicionar itens aos favoritos.
+- Realizar pedidos e acompanhar o status das compras.
+- Consultar o histórico de pedidos.
+
+### Assinante (Proprietário de Loja)
+
+Usuário que possui um plano de assinatura ativo.  
+É responsável pela administração completa de suas lojas, incluindo:
+
+- Criação e configuração de lojas.
+- Personalização de layout, cores e elementos visuais.
+- Gestão de produtos, categorias e estoque.
+- Acompanhamento de estatísticas de desempenho e vendas.
+- Administração de pedidos e informações logísticas.
+
+### Administrador
+
+Responsável pela gestão integral da plataforma.  
+Seu papel abrange:
+
+- Administração de usuários, assinaturas e permissões.
+- Gerenciamento de planos, configurações e políticas internas.
+- Moderação de lojas, produtos e conteúdos publicados.
+- Acompanhamento de métricas gerais e atividades do sistema.
+- Execução de processos de manutenção, auditoria e controle operacional.
 
 ## Como Começar
 
