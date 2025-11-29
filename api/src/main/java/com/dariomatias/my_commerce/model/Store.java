@@ -73,11 +73,7 @@ public class Store {
     }
 
     public void delete() {
-        this.deletedAt = LocalDateTime.now();
         this.isActive = false;
-        this.name = "Deleted Store";
-        this.slug = UUID.randomUUID().toString();
-        this.description = "";
-        this.themeColor = "";
+        this.deletedAt = LocalDateTime.now();
     }
 }

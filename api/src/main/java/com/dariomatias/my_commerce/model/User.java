@@ -61,10 +61,7 @@ public class User {
     }
 
     public void delete() {
-        this.deletedAt = LocalDateTime.now();
         this.enabled = false;
-        this.name = "Deleted User";
-        this.email = UUID.randomUUID() + "@deleted.com";
-        this.password = new BCryptPasswordEncoder().encode(UUID.randomUUID().toString());
+        this.deletedAt = LocalDateTime.now();
     }
 }
