@@ -11,13 +11,13 @@ public interface SubscriptionPlanContract {
 
     SubscriptionPlan save(SubscriptionPlan plan);
 
-    SubscriptionPlan update(SubscriptionPlan plan);
-
-    void delete(UUID id);
-
     Optional<SubscriptionPlan> findById(UUID id);
 
     Page<SubscriptionPlan> findAll(Pageable pageable);
 
     boolean existsByName(String name);
+
+    SubscriptionPlan update(SubscriptionPlan plan);
+
+    void deleteById(UUID id);
 }

@@ -67,55 +67,6 @@ public class SubscriptionJdbcRepository implements SubscriptionContract {
     }
 
     @Override
-    public Subscription update(Subscription s) {
-        LocalDateTime now = LocalDateTime.now();
-
-        String sql = """
-            UPDATE subscriptions SET
-                user_id = :user_id,
-                plan_id = :plan_id,
-                start_date = :start_date,
-                end_date = :end_date,
-                is_active = :is_active,
-                updated_at = :updated_at
-            WHERE id = :id
-        """;
-
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", s.getId())
-                .addValue("user_id", s.getUserId())
-                .addValue("plan_id", s.getPlanId())
-                .addValue("start_date", s.getStartDate())
-                .addValue("end_date", s.getEndDate())
-                .addValue("is_active", s.getIsActive())
-                .addValue("updated_at", now);
-
-        jdbc.update(sql, params);
-
-        s.getAudit().setUpdatedAt(now);
-        return s;
-    }
-
-    @Override
-    public void delete(UUID id) {
-        String sql = "DELETE FROM subscriptions WHERE id = :id";
-        jdbc.update(sql, new MapSqlParameterSource("id", id));
-    }
-
-    @Override
-    public Optional<Subscription> findById(UUID id) {
-        String sql = "SELECT * FROM subscriptions WHERE id = :id";
-
-        List<Subscription> list = jdbc.query(
-                sql,
-                new MapSqlParameterSource("id", id),
-                mapper
-        );
-
-        return list.stream().findFirst();
-    }
-
-    @Override
     public Page<Subscription> findAll(Pageable pageable) {
         int offset = pageable.getPageNumber() * pageable.getPageSize();
 
@@ -155,5 +106,54 @@ public class SubscriptionJdbcRepository implements SubscriptionContract {
         List<Subscription> list = jdbc.query(sql, params, mapper);
 
         return new PageImpl<>(list, pageable, list.size());
+    }
+
+    @Override
+    public Optional<Subscription> findById(UUID id) {
+        String sql = "SELECT * FROM subscriptions WHERE id = :id";
+
+        List<Subscription> list = jdbc.query(
+                sql,
+                new MapSqlParameterSource("id", id),
+                mapper
+        );
+
+        return list.stream().findFirst();
+    }
+
+    @Override
+    public Subscription update(Subscription s) {
+        LocalDateTime now = LocalDateTime.now();
+
+        String sql = """
+            UPDATE subscriptions SET
+                user_id = :user_id,
+                plan_id = :plan_id,
+                start_date = :start_date,
+                end_date = :end_date,
+                is_active = :is_active,
+                updated_at = :updated_at
+            WHERE id = :id
+        """;
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", s.getId())
+                .addValue("user_id", s.getUserId())
+                .addValue("plan_id", s.getPlanId())
+                .addValue("start_date", s.getStartDate())
+                .addValue("end_date", s.getEndDate())
+                .addValue("is_active", s.getIsActive())
+                .addValue("updated_at", now);
+
+        jdbc.update(sql, params);
+
+        s.getAudit().setUpdatedAt(now);
+        return s;
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        String sql = "DELETE FROM subscriptions WHERE id = :id";
+        jdbc.update(sql, new MapSqlParameterSource("id", id));
     }
 }

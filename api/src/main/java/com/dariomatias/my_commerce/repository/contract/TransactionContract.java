@@ -11,13 +11,13 @@ public interface TransactionContract {
 
     Transaction save(Transaction transaction);
 
-    Transaction update(Transaction transaction);
-
-    void delete(UUID id);
-
     Optional<Transaction> findById(UUID id);
 
     Page<Transaction> findAll(Pageable pageable);
 
     Page<Transaction> findAllByOrderId(UUID orderId, Pageable pageable);
+
+    Transaction update(Transaction transaction);
+
+    void deleteById(UUID id);
 }

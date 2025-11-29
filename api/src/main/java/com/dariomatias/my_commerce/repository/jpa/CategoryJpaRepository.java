@@ -28,21 +28,6 @@ public class CategoryJpaRepository implements CategoryContract {
     }
 
     @Override
-    public Category update(Category category) {
-        return repository.save(category);
-    }
-
-    @Override
-    public void delete(UUID id) {
-        repository.deleteById(id);
-    }
-
-    @Override
-    public Optional<Category> findById(UUID id) {
-        return repository.findById(id);
-    }
-
-    @Override
     public Page<Category> findAll(Pageable pageable) {
         return repository.findAll(pageable);
     }
@@ -52,5 +37,20 @@ public class CategoryJpaRepository implements CategoryContract {
         Store store = new Store();
         store.setId(storeId);
         return repository.findAllByStore(store, pageable);
+    }
+
+    @Override
+    public Optional<Category> findById(UUID id) {
+        return repository.findById(id);
+    }
+
+    @Override
+    public Category update(Category category) {
+        return repository.save(category);
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        repository.deleteById(id);
     }
 }

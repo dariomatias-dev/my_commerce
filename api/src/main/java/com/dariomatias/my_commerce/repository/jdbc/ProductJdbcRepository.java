@@ -69,68 +69,6 @@ public class ProductJdbcRepository implements ProductContract {
     }
 
     @Override
-    public Product update(Product product) {
-        LocalDateTime now = LocalDateTime.now();
-
-        String sql = """
-            UPDATE products
-            SET store_id = :store_id,
-                category_id = :category_id,
-                name = :name,
-                slug = :slug,
-                description = :description,
-                price = :price,
-                stock = :stock,
-                active = :active,
-                updated_at = :updated_at
-            WHERE id = :id
-        """;
-
-        jdbc.update(sql, new MapSqlParameterSource()
-                .addValue("id", product.getId())
-                .addValue("store_id", product.getStoreId())
-                .addValue("category_id", product.getCategoryId())
-                .addValue("name", product.getName())
-                .addValue("slug", product.getSlug())
-                .addValue("description", product.getDescription())
-                .addValue("price", product.getPrice())
-                .addValue("stock", product.getStock())
-                .addValue("active", product.getActive())
-                .addValue("updated_at", now));
-
-        product.getAudit().setUpdatedAt(now);
-        return product;
-    }
-
-    @Override
-    public void delete(UUID id) {
-        jdbc.update("DELETE FROM products WHERE id = :id",
-                new MapSqlParameterSource("id", id));
-    }
-
-    @Override
-    public Optional<Product> findById(UUID id) {
-        String sql = "SELECT * FROM products WHERE id = :id";
-
-        List<Product> list = jdbc.query(sql,
-                new MapSqlParameterSource("id", id),
-                mapper);
-
-        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
-    }
-
-    @Override
-    public Optional<Product> findBySlug(String slug) {
-        String sql = "SELECT * FROM products WHERE slug = :slug";
-
-        List<Product> list = jdbc.query(sql,
-                new MapSqlParameterSource("slug", slug),
-                mapper);
-
-        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
-    }
-
-    @Override
     public Page<Product> findAll(Pageable pageable) {
         String sql = """
             SELECT * FROM products
@@ -201,5 +139,67 @@ public class ProductJdbcRepository implements ProductContract {
         );
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public Optional<Product> findById(UUID id) {
+        String sql = "SELECT * FROM products WHERE id = :id";
+
+        List<Product> list = jdbc.query(sql,
+                new MapSqlParameterSource("id", id),
+                mapper);
+
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+    }
+
+    @Override
+    public Optional<Product> findBySlug(String slug) {
+        String sql = "SELECT * FROM products WHERE slug = :slug";
+
+        List<Product> list = jdbc.query(sql,
+                new MapSqlParameterSource("slug", slug),
+                mapper);
+
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+    }
+
+    @Override
+    public Product update(Product product) {
+        LocalDateTime now = LocalDateTime.now();
+
+        String sql = """
+            UPDATE products
+            SET store_id = :store_id,
+                category_id = :category_id,
+                name = :name,
+                slug = :slug,
+                description = :description,
+                price = :price,
+                stock = :stock,
+                active = :active,
+                updated_at = :updated_at
+            WHERE id = :id
+        """;
+
+        jdbc.update(sql, new MapSqlParameterSource()
+                .addValue("id", product.getId())
+                .addValue("store_id", product.getStoreId())
+                .addValue("category_id", product.getCategoryId())
+                .addValue("name", product.getName())
+                .addValue("slug", product.getSlug())
+                .addValue("description", product.getDescription())
+                .addValue("price", product.getPrice())
+                .addValue("stock", product.getStock())
+                .addValue("active", product.getActive())
+                .addValue("updated_at", now));
+
+        product.getAudit().setUpdatedAt(now);
+        return product;
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        jdbc.update("DELETE FROM products WHERE id = :id",
+                new MapSqlParameterSource("id", id));
     }
 }

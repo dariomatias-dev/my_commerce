@@ -61,45 +61,6 @@ public class CategoryJdbcRepository implements CategoryContract {
     }
 
     @Override
-    public Category update(Category category) {
-        LocalDateTime now = LocalDateTime.now();
-        category.getAudit().setUpdatedAt(now);
-
-        String sql = """
-            UPDATE categories
-            SET name = :name,
-                store_id = :store_id,
-                updated_at = :updated_at
-            WHERE id = :id
-        """;
-
-        jdbc.update(sql, new MapSqlParameterSource()
-                .addValue("id", category.getId())
-                .addValue("name", category.getName())
-                .addValue("store_id", category.getStoreId())
-                .addValue("updated_at", now));
-
-        return category;
-    }
-
-    @Override
-    public void delete(UUID id) {
-        String sql = "DELETE FROM categories WHERE id = :id";
-        jdbc.update(sql, new MapSqlParameterSource("id", id));
-    }
-
-    @Override
-    public Optional<Category> findById(UUID id) {
-        String sql = "SELECT * FROM categories WHERE id = :id";
-
-        List<Category> list = jdbc.query(sql,
-                new MapSqlParameterSource("id", id),
-                mapper);
-
-        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
-    }
-
-    @Override
     public Page<Category> findAll(Pageable pageable) {
         String sql = """
             SELECT * FROM categories
@@ -148,5 +109,44 @@ public class CategoryJdbcRepository implements CategoryContract {
                 Long.class);
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public Optional<Category> findById(UUID id) {
+        String sql = "SELECT * FROM categories WHERE id = :id";
+
+        List<Category> list = jdbc.query(sql,
+                new MapSqlParameterSource("id", id),
+                mapper);
+
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+    }
+
+    @Override
+    public Category update(Category category) {
+        LocalDateTime now = LocalDateTime.now();
+        category.getAudit().setUpdatedAt(now);
+
+        String sql = """
+            UPDATE categories
+            SET name = :name,
+                store_id = :store_id,
+                updated_at = :updated_at
+            WHERE id = :id
+        """;
+
+        jdbc.update(sql, new MapSqlParameterSource()
+                .addValue("id", category.getId())
+                .addValue("name", category.getName())
+                .addValue("store_id", category.getStoreId())
+                .addValue("updated_at", now));
+
+        return category;
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        String sql = "DELETE FROM categories WHERE id = :id";
+        jdbc.update(sql, new MapSqlParameterSource("id", id));
     }
 }

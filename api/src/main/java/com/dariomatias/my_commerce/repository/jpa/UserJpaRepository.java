@@ -27,6 +27,11 @@ public class UserJpaRepository implements UserContract {
     }
 
     @Override
+    public Page<User> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
+    @Override
     public Optional<User> findById(UUID id) {
         return repository.findById(id);
     }
@@ -34,11 +39,6 @@ public class UserJpaRepository implements UserContract {
     @Override
     public Optional<User> findByEmail(String email) {
         return repository.findByEmail(email);
-    }
-
-    @Override
-    public Page<User> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class UserJpaRepository implements UserContract {
     }
 
     @Override
-    public void delete(UUID id) {
+    public void deleteById(UUID id) {
         repository.deleteById(id);
     }
 }

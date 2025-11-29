@@ -67,6 +67,47 @@ public class SubscriptionPlanJdbcRepository implements SubscriptionPlanContract 
     }
 
     @Override
+    public Page<SubscriptionPlan> findAll(Pageable pageable) {
+        int offset = pageable.getPageNumber() * pageable.getPageSize();
+
+        String sql = """
+            SELECT * FROM subscription_plans
+            ORDER BY created_at DESC
+            OFFSET :offset LIMIT :limit
+        """;
+
+        List<SubscriptionPlan> list = jdbc.query(
+                sql,
+                new MapSqlParameterSource()
+                        .addValue("offset", offset)
+                        .addValue("limit", pageable.getPageSize()),
+                mapper
+        );
+
+        return new PageImpl<>(list, pageable, list.size());
+    }
+
+    @Override
+    public Optional<SubscriptionPlan> findById(UUID id) {
+        String sql = "SELECT * FROM subscription_plans WHERE id = :id";
+        List<SubscriptionPlan> list = jdbc.query(sql, new MapSqlParameterSource("id", id), mapper);
+        return list.stream().findFirst();
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        String sql = "SELECT COUNT(*) FROM subscription_plans WHERE name = :name";
+
+        Long count = jdbc.queryForObject(
+                sql,
+                new MapSqlParameterSource("name", name),
+                Long.class
+        );
+
+        return count != null && count > 0;
+    }
+
+    @Override
     public SubscriptionPlan update(SubscriptionPlan plan) {
         LocalDateTime now = LocalDateTime.now();
 
@@ -96,49 +137,8 @@ public class SubscriptionPlanJdbcRepository implements SubscriptionPlanContract 
     }
 
     @Override
-    public void delete(UUID id) {
+    public void deleteById(UUID id) {
         String sql = "DELETE FROM subscription_plans WHERE id = :id";
         jdbc.update(sql, new MapSqlParameterSource("id", id));
-    }
-
-    @Override
-    public Optional<SubscriptionPlan> findById(UUID id) {
-        String sql = "SELECT * FROM subscription_plans WHERE id = :id";
-        List<SubscriptionPlan> list = jdbc.query(sql, new MapSqlParameterSource("id", id), mapper);
-        return list.stream().findFirst();
-    }
-
-    @Override
-    public Page<SubscriptionPlan> findAll(Pageable pageable) {
-        int offset = pageable.getPageNumber() * pageable.getPageSize();
-
-        String sql = """
-            SELECT * FROM subscription_plans
-            ORDER BY created_at DESC
-            OFFSET :offset LIMIT :limit
-        """;
-
-        List<SubscriptionPlan> list = jdbc.query(
-                sql,
-                new MapSqlParameterSource()
-                        .addValue("offset", offset)
-                        .addValue("limit", pageable.getPageSize()),
-                mapper
-        );
-
-        return new PageImpl<>(list, pageable, list.size());
-    }
-
-    @Override
-    public boolean existsByName(String name) {
-        String sql = "SELECT COUNT(*) FROM subscription_plans WHERE name = :name";
-
-        Long count = jdbc.queryForObject(
-                sql,
-                new MapSqlParameterSource("name", name),
-                Long.class
-        );
-
-        return count != null && count > 0;
     }
 }

@@ -18,5 +18,5 @@ public interface FavoriteContract {
 
     Page<Favorite> findAllByProductId(UUID productId, Pageable pageable);
 
-    void delete(UUID id);
+    void deleteById(UUID id);
 }

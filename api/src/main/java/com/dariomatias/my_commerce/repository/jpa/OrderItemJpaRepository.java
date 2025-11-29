@@ -29,11 +29,6 @@ public class OrderItemJpaRepository implements OrderItemContract {
     }
 
     @Override
-    public Optional<OrderItem> findById(UUID id) {
-        return repository.findById(id);
-    }
-
-    @Override
     public Page<OrderItem> findAll(Pageable pageable) {
         return repository.findAll(pageable);
     }
@@ -50,6 +45,11 @@ public class OrderItemJpaRepository implements OrderItemContract {
         Product product = new Product();
         product.setId(productId);
         return repository.findAllByProduct(product, pageable);
+    }
+
+    @Override
+    public Optional<OrderItem> findById(UUID id) {
+        return repository.findById(id);
     }
 
     @Override

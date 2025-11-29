@@ -11,10 +11,6 @@ public interface StoreContract {
 
     Store save(Store store);
 
-    Store update(Store store);
-
-    void delete(UUID id);
-
     Optional<Store> findById(UUID id);
 
     Optional<Store> findBySlug(String slug);
@@ -26,4 +22,8 @@ public interface StoreContract {
     boolean existsBySlug(String slug);
 
     void deactivateByUserId(UUID userId);
+
+    Store update(Store store);
+
+    void deleteById(UUID id);
 }

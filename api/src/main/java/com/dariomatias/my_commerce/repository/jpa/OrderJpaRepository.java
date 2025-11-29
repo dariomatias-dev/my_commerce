@@ -29,21 +29,6 @@ public class OrderJpaRepository implements OrderContract {
     }
 
     @Override
-    public Order update(Order order) {
-        return repository.save(order);
-    }
-
-    @Override
-    public void deleteById(UUID id) {
-        repository.deleteById(id);
-    }
-
-    @Override
-    public Optional<Order> findById(UUID id) {
-        return repository.findById(id);
-    }
-
-    @Override
     public Page<Order> findAll(Pageable pageable) {
         return repository.findAll(pageable);
     }
@@ -60,5 +45,20 @@ public class OrderJpaRepository implements OrderContract {
         User user = new User();
         user.setId(userId);
         return repository.findAllByUser(user, pageable);
+    }
+
+    @Override
+    public Optional<Order> findById(UUID id) {
+        return repository.findById(id);
+    }
+
+    @Override
+    public Order update(Order order) {
+        return repository.save(order);
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        repository.deleteById(id);
     }
 }

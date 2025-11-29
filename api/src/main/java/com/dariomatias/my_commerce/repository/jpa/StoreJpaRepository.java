@@ -29,13 +29,15 @@ public class StoreJpaRepository implements StoreContract {
     }
 
     @Override
-    public Store update(Store store) {
-        return repository.save(store);
+    public Page<Store> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     @Override
-    public void delete(UUID id) {
-        repository.deleteById(id);
+    public Page<Store> findAllByUser(UUID userId, Pageable pageable) {
+        User user = new User();
+        user.setId(userId);
+        return repository.findAllByUser(user, pageable);
     }
 
     @Override
@@ -46,18 +48,6 @@ public class StoreJpaRepository implements StoreContract {
     @Override
     public Optional<Store> findBySlug(String slug) {
         return repository.findBySlug(slug);
-    }
-
-    @Override
-    public Page<Store> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
-    }
-
-    @Override
-    public Page<Store> findAllByUser(UUID userId, Pageable pageable) {
-        User user = new User();
-        user.setId(userId);
-        return repository.findAllByUser(user, pageable);
     }
 
     @Override
@@ -76,5 +66,15 @@ public class StoreJpaRepository implements StoreContract {
             store.getAudit().setUpdatedAt(now);
             repository.save(store);
         });
+    }
+
+    @Override
+    public Store update(Store store) {
+        return repository.save(store);
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        repository.deleteById(id);
     }
 }

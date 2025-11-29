@@ -28,11 +28,6 @@ public class TransactionJpaRepository implements TransactionContract {
     }
 
     @Override
-    public Optional<Transaction> findById(UUID id) {
-        return repository.findById(id);
-    }
-
-    @Override
     public Page<Transaction> findAll(Pageable pageable) {
         return repository.findAll(pageable);
     }
@@ -45,12 +40,17 @@ public class TransactionJpaRepository implements TransactionContract {
     }
 
     @Override
+    public Optional<Transaction> findById(UUID id) {
+        return repository.findById(id);
+    }
+
+    @Override
     public Transaction update(Transaction transaction) {
         return repository.save(transaction);
     }
 
     @Override
-    public void delete(UUID id) {
+    public void deleteById(UUID id) {
         repository.deleteById(id);
     }
 }

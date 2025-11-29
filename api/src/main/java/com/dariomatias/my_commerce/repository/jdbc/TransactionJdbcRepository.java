@@ -75,17 +75,6 @@ public class TransactionJdbcRepository implements TransactionContract {
     }
 
     @Override
-    public Optional<Transaction> findById(UUID id) {
-        String sql = "SELECT * FROM transactions WHERE id = :id";
-
-        List<Transaction> list = jdbc.query(sql,
-                new MapSqlParameterSource("id", id),
-                mapper);
-
-        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
-    }
-
-    @Override
     public Page<Transaction> findAll(Pageable pageable) {
         String sql = """
             SELECT * FROM transactions
@@ -134,6 +123,17 @@ public class TransactionJdbcRepository implements TransactionContract {
     }
 
     @Override
+    public Optional<Transaction> findById(UUID id) {
+        String sql = "SELECT * FROM transactions WHERE id = :id";
+
+        List<Transaction> list = jdbc.query(sql,
+                new MapSqlParameterSource("id", id),
+                mapper);
+
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+    }
+
+    @Override
     public Transaction update(Transaction transaction) {
         LocalDateTime now = LocalDateTime.now();
         transaction.getAudit().setUpdatedAt(now);
@@ -158,7 +158,7 @@ public class TransactionJdbcRepository implements TransactionContract {
     }
 
     @Override
-    public void delete(UUID id) {
+    public void deleteById(UUID id) {
         jdbc.update("DELETE FROM transactions WHERE id = :id",
                 new MapSqlParameterSource("id", id));
     }

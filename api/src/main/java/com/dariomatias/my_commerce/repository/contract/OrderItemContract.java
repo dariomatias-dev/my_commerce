@@ -11,10 +11,6 @@ public interface OrderItemContract {
 
     OrderItem save(OrderItem item);
 
-    OrderItem update(OrderItem item);
-
-    void deleteById(UUID id);
-
     Optional<OrderItem> findById(UUID id);
 
     Page<OrderItem> findAll(Pageable pageable);
@@ -22,4 +18,8 @@ public interface OrderItemContract {
     Page<OrderItem> findAllByOrderId(UUID orderId, Pageable pageable);
 
     Page<OrderItem> findAllByProductId(UUID productId, Pageable pageable);
+
+    OrderItem update(OrderItem item);
+
+    void deleteById(UUID id);
 }

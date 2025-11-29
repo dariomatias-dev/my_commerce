@@ -74,17 +74,6 @@ public class OrderItemJdbcRepository implements OrderItemContract {
     }
 
     @Override
-    public Optional<OrderItem> findById(UUID id) {
-        List<OrderItem> list = jdbc.query(
-                "SELECT * FROM order_items WHERE id = :id",
-                new MapSqlParameterSource("id", id),
-                mapper
-        );
-
-        return list.stream().findFirst();
-    }
-
-    @Override
     public Page<OrderItem> findAll(Pageable pageable) {
         String sql = """
             SELECT * FROM order_items
@@ -144,6 +133,17 @@ public class OrderItemJdbcRepository implements OrderItemContract {
                 """, new MapSqlParameterSource("product_id", productId), Long.class);
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public Optional<OrderItem> findById(UUID id) {
+        List<OrderItem> list = jdbc.query(
+                "SELECT * FROM order_items WHERE id = :id",
+                new MapSqlParameterSource("id", id),
+                mapper
+        );
+
+        return list.stream().findFirst();
     }
 
     @Override

@@ -27,13 +27,13 @@ public class SubscriptionJpaRepository implements SubscriptionContract {
     }
 
     @Override
-    public Subscription update(Subscription subscription) {
-        return repository.save(subscription);
+    public Page<Subscription> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     @Override
-    public void delete(UUID id) {
-        repository.deleteById(id);
+    public Page<Subscription> findAllByUser(UUID userId, Pageable pageable) {
+        return repository.findAllByUserId(userId, pageable);
     }
 
     @Override
@@ -42,12 +42,12 @@ public class SubscriptionJpaRepository implements SubscriptionContract {
     }
 
     @Override
-    public Page<Subscription> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Subscription update(Subscription subscription) {
+        return repository.save(subscription);
     }
 
     @Override
-    public Page<Subscription> findAllByUser(UUID userId, Pageable pageable) {
-        return repository.findAllByUserId(userId, pageable);
+    public void deleteById(UUID id) {
+        repository.deleteById(id);
     }
 }

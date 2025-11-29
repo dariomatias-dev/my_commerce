@@ -11,13 +11,13 @@ public interface CategoryContract {
 
     Category save(Category category);
 
-    Category update(Category category);
-
-    void delete(UUID id);
-
     Optional<Category> findById(UUID id);
 
     Page<Category> findAll(Pageable pageable);
 
     Page<Category> findAllByStoreId(UUID storeId, Pageable pageable);
+
+    Category update(Category category);
+
+    void deleteById(UUID id);
 }

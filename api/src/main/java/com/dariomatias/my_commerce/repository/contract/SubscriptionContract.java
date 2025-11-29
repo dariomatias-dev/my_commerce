@@ -11,13 +11,13 @@ public interface SubscriptionContract {
 
     Subscription save(Subscription subscription);
 
-    Subscription update(Subscription subscription);
-
-    void delete(UUID id);
-
     Optional<Subscription> findById(UUID id);
 
     Page<Subscription> findAll(Pageable pageable);
 
     Page<Subscription> findAllByUser(UUID userId, Pageable pageable);
+
+    Subscription update(Subscription subscription);
+
+    void deleteById(UUID id);
 }

@@ -57,13 +57,6 @@ public class FavoriteJdbcRepository implements FavoriteContract {
     }
 
     @Override
-    public Optional<Favorite> findById(UUID id) {
-        String sql = "SELECT * FROM favorites WHERE id = ?";
-        List<Favorite> list = jdbc.query(sql, mapper, id);
-        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
-    }
-
-    @Override
     public Page<Favorite> findAll(Pageable pageable) {
         int offset = (int) pageable.getOffset();
         int limit = pageable.getPageSize();
@@ -106,7 +99,14 @@ public class FavoriteJdbcRepository implements FavoriteContract {
     }
 
     @Override
-    public void delete(UUID id) {
+    public Optional<Favorite> findById(UUID id) {
+        String sql = "SELECT * FROM favorites WHERE id = ?";
+        List<Favorite> list = jdbc.query(sql, mapper, id);
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+    }
+
+    @Override
+    public void deleteById(UUID id) {
         String sql = "DELETE FROM favorites WHERE id = ?";
         jdbc.update(sql, id);
     }

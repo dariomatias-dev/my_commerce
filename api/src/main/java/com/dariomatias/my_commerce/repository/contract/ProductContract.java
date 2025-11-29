@@ -10,18 +10,17 @@ import java.util.UUID;
 public interface ProductContract {
 
     Product save(Product product);
-
-    Product update(Product product);
-
-    void delete(UUID id);
-
-    Optional<Product> findById(UUID id);
-
-    Optional<Product> findBySlug(String slug);
-
     Page<Product> findAll(Pageable pageable);
 
     Page<Product> findAllByStore(UUID storeId, Pageable pageable);
 
     Page<Product> findAllByCategory(UUID categoryId, Pageable pageable);
+
+    Optional<Product> findById(UUID id);
+
+    Optional<Product> findBySlug(String slug);
+
+    Product update(Product product);
+
+    void deleteById(UUID id);
 }

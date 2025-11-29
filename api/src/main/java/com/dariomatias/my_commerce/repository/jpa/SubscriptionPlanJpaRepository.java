@@ -27,13 +27,8 @@ public class SubscriptionPlanJpaRepository implements SubscriptionPlanContract {
     }
 
     @Override
-    public SubscriptionPlan update(SubscriptionPlan plan) {
-        return repository.save(plan);
-    }
-
-    @Override
-    public void delete(UUID id) {
-        repository.deleteById(id);
+    public Page<SubscriptionPlan> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     @Override
@@ -42,12 +37,17 @@ public class SubscriptionPlanJpaRepository implements SubscriptionPlanContract {
     }
 
     @Override
-    public Page<SubscriptionPlan> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+    public boolean existsByName(String name) {
+        return repository.existsByName(name);
     }
 
     @Override
-    public boolean existsByName(String name) {
-        return repository.existsByName(name);
+    public SubscriptionPlan update(SubscriptionPlan plan) {
+        return repository.save(plan);
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        repository.deleteById(id);
     }
 }

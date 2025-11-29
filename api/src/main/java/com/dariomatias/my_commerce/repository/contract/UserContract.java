@@ -22,5 +22,5 @@ public interface UserContract {
 
     User update(User user);
 
-    void delete(UUID id);
+    void deleteById(UUID id);
 }

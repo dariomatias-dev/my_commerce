@@ -72,6 +72,16 @@ public class UserJdbcRepository implements UserContract {
     }
 
     @Override
+    public Page<User> findAll(Pageable pageable) {
+        int offset = pageable.getPageNumber() * pageable.getPageSize();
+
+        String sql = "SELECT * FROM users ORDER BY name LIMIT ? OFFSET ?";
+        List<User> list = jdbcTemplate.query(sql, rowMapper, pageable.getPageSize(), offset);
+
+        return new PageImpl<>(list, pageable, list.size());
+    }
+
+    @Override
     public Optional<User> findById(UUID id) {
         String sql = "SELECT * FROM users WHERE id = ?";
         var list = jdbcTemplate.query(sql, rowMapper, id);
@@ -83,16 +93,6 @@ public class UserJdbcRepository implements UserContract {
         String sql = "SELECT * FROM users WHERE email = ?";
         var list = jdbcTemplate.query(sql, rowMapper, email);
         return list.stream().findFirst();
-    }
-
-    @Override
-    public Page<User> findAll(Pageable pageable) {
-        int offset = pageable.getPageNumber() * pageable.getPageSize();
-
-        String sql = "SELECT * FROM users ORDER BY name LIMIT ? OFFSET ?";
-        List<User> list = jdbcTemplate.query(sql, rowMapper, pageable.getPageSize(), offset);
-
-        return new PageImpl<>(list, pageable, list.size());
     }
 
     @Override
@@ -131,7 +131,7 @@ public class UserJdbcRepository implements UserContract {
     }
 
     @Override
-    public void delete(UUID id) {
+    public void deleteById(UUID id) {
         User user = findById(id).orElseThrow();
         user.delete();
         update(user);

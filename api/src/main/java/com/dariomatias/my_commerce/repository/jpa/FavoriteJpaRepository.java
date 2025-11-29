@@ -29,11 +29,6 @@ public class FavoriteJpaRepository implements FavoriteContract {
     }
 
     @Override
-    public Optional<Favorite> findById(UUID id) {
-        return repository.findById(id);
-    }
-
-    @Override
     public Page<Favorite> findAll(Pageable pageable) {
         return repository.findAll(pageable);
     }
@@ -53,7 +48,12 @@ public class FavoriteJpaRepository implements FavoriteContract {
     }
 
     @Override
-    public void delete(UUID id) {
+    public Optional<Favorite> findById(UUID id) {
+        return repository.findById(id);
+    }
+
+    @Override
+    public void deleteById(UUID id) {
         repository.deleteById(id);
     }
 }

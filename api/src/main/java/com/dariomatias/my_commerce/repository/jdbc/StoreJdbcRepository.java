@@ -70,79 +70,6 @@ public class StoreJdbcRepository implements StoreContract {
     }
 
     @Override
-    public Store update(Store store) {
-        LocalDateTime now = LocalDateTime.now();
-
-        String sql = """
-            UPDATE stores
-            SET name = :name,
-                slug = :slug,
-                description = :description,
-                theme_color = :theme_color,
-                is_active = :is_active,
-                deleted_at = :deleted_at,
-                updated_at = :updated_at
-            WHERE id = :id
-        """;
-
-        jdbc.update(sql, new MapSqlParameterSource()
-                .addValue("id", store.getId())
-                .addValue("name", store.getName())
-                .addValue("slug", store.getSlug())
-                .addValue("description", store.getDescription())
-                .addValue("theme_color", store.getThemeColor())
-                .addValue("is_active", store.getIsActive())
-                .addValue("deleted_at", store.getDeletedAt())
-                .addValue("updated_at", now));
-
-        store.getAudit().setUpdatedAt(now);
-        return store;
-    }
-
-    @Override
-    public void delete(UUID id) {
-        String sql = "DELETE FROM stores WHERE id = :id";
-        jdbc.update(sql, new MapSqlParameterSource("id", id));
-    }
-
-    @Override
-    public Optional<Store> findById(UUID id) {
-        String sql = """
-            SELECT * FROM stores
-            WHERE id = :id AND deleted_at IS NULL
-        """;
-
-        List<Store> list = jdbc.query(sql,
-                new MapSqlParameterSource("id", id),
-                mapper);
-
-        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
-    }
-
-    @Override
-    public Optional<Store> findBySlug(String slug) {
-        String sql = """
-            SELECT * FROM stores
-            WHERE slug = :slug AND deleted_at IS NULL
-        """;
-
-        List<Store> list = jdbc.query(sql,
-                new MapSqlParameterSource("slug", slug),
-                mapper);
-
-        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
-    }
-
-    @Override
-    public boolean existsBySlug(String slug) {
-        String sql = "SELECT COUNT(*) FROM stores WHERE slug = :slug";
-        Integer count = jdbc.queryForObject(sql,
-                new MapSqlParameterSource("slug", slug),
-                Integer.class);
-        return count != null && count > 0;
-    }
-
-    @Override
     public Page<Store> findAll(Pageable pageable) {
         String sql = """
             SELECT * FROM stores
@@ -192,6 +119,43 @@ public class StoreJdbcRepository implements StoreContract {
     }
 
     @Override
+    public Optional<Store> findById(UUID id) {
+        String sql = """
+            SELECT * FROM stores
+            WHERE id = :id AND deleted_at IS NULL
+        """;
+
+        List<Store> list = jdbc.query(sql,
+                new MapSqlParameterSource("id", id),
+                mapper);
+
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+    }
+
+    @Override
+    public Optional<Store> findBySlug(String slug) {
+        String sql = """
+            SELECT * FROM stores
+            WHERE slug = :slug AND deleted_at IS NULL
+        """;
+
+        List<Store> list = jdbc.query(sql,
+                new MapSqlParameterSource("slug", slug),
+                mapper);
+
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+    }
+
+    @Override
+    public boolean existsBySlug(String slug) {
+        String sql = "SELECT COUNT(*) FROM stores WHERE slug = :slug";
+        Integer count = jdbc.queryForObject(sql,
+                new MapSqlParameterSource("slug", slug),
+                Integer.class);
+        return count != null && count > 0;
+    }
+
+    @Override
     public void deactivateByUserId(UUID userId) {
         String sql = """
             UPDATE stores
@@ -207,5 +171,41 @@ public class StoreJdbcRepository implements StoreContract {
                 .addValue("user_id", userId)
                 .addValue("deleted_at", now)
                 .addValue("updated_at", now));
+    }
+
+    @Override
+    public Store update(Store store) {
+        LocalDateTime now = LocalDateTime.now();
+
+        String sql = """
+            UPDATE stores
+            SET name = :name,
+                slug = :slug,
+                description = :description,
+                theme_color = :theme_color,
+                is_active = :is_active,
+                deleted_at = :deleted_at,
+                updated_at = :updated_at
+            WHERE id = :id
+        """;
+
+        jdbc.update(sql, new MapSqlParameterSource()
+                .addValue("id", store.getId())
+                .addValue("name", store.getName())
+                .addValue("slug", store.getSlug())
+                .addValue("description", store.getDescription())
+                .addValue("theme_color", store.getThemeColor())
+                .addValue("is_active", store.getIsActive())
+                .addValue("deleted_at", store.getDeletedAt())
+                .addValue("updated_at", now));
+
+        store.getAudit().setUpdatedAt(now);
+        return store;
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        String sql = "DELETE FROM stores WHERE id = :id";
+        jdbc.update(sql, new MapSqlParameterSource("id", id));
     }
 }

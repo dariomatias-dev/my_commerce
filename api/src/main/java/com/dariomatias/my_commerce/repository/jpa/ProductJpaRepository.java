@@ -29,26 +29,6 @@ public class ProductJpaRepository implements ProductContract {
     }
 
     @Override
-    public Product update(Product product) {
-        return repository.save(product);
-    }
-
-    @Override
-    public void delete(UUID id) {
-        repository.deleteById(id);
-    }
-
-    @Override
-    public Optional<Product> findById(UUID id) {
-        return repository.findById(id);
-    }
-
-    @Override
-    public Optional<Product> findBySlug(String slug) {
-        return repository.findBySlug(slug);
-    }
-
-    @Override
     public Page<Product> findAll(Pageable pageable) {
         return repository.findAll(pageable);
     }
@@ -65,5 +45,25 @@ public class ProductJpaRepository implements ProductContract {
         Category category = new Category();
         category.setId(categoryId);
         return repository.findAllByCategory(category, pageable);
+    }
+
+    @Override
+    public Optional<Product> findById(UUID id) {
+        return repository.findById(id);
+    }
+
+    @Override
+    public Optional<Product> findBySlug(String slug) {
+        return repository.findBySlug(slug);
+    }
+
+    @Override
+    public Product update(Product product) {
+        return repository.save(product);
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        repository.deleteById(id);
     }
 }
