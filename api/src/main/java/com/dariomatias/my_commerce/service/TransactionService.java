@@ -2,7 +2,7 @@ package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.transaction.TransactionRequestDTO;
 import com.dariomatias.my_commerce.model.Transaction;
-import com.dariomatias.my_commerce.repository.adapter.TransactionAdapter;
+import com.dariomatias.my_commerce.repository.contract.TransactionContract;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -16,57 +16,51 @@ import java.util.UUID;
 @Transactional
 public class TransactionService {
 
-    private final TransactionAdapter transactionAdapter;
+    private final TransactionContract transactionRepository;
 
-    public TransactionService(TransactionAdapter transactionAdapter) {
-        this.transactionAdapter = transactionAdapter;
+    public TransactionService(TransactionContract transactionRepository) {
+        this.transactionRepository = transactionRepository;
     }
 
     public Transaction create(TransactionRequestDTO request) {
+        if (request.getPaymentMethod() == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Método de pagamento é obrigatório");
+
         Transaction transaction = new Transaction();
         transaction.setOrderId(request.getOrderId());
-
-        if (request.getPaymentMethod() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Método de pagamento é obrigatório");
-        }
-
         transaction.setPaymentMethod(request.getPaymentMethod());
         transaction.setAmount(request.getAmount());
 
-        return transactionAdapter.save(transaction);
+        return transactionRepository.save(transaction);
     }
 
     public Page<Transaction> getAll(Pageable pageable) {
-        return transactionAdapter.findAll(pageable);
-    }
-
-    public Page<Transaction> getAllByOrder(UUID orderId, Pageable pageable) {
-        return transactionAdapter.findAllByOrder(orderId, pageable);
+        return transactionRepository.findAll(pageable);
     }
 
     public Transaction getById(UUID id) {
-        Transaction transaction = transactionAdapter.findById(id);
-        if (transaction == null)
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Transação não encontrada");
-        return transaction;
+        return transactionRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Transação não encontrada"));
+    }
+
+    public Page<Transaction> getAllByOrder(UUID orderId, Pageable pageable) {
+        return transactionRepository.findAllByOrderId(orderId, pageable);
     }
 
     public Transaction update(UUID id, TransactionRequestDTO request) {
         Transaction transaction = getById(id);
 
-        if (request.getPaymentMethod() != null) {
+        if (request.getPaymentMethod() != null)
             transaction.setPaymentMethod(request.getPaymentMethod());
-        }
 
-        if (request.getAmount() != null) {
+        if (request.getAmount() != null)
             transaction.setAmount(request.getAmount());
-        }
 
-        return transactionAdapter.update(transaction);
+        return transactionRepository.update(transaction);
     }
 
     public void delete(UUID id) {
         getById(id);
-        transactionAdapter.delete(id);
+        transactionRepository.delete(id);
     }
 }
