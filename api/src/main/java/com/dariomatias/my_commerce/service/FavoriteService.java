@@ -2,9 +2,7 @@ package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.favorite.FavoriteRequestDTO;
 import com.dariomatias.my_commerce.model.Favorite;
-import com.dariomatias.my_commerce.model.Product;
-import com.dariomatias.my_commerce.model.User;
-import com.dariomatias.my_commerce.repository.adapter.FavoriteAdapter;
+import com.dariomatias.my_commerce.repository.contract.FavoriteContract;
 import com.dariomatias.my_commerce.repository.contract.ProductContract;
 import com.dariomatias.my_commerce.repository.contract.UserContract;
 import org.springframework.data.domain.Page;
@@ -20,51 +18,59 @@ import java.util.UUID;
 @Transactional
 public class FavoriteService {
 
-    private final FavoriteAdapter favoriteAdapter;
+    private final FavoriteContract favoriteRepository;
     private final UserContract userRepository;
     private final ProductContract productRepository;
 
-    public FavoriteService(FavoriteAdapter favoriteAdapter, UserContract userRepository, ProductContract productRepository) {
-        this.favoriteAdapter = favoriteAdapter;
+    public FavoriteService(FavoriteContract favoriteRepository,
+                           UserContract userRepository,
+                           ProductContract productRepository) {
+        this.favoriteRepository = favoriteRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
     }
 
     public Favorite create(FavoriteRequestDTO request) {
+        getUserOrThrow(request.getUserId());
+        getProductOrThrow(request.getProductId());
+
         Favorite favorite = new Favorite();
-        favorite.setUser(getUserOrThrow(request.getUserId()));
-        favorite.setProduct(getProductOrThrow(request.getProductId()));
-        return favoriteAdapter.save(favorite);
+        favorite.setUserId(request.getUserId());
+        favorite.setProductId(request.getProductId());
+
+        return favoriteRepository.save(favorite);
     }
 
     public Page<Favorite> getAll(Pageable pageable) {
-        return favoriteAdapter.findAll(pageable);
+        return favoriteRepository.findAll(pageable);
     }
 
     public Page<Favorite> getAllByUser(UUID userId, Pageable pageable) {
-        return favoriteAdapter.findAllByUser(getUserOrThrow(userId), pageable);
+        getUserOrThrow(userId);
+        return favoriteRepository.findAllByUserId(userId, pageable);
     }
 
     public Page<Favorite> getAllByProduct(UUID productId, Pageable pageable) {
-        return favoriteAdapter.findAllByProduct(getProductOrThrow(productId), pageable);
+        getProductOrThrow(productId);
+        return favoriteRepository.findAllByProductId(productId, pageable);
     }
 
     public Favorite getById(UUID id) {
-        return favoriteAdapter.findById(id)
+        return favoriteRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Favorito não encontrado"));
     }
 
     public void delete(UUID id) {
-        favoriteAdapter.delete(id);
+        favoriteRepository.delete(id);
     }
 
-    private User getUserOrThrow(UUID userId) {
-        return userRepository.findById(userId)
+    private void getUserOrThrow(UUID userId) {
+        userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
     }
 
-    private Product getProductOrThrow(UUID productId) {
-        return productRepository.findById(productId)
+    private void getProductOrThrow(UUID productId) {
+        productRepository.findById(productId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
     }
 }
