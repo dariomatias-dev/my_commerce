@@ -6,8 +6,8 @@ import com.dariomatias.my_commerce.model.Product;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.Category;
 import com.dariomatias.my_commerce.model.User;
-import com.dariomatias.my_commerce.repository.adapter.CategoryAdapter;
 import com.dariomatias.my_commerce.repository.adapter.ProductAdapter;
+import com.dariomatias.my_commerce.repository.contract.CategoryContract;
 import com.dariomatias.my_commerce.repository.contract.StoreContract;
 import com.dariomatias.my_commerce.util.SlugUtil;
 import org.springframework.data.domain.Page;
@@ -27,17 +27,17 @@ public class ProductService {
 
     private final ProductAdapter productAdapter;
     private final StoreContract storeRepository;
-    private final CategoryAdapter categoryAdapter;
+    private final CategoryContract categoryRepository;
     private final MinioService minioService;
     private static final String BUCKET_NAME = "stores";
 
     public ProductService(ProductAdapter productAdapter,
                           StoreContract storeRepository,
-                          CategoryAdapter categoryAdapter,
+                          CategoryContract categoryRepository,
                           MinioService minioService) {
         this.productAdapter = productAdapter;
         this.storeRepository = storeRepository;
-        this.categoryAdapter = categoryAdapter;
+        this.categoryRepository = categoryRepository;
         this.minioService = minioService;
     }
 
@@ -49,7 +49,7 @@ public class ProductService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "A loja não pertence ao usuário");
         }
 
-        Category category = categoryAdapter.findById(request.getCategoryId())
+        Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada"));
 
         if (!category.getStoreId().equals(store.getId())) {
@@ -110,7 +110,7 @@ public class ProductService {
         }
 
         if (request.getCategoryId() != null) {
-            Category category = categoryAdapter.findById(request.getCategoryId())
+            Category category = categoryRepository.findById(request.getCategoryId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada"));
 
             if (!category.getStoreId().equals(store.getId())) {

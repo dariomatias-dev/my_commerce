@@ -5,7 +5,7 @@ import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.Category;
 import com.dariomatias.my_commerce.repository.ProductRepository;
 import com.dariomatias.my_commerce.repository.StoreRepository;
-import com.dariomatias.my_commerce.repository.CategoryRepository;
+import com.dariomatias.my_commerce.repository.contract.CategoryContract;
 import com.dariomatias.my_commerce.repository.jdbc.ProductJdbcRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -25,13 +25,13 @@ public class ProductAdapter {
     private final ProductRepository productRepository;
     private final ProductJdbcRepository productJdbcRepository;
     private final StoreRepository storeRepository;
-    private final CategoryRepository categoryRepository;
+    private final CategoryContract categoryRepository;
     private final boolean useJdbc;
 
     public ProductAdapter(ProductRepository productRepository,
                           ProductJdbcRepository productJdbcRepository,
                           StoreRepository storeRepository,
-                          CategoryRepository categoryRepository,
+                          CategoryContract categoryRepository,
                           @Value("${app.useJdbc:false}") boolean useJdbc) {
         this.productRepository = productRepository;
         this.productJdbcRepository = productJdbcRepository;

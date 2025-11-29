@@ -1,29 +1,32 @@
 package com.dariomatias.my_commerce.repository.jdbc;
 
 import com.dariomatias.my_commerce.model.Category;
-import org.springframework.jdbc.core.JdbcTemplate;
+import com.dariomatias.my_commerce.repository.contract.CategoryContract;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
-public class CategoryJdbcRepository {
+@ConditionalOnProperty(name = "app.persistence", havingValue = "jdbc")
+public class CategoryJdbcRepository implements CategoryContract {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbc;
 
-    public CategoryJdbcRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public CategoryJdbcRepository(NamedParameterJdbcTemplate jdbc) {
+        this.jdbc = jdbc;
     }
 
-    private final RowMapper<Category> rowMapper = this::mapCategory;
+    private final RowMapper<Category> mapper = (rs, rowNum) -> mapCategory(rs);
 
-    private Category mapCategory(ResultSet rs, int rowNum) throws SQLException {
+    private Category mapCategory(ResultSet rs) throws SQLException {
         Category category = new Category();
         category.setId(UUID.fromString(rs.getString("id")));
         category.setName(rs.getString("name"));
@@ -33,56 +36,117 @@ public class CategoryJdbcRepository {
         return category;
     }
 
+    @Override
     public Category save(Category category) {
-        if (category.getId() == null) {
-            category.setId(UUID.randomUUID());
-        }
         LocalDateTime now = LocalDateTime.now();
+        UUID id = UUID.randomUUID();
+
+        category.setId(id);
         category.getAudit().setCreatedAt(now);
         category.getAudit().setUpdatedAt(now);
 
-        String sql = "INSERT INTO categories (id, name, store_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql,
-                category.getId(),
-                category.getName(),
-                category.getStoreId(),
-                category.getAudit().getCreatedAt(),
-                category.getAudit().getUpdatedAt()
-        );
+        String sql = """
+            INSERT INTO categories (id, name, store_id, created_at, updated_at)
+            VALUES (:id, :name, :store_id, :created_at, :updated_at)
+        """;
+
+        jdbc.update(sql, new MapSqlParameterSource()
+                .addValue("id", id)
+                .addValue("name", category.getName())
+                .addValue("store_id", category.getStoreId())
+                .addValue("created_at", now)
+                .addValue("updated_at", now));
 
         return category;
     }
 
-    public void update(Category category) {
-        category.getAudit().setUpdatedAt(LocalDateTime.now());
+    @Override
+    public Category update(Category category) {
+        LocalDateTime now = LocalDateTime.now();
+        category.getAudit().setUpdatedAt(now);
 
-        String sql = "UPDATE categories SET name = ?, store_id = ?, updated_at = ? WHERE id = ?";
-        jdbcTemplate.update(sql,
-                category.getName(),
-                category.getStoreId(),
-                category.getAudit().getUpdatedAt(),
-                category.getId()
-        );
+        String sql = """
+            UPDATE categories
+            SET name = :name,
+                store_id = :store_id,
+                updated_at = :updated_at
+            WHERE id = :id
+        """;
+
+        jdbc.update(sql, new MapSqlParameterSource()
+                .addValue("id", category.getId())
+                .addValue("name", category.getName())
+                .addValue("store_id", category.getStoreId())
+                .addValue("updated_at", now));
+
+        return category;
     }
 
+    @Override
     public void delete(UUID id) {
-        String sql = "DELETE FROM categories WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        String sql = "DELETE FROM categories WHERE id = :id";
+        jdbc.update(sql, new MapSqlParameterSource("id", id));
     }
 
+    @Override
     public Optional<Category> findById(UUID id) {
-        String sql = "SELECT * FROM categories WHERE id = ?";
-        List<Category> list = jdbcTemplate.query(sql, rowMapper, id);
+        String sql = "SELECT * FROM categories WHERE id = :id";
+
+        List<Category> list = jdbc.query(sql,
+                new MapSqlParameterSource("id", id),
+                mapper);
+
         return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
     }
 
-    public List<Category> findAll(int offset, int limit) {
-        String sql = "SELECT * FROM categories ORDER BY name LIMIT ? OFFSET ?";
-        return jdbcTemplate.query(sql, rowMapper, limit, offset);
+    @Override
+    public Page<Category> findAll(Pageable pageable) {
+        String sql = """
+            SELECT * FROM categories
+            ORDER BY created_at DESC
+            OFFSET :offset LIMIT :limit
+        """;
+
+        List<Category> content = jdbc.query(sql,
+                new MapSqlParameterSource()
+                        .addValue("offset", pageable.getOffset())
+                        .addValue("limit", pageable.getPageSize()),
+                mapper);
+
+        long total = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM categories",
+                new MapSqlParameterSource(),
+                Long.class
+        );
+
+        return new PageImpl<>(content, pageable, total);
     }
 
-    public List<Category> findAllByStoreId(UUID storeId, int offset, int limit) {
-        String sql = "SELECT * FROM categories WHERE store_id = ? ORDER BY name LIMIT ? OFFSET ?";
-        return jdbcTemplate.query(sql, rowMapper, storeId, limit, offset);
+    @Override
+    public Page<Category> findAllByStoreId(UUID storeId, Pageable pageable) {
+        String sql = """
+            SELECT * FROM categories
+            WHERE store_id = :store_id
+            ORDER BY created_at DESC
+            OFFSET :offset LIMIT :limit
+        """;
+
+        List<Category> content = jdbc.query(sql,
+                new MapSqlParameterSource()
+                        .addValue("store_id", storeId)
+                        .addValue("offset", pageable.getOffset())
+                        .addValue("limit", pageable.getPageSize()),
+                mapper);
+
+        String countSql = """
+            SELECT COUNT(*) FROM categories
+            WHERE store_id = :store_id
+        """;
+
+        long total = jdbc.queryForObject(countSql,
+                new MapSqlParameterSource("store_id", storeId),
+                Long.class);
+
+        return new PageImpl<>(content, pageable, total);
     }
 }
