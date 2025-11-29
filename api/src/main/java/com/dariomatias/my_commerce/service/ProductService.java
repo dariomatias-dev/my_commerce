@@ -6,9 +6,9 @@ import com.dariomatias.my_commerce.model.Product;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.Category;
 import com.dariomatias.my_commerce.model.User;
-import com.dariomatias.my_commerce.repository.adapter.ProductAdapter;
 import com.dariomatias.my_commerce.repository.contract.CategoryContract;
 import com.dariomatias.my_commerce.repository.contract.StoreContract;
+import com.dariomatias.my_commerce.repository.contract.ProductContract;
 import com.dariomatias.my_commerce.util.SlugUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,17 +25,17 @@ import java.util.UUID;
 @Transactional
 public class ProductService {
 
-    private final ProductAdapter productAdapter;
+    private final ProductContract productRepository;
     private final StoreContract storeRepository;
     private final CategoryContract categoryRepository;
     private final MinioService minioService;
     private static final String BUCKET_NAME = "stores";
 
-    public ProductService(ProductAdapter productAdapter,
+    public ProductService(ProductContract productRepository,
                           StoreContract storeRepository,
                           CategoryContract categoryRepository,
                           MinioService minioService) {
-        this.productAdapter = productAdapter;
+        this.productRepository = productRepository;
         this.storeRepository = storeRepository;
         this.categoryRepository = categoryRepository;
         this.minioService = minioService;
@@ -57,16 +57,15 @@ public class ProductService {
         }
 
         String productSlug = SlugUtil.generateSlug(request.getName());
+        Optional<Product> existingProduct = productRepository.findBySlug(productSlug);
 
-        Optional<Product> productOptional = productAdapter.findBySlug(productSlug);
-
-        if (productOptional.isPresent()) {
+        if (existingProduct.isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um produto com este nome na loja");
         }
 
         Product product = new Product();
-        product.setStore(store);
-        product.setCategory(category);
+        product.setStoreId(store.getId());
+        product.setCategoryId(category.getId());
         product.setName(request.getName());
         product.setSlug(productSlug);
         product.setDescription(request.getDescription());
@@ -76,34 +75,36 @@ public class ProductService {
 
         uploadProductImages(store, product, images);
 
-        return productAdapter.save(product);
+        return productRepository.save(product);
     }
 
     public Page<Product> getAll(Pageable pageable) {
-        return productAdapter.findAll(pageable);
+        return productRepository.findAll(pageable);
     }
 
     public Page<Product> getAllByStore(UUID storeId, Pageable pageable) {
-        return productAdapter.findAllByStore(storeId, pageable);
+        return productRepository.findAllByStore(storeId, pageable);
     }
 
     public Page<Product> getAllByCategory(UUID categoryId, Pageable pageable) {
-        return productAdapter.findAllByCategory(categoryId, pageable);
+        return productRepository.findAllByCategory(categoryId, pageable);
     }
 
     public Product getBySlug(String slug) {
-        return productAdapter.findBySlug(slug)
+        return productRepository.findBySlug(slug)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
     }
 
     public Product getById(UUID id) {
-        return productAdapter.findById(id)
+        return productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
     }
 
     public Product update(User user, UUID id, ProductRequestDTO request, MultipartFile[] images) {
         Product product = getById(id);
-        Store store = product.getStore();
+
+        Store store = storeRepository.findById(product.getStoreId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
 
         if (!user.getRole().equals(UserRole.ADMIN) && !store.getUserId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
@@ -114,23 +115,22 @@ public class ProductService {
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada"));
 
             if (!category.getStoreId().equals(store.getId())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A categoria não pertence à loja do produto");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A categoria não pertence à loja");
             }
 
-            product.setCategory(category);
+            product.setCategoryId(category.getId());
         }
 
         if (request.getName() != null && !request.getName().equals(product.getName())) {
-            String productSlug = SlugUtil.generateSlug(request.getName());
+            String newSlug = SlugUtil.generateSlug(request.getName());
+            Optional<Product> existingProduct = productRepository.findBySlug(newSlug);
 
-            Optional<Product> productOptional = productAdapter.findBySlug(productSlug);
-
-            if (productOptional.isPresent()) {
+            if (existingProduct.isPresent()) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um produto com este nome na loja");
             }
 
             product.setName(request.getName());
-            product.setSlug(productSlug);
+            product.setSlug(newSlug);
         }
 
         if (request.getDescription() != null) product.setDescription(request.getDescription());
@@ -140,17 +140,20 @@ public class ProductService {
 
         uploadProductImages(store, product, images);
 
-        return productAdapter.update(product);
+        return productRepository.update(product);
     }
 
     public void delete(User user, UUID id) {
         Product product = getById(id);
 
-        if (!user.getRole().equals(UserRole.ADMIN) && !product.getStore().getUser().getId().equals(user.getId())) {
+        Store store = storeRepository.findById(product.getStoreId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
+
+        if (!user.getRole().equals(UserRole.ADMIN) && !store.getUserId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
         }
 
-        productAdapter.delete(id);
+        productRepository.delete(id);
     }
 
     private void uploadProductImages(Store store, Product product, MultipartFile[] images) {

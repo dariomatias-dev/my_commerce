@@ -5,7 +5,7 @@ import com.dariomatias.my_commerce.model.Favorite;
 import com.dariomatias.my_commerce.model.Product;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.adapter.FavoriteAdapter;
-import com.dariomatias.my_commerce.repository.adapter.ProductAdapter;
+import com.dariomatias.my_commerce.repository.contract.ProductContract;
 import com.dariomatias.my_commerce.repository.contract.UserContract;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,12 +22,12 @@ public class FavoriteService {
 
     private final FavoriteAdapter favoriteAdapter;
     private final UserContract userRepository;
-    private final ProductAdapter productAdapter;
+    private final ProductContract productRepository;
 
-    public FavoriteService(FavoriteAdapter favoriteAdapter, UserContract userRepository, ProductAdapter productAdapter) {
+    public FavoriteService(FavoriteAdapter favoriteAdapter, UserContract userRepository, ProductContract productRepository) {
         this.favoriteAdapter = favoriteAdapter;
         this.userRepository = userRepository;
-        this.productAdapter = productAdapter;
+        this.productRepository = productRepository;
     }
 
     public Favorite create(FavoriteRequestDTO request) {
@@ -64,7 +64,7 @@ public class FavoriteService {
     }
 
     private Product getProductOrThrow(UUID productId) {
-        return productAdapter.findById(productId)
+        return productRepository.findById(productId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
     }
 }

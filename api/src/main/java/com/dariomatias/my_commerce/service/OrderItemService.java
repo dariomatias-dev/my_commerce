@@ -6,7 +6,7 @@ import com.dariomatias.my_commerce.model.OrderItem;
 import com.dariomatias.my_commerce.model.Product;
 import com.dariomatias.my_commerce.repository.adapter.OrderAdapter;
 import com.dariomatias.my_commerce.repository.adapter.OrderItemAdapter;
-import com.dariomatias.my_commerce.repository.adapter.ProductAdapter;
+import com.dariomatias.my_commerce.repository.contract.ProductContract;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -22,14 +22,14 @@ public class OrderItemService {
 
     private final OrderItemAdapter itemAdapter;
     private final OrderAdapter orderAdapter;
-    private final ProductAdapter productAdapter;
+    private final ProductContract productRepository;
 
     public OrderItemService(OrderItemAdapter itemAdapter,
                             OrderAdapter orderAdapter,
-                            ProductAdapter productAdapter) {
+                            ProductContract productRepository) {
         this.itemAdapter = itemAdapter;
         this.orderAdapter = orderAdapter;
-        this.productAdapter = productAdapter;
+        this.productRepository = productRepository;
     }
 
     public OrderItem create(OrderItemRequestDTO request) {
@@ -77,7 +77,7 @@ public class OrderItemService {
     }
 
     private Product getProductOrThrow(UUID productId) {
-        return productAdapter.findById(productId)
+        return productRepository.findById(productId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
     }
 }
