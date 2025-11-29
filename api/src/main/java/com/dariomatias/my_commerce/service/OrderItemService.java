@@ -4,8 +4,8 @@ import com.dariomatias.my_commerce.dto.order_item.OrderItemRequestDTO;
 import com.dariomatias.my_commerce.model.Order;
 import com.dariomatias.my_commerce.model.OrderItem;
 import com.dariomatias.my_commerce.model.Product;
-import com.dariomatias.my_commerce.repository.adapter.OrderAdapter;
 import com.dariomatias.my_commerce.repository.adapter.OrderItemAdapter;
+import com.dariomatias.my_commerce.repository.contract.OrderContract;
 import com.dariomatias.my_commerce.repository.contract.ProductContract;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,14 +21,14 @@ import java.util.UUID;
 public class OrderItemService {
 
     private final OrderItemAdapter itemAdapter;
-    private final OrderAdapter orderAdapter;
+    private final OrderContract orderRepository;
     private final ProductContract productRepository;
 
     public OrderItemService(OrderItemAdapter itemAdapter,
-                            OrderAdapter orderAdapter,
+                            OrderContract orderRepository,
                             ProductContract productRepository) {
         this.itemAdapter = itemAdapter;
-        this.orderAdapter = orderAdapter;
+        this.orderRepository = orderRepository;
         this.productRepository = productRepository;
     }
 
@@ -72,7 +72,7 @@ public class OrderItemService {
     }
 
     private Order getOrderOrThrow(UUID orderId) {
-        return orderAdapter.findById(orderId)
+        return orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
     }
 
