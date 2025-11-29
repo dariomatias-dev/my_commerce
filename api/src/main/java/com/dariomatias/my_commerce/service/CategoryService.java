@@ -4,7 +4,7 @@ import com.dariomatias.my_commerce.dto.category.CategoryRequestDTO;
 import com.dariomatias.my_commerce.model.Category;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.repository.adapter.CategoryAdapter;
-import com.dariomatias.my_commerce.repository.adapter.StoreAdapter;
+import com.dariomatias.my_commerce.repository.contract.StoreContract;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -19,11 +19,11 @@ import java.util.UUID;
 public class CategoryService {
 
     private final CategoryAdapter categoryAdapter;
-    private final StoreAdapter storeAdapter;
+    private final StoreContract storeRepository;
 
-    public CategoryService(CategoryAdapter categoryAdapter, StoreAdapter storeAdapter) {
+    public CategoryService(CategoryAdapter categoryAdapter, StoreContract storeRepository) {
         this.categoryAdapter = categoryAdapter;
-        this.storeAdapter = storeAdapter;
+        this.storeRepository = storeRepository;
     }
 
     public Category create(CategoryRequestDTO request) {
@@ -60,7 +60,7 @@ public class CategoryService {
     }
 
     private Store getStoreOrThrow(UUID storeId) {
-        return storeAdapter.findById(storeId)
+        return storeRepository.findById(storeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
     }
 }

@@ -4,7 +4,7 @@ import com.dariomatias.my_commerce.dto.stores.StoreRequestDTO;
 import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.User;
-import com.dariomatias.my_commerce.repository.adapter.StoreAdapter;
+import com.dariomatias.my_commerce.repository.contract.StoreContract;
 import com.dariomatias.my_commerce.repository.contract.UserContract;
 import com.dariomatias.my_commerce.util.SlugUtil;
 import org.springframework.data.domain.Page;
@@ -21,14 +21,18 @@ import java.util.UUID;
 @Transactional
 public class StoreService {
 
-    private final StoreAdapter storeAdapter;
+    private final StoreContract storeRepository;
     private final UserContract userRepository;
     private final MinioService minioService;
 
     private static final String BUCKET_NAME = "stores";
 
-    public StoreService(StoreAdapter storeAdapter, UserContract userRepository, MinioService minioService) {
-        this.storeAdapter = storeAdapter;
+    public StoreService(
+            StoreContract storeRepository,
+            UserContract userRepository,
+            MinioService minioService
+    ) {
+        this.storeRepository = storeRepository;
         this.userRepository = userRepository;
         this.minioService = minioService;
     }
@@ -38,17 +42,14 @@ public class StoreService {
         String slug = SlugUtil.generateSlug(request.getName());
 
         minioService.createBucket(BUCKET_NAME);
-
         String folder = slug + "/";
 
         if (logo != null && !logo.isEmpty()) {
-            String objectName = folder + "logo.jpeg";
-            minioService.uploadFile(BUCKET_NAME, objectName, logo);
+            minioService.uploadFile(BUCKET_NAME, folder + "logo.jpeg", logo);
         }
 
         if (banner != null && !banner.isEmpty()) {
-            String objectName = folder + "banner.jpeg";
-            minioService.uploadFile(BUCKET_NAME, objectName, banner);
+            minioService.uploadFile(BUCKET_NAME, folder + "banner.jpeg", banner);
         }
 
         Store store = new Store();
@@ -59,16 +60,16 @@ public class StoreService {
         store.setIsActive(true);
         store.setUser(user);
 
-        return storeAdapter.save(store);
+        return storeRepository.save(store);
     }
 
     public Page<Store> getAll(Pageable pageable) {
-        return storeAdapter.findAll(pageable);
+        return storeRepository.findAll(pageable);
     }
 
     public Page<Store> getAllByUser(UUID userId, Pageable pageable) {
         User user = getUserById(userId);
-        return storeAdapter.findAllByUser(user, pageable);
+        return storeRepository.findAllByUser(user.getId(), pageable);
     }
 
     public Store getById(UUID id, User user) {
@@ -78,7 +79,7 @@ public class StoreService {
     }
 
     public Store getBySlug(String slug) {
-        return storeAdapter.findBySlug(slug)
+        return storeRepository.findBySlug(slug)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
     }
 
@@ -89,26 +90,29 @@ public class StoreService {
         if (request != null) {
             if (request.getName() != null && !request.getName().equals(store.getName())) {
                 store.setName(request.getName());
-                store.setSlug(SlugUtil.generateSlug((request.getName())));
+                store.setSlug(SlugUtil.generateSlug(request.getName()));
             }
 
-            if (request.getDescription() != null) store.setDescription(request.getDescription());
-            if (request.getThemeColor() != null) store.setThemeColor(request.getThemeColor());
+            if (request.getDescription() != null) {
+                store.setDescription(request.getDescription());
+            }
+
+            if (request.getThemeColor() != null) {
+                store.setThemeColor(request.getThemeColor());
+            }
         }
 
         String folder = store.getSlug() + "/";
 
         if (logo != null && !logo.isEmpty()) {
-            String objectName = folder + "logo.jpeg";
-            minioService.uploadFile(BUCKET_NAME, objectName, logo);
+            minioService.uploadFile(BUCKET_NAME, folder + "logo.jpeg", logo);
         }
 
         if (banner != null && !banner.isEmpty()) {
-            String objectName = folder + "banner.jpeg";
-            minioService.uploadFile(BUCKET_NAME, objectName, banner);
+            minioService.uploadFile(BUCKET_NAME, folder + "banner.jpeg", banner);
         }
 
-        return storeAdapter.update(store);
+        return storeRepository.update(store);
     }
 
     public void delete(UUID id, User user) {
@@ -117,8 +121,7 @@ public class StoreService {
 
         String folder = store.getSlug() + "/";
 
-        storeAdapter.delete(id);
-
+        storeRepository.delete(id);
         minioService.deleteFolder(BUCKET_NAME, folder);
     }
 
@@ -128,7 +131,7 @@ public class StoreService {
     }
 
     private Store getStoreById(UUID id) {
-        return storeAdapter.findById(id)
+        return storeRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
     }
 

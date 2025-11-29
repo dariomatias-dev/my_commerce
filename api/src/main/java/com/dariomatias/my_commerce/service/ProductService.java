@@ -8,7 +8,7 @@ import com.dariomatias.my_commerce.model.Category;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.adapter.CategoryAdapter;
 import com.dariomatias.my_commerce.repository.adapter.ProductAdapter;
-import com.dariomatias.my_commerce.repository.adapter.StoreAdapter;
+import com.dariomatias.my_commerce.repository.contract.StoreContract;
 import com.dariomatias.my_commerce.util.SlugUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,23 +26,23 @@ import java.util.UUID;
 public class ProductService {
 
     private final ProductAdapter productAdapter;
-    private final StoreAdapter storeAdapter;
+    private final StoreContract storeRepository;
     private final CategoryAdapter categoryAdapter;
     private final MinioService minioService;
     private static final String BUCKET_NAME = "stores";
 
     public ProductService(ProductAdapter productAdapter,
-                          StoreAdapter storeAdapter,
+                          StoreContract storeRepository,
                           CategoryAdapter categoryAdapter,
                           MinioService minioService) {
         this.productAdapter = productAdapter;
-        this.storeAdapter = storeAdapter;
+        this.storeRepository = storeRepository;
         this.categoryAdapter = categoryAdapter;
         this.minioService = minioService;
     }
 
     public Product create(User user, ProductRequestDTO request, MultipartFile[] images) {
-        Store store = storeAdapter.findById(request.getStoreId())
+        Store store = storeRepository.findById(request.getStoreId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
 
         if (!user.getRole().equals(UserRole.ADMIN) && !store.getUserId().equals(user.getId())) {

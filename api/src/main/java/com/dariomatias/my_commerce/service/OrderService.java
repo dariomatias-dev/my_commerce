@@ -5,7 +5,7 @@ import com.dariomatias.my_commerce.model.Order;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.adapter.OrderAdapter;
-import com.dariomatias.my_commerce.repository.adapter.StoreAdapter;
+import com.dariomatias.my_commerce.repository.contract.StoreContract;
 import com.dariomatias.my_commerce.repository.contract.UserContract;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,14 +21,14 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderAdapter orderAdapter;
-    private final StoreAdapter storeAdapter;
+    private final StoreContract storeRepository;
     private final UserContract userRepository;
 
     public OrderService(OrderAdapter orderAdapter,
-                        StoreAdapter storeAdapter,
+                        StoreContract storeRepository,
                         UserContract userRepository) {
         this.orderAdapter = orderAdapter;
-        this.storeAdapter = storeAdapter;
+        this.storeRepository = storeRepository;
         this.userRepository = userRepository;
     }
 
@@ -72,7 +72,7 @@ public class OrderService {
     }
 
     private Store getStoreOrThrow(UUID storeId) {
-        return storeAdapter.findById(storeId)
+        return storeRepository.findById(storeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
     }
 
