@@ -2,19 +2,23 @@ package com.dariomatias.my_commerce.repository.jdbc;
 
 import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.User;
+import com.dariomatias.my_commerce.repository.contract.UserContract;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Pageable;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
-public class UserJdbcRepository {
+@ConditionalOnProperty(name = "app.persistence", havingValue = "jdbc")
+public class UserJdbcRepository implements UserContract {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -29,68 +33,106 @@ public class UserJdbcRepository {
         user.setId(UUID.fromString(rs.getString("id")));
         user.setName(rs.getString("name"));
         user.setEmail(rs.getString("email"));
+
         String roleStr = rs.getString("role");
         user.setRole(UserRole.valueOf(roleStr));
-        user.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+
+        user.getAudit().setCreatedAt(
+                rs.getTimestamp("created_at").toLocalDateTime()
+        );
+
         user.setEnabled(rs.getBoolean("enabled"));
+
         return user;
     }
 
+    @Override
     public User save(User user) {
         if (user.getId() == null) user.setId(UUID.randomUUID());
-        if (user.getAudit().getCreatedAt() == null) user.getAudit().setCreatedAt(LocalDateTime.now());
+        if (user.getAudit().getCreatedAt() == null)
+            user.getAudit().setCreatedAt(LocalDateTime.now());
         if (user.getRole() == null) user.setRole(UserRole.USER);
-        String sql = "INSERT INTO users (id, name, email, password, role, created_at, enabled) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        String sql = """
+            INSERT INTO users (id, name, email, password, role, created_at, enabled)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """;
+
         jdbcTemplate.update(sql,
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
                 user.getPassword(),
-                user.getRole(),
+                user.getRole().name(),
                 user.getAudit().getCreatedAt(),
                 user.isEnabled()
         );
+
         return user;
     }
 
+    @Override
     public Optional<User> findById(UUID id) {
         String sql = "SELECT * FROM users WHERE id = ?";
-        List<User> list = jdbcTemplate.query(sql, rowMapper, id);
-        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+        var list = jdbcTemplate.query(sql, rowMapper, id);
+        return list.stream().findFirst();
     }
 
+    @Override
     public Optional<User> findByEmail(String email) {
         String sql = "SELECT * FROM users WHERE email = ?";
-        List<User> list = jdbcTemplate.query(sql, rowMapper, email);
-        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+        var list = jdbcTemplate.query(sql, rowMapper, email);
+        return list.stream().findFirst();
     }
 
-    public List<User> findAll(int offset, int limit) {
+    @Override
+    public Page<User> findAll(Pageable pageable) {
+        int offset = pageable.getPageNumber() * pageable.getPageSize();
+
         String sql = "SELECT * FROM users ORDER BY name LIMIT ? OFFSET ?";
-        return jdbcTemplate.query(sql, rowMapper, limit, offset);
+        List<User> list = jdbcTemplate.query(sql, rowMapper, pageable.getPageSize(), offset);
+
+        return new PageImpl<>(list, pageable, list.size());
     }
 
+    @Override
     public boolean existsById(UUID id) {
         String sql = "SELECT COUNT(*) FROM users WHERE id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return count != null && count > 0;
     }
 
-    public void update(User user) {
-        String sql = "UPDATE users SET name = ?, email = ?, password = ?, role = ?, enabled = ?, deleted_at = ? WHERE id = ?";
+    @Override
+    public boolean existsByEmail(String email) {
+        String sql = "SELECT COUNT(*) FROM users WHERE email = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, email);
+        return count != null && count > 0;
+    }
+
+    @Override
+    public User update(User user) {
+        String sql = """
+           UPDATE users 
+           SET name = ?, email = ?, password = ?, role = ?, enabled = ?, deleted_at = ?
+           WHERE id = ?
+        """;
+
         jdbcTemplate.update(sql,
                 user.getName(),
                 user.getEmail(),
                 user.getPassword(),
-                user.getRole(),
+                user.getRole().name(),
                 user.isEnabled(),
                 user.getDeletedAt(),
                 user.getId()
         );
+
+        return user;
     }
 
-    public void delete(UUID userId) {
-        User user = findById(userId).orElseThrow();
+    @Override
+    public void delete(UUID id) {
+        User user = findById(id).orElseThrow();
         user.delete();
         update(user);
     }

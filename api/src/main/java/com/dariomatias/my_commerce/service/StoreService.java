@@ -5,7 +5,7 @@ import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.adapter.StoreAdapter;
-import com.dariomatias.my_commerce.repository.adapter.UserAdapter;
+import com.dariomatias.my_commerce.repository.contract.UserContract;
 import com.dariomatias.my_commerce.util.SlugUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,14 +22,14 @@ import java.util.UUID;
 public class StoreService {
 
     private final StoreAdapter storeAdapter;
-    private final UserAdapter userAdapter;
+    private final UserContract userRepository;
     private final MinioService minioService;
 
     private static final String BUCKET_NAME = "stores";
 
-    public StoreService(StoreAdapter storeAdapter, UserAdapter userAdapter, MinioService minioService) {
+    public StoreService(StoreAdapter storeAdapter, UserContract userRepository, MinioService minioService) {
         this.storeAdapter = storeAdapter;
-        this.userAdapter = userAdapter;
+        this.userRepository = userRepository;
         this.minioService = minioService;
     }
 
@@ -123,7 +123,7 @@ public class StoreService {
     }
 
     private User getUserById(UUID id) {
-        return userAdapter.findById(id)
+        return userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
     }
 

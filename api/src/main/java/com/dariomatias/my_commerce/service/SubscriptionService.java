@@ -6,7 +6,7 @@ import com.dariomatias.my_commerce.model.SubscriptionPlan;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.adapter.SubscriptionAdapter;
 import com.dariomatias.my_commerce.repository.adapter.SubscriptionPlanAdapter;
-import com.dariomatias.my_commerce.repository.adapter.UserAdapter;
+import com.dariomatias.my_commerce.repository.contract.UserContract;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -22,12 +22,12 @@ import java.util.UUID;
 public class SubscriptionService {
 
     private final SubscriptionAdapter adapter;
-    private final UserAdapter userAdapter;
+    private final UserContract userRepository;
     private final SubscriptionPlanAdapter planAdapter;
 
-    public SubscriptionService(SubscriptionAdapter adapter, UserAdapter userAdapter, SubscriptionPlanAdapter planAdapter) {
+    public SubscriptionService(SubscriptionAdapter adapter, UserContract userRepository, SubscriptionPlanAdapter planAdapter) {
         this.adapter = adapter;
-        this.userAdapter = userAdapter;
+        this.userRepository = userRepository;
         this.planAdapter = planAdapter;
     }
 
@@ -107,7 +107,7 @@ public class SubscriptionService {
     }
 
     private User getUserOrThrow(UUID userId) {
-        return userAdapter.findById(userId)
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
     }
 

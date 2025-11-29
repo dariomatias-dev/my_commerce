@@ -3,7 +3,7 @@ package com.dariomatias.my_commerce.service;
 import com.dariomatias.my_commerce.dto.*;
 import com.dariomatias.my_commerce.dto.refresh_token.RefreshTokenResponse;
 import com.dariomatias.my_commerce.model.User;
-import com.dariomatias.my_commerce.repository.adapter.UserAdapter;
+import com.dariomatias.my_commerce.repository.contract.UserContract;
 import jakarta.mail.MessagingException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 public class AuthService {
 
     private final AuditLogService auditLogService;
-    private final UserAdapter userAdapter;
+    private final UserContract userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final JwtService jwtService;
@@ -29,13 +29,13 @@ public class AuthService {
     private static final String VERIFICATION_PREFIX = "email_verification:";
     private static final String PASSWORD_RECOVERY_PREFIX = "password_recovery:";
 
-    public AuthService(UserAdapter userAdapter,
+    public AuthService(UserContract userRepository,
                        PasswordEncoder passwordEncoder,
                        EmailService emailService,
                        RedisTemplate<String, Object> redisTemplate,
                        JwtService jwtService,
                        AuditLogService auditLogService) {
-        this.userAdapter = userAdapter;
+        this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.redisTemplate = redisTemplate;
@@ -44,7 +44,7 @@ public class AuthService {
     }
 
     public RefreshTokenResponse login(LoginRequest request) {
-        User user = userAdapter.findByEmail(request.getEmail())
+        User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciais inválidas"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
@@ -67,7 +67,7 @@ public class AuthService {
     }
 
     public User register(SignupRequest request) {
-        userAdapter.findByEmail(request.getEmail())
+        userRepository.findByEmail(request.getEmail())
                 .ifPresent(u -> {
                     auditLogService.log(u.getId().toString(), "signup", "failure", Map.of("email", u.getEmail(), "reason", "email already in use"));
                     throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já está em uso");
@@ -78,7 +78,7 @@ public class AuthService {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEnabled(false);
-        User savedUser = userAdapter.save(user);
+        User savedUser = userRepository.save(user);
 
         auditLogService.log(savedUser.getId().toString(), "signup", "success", Map.of("email", savedUser.getEmail()));
 
@@ -93,13 +93,13 @@ public class AuthService {
     public void verifyEmail(String token) {
         validateToken(VERIFICATION_PREFIX + token, user -> {
             user.setEnabled(true);
-            userAdapter.save(user);
+            userRepository.save(user);
             auditLogService.log(user.getId().toString(), "verify_email", "success", Map.of("email", user.getEmail()));
         });
     }
 
     public void resendVerificationEmail(String email) {
-        User user = userAdapter.findByEmail(email)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
         if (user.isEnabled()) {
@@ -123,7 +123,7 @@ public class AuthService {
     }
 
     public void recoverPassword(String email) {
-        User user = userAdapter.findByEmail(email)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
         String token = UUID.randomUUID().toString();
@@ -141,7 +141,7 @@ public class AuthService {
     public void resetPassword(ResetPasswordRequest request) {
         validateToken(PASSWORD_RECOVERY_PREFIX + request.getToken(), user -> {
             user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-            userAdapter.save(user);
+            userRepository.save(user);
             auditLogService.log(user.getId().toString(), "reset_password", "success", Map.of("email", user.getEmail()));
         });
     }
@@ -153,7 +153,7 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token inválido ou expirado");
         }
 
-        User user = userAdapter.findById(UUID.fromString(userId))
+        User user = userRepository.findById(UUID.fromString(userId))
                 .orElseThrow(() -> {
                     auditLogService.log(userId, "refresh_token", "failure", Map.of("reason", "user not found"));
                     return new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não encontrado");
@@ -184,7 +184,7 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token inválido ou expirado");
         }
 
-        User user = userAdapter.findById(UUID.fromString(userIdStr))
+        User user = userRepository.findById(UUID.fromString(userIdStr))
                 .orElseThrow(() -> {
                     auditLogService.log(userIdStr, "validate_token", "failure", Map.of("reason", "user not found"));
                     return new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário não encontrado");

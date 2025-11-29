@@ -6,7 +6,7 @@ import com.dariomatias.my_commerce.model.Product;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.adapter.FavoriteAdapter;
 import com.dariomatias.my_commerce.repository.adapter.ProductAdapter;
-import com.dariomatias.my_commerce.repository.adapter.UserAdapter;
+import com.dariomatias.my_commerce.repository.contract.UserContract;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -21,12 +21,12 @@ import java.util.UUID;
 public class FavoriteService {
 
     private final FavoriteAdapter favoriteAdapter;
-    private final UserAdapter userAdapter;
+    private final UserContract userRepository;
     private final ProductAdapter productAdapter;
 
-    public FavoriteService(FavoriteAdapter favoriteAdapter, UserAdapter userAdapter, ProductAdapter productAdapter) {
+    public FavoriteService(FavoriteAdapter favoriteAdapter, UserContract userRepository, ProductAdapter productAdapter) {
         this.favoriteAdapter = favoriteAdapter;
-        this.userAdapter = userAdapter;
+        this.userRepository = userRepository;
         this.productAdapter = productAdapter;
     }
 
@@ -59,7 +59,7 @@ public class FavoriteService {
     }
 
     private User getUserOrThrow(UUID userId) {
-        return userAdapter.findById(userId)
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
     }
 
