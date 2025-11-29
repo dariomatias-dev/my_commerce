@@ -3,29 +3,32 @@ package com.dariomatias.my_commerce.repository.jdbc;
 import com.dariomatias.my_commerce.model.Order;
 import com.dariomatias.my_commerce.model.OrderItem;
 import com.dariomatias.my_commerce.model.Product;
-import org.springframework.jdbc.core.JdbcTemplate;
+import com.dariomatias.my_commerce.repository.contract.OrderItemContract;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.domain.*;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
-public class OrderItemJdbcRepository {
+@ConditionalOnProperty(name = "app.persistence", havingValue = "jdbc")
+public class OrderItemJdbcRepository implements OrderItemContract {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbc;
 
-    public OrderItemJdbcRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public OrderItemJdbcRepository(NamedParameterJdbcTemplate jdbc) {
+        this.jdbc = jdbc;
     }
 
-    private final RowMapper<OrderItem> rowMapper = this::mapOrderItem;
+    private final RowMapper<OrderItem> mapper = this::map;
 
-    private OrderItem mapOrderItem(ResultSet rs, int rowNum) throws SQLException {
+    private OrderItem map(ResultSet rs, int row) throws SQLException {
         OrderItem item = new OrderItem();
         item.setId(UUID.fromString(rs.getString("id")));
         item.setQuantity(rs.getInt("quantity"));
@@ -44,62 +47,130 @@ public class OrderItemJdbcRepository {
         return item;
     }
 
+    @Override
     public OrderItem save(OrderItem item) {
-        if (item.getId() == null) {
-            item.setId(UUID.randomUUID());
-        }
+        UUID id = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
+
+        item.setId(id);
         item.getAudit().setCreatedAt(now);
         item.getAudit().setUpdatedAt(now);
 
-        String sql = "INSERT INTO order_items (id, order_id, product_id, quantity, price, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql,
-                item.getId(),
-                item.getOrder().getId(),
-                item.getProduct().getId(),
-                item.getQuantity(),
-                item.getPrice(),
-                item.getAudit().getCreatedAt(),
-                item.getAudit().getUpdatedAt()
-        );
+        String sql = """
+            INSERT INTO order_items (id, order_id, product_id, quantity, price, created_at, updated_at)
+            VALUES (:id, :order_id, :product_id, :quantity, :price, :created_at, :updated_at)
+        """;
+
+        jdbc.update(sql, new MapSqlParameterSource()
+                .addValue("id", id)
+                .addValue("order_id", item.getOrder().getId())
+                .addValue("product_id", item.getProduct().getId())
+                .addValue("quantity", item.getQuantity())
+                .addValue("price", item.getPrice())
+                .addValue("created_at", now)
+                .addValue("updated_at", now));
 
         return item;
     }
 
+    @Override
     public Optional<OrderItem> findById(UUID id) {
-        String sql = "SELECT * FROM order_items WHERE id = ?";
-        List<OrderItem> list = jdbcTemplate.query(sql, rowMapper, id);
-        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
-    }
-
-    public List<OrderItem> findAllByOrderId(UUID orderId, int offset, int limit) {
-        String sql = "SELECT * FROM order_items WHERE order_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?";
-        return jdbcTemplate.query(sql, rowMapper, orderId, limit, offset);
-    }
-
-    public List<OrderItem> findAllByProductId(UUID productId, int offset, int limit) {
-        String sql = "SELECT * FROM order_items WHERE product_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?";
-        return jdbcTemplate.query(sql, rowMapper, productId, limit, offset);
-    }
-
-    public List<OrderItem> findAll(int offset, int limit) {
-        String sql = "SELECT * FROM order_items ORDER BY created_at DESC LIMIT ? OFFSET ?";
-        return jdbcTemplate.query(sql, rowMapper, limit, offset);
-    }
-
-    public void update(OrderItem item) {
-        item.getAudit().setUpdatedAt(LocalDateTime.now());
-        String sql = "UPDATE order_items SET quantity = ?, price = ?, updated_at = ? WHERE id = ?";
-        jdbcTemplate.update(sql,
-                item.getQuantity(),
-                item.getPrice(),
-                item.getAudit().getUpdatedAt(),
-                item.getId()
+        List<OrderItem> list = jdbc.query(
+                "SELECT * FROM order_items WHERE id = :id",
+                new MapSqlParameterSource("id", id),
+                mapper
         );
+
+        return list.stream().findFirst();
     }
 
+    @Override
+    public Page<OrderItem> findAll(Pageable pageable) {
+        String sql = """
+            SELECT * FROM order_items
+            ORDER BY created_at DESC
+            OFFSET :offset LIMIT :limit
+        """;
+
+        List<OrderItem> content = jdbc.query(sql, new MapSqlParameterSource()
+                .addValue("offset", pageable.getOffset())
+                .addValue("limit", pageable.getPageSize()), mapper);
+
+        Long total = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM order_items",
+                new MapSqlParameterSource(), Long.class
+        );
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public Page<OrderItem> findAllByOrderId(UUID orderId, Pageable pageable) {
+        String sql = """
+            SELECT * FROM order_items
+            WHERE order_id = :order_id
+            ORDER BY created_at DESC
+            OFFSET :offset LIMIT :limit
+        """;
+
+        List<OrderItem> content = jdbc.query(sql, new MapSqlParameterSource()
+                .addValue("order_id", orderId)
+                .addValue("offset", pageable.getOffset())
+                .addValue("limit", pageable.getPageSize()), mapper);
+
+        Long total = jdbc.queryForObject("""
+                SELECT COUNT(*) FROM order_items WHERE order_id = :order_id
+                """, new MapSqlParameterSource("order_id", orderId), Long.class);
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public Page<OrderItem> findAllByProductId(UUID productId, Pageable pageable) {
+        String sql = """
+            SELECT * FROM order_items
+            WHERE product_id = :product_id
+            ORDER BY created_at DESC
+            OFFSET :offset LIMIT :limit
+        """;
+
+        List<OrderItem> content = jdbc.query(sql, new MapSqlParameterSource()
+                .addValue("product_id", productId)
+                .addValue("offset", pageable.getOffset())
+                .addValue("limit", pageable.getPageSize()), mapper);
+
+        Long total = jdbc.queryForObject("""
+                SELECT COUNT(*) FROM order_items WHERE product_id = :product_id
+                """, new MapSqlParameterSource("product_id", productId), Long.class);
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public OrderItem update(OrderItem item) {
+        LocalDateTime now = LocalDateTime.now();
+        item.getAudit().setUpdatedAt(now);
+
+        String sql = """
+            UPDATE order_items
+               SET quantity = :quantity,
+                   price = :price,
+                   updated_at = :updated_at
+             WHERE id = :id
+        """;
+
+        jdbc.update(sql, new MapSqlParameterSource()
+                .addValue("id", item.getId())
+                .addValue("quantity", item.getQuantity())
+                .addValue("price", item.getPrice())
+                .addValue("updated_at", now));
+
+        return item;
+    }
+
+    @Override
     public void deleteById(UUID id) {
-        String sql = "DELETE FROM order_items WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        jdbc.update("DELETE FROM order_items WHERE id = :id",
+                new MapSqlParameterSource("id", id));
     }
 }
