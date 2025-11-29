@@ -5,7 +5,7 @@ import com.dariomatias.my_commerce.model.Subscription;
 import com.dariomatias.my_commerce.model.SubscriptionPlan;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.adapter.SubscriptionAdapter;
-import com.dariomatias.my_commerce.repository.adapter.SubscriptionPlanAdapter;
+import com.dariomatias.my_commerce.repository.contract.SubscriptionPlanContract;
 import com.dariomatias.my_commerce.repository.contract.UserContract;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,12 +23,12 @@ public class SubscriptionService {
 
     private final SubscriptionAdapter adapter;
     private final UserContract userRepository;
-    private final SubscriptionPlanAdapter planAdapter;
+    private final SubscriptionPlanContract subscriptionPlanRepository;
 
-    public SubscriptionService(SubscriptionAdapter adapter, UserContract userRepository, SubscriptionPlanAdapter planAdapter) {
+    public SubscriptionService(SubscriptionAdapter adapter, UserContract userRepository, SubscriptionPlanContract subscriptionPlanRepository) {
         this.adapter = adapter;
         this.userRepository = userRepository;
-        this.planAdapter = planAdapter;
+        this.subscriptionPlanRepository = subscriptionPlanRepository;
     }
 
     public Subscription create(User user, SubscriptionRequestDTO request) {
@@ -112,7 +112,7 @@ public class SubscriptionService {
     }
 
     private SubscriptionPlan getPlanOrThrow(UUID planId) {
-        return planAdapter.findById(planId)
+        return subscriptionPlanRepository.findById(planId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Plano de assinatura não encontrado"));
     }
 }

@@ -1,18 +1,22 @@
 package com.dariomatias.my_commerce.repository.jdbc;
 
 import com.dariomatias.my_commerce.model.SubscriptionPlan;
+import com.dariomatias.my_commerce.repository.contract.SubscriptionPlanContract;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
-public class SubscriptionPlanJdbcRepository {
+@ConditionalOnProperty(name = "app.persistence", havingValue = "jdbc")
+public class SubscriptionPlanJdbcRepository implements SubscriptionPlanContract {
 
     private final NamedParameterJdbcTemplate jdbc;
 
@@ -33,12 +37,14 @@ public class SubscriptionPlanJdbcRepository {
         return plan;
     };
 
+    @Override
     public SubscriptionPlan save(SubscriptionPlan plan) {
         LocalDateTime now = LocalDateTime.now();
         UUID id = UUID.randomUUID();
 
         String sql = """
-            INSERT INTO subscription_plans (id, name, max_stores, max_products, features, price, created_at, updated_at)
+            INSERT INTO subscription_plans 
+            (id, name, max_stores, max_products, features, price, created_at, updated_at)
             VALUES (:id, :name, :max_stores, :max_products, :features, :price, :created_at, :updated_at)
         """;
 
@@ -60,25 +66,13 @@ public class SubscriptionPlanJdbcRepository {
         return plan;
     }
 
-    public List<SubscriptionPlan> findAll(int offset, int limit) {
-        String sql = "SELECT * FROM subscription_plans ORDER BY created_at DESC OFFSET :offset LIMIT :limit";
-        return jdbc.query(sql, new MapSqlParameterSource()
-                .addValue("offset", offset)
-                .addValue("limit", limit), mapper);
-    }
-
-    public Optional<SubscriptionPlan> findById(UUID id) {
-        String sql = "SELECT * FROM subscription_plans WHERE id = :id";
-        List<SubscriptionPlan> list = jdbc.query(sql, new MapSqlParameterSource("id", id), mapper);
-        return list.stream().findFirst();
-    }
-
-    public void update(SubscriptionPlan plan) {
+    @Override
+    public SubscriptionPlan update(SubscriptionPlan plan) {
         LocalDateTime now = LocalDateTime.now();
 
         String sql = """
-            UPDATE subscription_plans
-            SET name = :name,
+            UPDATE subscription_plans SET
+                name = :name,
                 max_stores = :max_stores,
                 max_products = :max_products,
                 features = :features,
@@ -98,10 +92,53 @@ public class SubscriptionPlanJdbcRepository {
 
         jdbc.update(sql, params);
         plan.getAudit().setUpdatedAt(now);
+        return plan;
     }
 
+    @Override
     public void delete(UUID id) {
         String sql = "DELETE FROM subscription_plans WHERE id = :id";
         jdbc.update(sql, new MapSqlParameterSource("id", id));
+    }
+
+    @Override
+    public Optional<SubscriptionPlan> findById(UUID id) {
+        String sql = "SELECT * FROM subscription_plans WHERE id = :id";
+        List<SubscriptionPlan> list = jdbc.query(sql, new MapSqlParameterSource("id", id), mapper);
+        return list.stream().findFirst();
+    }
+
+    @Override
+    public Page<SubscriptionPlan> findAll(Pageable pageable) {
+        int offset = pageable.getPageNumber() * pageable.getPageSize();
+
+        String sql = """
+            SELECT * FROM subscription_plans
+            ORDER BY created_at DESC
+            OFFSET :offset LIMIT :limit
+        """;
+
+        List<SubscriptionPlan> list = jdbc.query(
+                sql,
+                new MapSqlParameterSource()
+                        .addValue("offset", offset)
+                        .addValue("limit", pageable.getPageSize()),
+                mapper
+        );
+
+        return new PageImpl<>(list, pageable, list.size());
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        String sql = "SELECT COUNT(*) FROM subscription_plans WHERE name = :name";
+
+        Long count = jdbc.queryForObject(
+                sql,
+                new MapSqlParameterSource("name", name),
+                Long.class
+        );
+
+        return count != null && count > 0;
     }
 }
