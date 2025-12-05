@@ -96,20 +96,6 @@ public class UserJdbcRepository implements UserContract {
     }
 
     @Override
-    public boolean existsById(UUID id) {
-        String sql = "SELECT COUNT(*) FROM users WHERE id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
-        return count != null && count > 0;
-    }
-
-    @Override
-    public boolean existsByEmail(String email) {
-        String sql = "SELECT COUNT(*) FROM users WHERE email = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, email);
-        return count != null && count > 0;
-    }
-
-    @Override
     public User update(User user) {
         String sql = """
            UPDATE users 

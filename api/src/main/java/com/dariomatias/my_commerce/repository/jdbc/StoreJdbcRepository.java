@@ -147,33 +147,6 @@ public class StoreJdbcRepository implements StoreContract {
     }
 
     @Override
-    public boolean existsBySlug(String slug) {
-        String sql = "SELECT COUNT(*) FROM stores WHERE slug = :slug";
-        Integer count = jdbc.queryForObject(sql,
-                new MapSqlParameterSource("slug", slug),
-                Integer.class);
-        return count != null && count > 0;
-    }
-
-    @Override
-    public void deactivateByUserId(UUID userId) {
-        String sql = """
-            UPDATE stores
-            SET deleted_at = :deleted_at,
-                is_active = false,
-                updated_at = :updated_at
-            WHERE user_id = :user_id
-        """;
-
-        LocalDateTime now = LocalDateTime.now();
-
-        jdbc.update(sql, new MapSqlParameterSource()
-                .addValue("user_id", userId)
-                .addValue("deleted_at", now)
-                .addValue("updated_at", now));
-    }
-
-    @Override
     public Store update(Store store) {
         LocalDateTime now = LocalDateTime.now();
 

@@ -19,10 +19,6 @@ public interface StoreContract {
 
     Page<Store> findAllByUser(UUID userId, Pageable pageable);
 
-    boolean existsBySlug(String slug);
-
-    void deactivateByUserId(UUID userId);
-
     Store update(Store store);
 
     void deleteById(UUID id);

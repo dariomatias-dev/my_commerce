@@ -16,10 +16,6 @@ public interface UserContract {
 
     Page<User> findAll(Pageable pageable);
 
-    boolean existsById(UUID id);
-
-    boolean existsByEmail(String email);
-
     User update(User user);
 
     void deleteById(UUID id);

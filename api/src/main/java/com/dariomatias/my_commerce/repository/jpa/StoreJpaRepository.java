@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -48,24 +47,6 @@ public class StoreJpaRepository implements StoreContract {
     @Override
     public Optional<Store> findBySlug(String slug) {
         return repository.findBySlug(slug);
-    }
-
-    @Override
-    public boolean existsBySlug(String slug) {
-        return repository.existsBySlug(slug);
-    }
-
-    @Override
-    public void deactivateByUserId(UUID userId) {
-        Page<Store> stores = findAllByUser(userId, Pageable.unpaged());
-        LocalDateTime now = LocalDateTime.now();
-
-        stores.forEach(store -> {
-            store.setIsActive(false);
-            store.setDeletedAt(now);
-            store.getAudit().setUpdatedAt(now);
-            repository.save(store);
-        });
     }
 
     @Override

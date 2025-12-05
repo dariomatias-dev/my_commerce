@@ -42,16 +42,6 @@ public class UserJpaRepository implements UserContract {
     }
 
     @Override
-    public boolean existsById(UUID id) {
-        return repository.existsById(id);
-    }
-
-    @Override
-    public boolean existsByEmail(String email) {
-        return repository.existsByEmail(email);
-    }
-
-    @Override
     public User update(User user) {
         return repository.save(user);
     }
