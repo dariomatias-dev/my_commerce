@@ -6,7 +6,6 @@ import com.dariomatias.my_commerce.model.SubscriptionPlan;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.contract.SubscriptionContract;
 import com.dariomatias.my_commerce.repository.contract.SubscriptionPlanContract;
-import com.dariomatias.my_commerce.repository.contract.UserContract;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -22,16 +21,13 @@ import java.util.UUID;
 public class SubscriptionService {
 
     private final SubscriptionContract subscriptionRepository;
-    private final UserContract userRepository;
     private final SubscriptionPlanContract subscriptionPlanRepository;
 
     public SubscriptionService(
             SubscriptionContract subscriptionRepository,
-            UserContract userRepository,
             SubscriptionPlanContract subscriptionPlanRepository
     ) {
         this.subscriptionRepository = subscriptionRepository;
-        this.userRepository = userRepository;
         this.subscriptionPlanRepository = subscriptionPlanRepository;
     }
 
@@ -115,14 +111,7 @@ public class SubscriptionService {
     }
 
     public void delete(UUID id) {
-        subscriptionRepository.delete(id);
-    }
-
-    private User getUserOrThrow(UUID userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado")
-                );
+        subscriptionRepository.deleteById(id);
     }
 
     private SubscriptionPlan getPlanOrThrow(UUID planId) {

@@ -61,7 +61,7 @@ public class FavoriteService {
     }
 
     public void delete(UUID id) {
-        favoriteRepository.delete(id);
+        favoriteRepository.deleteById(id);
     }
 
     private void getUserOrThrow(UUID userId) {

@@ -90,11 +90,6 @@ public class ProductService {
         return productRepository.findAllByCategory(categoryId, pageable);
     }
 
-    public Product getBySlug(String slug) {
-        return productRepository.findBySlug(slug)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
-    }
-
     public Product getById(UUID id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
@@ -153,7 +148,7 @@ public class ProductService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
         }
 
-        productRepository.delete(id);
+        productRepository.deleteById(id);
     }
 
     private void uploadProductImages(Store store, Product product, MultipartFile[] images) {

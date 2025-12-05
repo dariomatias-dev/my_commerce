@@ -62,7 +62,7 @@ public class CategoryService {
 
     public void delete(UUID id) {
         getById(id);
-        categoryRepository.delete(id);
+        categoryRepository.deleteById(id);
     }
 
     private Store getStoreOrThrow(UUID storeId) {

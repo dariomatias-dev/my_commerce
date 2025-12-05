@@ -61,6 +61,6 @@ public class TransactionService {
 
     public void delete(UUID id) {
         getById(id);
-        transactionRepository.delete(id);
+        transactionRepository.deleteById(id);
     }
 }
