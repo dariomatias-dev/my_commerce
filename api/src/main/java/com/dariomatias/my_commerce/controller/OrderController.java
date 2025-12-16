@@ -73,6 +73,7 @@ public class OrderController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<?>> getById(
+            @AuthenticationPrincipal User user,
             @PathVariable UUID id,
             @RequestParam(required = false) String include
     ) {
@@ -80,16 +81,17 @@ public class OrderController {
             return ResponseEntity.ok(
                     ApiResponse.success(
                             "Pedido completo obtido com sucesso",
-                            service.getByIdWithItems(id)
+                            service.getByIdWithItems(id, user)
                     )
             );
         }
 
-        Order order = service.getById(id);
         return ResponseEntity.ok(
                 ApiResponse.success(
                         "Pedido obtido com sucesso",
-                        OrderResponseDTO.from(order)
+                        OrderResponseDTO.from(
+                                service.getById(id, user)
+                        )
                 )
         );
     }

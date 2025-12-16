@@ -4,6 +4,7 @@ import com.dariomatias.my_commerce.dto.order.OrderRequestDTO;
 import com.dariomatias.my_commerce.dto.order.OrderWithItemsResponseDTO;
 import com.dariomatias.my_commerce.dto.order_item.OrderItemRequestDTO;
 import com.dariomatias.my_commerce.dto.order_item.OrderItemResponseDTO;
+import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.Order;
 import com.dariomatias.my_commerce.model.OrderItem;
 import com.dariomatias.my_commerce.model.Product;
@@ -46,7 +47,6 @@ public class OrderService {
     }
 
     public Order create(User user, OrderRequestDTO request) {
-
         Order order = new Order();
         order.setStore(getStoreOrThrow(request.getStoreId()));
         order.setUser(getAuthenticatedUser(user));
@@ -91,13 +91,22 @@ public class OrderService {
         return orderRepository.findAllByStoreId(storeId, pageable);
     }
 
-    public Order getById(UUID id) {
-        return orderRepository.findById(id)
+    public Order getById(UUID orderId, User user) {
+        Order order = orderRepository.findById(orderId)
                 .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Pedido não encontrado"
+                        )
+                );
+
+        validateOrderAccess(order, user);
+
+        return order;
     }
 
-    public OrderWithItemsResponseDTO getByIdWithItems(UUID id) {
+    public OrderWithItemsResponseDTO getByIdWithItems(UUID id, User user) {
+
         Order order = orderRepository.getByIdWithItems(id)
                 .orElseThrow(() ->
                         new ResponseStatusException(
@@ -105,6 +114,8 @@ public class OrderService {
                                 "Pedido não encontrado"
                         )
                 );
+
+        validateOrderAccess(order, user);
 
         return new OrderWithItemsResponseDTO(
                 order.getId(),
@@ -124,12 +135,6 @@ public class OrderService {
                         ))
                         .toList()
         );
-    }
-
-    public Order updateStatus(UUID id, String status) {
-        Order order = getById(id);
-        order.setStatus(status);
-        return orderRepository.update(order);
     }
 
     public void delete(UUID id) {
@@ -152,5 +157,20 @@ public class OrderService {
         return productRepository.findById(productId)
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
+    }
+
+    private void validateOrderAccess(Order order, User authenticatedUser) {
+        boolean isAdmin = authenticatedUser.getRole() == UserRole.ADMIN;
+        boolean isOwner = order.getUser().getId().equals(authenticatedUser.getId());
+
+        System.out.println("====" + order.getUser().getId());
+        System.out.println("====" + authenticatedUser.getId());
+
+        if (!isAdmin && !isOwner) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Você não tem permissão para acessar este pedido"
+            );
+        }
     }
 }
