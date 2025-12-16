@@ -71,9 +71,26 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<OrderResponseDTO>> getById(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<?>> getById(
+            @PathVariable UUID id,
+            @RequestParam(required = false) String include
+    ) {
+        if ("items".equals(include)) {
+            return ResponseEntity.ok(
+                    ApiResponse.success(
+                            "Pedido completo obtido com sucesso",
+                            service.getByIdWithItems(id)
+                    )
+            );
+        }
+
         Order order = service.getById(id);
-        return ResponseEntity.ok(ApiResponse.success("Pedido obtido com sucesso", OrderResponseDTO.from(order)));
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Pedido obtido com sucesso",
+                        OrderResponseDTO.from(order)
+                )
+        );
     }
 
     @DeleteMapping("/{id}")

@@ -13,6 +13,8 @@ public interface OrderContract {
 
     Optional<Order> findById(UUID id);
 
+    Optional<Order> getByIdWithItems(UUID id);
+
     Page<Order> findAll(Pageable pageable);
 
     Page<Order> findAllByStoreId(UUID storeId, Pageable pageable);

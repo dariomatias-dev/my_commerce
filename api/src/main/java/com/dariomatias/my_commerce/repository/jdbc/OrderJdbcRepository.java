@@ -1,8 +1,6 @@
 package com.dariomatias.my_commerce.repository.jdbc;
 
-import com.dariomatias.my_commerce.model.Order;
-import com.dariomatias.my_commerce.model.Store;
-import com.dariomatias.my_commerce.model.User;
+import com.dariomatias.my_commerce.model.*;
 import com.dariomatias.my_commerce.repository.contract.OrderContract;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.*;
@@ -139,6 +137,70 @@ public class OrderJdbcRepository implements OrderContract {
         );
 
         return list.stream().findFirst();
+    }
+
+    @Override
+    public Optional<Order> getByIdWithItems(UUID id) {
+
+        String orderSql = """
+        SELECT
+            id,
+            total_amount,
+            status,
+            created_at,
+            updated_at
+        FROM orders
+        WHERE id = :id
+    """;
+
+        List<Order> orders = jdbc.query(
+                orderSql,
+                new MapSqlParameterSource("id", id),
+                (rs, rowNum) -> {
+                    Order o = new Order();
+                    o.setId(UUID.fromString(rs.getString("id")));
+                    o.setTotalAmount(rs.getBigDecimal("total_amount"));
+                    o.setStatus(rs.getString("status"));
+                    o.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                    o.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+                    o.setItems(new ArrayList<>());
+                    return o;
+                }
+        );
+
+        if (orders.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Order order = orders.get(0);
+
+        String itemsSql = """
+        SELECT
+            id,
+            product_id,
+            quantity,
+            price
+        FROM order_items
+        WHERE order_id = :order_id
+    """;
+
+        List<OrderItem> items = jdbc.query(
+                itemsSql,
+                new MapSqlParameterSource("order_id", id),
+                (rs, rowNum) -> {
+                    OrderItem item = new OrderItem();
+                    item.setId(UUID.fromString(rs.getString("id")));
+                    item.setQuantity(rs.getInt("quantity"));
+                    item.setPrice(rs.getBigDecimal("price"));
+                    item.setProductId(UUID.fromString(rs.getString("product_id")));
+                    item.setOrderId(id);
+                    return item;
+                }
+        );
+
+        order.setItems(items);
+
+        return Optional.of(order);
     }
 
     @Override

@@ -29,6 +29,16 @@ public class OrderJpaRepository implements OrderContract {
     }
 
     @Override
+    public Optional<Order> findById(UUID id) {
+        return repository.findById(id);
+    }
+
+    @Override
+    public Optional<Order> getByIdWithItems(UUID id) {
+        return repository.getByIdWithItems(id);
+    }
+
+    @Override
     public Page<Order> findAll(Pageable pageable) {
         return repository.findAll(pageable);
     }
@@ -45,11 +55,6 @@ public class OrderJpaRepository implements OrderContract {
         User user = new User();
         user.setId(userId);
         return repository.findAllByUser(user, pageable);
-    }
-
-    @Override
-    public Optional<Order> findById(UUID id) {
-        return repository.findById(id);
     }
 
     @Override

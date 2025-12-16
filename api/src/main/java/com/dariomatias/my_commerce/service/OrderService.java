@@ -1,7 +1,9 @@
 package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.order.OrderRequestDTO;
+import com.dariomatias.my_commerce.dto.order.OrderWithItemsResponseDTO;
 import com.dariomatias.my_commerce.dto.order_item.OrderItemRequestDTO;
+import com.dariomatias.my_commerce.dto.order_item.OrderItemResponseDTO;
 import com.dariomatias.my_commerce.model.Order;
 import com.dariomatias.my_commerce.model.OrderItem;
 import com.dariomatias.my_commerce.model.Product;
@@ -44,42 +46,37 @@ public class OrderService {
     }
 
     public Order create(User user, OrderRequestDTO request) {
+
         Order order = new Order();
         order.setStore(getStoreOrThrow(request.getStoreId()));
         order.setUser(getAuthenticatedUser(user));
         order.setStatus("PENDING");
         order.setTotalAmount(BigDecimal.ZERO);
-
-        Order savedOrder = orderRepository.save(order);
+        order.setItems(new ArrayList<>());
 
         BigDecimal totalAmount = BigDecimal.ZERO;
-        var items = new ArrayList<OrderItem>();
 
         for (OrderItemRequestDTO itemRequest : request.getItems()) {
+
             Product product = getProductOrThrow(itemRequest.getProductId());
 
             OrderItem item = new OrderItem();
-            item.setOrder(savedOrder);
+            item.setOrder(order);
             item.setProduct(product);
             item.setQuantity(itemRequest.getQuantity());
             item.setPrice(product.getPrice());
 
             totalAmount = totalAmount.add(
-                    product.getPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity()))
+                    product.getPrice()
+                            .multiply(BigDecimal.valueOf(itemRequest.getQuantity()))
             );
 
-            items.add(item);
+            order.getItems().add(item);
         }
 
-        savedOrder.setTotalAmount(totalAmount);
+        order.setTotalAmount(totalAmount);
 
-        return orderRepository.save(savedOrder);
-    }
-
-    public Order getById(UUID id) {
-        return orderRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
+        return orderRepository.save(order);
     }
 
     public Page<Order> getAll(Pageable pageable) {
@@ -92,6 +89,41 @@ public class OrderService {
 
     public Page<Order> getAllByStore(UUID storeId, Pageable pageable) {
         return orderRepository.findAllByStoreId(storeId, pageable);
+    }
+
+    public Order getById(UUID id) {
+        return orderRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
+    }
+
+    public OrderWithItemsResponseDTO getByIdWithItems(UUID id) {
+        Order order = orderRepository.getByIdWithItems(id)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Pedido não encontrado"
+                        )
+                );
+
+        return new OrderWithItemsResponseDTO(
+                order.getId(),
+                order.getTotalAmount(),
+                order.getStatus(),
+                order.getAudit().getCreatedAt(),
+                order.getAudit().getUpdatedAt(),
+                order.getItems().stream()
+                        .map(item -> new OrderItemResponseDTO(
+                                item.getId(),
+                                item.getOrderId(),
+                                item.getProductId(),
+                                item.getQuantity(),
+                                item.getPrice(),
+                                item.getAudit().getCreatedAt(),
+                                item.getAudit().getUpdatedAt()
+                        ))
+                        .toList()
+        );
     }
 
     public Order updateStatus(UUID id, String status) {
