@@ -28,7 +28,6 @@ public class OrderController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<OrderResponseDTO>> create(
             @AuthenticationPrincipal User user,
             @RequestBody @Valid OrderRequestDTO request
@@ -49,6 +48,7 @@ public class OrderController {
     }
 
     @GetMapping("/user/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Page<OrderResponseDTO>>> getAllByUser(
             @PathVariable UUID userId,
             @RequestParam(defaultValue = "0") int page,
@@ -60,6 +60,7 @@ public class OrderController {
     }
 
     @GetMapping("/store/{storeId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<Page<OrderResponseDTO>>> getAllByStore(
             @PathVariable UUID storeId,
             @RequestParam(defaultValue = "0") int page,
@@ -94,7 +95,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         service.delete(id);
         return ResponseEntity.ok(ApiResponse.success("Pedido excluído com sucesso", null));
