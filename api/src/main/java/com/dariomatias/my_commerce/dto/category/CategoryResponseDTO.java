@@ -1,9 +1,14 @@
 package com.dariomatias.my_commerce.dto.category;
 
 import com.dariomatias.my_commerce.model.Category;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Getter
+@Setter
 public class CategoryResponseDTO {
 
     private UUID id;
@@ -11,8 +16,6 @@ public class CategoryResponseDTO {
     private String name;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-    public CategoryResponseDTO() {}
 
     public CategoryResponseDTO(UUID id, UUID storeId, String name, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
@@ -32,18 +35,4 @@ public class CategoryResponseDTO {
         );
     }
 
-    public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
-
-    public UUID getStoreId() { return storeId; }
-    public void setStoreId(UUID storeId) { this.storeId = storeId; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

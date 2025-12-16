@@ -1,11 +1,15 @@
 package com.dariomatias.my_commerce.dto.order;
 
 import com.dariomatias.my_commerce.model.Order;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Getter
+@Setter
 public class OrderResponseDTO {
 
     private UUID id;
@@ -15,8 +19,6 @@ public class OrderResponseDTO {
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-    public OrderResponseDTO() {}
 
     public OrderResponseDTO(UUID id, UUID storeId, UUID userId, BigDecimal totalAmount, String status,
                             LocalDateTime createdAt, LocalDateTime updatedAt) {
@@ -41,24 +43,4 @@ public class OrderResponseDTO {
         );
     }
 
-    public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
-
-    public UUID getStoreId() { return storeId; }
-    public void setStoreId(UUID storeId) { this.storeId = storeId; }
-
-    public UUID getUserId() { return userId; }
-    public void setUserId(UUID userId) { this.userId = userId; }
-
-    public BigDecimal getTotalAmount() { return totalAmount; }
-    public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
-
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

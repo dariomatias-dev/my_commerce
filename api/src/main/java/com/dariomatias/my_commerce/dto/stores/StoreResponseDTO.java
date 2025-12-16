@@ -1,9 +1,14 @@
 package com.dariomatias.my_commerce.dto.stores;
 
 import com.dariomatias.my_commerce.model.Store;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Getter
+@Setter
 public class StoreResponseDTO {
 
     private UUID id;
@@ -16,8 +21,6 @@ public class StoreResponseDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
-
-    public StoreResponseDTO() {}
 
     public StoreResponseDTO(UUID id, String name, String slug, String description, String themeColor, Boolean isActive, UUID userId,
                             LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
@@ -48,33 +51,4 @@ public class StoreResponseDTO {
         );
     }
 
-    public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getSlug() { return slug; }
-    public void setSlug(String slug) { this.slug = slug; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public String getThemeColor() { return themeColor; }
-    public void setThemeColor(String themeColor) { this.themeColor = themeColor; }
-
-    public Boolean getIsActive() { return isActive; }
-    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
-
-    public UUID getUserId() { return userId; }
-    public void setUserId(UUID userId) { this.userId = userId; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
-
-    public LocalDateTime getDeletedAt() { return deletedAt; }
-    public void setDeletedAt(LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
 }

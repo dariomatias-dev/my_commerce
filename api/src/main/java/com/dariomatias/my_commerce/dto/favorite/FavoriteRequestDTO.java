@@ -1,8 +1,13 @@
 package com.dariomatias.my_commerce.dto.favorite;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.UUID;
 
+@Getter
+@Setter
 public class FavoriteRequestDTO {
 
     @NotNull(message = "O userId é obrigatório")
@@ -11,9 +16,4 @@ public class FavoriteRequestDTO {
     @NotNull(message = "O productId é obrigatório")
     private UUID productId;
 
-    public UUID getUserId() { return userId; }
-    public void setUserId(UUID userId) { this.userId = userId; }
-
-    public UUID getProductId() { return productId; }
-    public void setProductId(UUID productId) { this.productId = productId; }
 }

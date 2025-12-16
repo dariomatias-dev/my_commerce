@@ -2,8 +2,13 @@ package com.dariomatias.my_commerce.dto.category;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.UUID;
 
+@Getter
+@Setter
 public class CategoryRequestDTO {
 
     @NotNull(message = "A loja é obrigatória")
@@ -14,9 +19,4 @@ public class CategoryRequestDTO {
 
     public CategoryRequestDTO() {}
 
-    public UUID getStoreId() { return storeId; }
-    public void setStoreId(UUID storeId) { this.storeId = storeId; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
 }

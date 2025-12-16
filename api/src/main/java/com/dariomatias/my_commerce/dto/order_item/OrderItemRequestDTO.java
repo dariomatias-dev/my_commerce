@@ -2,9 +2,13 @@ package com.dariomatias.my_commerce.dto.order_item;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
+@Getter
+@Setter
 public class OrderItemRequestDTO {
 
     @NotNull(message = "O produto é obrigatório")
@@ -14,19 +18,4 @@ public class OrderItemRequestDTO {
     @Min(value = 1, message = "A quantidade deve ser maior que zero")
     private Integer quantity;
 
-    public UUID getProductId() {
-        return productId;
-    }
-
-    public void setProductId(UUID productId) {
-        this.productId = productId;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
 }

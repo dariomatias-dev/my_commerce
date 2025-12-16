@@ -2,7 +2,11 @@ package com.dariomatias.my_commerce.dto.stores;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class StoreRequestDTO {
 
     @NotBlank(message = "O nome da loja é obrigatório")
@@ -17,12 +21,4 @@ public class StoreRequestDTO {
 
     public StoreRequestDTO() {}
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public String getThemeColor() { return themeColor; }
-    public void setThemeColor(String themeColor) { this.themeColor = themeColor; }
 }
