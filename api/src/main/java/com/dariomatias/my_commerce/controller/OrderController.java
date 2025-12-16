@@ -4,12 +4,15 @@ import com.dariomatias.my_commerce.dto.ApiResponse;
 import com.dariomatias.my_commerce.dto.order.OrderRequestDTO;
 import com.dariomatias.my_commerce.dto.order.OrderResponseDTO;
 import com.dariomatias.my_commerce.model.Order;
+import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.service.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -26,8 +29,11 @@ public class OrderController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<OrderResponseDTO>> create(@RequestBody OrderRequestDTO request) {
-        Order order = service.create(request);
+    public ResponseEntity<ApiResponse<OrderResponseDTO>> create(
+            @AuthenticationPrincipal User user,
+            @RequestBody @Valid OrderRequestDTO request
+    ) {
+        Order order = service.create(user, request);
         return ResponseEntity.ok(ApiResponse.success("Pedido criado com sucesso", OrderResponseDTO.from(order)));
     }
 
@@ -68,14 +74,6 @@ public class OrderController {
     public ResponseEntity<ApiResponse<OrderResponseDTO>> getById(@PathVariable UUID id) {
         Order order = service.getById(id);
         return ResponseEntity.ok(ApiResponse.success("Pedido obtido com sucesso", OrderResponseDTO.from(order)));
-    }
-
-    @PatchMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<OrderResponseDTO>> update(@PathVariable UUID id,
-                                                                @RequestBody OrderRequestDTO request) {
-        Order order = service.update(id, request);
-        return ResponseEntity.ok(ApiResponse.success("Pedido atualizado com sucesso", OrderResponseDTO.from(order)));
     }
 
     @DeleteMapping("/{id}")

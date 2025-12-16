@@ -24,13 +24,6 @@ public class OrderItemController {
         this.service = service;
     }
 
-    @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<OrderItemResponseDTO>> create(@RequestBody OrderItemRequestDTO request) {
-        OrderItem item = service.create(request);
-        return ResponseEntity.ok(ApiResponse.success("Item criado com sucesso", OrderItemResponseDTO.from(item)));
-    }
-
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Page<OrderItemResponseDTO>>> getAll(
@@ -68,15 +61,6 @@ public class OrderItemController {
     public ResponseEntity<ApiResponse<OrderItemResponseDTO>> getById(@PathVariable UUID id) {
         OrderItem item = service.getById(id);
         return ResponseEntity.ok(ApiResponse.success("Item obtido com sucesso", OrderItemResponseDTO.from(item)));
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<OrderItemResponseDTO>> update(
-            @PathVariable UUID id,
-            @RequestBody OrderItemRequestDTO request
-    ) {
-        OrderItem item = service.update(id, request);
-        return ResponseEntity.ok(ApiResponse.success("Item atualizado com sucesso", OrderItemResponseDTO.from(item)));
     }
 
     @DeleteMapping("/{id}")

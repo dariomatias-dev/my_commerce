@@ -32,15 +32,6 @@ public class OrderItemService {
         this.productRepository = productRepository;
     }
 
-    public OrderItem create(OrderItemRequestDTO request) {
-        OrderItem item = new OrderItem();
-        item.setOrder(getOrderOrThrow(request.getOrderId()));
-        item.setProduct(getProductOrThrow(request.getProductId()));
-        item.setQuantity(request.getQuantity());
-        item.setPrice(request.getPrice());
-        return itemRepository.save(item);
-    }
-
     public Page<OrderItem> getAll(Pageable pageable) {
         return itemRepository.findAll(pageable);
     }
@@ -66,15 +57,6 @@ public class OrderItemService {
     private Product getProductOrThrow(UUID productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
-    }
-
-    public OrderItem update(UUID id, OrderItemRequestDTO request) {
-        OrderItem item = getById(id);
-        if (request.getOrderId() != null) item.setOrder(getOrderOrThrow(request.getOrderId()));
-        if (request.getProductId() != null) item.setProduct(getProductOrThrow(request.getProductId()));
-        if (request.getQuantity() != null) item.setQuantity(request.getQuantity());
-        if (request.getPrice() != null) item.setPrice(request.getPrice());
-        return itemRepository.update(item);
     }
 
     public void delete(UUID id) {

@@ -58,6 +58,7 @@ public class StoreController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<StoreResponseDTO>> getById(@AuthenticationPrincipal User user, @PathVariable UUID id) {
         Store entity = service.getById(id, user);
         return ResponseEntity.ok(ApiResponse.success("Loja obtida com sucesso", StoreResponseDTO.from(entity)));

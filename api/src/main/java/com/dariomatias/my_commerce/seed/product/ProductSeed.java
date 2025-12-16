@@ -9,6 +9,8 @@ import com.dariomatias.my_commerce.repository.StoreRepository;
 import com.dariomatias.my_commerce.util.SlugUtil;
 import org.springframework.stereotype.Component;
 import jakarta.transaction.Transactional;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @Component
@@ -45,7 +47,7 @@ public class ProductSeed {
             product.setSlug(SlugUtil.generateSlug(name));
 
             product.setDescription("Descrição do produto " + i);
-            product.setPrice(49.90 + i);
+            product.setPrice(BigDecimal.valueOf(49.90 + i));
             product.setStock(20 + i);
             product.setActive(true);
 

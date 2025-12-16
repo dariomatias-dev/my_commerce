@@ -1,7 +1,10 @@
 package com.dariomatias.my_commerce.dto.order;
 
+import com.dariomatias.my_commerce.dto.order_item.OrderItemRequestDTO;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import java.math.BigDecimal;
+
+import java.util.List;
 import java.util.UUID;
 
 public class OrderRequestDTO {
@@ -9,23 +12,22 @@ public class OrderRequestDTO {
     @NotNull(message = "A loja é obrigatória")
     private UUID storeId;
 
-    @NotNull(message = "O usuário é obrigatório")
-    private UUID userId;
+    @NotEmpty(message = "O pedido deve conter ao menos um item")
+    private List<OrderItemRequestDTO> items;
 
-    @NotNull(message = "O total do pedido é obrigatório")
-    private BigDecimal totalAmount;
+    public UUID getStoreId() {
+        return storeId;
+    }
 
-    private String status;
+    public void setStoreId(UUID storeId) {
+        this.storeId = storeId;
+    }
 
-    public UUID getStoreId() { return storeId; }
-    public void setStoreId(UUID storeId) { this.storeId = storeId; }
+    public List<OrderItemRequestDTO> getItems() {
+        return items;
+    }
 
-    public UUID getUserId() { return userId; }
-    public void setUserId(UUID userId) { this.userId = userId; }
-
-    public BigDecimal getTotalAmount() { return totalAmount; }
-    public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
-
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public void setItems(List<OrderItemRequestDTO> items) {
+        this.items = items;
+    }
 }

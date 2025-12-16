@@ -1,6 +1,8 @@
 package com.dariomatias.my_commerce.dto.product;
 
 import com.dariomatias.my_commerce.model.Product;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -12,7 +14,7 @@ public class ProductResponseDTO {
     private String name;
     private String slug;
     private String description;
-    private Double price;
+    private BigDecimal price;
     private Integer stock;
     private Boolean active;
     private LocalDateTime createdAt;
@@ -54,8 +56,8 @@ public class ProductResponseDTO {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public Double getPrice() { return price; }
-    public void setPrice(Double price) { this.price = price; }
+    public BigDecimal getPrice() { return price; }
+    public void setPrice(BigDecimal price) { this.price = price; }
 
     public Integer getStock() { return stock; }
     public void setStock(Integer stock) { this.stock = stock; }

@@ -1,6 +1,8 @@
 package com.dariomatias.my_commerce.dto.product;
 
 import jakarta.validation.constraints.*;
+
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public class ProductRequestDTO {
@@ -21,7 +23,7 @@ public class ProductRequestDTO {
 
     @NotNull(message = "O preço é obrigatório")
     @DecimalMin(value = "0.0", inclusive = false, message = "O preço deve ser maior que 0")
-    private Double price;
+    private BigDecimal price;
 
     @NotNull(message = "O estoque é obrigatório")
     @Min(value = 0, message = "O estoque não pode ser negativo")
@@ -42,8 +44,8 @@ public class ProductRequestDTO {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public Double getPrice() { return price; }
-    public void setPrice(Double price) { this.price = price; }
+    public BigDecimal getPrice() { return price; }
+    public void setPrice(BigDecimal price) { this.price = price; }
 
     public Integer getStock() { return stock; }
     public void setStock(Integer stock) { this.stock = stock; }

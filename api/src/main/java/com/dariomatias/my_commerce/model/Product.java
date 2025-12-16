@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -47,7 +48,7 @@ public class Product {
     @Column(nullable = false)
     @Getter
     @Setter
-    private Double price;
+    private BigDecimal price;
 
     @Column(nullable = false)
     @Getter

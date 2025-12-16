@@ -30,7 +30,7 @@ public class ProductJdbcRepository implements ProductContract {
         p.setName(rs.getString("name"));
         p.setSlug(rs.getString("slug"));
         p.setDescription(rs.getString("description"));
-        p.setPrice(rs.getDouble("price"));
+        p.setPrice(rs.getBigDecimal("price"));
         p.setStock(rs.getInt("stock"));
         p.setActive(rs.getBoolean("active"));
         p.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());

@@ -46,7 +46,7 @@ public class OrderItemSeed {
                 Product product = products.get(random.nextInt(products.size()));
 
                 int quantity = random.nextInt(5) + 1;
-                BigDecimal unitPrice = BigDecimal.valueOf(product.getPrice());
+                BigDecimal unitPrice = product.getPrice();
                 BigDecimal totalPrice = unitPrice.multiply(BigDecimal.valueOf(quantity));
 
                 OrderItem item = new OrderItem();
