@@ -1,8 +1,10 @@
 "use client";
 
 import { ArrowRight, RefreshCw, Sparkles, Store } from "lucide-react";
-import Link from "next/link";
 import React, { useRef, useState } from "react";
+
+import { Footer } from "@/components/layout/footer";
+import { Header } from "@/components/layout/header";
 
 export default function VerifyEmailPage() {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
@@ -36,84 +38,86 @@ export default function VerifyEmailPage() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white p-6 font-sans text-slate-900">
-      <div className="pointer-events-none absolute inset-0 z-0">
-        <div className="absolute top-[-10%] left-[-10%] h-[50%] w-[50%] rounded-full bg-indigo-50 opacity-60 blur-[120px]" />
-        <div className="absolute right-[-10%] bottom-[-10%] h-[50%] w-[50%] rounded-full bg-violet-50 opacity-60 blur-[120px]" />
-      </div>
+    <>
+      <Header />
 
-      <div className="relative z-10 w-full max-w-xl">
-        <div className="mb-16 flex justify-center">
-          <Link href="/" className="group flex items-center gap-3">
-            <div className="rounded-xl bg-indigo-600 p-2 shadow-lg shadow-indigo-100 transition-transform group-hover:rotate-12">
-              <Store className="h-6 w-6 text-white" />
+      <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white p-6 font-sans text-slate-900">
+        <div className="pointer-events-none absolute inset-0 z-0">
+          <div className="absolute top-[-5%] right-[-5%] h-[60%] w-[50%] rounded-full bg-indigo-50/50 opacity-60 blur-[120px]" />
+          <div className="absolute bottom-[-5%] left-[-5%] h-[50%] w-[40%] rounded-full bg-violet-50/40 opacity-60 blur-[100px]" />
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] brightness-100 contrast-150" />
+
+          <div className="absolute top-0 left-1/4 h-full w-px bg-gradient-to-b from-transparent via-slate-100 to-transparent" />
+          <div className="absolute top-0 right-1/4 h-full w-px bg-gradient-to-b from-transparent via-slate-100 to-transparent" />
+        </div>
+
+        <div className="relative z-10 w-full max-w-lg">
+          <div className="relative overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white p-8 text-center shadow-[0_30px_80px_-20px_rgba(0,0,0,0.08)] md:p-14">
+            <div className="mb-6 flex justify-center">
+              <div className="rounded-xl bg-slate-950 p-2 shadow-lg shadow-slate-200">
+                <Store className="h-5 w-5 text-white" />
+              </div>
             </div>
-            <span className="text-2xl font-black tracking-tighter uppercase italic">
-              My<span className="text-indigo-600">Ecommerce</span>
-            </span>
-          </Link>
-        </div>
 
-        <div className="relative overflow-hidden rounded-[4rem] border border-slate-100 bg-white p-10 text-center shadow-[0_40px_100px_-20px_rgba(0,0,0,0.08)] md:p-20">
-          <div className="mb-10 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-indigo-50 px-4 py-2">
-            <Sparkles size={14} className="text-indigo-600" />
-            <span className="text-[10px] font-black tracking-[0.2em] text-indigo-600 uppercase">
-              Verificação de Segurança
-            </span>
-          </div>
+            <div className="mb-10 text-center">
+              <h1 className="mb-3 text-3xl font-black tracking-tighter text-slate-950 uppercase italic md:text-4xl">
+                VERIFIQUE <span className="text-indigo-600">SEU ACESSO.</span>
+              </h1>
+              <p className="text-sm leading-relaxed font-medium text-slate-500">
+                Insira o código de 6 dígitos enviado para o seu{" "}
+                <br className="hidden md:block" />
+                e-mail corporativo para ativar sua loja.
+              </p>
+            </div>
 
-          <div className="mb-10">
-            <h1 className="mb-6 text-4xl leading-none font-black tracking-tighter text-slate-950 uppercase italic md:text-5xl">
-              QUASE LÁ. <br />{" "}
-              <span className="text-indigo-600">VERIFIQUE SEU E-MAIL.</span>
-            </h1>
-            <p className="text-lg leading-relaxed font-medium text-slate-500">
-              Enviamos um código de 6 dígitos para o seu e-mail corporativo.{" "}
-              <br />
-              Insira-o abaixo para ativar sua loja.
-            </p>
-          </div>
+            <div className="mb-10 flex justify-center gap-2 md:gap-3">
+              {code.map((digit, index) => (
+                <input
+                  key={index}
+                  type="text"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(e) => handleChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  className="h-14 w-11 rounded-xl border border-slate-100 bg-slate-50 text-center text-2xl font-black text-indigo-600 shadow-sm transition-all focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-600/5 focus:outline-none md:h-16 md:w-14"
+                />
+              ))}
+            </div>
 
-          <div className="mb-12 flex justify-center gap-2 md:gap-4">
-            {code.map((digit, index) => (
-              <input
-                key={index}
-                type="text"
-                maxLength={1}
-                value={digit}
-                onChange={(e) => handleChange(index, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(index, e)}
-                className="h-16 w-12 rounded-2xl border border-slate-100 bg-slate-50 text-center text-3xl font-black text-indigo-600 shadow-sm transition-all focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-600/5 focus:outline-none md:h-20 md:w-16"
-              />
-            ))}
-          </div>
-
-          <button className="group relative w-full overflow-hidden rounded-3xl bg-indigo-600 py-6 text-xl font-black text-white shadow-xl transition-all hover:bg-indigo-700 hover:shadow-[0_20px_40px_rgba(79,70,229,0.2)] active:scale-95">
-            <span className="relative z-10 flex items-center justify-center gap-2">
-              CONFIRMAR CÓDIGO{" "}
-              <ArrowRight
-                size={24}
-                className="transition-transform group-hover:translate-x-1"
-              />
-            </span>
-            <div className="absolute inset-0 translate-y-full bg-slate-950 transition-transform duration-300 group-hover:translate-y-0" />
-          </button>
-
-          <div className="mt-12 flex flex-col items-center gap-4">
-            <button
-              onClick={handleResend}
-              disabled={isResending}
-              className="flex items-center gap-2 text-xs font-black tracking-widest text-slate-400 uppercase transition-colors hover:text-indigo-600 disabled:opacity-50"
-            >
-              <RefreshCw
-                size={14}
-                className={isResending ? "animate-spin" : ""}
-              />
-              {isResending ? "Reenviando..." : "Não recebeu? Reenviar código"}
+            <button className="group relative w-full overflow-hidden rounded-2xl bg-slate-950 py-4 text-xs font-black tracking-widest text-white transition-all hover:bg-indigo-600 active:scale-95">
+              <span className="relative z-10 flex items-center justify-center gap-2">
+                CONFIRMAR CONTA
+                <ArrowRight
+                  size={16}
+                  className="transition-transform group-hover:translate-x-1"
+                />
+              </span>
+              <div className="absolute inset-0 translate-y-full bg-indigo-600 transition-transform duration-300 group-hover:translate-y-0" />
             </button>
+
+            <div className="mt-10 flex flex-col items-center gap-4 border-t border-slate-50 pt-8">
+              <button
+                onClick={handleResend}
+                disabled={isResending}
+                className="flex items-center gap-2 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors hover:text-indigo-600 disabled:opacity-50"
+              >
+                <RefreshCw
+                  size={12}
+                  className={isResending ? "animate-spin" : ""}
+                />
+                {isResending ? "Reenviando Código..." : "Não recebeu? Reenviar"}
+              </button>
+            </div>
           </div>
+
+          <p className="mt-8 text-center text-[10px] font-bold tracking-[0.3em] text-slate-300 uppercase italic">
+            <Sparkles size={12} className="mr-2 inline text-indigo-400" />
+            Verificação de identidade segura
+          </p>
         </div>
-      </div>
-    </div>
+      </main>
+
+      <Footer />
+    </>
   );
 }
