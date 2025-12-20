@@ -51,7 +51,7 @@ public class SubscriptionController {
     }
 
     @GetMapping("/user/{userId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Page<SubscriptionResponseDTO>>> getAllByUser(
             @PathVariable UUID userId,
             @RequestParam(defaultValue = "0") int page,
@@ -59,6 +59,21 @@ public class SubscriptionController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<SubscriptionResponseDTO> subscriptions = service.getAllByUser(userId, pageable)
+                .map(SubscriptionResponseDTO::from);
+        return ResponseEntity.ok(
+                ApiResponse.success("Assinaturas do usuário obtidas com sucesso", subscriptions)
+        );
+    }
+
+    @GetMapping("/user/me")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
+    public ResponseEntity<ApiResponse<Page<SubscriptionResponseDTO>>> getAllByMe(
+            @AuthenticationPrincipal User user,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<SubscriptionResponseDTO> subscriptions = service.getAllByUser(user.getId(), pageable)
                 .map(SubscriptionResponseDTO::from);
         return ResponseEntity.ok(
                 ApiResponse.success("Assinaturas do usuário obtidas com sucesso", subscriptions)
