@@ -12,4 +12,6 @@ import java.util.UUID;
 @Repository
 public interface SubscriptionRepository extends JpaRepository<Subscription, UUID> {
     Page<Subscription> findAllByUser_Id(UUID userId, Pageable pageable);
+
+    boolean existsByUser_IdAndIsActiveTrue(UUID userId);
 }

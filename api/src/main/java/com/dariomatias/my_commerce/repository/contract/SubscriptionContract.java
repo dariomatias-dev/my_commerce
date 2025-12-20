@@ -17,5 +17,7 @@ public interface SubscriptionContract {
 
     Page<Subscription> findAllByUser_Id(UUID userId, Pageable pageable);
 
+    boolean existsActiveSubscriptionByUserId(UUID userId);
+
     Subscription update(Subscription subscription);
 }

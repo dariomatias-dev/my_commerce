@@ -5,6 +5,7 @@ import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.contract.StoreContract;
+import com.dariomatias.my_commerce.repository.contract.SubscriptionContract;
 import com.dariomatias.my_commerce.repository.contract.UserContract;
 import com.dariomatias.my_commerce.util.SlugUtil;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,7 @@ import java.util.UUID;
 public class StoreService {
 
     private final StoreContract storeRepository;
+    private final SubscriptionContract subscriptionRepository;
     private final UserContract userRepository;
     private final MinioService minioService;
 
@@ -29,15 +31,21 @@ public class StoreService {
 
     public StoreService(
             StoreContract storeRepository,
+            SubscriptionContract subscriptionRepository,
             UserContract userRepository,
             MinioService minioService
     ) {
         this.storeRepository = storeRepository;
+        this.subscriptionRepository = subscriptionRepository;
         this.userRepository = userRepository;
         this.minioService = minioService;
     }
 
     public Store create(UUID userId, StoreRequestDTO request, MultipartFile logo, MultipartFile banner) {
+        if (!subscriptionRepository.existsActiveSubscriptionByUserId(userId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O usuário não possue uma assinatura ativa");
+        }
+
         User user = getUserById(userId);
         String slug = SlugUtil.generateSlug(request.getName());
 

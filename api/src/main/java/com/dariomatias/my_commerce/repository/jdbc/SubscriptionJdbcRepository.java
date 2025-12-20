@@ -109,6 +109,25 @@ public class SubscriptionJdbcRepository implements SubscriptionContract {
     }
 
     @Override
+    public boolean existsActiveSubscriptionByUserId(UUID userId) {
+        String sql = """
+        SELECT COUNT(1)
+        FROM subscriptions
+        WHERE user_id = :user_id
+          AND is_active = true
+    """;
+
+        Integer count = jdbc.queryForObject(
+                sql,
+                new MapSqlParameterSource("user_id", userId),
+                Integer.class
+        );
+
+        return count != null && count > 0;
+    }
+
+
+    @Override
     public Optional<Subscription> findById(UUID id) {
         String sql = "SELECT * FROM subscriptions WHERE id = :id";
 

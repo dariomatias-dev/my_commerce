@@ -37,6 +37,11 @@ public class SubscriptionJpaRepository implements SubscriptionContract {
     }
 
     @Override
+    public boolean existsActiveSubscriptionByUserId(UUID userId) {
+        return repository.existsByUser_IdAndIsActiveTrue(userId);
+    }
+
+    @Override
     public Optional<Subscription> findById(UUID id) {
         return repository.findById(id);
     }
