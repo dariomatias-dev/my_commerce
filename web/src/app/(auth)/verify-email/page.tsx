@@ -1,8 +1,9 @@
 "use client";
 
-import { ArrowRight, RefreshCw, Sparkles, Store } from "lucide-react";
+import { RefreshCw, Sparkles, Store } from "lucide-react";
 import React, { useRef, useState } from "react";
 
+import { ActionButton } from "@/components/action-button";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 
@@ -84,16 +85,7 @@ export default function VerifyEmailPage() {
               ))}
             </div>
 
-            <button className="group relative w-full overflow-hidden rounded-2xl bg-slate-950 py-4 text-xs font-black tracking-widest text-white transition-all hover:bg-indigo-600 active:scale-95">
-              <span className="relative z-10 flex items-center justify-center gap-2">
-                CONFIRMAR CONTA
-                <ArrowRight
-                  size={16}
-                  className="transition-transform group-hover:translate-x-1"
-                />
-              </span>
-              <div className="absolute inset-0 translate-y-full bg-indigo-600 transition-transform duration-300 group-hover:translate-y-0" />
-            </button>
+            <ActionButton label="CONFIRMAR CONTA" variant="dark" size="sm" />
 
             <div className="mt-10 flex flex-col items-center gap-4 border-t border-slate-50 pt-8">
               <button

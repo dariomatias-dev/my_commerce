@@ -1,8 +1,9 @@
 "use client";
 
-import { ArrowRight, CheckCircle2, Mail, Store } from "lucide-react";
+import { CheckCircle2, Mail, Store } from "lucide-react";
 import React, { useState } from "react";
 
+import { ActionButton } from "@/components/action-button";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 
@@ -70,19 +71,11 @@ export default function RecoverPasswordPage() {
                     </div>
                   </div>
 
-                  <button
-                    type="submit"
-                    className="group relative w-full overflow-hidden rounded-2xl bg-slate-950 py-4 text-xs font-black tracking-widest text-white transition-all hover:bg-indigo-600 active:scale-95"
-                  >
-                    <span className="relative z-10 flex items-center justify-center gap-2">
-                      ENVIAR INSTRUÇÕES
-                      <ArrowRight
-                        size={16}
-                        className="transition-transform group-hover:translate-x-1"
-                      />
-                    </span>
-                    <div className="absolute inset-0 translate-y-full bg-indigo-600 transition-transform duration-300 group-hover:translate-y-0" />
-                  </button>
+                  <ActionButton
+                    label="ENVIAR INSTRUÇÕES"
+                    variant="dark"
+                    size="sm"
+                  />
                 </form>
               </div>
             ) : (

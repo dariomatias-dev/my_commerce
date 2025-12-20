@@ -2,7 +2,6 @@
 
 import {
   ArrowLeft,
-  ArrowRight,
   Chrome,
   Eye,
   EyeOff,
@@ -14,6 +13,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
+
+import { ActionButton } from "@/components/action-button";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -152,19 +153,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <button
-              type="submit"
-              className="group relative w-full overflow-hidden rounded-2xl bg-indigo-600 py-5 text-lg font-black text-white shadow-xl transition-all hover:bg-indigo-700 hover:shadow-[0_20px_40px_rgba(79,70,229,0.2)] active:scale-95"
-            >
-              <span className="relative z-10 flex items-center justify-center gap-2">
-                ENTRAR NO PAINEL{" "}
-                <ArrowRight
-                  size={20}
-                  className="transition-transform group-hover:translate-x-1"
-                />
-              </span>
-              <div className="absolute inset-0 translate-y-full bg-slate-950 transition-transform duration-300 group-hover:translate-y-0" />
-            </button>
+            <ActionButton label="ENTRAR" />
           </form>
 
           <div className="mt-12 text-center">
