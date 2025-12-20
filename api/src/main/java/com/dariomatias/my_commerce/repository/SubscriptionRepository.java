@@ -11,5 +11,5 @@ import java.util.UUID;
 
 @Repository
 public interface SubscriptionRepository extends JpaRepository<Subscription, UUID> {
-    Page<Subscription> findAllByUserId(UUID userId, Pageable pageable);
+    Page<Subscription> findAllByUser_Id(UUID userId, Pageable pageable);
 }

@@ -32,8 +32,8 @@ public class SubscriptionJpaRepository implements SubscriptionContract {
     }
 
     @Override
-    public Page<Subscription> findAllByUser(UUID userId, Pageable pageable) {
-        return repository.findAllByUserId(userId, pageable);
+    public Page<Subscription> findAllByUser_Id(UUID userId, Pageable pageable) {
+        return repository.findAllByUser_Id(userId, pageable);
     }
 
     @Override

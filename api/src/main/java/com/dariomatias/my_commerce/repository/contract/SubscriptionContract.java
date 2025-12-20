@@ -15,7 +15,7 @@ public interface SubscriptionContract {
 
     Page<Subscription> findAll(Pageable pageable);
 
-    Page<Subscription> findAllByUser(UUID userId, Pageable pageable);
+    Page<Subscription> findAllByUser_Id(UUID userId, Pageable pageable);
 
     Subscription update(Subscription subscription);
 

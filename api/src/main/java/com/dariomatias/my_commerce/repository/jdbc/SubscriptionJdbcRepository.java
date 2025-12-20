@@ -88,7 +88,7 @@ public class SubscriptionJdbcRepository implements SubscriptionContract {
     }
 
     @Override
-    public Page<Subscription> findAllByUser(UUID userId, Pageable pageable) {
+    public Page<Subscription> findAllByUser_Id(UUID userId, Pageable pageable) {
         int offset = pageable.getPageNumber() * pageable.getPageSize();
 
         String sql = """

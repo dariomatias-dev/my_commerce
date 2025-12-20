@@ -1,11 +1,13 @@
 package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.subscription.SubscriptionRequestDTO;
+import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.Subscription;
 import com.dariomatias.my_commerce.model.SubscriptionPlan;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.contract.SubscriptionContract;
 import com.dariomatias.my_commerce.repository.contract.SubscriptionPlanContract;
+import com.dariomatias.my_commerce.repository.contract.UserContract;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -20,21 +22,23 @@ import java.util.UUID;
 @Transactional
 public class SubscriptionService {
 
+    private final UserContract userRepository;
     private final SubscriptionContract subscriptionRepository;
     private final SubscriptionPlanContract subscriptionPlanRepository;
 
     public SubscriptionService(
+            UserContract userRepository,
             SubscriptionContract subscriptionRepository,
             SubscriptionPlanContract subscriptionPlanRepository
     ) {
+        this.userRepository = userRepository;
         this.subscriptionRepository = subscriptionRepository;
         this.subscriptionPlanRepository = subscriptionPlanRepository;
     }
 
     public Subscription create(User user, SubscriptionRequestDTO request) {
-
         Page<Subscription> subscriptions =
-                subscriptionRepository.findAllByUser(user.getId(), Pageable.unpaged());
+                subscriptionRepository.findAllByUser_Id(user.getId(), Pageable.unpaged());
 
         boolean hasActive = subscriptions.stream().anyMatch(Subscription::getIsActive);
 
@@ -56,6 +60,9 @@ public class SubscriptionService {
         subscription.setEndDate(end);
         subscription.setIsActive(true);
 
+        user.setRole(UserRole.SUBSCRIBER);
+        userRepository.update(user);
+
         return subscriptionRepository.save(subscription);
     }
 
@@ -64,7 +71,7 @@ public class SubscriptionService {
     }
 
     public Page<Subscription> getAllByUser(UUID userId, Pageable pageable) {
-        return subscriptionRepository.findAllByUser(userId, pageable);
+        return subscriptionRepository.findAllByUser_Id(userId, pageable);
     }
 
     public Subscription getById(UUID id) {
@@ -77,7 +84,7 @@ public class SubscriptionService {
     public Subscription changePlan(User user, SubscriptionRequestDTO request) {
 
         Page<Subscription> subscriptions =
-                subscriptionRepository.findAllByUser(user.getId(), Pageable.unpaged());
+                subscriptionRepository.findAllByUser_Id(user.getId(), Pageable.unpaged());
 
         Subscription active = subscriptions.stream()
                 .filter(Subscription::getIsActive)
