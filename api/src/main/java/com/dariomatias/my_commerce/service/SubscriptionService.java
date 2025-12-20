@@ -117,10 +117,6 @@ public class SubscriptionService {
         return subscriptionRepository.save(newSubscription);
     }
 
-    public void delete(UUID id) {
-        subscriptionRepository.deleteById(id);
-    }
-
     private SubscriptionPlan getPlanOrThrow(UUID planId) {
         return subscriptionPlanRepository.findById(planId)
                 .orElseThrow(() ->

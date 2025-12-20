@@ -85,11 +85,4 @@ public class SubscriptionController {
                 ApiResponse.success("Plano alterado com sucesso", SubscriptionResponseDTO.from(subscription))
         );
     }
-
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
-        service.delete(id);
-        return ResponseEntity.ok(ApiResponse.success("Assinatura excluída com sucesso", null));
-    }
 }

@@ -45,9 +45,4 @@ public class SubscriptionJpaRepository implements SubscriptionContract {
     public Subscription update(Subscription subscription) {
         return repository.save(subscription);
     }
-
-    @Override
-    public void deleteById(UUID id) {
-        repository.deleteById(id);
-    }
 }

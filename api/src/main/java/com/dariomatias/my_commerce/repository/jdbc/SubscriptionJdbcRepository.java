@@ -150,10 +150,4 @@ public class SubscriptionJdbcRepository implements SubscriptionContract {
         s.getAudit().setUpdatedAt(now);
         return s;
     }
-
-    @Override
-    public void deleteById(UUID id) {
-        String sql = "DELETE FROM subscriptions WHERE id = :id";
-        jdbc.update(sql, new MapSqlParameterSource("id", id));
-    }
 }

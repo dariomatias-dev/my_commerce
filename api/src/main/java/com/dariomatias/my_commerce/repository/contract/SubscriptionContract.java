@@ -18,6 +18,4 @@ public interface SubscriptionContract {
     Page<Subscription> findAllByUser_Id(UUID userId, Pageable pageable);
 
     Subscription update(Subscription subscription);
-
-    void deleteById(UUID id);
 }
