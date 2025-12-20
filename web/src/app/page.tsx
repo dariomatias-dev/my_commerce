@@ -5,28 +5,20 @@ import {
   Check,
   ChevronDown,
   Globe,
-  Menu,
   Search,
   Smartphone,
   Sparkles,
-  Store,
   TrendingUp,
-  X,
   Zap,
   ZapIcon,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
+import { Footer } from "@/components/layout/footer";
+import { Header } from "@/components/layout/header";
 
 export default function Home() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   const faqs = [
     {
@@ -49,48 +41,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-white font-sans text-slate-900 selection:bg-indigo-600 selection:text-white">
-      <header>
-        <nav
-          className={`fixed inset-x-0 top-0 z-[100] transition-all duration-500 ${
-            scrolled
-              ? "bg-white/80 py-4 shadow-sm backdrop-blur-xl"
-              : "bg-transparent py-8"
-          }`}
-        >
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-6">
-            <div className="group flex cursor-pointer items-center gap-2">
-              <div className="rounded-xl bg-slate-950 p-2 transition-transform group-hover:rotate-12">
-                <Store className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-xl font-black tracking-tighter uppercase italic">
-                My<span className="text-indigo-600">Ecommerce</span>
-              </span>
-            </div>
-
-            <div className="hidden items-center gap-10 lg:flex">
-              {["Funcionalidades", "Planos", "FAQ"].map((item) => (
-                <a
-                  key={item}
-                  href={`#${item.toLowerCase()}`}
-                  className="text-xs font-black tracking-widest text-slate-400 uppercase transition-colors hover:text-indigo-600"
-                >
-                  {item}
-                </a>
-              ))}
-              <button className="rounded-full bg-slate-950 px-8 py-3 text-xs font-black tracking-widest text-white uppercase shadow-2xl shadow-slate-200 transition-all hover:bg-indigo-600 active:scale-95">
-                Criar Loja Free
-              </button>
-            </div>
-
-            <button
-              className="lg:hidden"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <X /> : <Menu />}
-            </button>
-          </div>
-        </nav>
-      </header>
+      <Header />
 
       <section className="relative flex min-h-screen items-center justify-center">
         <div className="mx-auto max-w-7xl px-6 text-center">
@@ -484,104 +435,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="border-t border-slate-50 bg-white py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="mb-24 flex flex-col items-start justify-between gap-20 lg:flex-row">
-            <div className="max-w-xs">
-              <div className="mb-10 flex items-center gap-2">
-                <div className="rounded-xl bg-slate-950 p-2">
-                  <Store className="h-5 w-5 text-white" />
-                </div>
-                <span className="text-2xl font-black tracking-tighter text-slate-950 uppercase italic">
-                  MyEcommerce
-                </span>
-              </div>
-              <p className="leading-relaxed font-medium text-slate-400 italic">
-                Empoderando empreendedores a alcançarem a liberdade financeira
-                através do varejo digital.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-20 lg:gap-40">
-              <div>
-                <h4 className="mb-10 text-xs font-black tracking-[0.4em] text-indigo-600 uppercase">
-                  Produto
-                </h4>
-                <ul className="space-y-6 text-[10px] font-black tracking-widest text-slate-400 uppercase">
-                  <li>
-                    <a
-                      href="#"
-                      className="transition-colors hover:text-slate-950"
-                    >
-                      Sistema
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="transition-colors hover:text-slate-950"
-                    >
-                      Marketplace
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="transition-colors hover:text-slate-950"
-                    >
-                      Segurança
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="mb-10 text-xs font-black tracking-[0.4em] text-indigo-600 uppercase">
-                  Empresa
-                </h4>
-                <ul className="space-y-6 text-[10px] font-black tracking-widest text-slate-400 uppercase">
-                  <li>
-                    <a
-                      href="#"
-                      className="transition-colors hover:text-slate-950"
-                    >
-                      Suporte
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="transition-colors hover:text-slate-950"
-                    >
-                      Privacidade
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="transition-colors hover:text-slate-950"
-                    >
-                      Contato
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-col items-center justify-between border-t border-slate-50 pt-10 text-[10px] font-black tracking-[0.5em] text-slate-300 uppercase md:flex-row">
-            <p>© 2025 MY ECOMMERCE INC. ALL RIGHTS RESERVED.</p>
-            <div className="mt-8 flex gap-10 md:mt-0">
-              <a href="#" className="transition-colors hover:text-indigo-600">
-                Twitter
-              </a>
-              <a href="#" className="transition-colors hover:text-indigo-600">
-                Instagram
-              </a>
-              <a href="#" className="transition-colors hover:text-indigo-600">
-                LinkedIn
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }
