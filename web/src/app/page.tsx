@@ -1,8 +1,5 @@
-"use client";
-
 import {
   Check,
-  ChevronDown,
   Globe,
   Search,
   Smartphone,
@@ -10,34 +7,13 @@ import {
   Zap,
   ZapIcon,
 } from "lucide-react";
-import { useState } from "react";
 
+import { FaqsSection } from "@/components/faqs-section";
 import { HeroSection } from "@/components/hero-section.";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 
 export default function Home() {
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-
-  const faqs = [
-    {
-      q: "Como funciona a migração de outra plataforma?",
-      a: "Nossa equipe cuida de tudo. Importamos seus produtos, clientes e histórico de pedidos em menos de 24h sem tirar sua loja do ar.",
-    },
-    {
-      q: "Quais as formas de pagamento aceitas?",
-      a: "Integração nativa com Pix, principais cartões de crédito e boleto. Taxas exclusivas já negociadas para nossos parceiros.",
-    },
-    {
-      q: "Posso vender em marketplaces como Amazon e Magalu?",
-      a: "Sim! O MyEcommerce centraliza seu estoque e pedidos de múltiplos canais em um único painel inteligente.",
-    },
-    {
-      q: "Existe limite de visitas ou tráfego?",
-      a: "Nenhum. Nossa infraestrutura escala automaticamente para aguentar desde o primeiro acesso até o Black Friday.",
-    },
-  ];
-
   return (
     <main className="min-h-screen bg-white font-sans text-slate-900 selection:bg-indigo-600 selection:text-white">
       <Header />
@@ -326,43 +302,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-40" id="faq">
-        <div className="mx-auto max-w-3xl px-6">
-          <div className="mb-24 text-center">
-            <h2 className="mb-4 text-4xl font-black tracking-tighter uppercase italic">
-              Perguntas Frequentes
-            </h2>
-            <p className="text-xs font-bold tracking-widest text-slate-400 uppercase">
-              Tudo o que você precisa saber
-            </p>
-          </div>
-          <div className="space-y-4">
-            {faqs.map((faq, i) => (
-              <div
-                key={i}
-                className="overflow-hidden rounded-3xl border border-slate-100 bg-white transition-all"
-              >
-                <button
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="flex w-full items-center justify-between px-10 py-8 text-left transition-colors hover:bg-slate-50"
-                >
-                  <span className="text-lg font-black tracking-tight">
-                    {faq.q}
-                  </span>
-                  <ChevronDown
-                    className={`transition-transform duration-300 ${openFaq === i ? "rotate-180 text-indigo-600" : "text-slate-300"}`}
-                  />
-                </button>
-                {openFaq === i && (
-                  <div className="animate-in slide-in-from-top-2 px-10 pb-10 text-lg leading-relaxed font-medium text-slate-500 duration-300">
-                    {faq.a}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <FaqsSection />
 
       <section className="relative w-full overflow-hidden bg-indigo-600 py-40 lg:py-60">
         <div className="pointer-events-none absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10" />
