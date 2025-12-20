@@ -2,6 +2,7 @@ package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.*;
 import com.dariomatias.my_commerce.dto.refresh_token.RefreshTokenResponse;
+import com.dariomatias.my_commerce.dto.user.UserResponse;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.contract.UserContract;
 import jakarta.mail.MessagingException;
@@ -66,7 +67,7 @@ public class AuthService {
         auditLogService.log(userId, "login", result, details);
     }
 
-    public User register(SignupRequest request) {
+    public UserResponse register(SignupRequest request) {
         userRepository.findByEmail(request.getEmail())
                 .ifPresent(u -> {
                     auditLogService.log(u.getId().toString(), "signup", "failure", Map.of("email", u.getEmail(), "reason", "email already in use"));
@@ -87,7 +88,8 @@ public class AuthService {
         } catch (MessagingException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao enviar e-mail de verificação");
         }
-        return savedUser;
+
+        return new UserResponse(savedUser.getId(), savedUser.getName(), savedUser.getEmail(), savedUser.getRole(), savedUser.isEnabled());
     }
 
     public void verifyEmail(String token) {

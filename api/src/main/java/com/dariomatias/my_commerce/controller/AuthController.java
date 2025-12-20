@@ -3,6 +3,7 @@ package com.dariomatias.my_commerce.controller;
 import com.dariomatias.my_commerce.dto.*;
 import com.dariomatias.my_commerce.dto.refresh_token.RefreshTokenRequest;
 import com.dariomatias.my_commerce.dto.refresh_token.RefreshTokenResponse;
+import com.dariomatias.my_commerce.dto.user.UserResponse;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.service.AuthService;
 import jakarta.validation.Valid;
@@ -26,9 +27,9 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<User>> signup(@Valid @RequestBody SignupRequest request) {
-        User user = authService.register(request);
-        return ResponseEntity.status(201).body(ApiResponse.success("Usuário cadastrado com sucesso. Verifique seu e-mail", user));
+    public ResponseEntity<ApiResponse<UserResponse>> signup(@Valid @RequestBody SignupRequest request) {
+        UserResponse user = authService.register(request);
+        return ResponseEntity.status(201).body(ApiResponse.success(201, "Usuário cadastrado com sucesso. Verifique seu e-mail", user));
     }
 
     @PostMapping("/verify-email")
