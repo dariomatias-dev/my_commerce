@@ -49,6 +49,13 @@ public class StoreService {
         User user = getUserById(userId);
         String slug = SlugUtil.generateSlug(request.getName());
 
+        if (storeRepository.existsBySlug(slug)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Já existe uma loja registrada com esse nome"
+            );
+        }
+
         minioService.createBucket(BUCKET_NAME);
         String folder = slug + "/";
 
@@ -97,8 +104,17 @@ public class StoreService {
 
         if (request != null) {
             if (request.getName() != null && !request.getName().equals(store.getName())) {
+                String newSlug = SlugUtil.generateSlug(request.getName());
+
+                if (storeRepository.existsBySlug(newSlug)) {
+                    throw new ResponseStatusException(
+                            HttpStatus.CONFLICT,
+                            "O nome da loja já está em uso."
+                    );
+                }
+
                 store.setName(request.getName());
-                store.setSlug(SlugUtil.generateSlug(request.getName()));
+                store.setSlug(newSlug);
             }
 
             if (request.getDescription() != null) {

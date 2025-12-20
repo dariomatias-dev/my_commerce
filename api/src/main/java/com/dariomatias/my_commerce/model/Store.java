@@ -4,11 +4,18 @@ import com.dariomatias.my_commerce.model.shared.AuditMetadata;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "stores")
+@Table(
+        name = "stores",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"slug"}),
+                @UniqueConstraint(columnNames = {"name"})
+        }
+)
 public class Store {
 
     @Id
@@ -22,14 +29,14 @@ public class Store {
     @Setter
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     @Getter
     @Setter
     private String slug;
 
+    @Column(nullable = false)
     @Getter
     @Setter
-    @Column(nullable = false)
     private String description;
 
     @Column(nullable = false)
@@ -53,7 +60,7 @@ public class Store {
     private LocalDateTime deletedAt;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     @Getter
     @Setter
     private User user;

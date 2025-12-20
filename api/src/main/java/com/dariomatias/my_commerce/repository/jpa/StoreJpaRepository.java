@@ -50,6 +50,11 @@ public class StoreJpaRepository implements StoreContract {
     }
 
     @Override
+    public boolean existsBySlug(String slug) {
+        return repository.existsBySlug(slug);
+    }
+
+    @Override
     public Store update(Store store) {
         return repository.save(store);
     }

@@ -15,6 +15,8 @@ public interface StoreContract {
 
     Optional<Store> findBySlug(String slug);
 
+    boolean existsBySlug(String slug);
+
     Page<Store> findAll(Pageable pageable);
 
     Page<Store> findAllByUser(UUID userId, Pageable pageable);

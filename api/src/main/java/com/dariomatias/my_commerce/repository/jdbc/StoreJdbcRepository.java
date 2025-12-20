@@ -147,6 +147,24 @@ public class StoreJdbcRepository implements StoreContract {
     }
 
     @Override
+    public boolean existsBySlug(String slug) {
+        String sql = """
+        SELECT 1
+        FROM stores
+        WHERE slug = :slug AND deleted_at IS NULL
+        LIMIT 1
+    """;
+
+        List<Integer> result = jdbc.query(
+                sql,
+                new MapSqlParameterSource("slug", slug),
+                (rs, rowNum) -> rs.getInt(1)
+        );
+
+        return !result.isEmpty();
+    }
+
+    @Override
     public Store update(Store store) {
         LocalDateTime now = LocalDateTime.now();
 
