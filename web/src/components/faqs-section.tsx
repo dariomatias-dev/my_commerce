@@ -3,6 +3,8 @@
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
+import { cn } from "@/lib/utils";
+
 export const FaqsSection = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
@@ -36,6 +38,7 @@ export const FaqsSection = () => {
             Tudo o que você precisa saber
           </p>
         </div>
+
         <div className="space-y-4">
           {faqs.map((faq, i) => (
             <div
@@ -50,14 +53,23 @@ export const FaqsSection = () => {
                   {faq.q}
                 </span>
                 <ChevronDown
-                  className={`transition-transform duration-300 ${openFaq === i ? "rotate-180 text-indigo-600" : "text-slate-300"}`}
+                  className={cn(
+                    "transition-transform duration-300",
+                    openFaq === i
+                      ? "rotate-180 text-indigo-600"
+                      : "text-slate-300",
+                  )}
                 />
               </button>
-              {openFaq === i && (
-                <div className="animate-in slide-in-from-top-2 px-10 pb-10 text-lg leading-relaxed font-medium text-slate-500 duration-300">
-                  {faq.a}
-                </div>
-              )}
+
+              <div
+                className={cn(
+                  "overflow-hidden px-10 text-lg leading-relaxed font-medium text-slate-500 transition-all duration-500",
+                  openFaq === i ? "max-h-[200px] pb-10" : "max-h-0 pb-0",
+                )}
+              >
+                <div className="mt-2">{faq.a}</div>
+              </div>
             </div>
           ))}
         </div>
