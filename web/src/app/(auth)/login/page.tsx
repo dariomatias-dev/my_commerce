@@ -3,10 +3,7 @@
 import {
   ArrowLeft,
   Chrome,
-  Eye,
-  EyeOff,
   Github,
-  Lock,
   Mail,
   ShieldCheck,
   Store,
@@ -15,9 +12,9 @@ import Link from "next/link";
 import React, { useState } from "react";
 
 import { ActionButton } from "@/components/action-button";
+import { PasswordField } from "@/components/password-field";
 
 export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -130,27 +127,13 @@ export default function LoginPage() {
                   Esqueceu a senha?
                 </Link>
               </div>
-              <div className="group relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-300 transition-colors group-focus-within:text-indigo-600">
-                  <Lock size={18} />
-                </div>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  required
-                  placeholder="••••••••"
-                  className="w-full rounded-2xl border border-slate-100 bg-slate-50 py-4 pr-12 pl-12 font-bold text-slate-900 transition-all placeholder:text-slate-300 focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-600/5 focus:outline-none"
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-300 transition-colors hover:text-indigo-600"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
+
+              <PasswordField
+                value={formData.password}
+                onChange={(value) =>
+                  setFormData({ ...formData, password: value })
+                }
+              />
             </div>
 
             <ActionButton label="ENTRAR" />

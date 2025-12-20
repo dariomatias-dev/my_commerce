@@ -1,23 +1,15 @@
 "use client";
 
-import {
-  ArrowRight,
-  CheckCircle2,
-  Eye,
-  EyeOff,
-  Lock,
-  LockKeyholeIcon,
-  Store,
-} from "lucide-react";
+import { ArrowRight, CheckCircle2, LockKeyholeIcon, Store } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 
 import { ActionButton } from "@/components/action-button";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
+import { PasswordField } from "@/components/password-field";
 
 export default function ResetPasswordPage() {
-  const [showPassword, setShowPassword] = useState(false);
   const [isReset, setIsReset] = useState(false);
   const [formData, setFormData] = useState({
     password: "",
@@ -38,7 +30,6 @@ export default function ResetPasswordPage() {
           <div className="absolute top-[-5%] right-[-5%] h-[60%] w-[50%] rounded-full bg-indigo-50/50 opacity-60 blur-[120px]" />
           <div className="absolute bottom-[-5%] left-[-5%] h-[50%] w-[40%] rounded-full bg-violet-50/40 opacity-60 blur-[100px]" />
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] brightness-100 contrast-150" />
-
           <div className="absolute top-0 left-1/4 h-full w-px bg-gradient-to-b from-transparent via-slate-100 to-transparent" />
           <div className="absolute top-0 right-1/4 h-full w-px bg-gradient-to-b from-transparent via-slate-100 to-transparent" />
         </div>
@@ -58,7 +49,7 @@ export default function ResetPasswordPage() {
                     NOVA <span className="text-indigo-600">SENHA.</span>
                   </h1>
                   <p className="text-sm leading-relaxed font-medium text-slate-500">
-                    Escolha uma combinação forte para{" "}
+                    Escolha uma combinação forte para
                     <br className="hidden md:block" />
                     garantir a proteção das suas lojas.
                   </p>
@@ -69,54 +60,27 @@ export default function ResetPasswordPage() {
                     <label className="ml-1 text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase">
                       Nova Senha
                     </label>
-                    <div className="group relative">
-                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-300 transition-colors group-focus-within:text-indigo-600">
-                        <Lock size={18} />
-                      </div>
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        required
-                        placeholder="••••••••"
-                        className="w-full rounded-2xl border border-slate-100 bg-slate-50 py-4 pr-12 pl-12 text-sm font-bold text-slate-900 shadow-sm transition-all placeholder:text-slate-300 focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-600/5 focus:outline-none"
-                        onChange={(e) =>
-                          setFormData({ ...formData, password: e.target.value })
-                        }
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-300 transition-colors hover:text-indigo-600"
-                      >
-                        {showPassword ? (
-                          <EyeOff size={18} />
-                        ) : (
-                          <Eye size={18} />
-                        )}
-                      </button>
-                    </div>
+                    <PasswordField
+                      value={formData.password}
+                      onChange={(value) =>
+                        setFormData({ ...formData, password: value })
+                      }
+                    />
                   </div>
 
                   <div className="space-y-2 text-left">
                     <label className="ml-1 text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase">
                       Confirmar Senha
                     </label>
-                    <div className="group relative">
-                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-300 transition-colors group-focus-within:text-indigo-600">
-                        <Lock size={18} />
-                      </div>
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        required
-                        placeholder="••••••••"
-                        className="w-full rounded-2xl border border-slate-100 bg-slate-50 py-4 pr-4 pl-12 text-sm font-bold text-slate-900 shadow-sm transition-all placeholder:text-slate-300 focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-600/5 focus:outline-none"
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            confirmPassword: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
+                    <PasswordField
+                      value={formData.confirmPassword}
+                      onChange={(value) =>
+                        setFormData({
+                          ...formData,
+                          confirmPassword: value,
+                        })
+                      }
+                    />
                   </div>
 
                   <ActionButton
@@ -136,13 +100,17 @@ export default function ResetPasswordPage() {
                     </div>
                   </div>
                 </div>
+
                 <h2 className="mb-4 text-3xl font-black tracking-tighter text-slate-950 uppercase italic">
                   SENHA <span className="text-indigo-600">REDEFINIDA.</span>
                 </h2>
+
                 <p className="mb-10 px-4 text-sm leading-relaxed font-medium text-slate-500">
-                  Sua segurança foi atualizada com sucesso. <br />
+                  Sua segurança foi atualizada com sucesso.
+                  <br />
                   Acesse sua conta para continuar vendendo.
                 </p>
+
                 <Link
                   href="/login"
                   className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-slate-950 px-10 py-4 text-xs font-black tracking-widest text-white shadow-2xl transition-all hover:bg-indigo-600 active:scale-95"

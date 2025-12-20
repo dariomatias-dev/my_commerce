@@ -3,9 +3,6 @@
 import {
   ArrowLeft,
   CheckCircle2,
-  Eye,
-  EyeOff,
-  Lock,
   Mail,
   Sparkles,
   Store,
@@ -15,9 +12,9 @@ import Link from "next/link";
 import React, { useState } from "react";
 
 import { ActionButton } from "@/components/action-button";
+import { PasswordField } from "@/components/password-field";
 
 export default function SignupPage() {
-  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -153,50 +150,24 @@ export default function SignupPage() {
               <label className="ml-1 text-xs font-black tracking-widest text-slate-400 uppercase">
                 Senha
               </label>
-              <div className="group relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-300 transition-colors group-focus-within:text-indigo-600">
-                  <Lock size={18} />
-                </div>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  required
-                  placeholder="••••••••"
-                  className="w-full rounded-2xl border border-slate-100 bg-slate-50 py-4 pr-12 pl-12 font-bold text-slate-900 shadow-sm transition-all placeholder:text-slate-300 focus:border-indigo-600 focus:bg-white focus:ring-2 focus:ring-indigo-600/20 focus:outline-none"
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-300 transition-colors hover:text-indigo-600"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
+              <PasswordField
+                value={formData.password}
+                onChange={(value) =>
+                  setFormData({ ...formData, password: value })
+                }
+              />
             </div>
 
             <div className="space-y-2">
               <label className="ml-1 text-xs font-black tracking-widest text-slate-400 uppercase">
                 Confirmar Senha
               </label>
-              <div className="group relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-300 transition-colors group-focus-within:text-indigo-600">
-                  <Lock size={18} />
-                </div>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  required
-                  placeholder="••••••••"
-                  className="w-full rounded-2xl border border-slate-100 bg-slate-50 py-4 pr-4 pl-12 font-bold text-slate-900 shadow-sm transition-all placeholder:text-slate-300 focus:border-indigo-600 focus:bg-white focus:ring-2 focus:ring-indigo-600/20 focus:outline-none"
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      confirmPassword: e.target.value,
-                    })
-                  }
-                />
-              </div>
+              <PasswordField
+                value={formData.confirmPassword}
+                onChange={(value) =>
+                  setFormData({ ...formData, confirmPassword: value })
+                }
+              />
             </div>
 
             <ActionButton label="CRIAR MINHA CONTA" />
