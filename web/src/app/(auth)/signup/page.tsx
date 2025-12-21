@@ -2,10 +2,13 @@
 
 import { ArrowLeft, CheckCircle2, Sparkles, Store } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
 import { SignupForm } from "@/components/(auth)/signup/signup-form";
 
 const SignupPage = () => {
+  const [isSuccess, setIsSuccess] = useState(false);
+
   return (
     <div className="flex min-h-screen flex-col overflow-hidden bg-white font-sans text-slate-900 lg:flex-row">
       <div className="relative hidden flex-col justify-between overflow-hidden bg-slate-950 p-16 lg:flex lg:w-1/2">
@@ -70,34 +73,38 @@ const SignupPage = () => {
         </div>
 
         <div className="mx-auto w-full max-w-md">
-          <div className="mb-10">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1">
-              <Sparkles size={12} className="text-indigo-600" />
-              <span className="text-[10px] font-black tracking-widest text-indigo-600 uppercase">
-                Comece sua jornada
-              </span>
+          {!isSuccess && (
+            <div className="animate-in fade-in slide-in-from-top-4 mb-10 duration-500">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1">
+                <Sparkles size={12} className="text-indigo-600" />
+                <span className="text-[10px] font-black tracking-widest text-indigo-600 uppercase">
+                  Comece sua jornada
+                </span>
+              </div>
+              <h2 className="mb-2 text-4xl font-black tracking-tighter text-slate-950 uppercase italic">
+                Criar Conta.
+              </h2>
+              <p className="font-medium tracking-tight text-slate-500">
+                Preencha os dados abaixo para iniciar sua loja grátis.
+              </p>
             </div>
-            <h2 className="mb-2 text-4xl font-black tracking-tighter text-slate-950 uppercase italic">
-              Criar Conta.
-            </h2>
-            <p className="font-medium tracking-tight text-slate-500">
-              Preencha os dados abaixo para iniciar sua loja grátis.
-            </p>
-          </div>
+          )}
 
-          <SignupForm />
+          <SignupForm onSuccess={() => setIsSuccess(true)} />
 
-          <div className="mt-10 text-center">
-            <p className="text-sm font-bold text-slate-500">
-              Já possui uma conta?{" "}
-              <Link
-                href="/login"
-                className="text-indigo-600 decoration-2 underline-offset-4 hover:underline"
-              >
-                Fazer Login
-              </Link>
-            </p>
-          </div>
+          {!isSuccess && (
+            <div className="animate-in fade-in mt-10 text-center duration-700">
+              <p className="text-sm font-bold text-slate-500">
+                Já possui uma conta?{" "}
+                <Link
+                  href="/login"
+                  className="text-indigo-600 decoration-2 underline-offset-4 hover:underline"
+                >
+                  Fazer Login
+                </Link>
+              </p>
+            </div>
+          )}
 
           <div className="mt-12 border-t border-slate-50 pt-8 text-center">
             <p className="text-[10px] leading-relaxed font-black tracking-[0.2em] text-slate-300 uppercase">
