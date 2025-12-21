@@ -5,7 +5,7 @@ import Link from "next/link";
 
 import { SignupForm } from "@/components/(auth)/signup/signup-form";
 
-export default function SignupPage() {
+const SignupPage = () => {
   return (
     <div className="flex min-h-screen flex-col overflow-hidden bg-white font-sans text-slate-900 lg:flex-row">
       <div className="relative hidden flex-col justify-between overflow-hidden bg-slate-950 p-16 lg:flex lg:w-1/2">
@@ -129,4 +129,6 @@ export default function SignupPage() {
       </Link>
     </div>
   );
-}
+};
+
+export default SignupPage;

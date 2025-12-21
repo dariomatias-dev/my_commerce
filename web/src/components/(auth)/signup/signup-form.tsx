@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { ActionButton } from "@/components/action-button";
 import { PasswordField } from "@/components/password-field";
 
-export function SignupForm() {
+export const SignupForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -83,4 +83,4 @@ export function SignupForm() {
       <ActionButton label="CRIAR MINHA CONTA" />
     </form>
   );
-}
+};

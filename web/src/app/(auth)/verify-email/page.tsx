@@ -6,7 +6,7 @@ import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { VerifyEmailForm } from "../../../components/(auth)/verify-email/verify-email-form";
 
-export default function VerifyEmailPage() {
+const VerifyEmailPage = () => {
   return (
     <>
       <Header />
@@ -34,4 +34,6 @@ export default function VerifyEmailPage() {
       <Footer />
     </>
   );
-}
+};
+
+export default VerifyEmailPage;

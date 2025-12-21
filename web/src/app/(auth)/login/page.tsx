@@ -1,11 +1,12 @@
 "use client";
 
-import { ArrowLeft, Chrome, Github, ShieldCheck, Store } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Store } from "lucide-react";
 import Link from "next/link";
+import { FaFacebookF, FaGoogle } from "react-icons/fa";
 
 import { LoginForm } from "@/components/(auth)/login/login-form";
 
-export default function LoginPage() {
+const LoginPage = () => {
   return (
     <div className="flex min-h-screen flex-col overflow-hidden bg-white font-sans text-slate-900 lg:flex-row">
       <div className="relative hidden flex-col justify-between overflow-hidden bg-slate-950 p-16 lg:flex lg:w-1/2">
@@ -35,7 +36,7 @@ export default function LoginPage() {
 
         <div className="relative z-10 flex items-center gap-4 text-[10px] font-black tracking-[0.4em] text-slate-500 uppercase italic opacity-50">
           <ShieldCheck size={16} className="text-indigo-500" />
-          Conexão Segura & Criptografada
+          Conexão Segura
         </div>
       </div>
 
@@ -59,10 +60,10 @@ export default function LoginPage() {
 
           <div className="mb-10 grid grid-cols-2 gap-4">
             <button className="flex items-center justify-center gap-3 rounded-2xl border border-slate-100 py-4 text-xs font-bold tracking-widest uppercase transition-all hover:bg-slate-50 active:scale-95">
-              <Chrome size={16} /> Google
+              <FaGoogle size={16} /> Google
             </button>
             <button className="flex items-center justify-center gap-3 rounded-2xl border border-slate-100 py-4 text-xs font-bold tracking-widest uppercase transition-all hover:bg-slate-50 active:scale-95">
-              <Github size={16} /> GitHub
+              <FaFacebookF size={16} /> Facebook
             </button>
           </div>
 
@@ -98,4 +99,6 @@ export default function LoginPage() {
       </div>
     </div>
   );
-}
+};
+
+export default LoginPage;

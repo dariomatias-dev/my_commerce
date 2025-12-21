@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import { ActionButton } from "@/components/action-button";
 import { PasswordField } from "@/components/password-field";
 
-export function LoginForm() {
+export const LoginForm = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -45,7 +45,7 @@ export function LoginForm() {
             Senha
           </label>
           <Link
-            href="/forgot"
+            href="/recover-password"
             className="text-[10px] font-black tracking-widest text-indigo-600 uppercase transition-colors hover:text-indigo-700"
           >
             Esqueceu a senha?
@@ -61,4 +61,4 @@ export function LoginForm() {
       <ActionButton label="ENTRAR" />
     </form>
   );
-}
+};

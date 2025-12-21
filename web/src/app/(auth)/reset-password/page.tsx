@@ -6,7 +6,7 @@ import { ResetPasswordForm } from "@/components/(auth)/reset-password/reset-pass
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 
-export default function ResetPasswordPage() {
+const ResetPasswordPage = () => {
   return (
     <>
       <Header />
@@ -37,4 +37,6 @@ export default function ResetPasswordPage() {
       <Footer />
     </>
   );
-}
+};
+
+export default ResetPasswordPage;

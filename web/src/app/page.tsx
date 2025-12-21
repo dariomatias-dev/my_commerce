@@ -13,7 +13,7 @@ import { HeroSection } from "@/components/hero-section.";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 
-export default function Home() {
+const Home = () => {
   return (
     <main className="min-h-screen bg-white font-sans text-slate-900 selection:bg-indigo-600 selection:text-white">
       <Header />
@@ -332,4 +332,6 @@ export default function Home() {
       <Footer />
     </main>
   );
-}
+};
+
+export default Home;

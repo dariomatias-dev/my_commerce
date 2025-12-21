@@ -5,7 +5,7 @@ import React, { useRef, useState } from "react";
 
 import { ActionButton } from "@/components/action-button";
 
-export function VerifyEmailForm() {
+export const VerifyEmailForm = () => {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
   const [isResending, setIsResending] = useState(false);
@@ -86,4 +86,4 @@ export function VerifyEmailForm() {
       </div>
     </div>
   );
-}
+};

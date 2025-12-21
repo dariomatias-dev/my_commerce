@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import { ActionButton } from "@/components/action-button";
 import { PasswordField } from "@/components/password-field";
 
-export function ResetPasswordForm() {
+export const ResetPasswordForm = () => {
   const [isReset, setIsReset] = useState(false);
   const [formData, setFormData] = useState({
     password: "",
@@ -104,4 +104,4 @@ export function ResetPasswordForm() {
       </form>
     </div>
   );
-}
+};

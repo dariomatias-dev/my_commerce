@@ -4,7 +4,7 @@ import { RecoverPasswordForm } from "@/components/(auth)/recover-password/recove
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 
-export default function RecoverPasswordPage() {
+const RecoverPasswordPage = () => {
   return (
     <>
       <Header />
@@ -33,4 +33,6 @@ export default function RecoverPasswordPage() {
       <Footer />
     </>
   );
-}
+};
+
+export default RecoverPasswordPage;
