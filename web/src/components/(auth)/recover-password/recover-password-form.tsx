@@ -7,13 +7,17 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 import { ActionButton } from "@/components/action-button";
+import { useAuth } from "@/hooks/use-auth";
 import { recoverSchema } from "@/schemas/recover.schema";
 
 type RecoverFormValues = z.infer<typeof recoverSchema>;
 
 export const RecoverPasswordForm = () => {
+  const { recoverPassword } = useAuth();
   const [emailSent, setEmailSent] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const {
     register,
@@ -27,13 +31,25 @@ export const RecoverPasswordForm = () => {
     },
   });
 
-  const onSubmit = (data: RecoverFormValues) => {
-    setSubmittedEmail(data.email);
-    setEmailSent(true);
+  const onSubmit = async (data: RecoverFormValues) => {
+    try {
+      setIsLoading(true);
+      setApiError(null);
+
+      await recoverPassword({ email: data.email });
+
+      setSubmittedEmail(data.email);
+      setEmailSent(true);
+    } catch (error: any) {
+      setApiError(error.message || "Erro ao solicitar recuperação.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleReset = () => {
     setEmailSent(false);
+    setApiError(null);
     reset();
   };
 
@@ -89,6 +105,14 @@ export const RecoverPasswordForm = () => {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        {apiError && (
+          <div className="rounded-xl bg-red-50 p-4 text-center">
+            <p className="text-[10px] font-black tracking-widest text-red-500 uppercase">
+              {apiError}
+            </p>
+          </div>
+        )}
+
         <div className="space-y-2 text-left">
           <label className="ml-1 text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase">
             E-mail Cadastrado
@@ -100,8 +124,9 @@ export const RecoverPasswordForm = () => {
             <input
               {...register("email")}
               type="email"
+              disabled={isLoading}
               placeholder="seu@email.com"
-              className={`w-full rounded-2xl border bg-slate-50 py-4 pr-4 pl-12 text-sm font-bold text-slate-900 shadow-sm transition-all placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:outline-none ${
+              className={`w-full rounded-2xl border bg-slate-50 py-4 pr-4 pl-12 text-sm font-bold text-slate-900 shadow-sm transition-all placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:outline-none disabled:opacity-50 ${
                 errors.email
                   ? "border-red-500 focus:border-red-500 focus:ring-red-500/5"
                   : "border-slate-100 focus:border-indigo-600 focus:ring-indigo-600/5"
@@ -115,7 +140,12 @@ export const RecoverPasswordForm = () => {
           )}
         </div>
 
-        <ActionButton label="ENVIAR INSTRUÇÕES" variant="dark" size="sm" />
+        <ActionButton
+          label={isLoading ? "ENVIANDO..." : "ENVIAR INSTRUÇÕES"}
+          variant="dark"
+          size="sm"
+          disabled={isLoading}
+        />
       </form>
     </div>
   );
