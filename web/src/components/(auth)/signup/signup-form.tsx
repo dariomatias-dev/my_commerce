@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle2, Mail, MailCheck, User } from "lucide-react";
+import { CheckCircle2, Mail, MailCheck, RefreshCw, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -19,11 +19,16 @@ interface SignupFormProps {
 }
 
 export const SignupForm = ({ onSuccess }: SignupFormProps) => {
-  const { signup } = useAuth();
+  const { signup, resendVerificationEmail } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [registeredEmail, setRegisteredEmail] = useState("");
+  const [resendFeedback, setResendFeedback] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   const {
     register,
@@ -57,6 +62,25 @@ export const SignupForm = ({ onSuccess }: SignupFormProps) => {
       setApiError(error.message || "Erro ao criar conta. Tente novamente.");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    try {
+      setIsResending(true);
+      setResendFeedback(null);
+      await resendVerificationEmail({ email: registeredEmail });
+      setResendFeedback({
+        message: "E-mail reenviado com sucesso!",
+        type: "success",
+      });
+    } catch (error: any) {
+      setResendFeedback({
+        message: error.message || "Erro ao reenviar e-mail.",
+        type: "error",
+      });
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -99,6 +123,31 @@ export const SignupForm = ({ onSuccess }: SignupFormProps) => {
               />
               Clique no botão para validar seu acesso.
             </p>
+          </div>
+
+          <div className="pt-2">
+            <button
+              onClick={handleResend}
+              disabled={isResending}
+              className="group flex w-full items-center justify-center gap-2 rounded-xl border border-slate-100 bg-white py-3 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-all hover:border-indigo-600 hover:text-indigo-600 disabled:opacity-50"
+            >
+              <RefreshCw
+                size={14}
+                className={isResending ? "animate-spin" : ""}
+              />
+              {isResending ? "Reenviando..." : "Reenviar e-mail de ativação"}
+            </button>
+            {resendFeedback && (
+              <p
+                className={`mt-2 text-[9px] font-bold tracking-wider uppercase ${
+                  resendFeedback.type === "success"
+                    ? "text-emerald-500"
+                    : "text-red-500"
+                }`}
+              >
+                {resendFeedback.message}
+              </p>
+            )}
           </div>
         </div>
 
