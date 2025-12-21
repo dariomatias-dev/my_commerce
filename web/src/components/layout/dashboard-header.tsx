@@ -1,21 +1,11 @@
 "use client";
 
-import {
-  Bell,
-  ChevronDown,
-  LogOut,
-  Search,
-  Settings,
-  Store,
-  User,
-  Zap,
-} from "lucide-react";
+import { Bell, Search, Store, Zap } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+
+import { UserProfileDropdown } from "../user-profile-dropdown";
 
 export const DashboardHeader = () => {
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-
   return (
     <header className="fixed inset-x-0 top-0 z-[100] border-b border-slate-200 bg-white/80 backdrop-blur-md">
       <div className="mx-auto flex h-20 max-w-[1600px] items-center justify-between px-6">
@@ -66,48 +56,7 @@ export const DashboardHeader = () => {
             <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full border-2 border-white bg-indigo-600" />
           </button>
 
-          <div className="relative">
-            <button
-              onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-1.5 pr-3 transition-all hover:border-indigo-600"
-            >
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-950 text-[10px] font-black text-white italic">
-                DS
-              </div>
-              <div className="hidden text-left lg:block">
-                <p className="text-[10px] font-black tracking-tight text-slate-950 uppercase">
-                  Dário Sales
-                </p>
-                <p className="text-[8px] font-bold tracking-widest text-indigo-600 uppercase">
-                  Plano Enterprise
-                </p>
-              </div>
-              <ChevronDown
-                size={14}
-                className={`text-slate-400 transition-transform ${isProfileOpen ? "rotate-180" : ""}`}
-              />
-            </button>
-
-            {isProfileOpen && (
-              <div className="animate-in fade-in zoom-in-95 absolute right-0 mt-2 w-56 origin-top-right rounded-2xl border border-slate-100 bg-white p-2 shadow-2xl">
-                <div className="mb-2 px-3 py-2">
-                  <p className="text-[9px] font-black tracking-widest text-slate-400 uppercase">
-                    Conta
-                  </p>
-                </div>
-                <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition-all hover:bg-slate-50 hover:text-indigo-600">
-                  <User size={16} /> Meu Perfil
-                </button>
-                <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition-all hover:bg-slate-50 hover:text-indigo-600">
-                  <Settings size={16} /> Configurações
-                </button>
-                <div className="my-2 h-px bg-slate-100" />
-                <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-bold text-red-500 transition-all hover:bg-red-50">
-                  <LogOut size={16} /> Sair do Console
-                </button>
-              </div>
-            )}
-          </div>
+          <UserProfileDropdown />
         </div>
       </div>
     </header>
