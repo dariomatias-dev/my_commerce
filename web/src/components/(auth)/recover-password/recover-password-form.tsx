@@ -1,17 +1,43 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2, Mail, Store } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 import { ActionButton } from "@/components/action-button";
 
+const recoverSchema = z.object({
+  email: z.email("Insira um e-mail válido"),
+});
+
+type RecoverFormValues = z.infer<typeof recoverSchema>;
+
 export const RecoverPasswordForm = () => {
   const [emailSent, setEmailSent] = useState(false);
-  const [email, setEmail] = useState("");
+  const [submittedEmail, setSubmittedEmail] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<RecoverFormValues>({
+    resolver: zodResolver(recoverSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
+
+  const onSubmit = (data: RecoverFormValues) => {
+    setSubmittedEmail(data.email);
     setEmailSent(true);
+  };
+
+  const handleReset = () => {
+    setEmailSent(false);
+    reset();
   };
 
   if (emailSent) {
@@ -31,13 +57,13 @@ export const RecoverPasswordForm = () => {
         <p className="mb-10 px-4 text-sm leading-relaxed font-medium text-slate-500">
           Enviamos um link de recuperação para <br />
           <span className="font-bold text-slate-900 underline decoration-emerald-200 decoration-2">
-            {email}
+            {submittedEmail}
           </span>
           .
         </p>
 
         <button
-          onClick={() => setEmailSent(false)}
+          onClick={handleReset}
           className="rounded-full border border-slate-100 bg-white px-8 py-3 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-all hover:border-indigo-600 hover:text-indigo-600"
         >
           Tentar outro e-mail
@@ -65,7 +91,7 @@ export const RecoverPasswordForm = () => {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div className="space-y-2 text-left">
           <label className="ml-1 text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase">
             E-mail Cadastrado
@@ -75,14 +101,21 @@ export const RecoverPasswordForm = () => {
               <Mail size={18} />
             </div>
             <input
+              {...register("email")}
               type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               placeholder="seu@email.com"
-              className="w-full rounded-2xl border border-slate-100 bg-slate-50 py-4 pr-4 pl-12 text-sm font-bold text-slate-900 shadow-sm transition-all placeholder:text-slate-300 focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-600/5 focus:outline-none"
+              className={`w-full rounded-2xl border bg-slate-50 py-4 pr-4 pl-12 text-sm font-bold text-slate-900 shadow-sm transition-all placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:outline-none ${
+                errors.email
+                  ? "border-red-500 focus:border-red-500 focus:ring-red-500/5"
+                  : "border-slate-100 focus:border-indigo-600 focus:ring-indigo-600/5"
+              }`}
             />
           </div>
+          {errors.email && (
+            <p className="ml-1 text-[10px] font-bold tracking-wider text-red-500 uppercase">
+              {errors.email.message}
+            </p>
+          )}
         </div>
 
         <ActionButton label="ENVIAR INSTRUÇÕES" variant="dark" size="sm" />
