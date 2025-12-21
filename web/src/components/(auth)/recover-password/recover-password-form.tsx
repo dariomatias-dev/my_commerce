@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
+import { ApiError } from "@/@types/api";
 import { ActionButton } from "@/components/buttons/action-button";
 import { useAuth } from "@/hooks/use-auth";
 import { recoverSchema } from "@/schemas/recover.schema";
@@ -23,6 +24,7 @@ export const RecoverPasswordForm = () => {
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors },
   } = useForm<RecoverFormValues>({
     resolver: zodResolver(recoverSchema),
@@ -41,7 +43,20 @@ export const RecoverPasswordForm = () => {
       setSubmittedEmail(data.email);
       setEmailSent(true);
     } catch (error: any) {
-      setApiError(error.message || "Erro ao solicitar recuperação.");
+      if (error instanceof ApiError) {
+        if (error.errors && error.errors.length > 0) {
+          error.errors.forEach((fError) => {
+            setError(fError.field as keyof RecoverFormValues, {
+              type: "server",
+              message: fError.error,
+            });
+          });
+        } else {
+          setApiError(error.message);
+        }
+      } else {
+        setApiError("Erro ao solicitar recuperação. Tente novamente.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +92,7 @@ export const RecoverPasswordForm = () => {
 
         <button
           onClick={handleReset}
-          className="rounded-full border border-slate-100 bg-white px-8 py-3 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-all hover:border-indigo-600 hover:text-indigo-600"
+          className="rounded-full border border-slate-100 bg-white px-8 py-3 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-all hover:border-indigo-600 hover:text-indigo-600 active:scale-95"
         >
           Tentar outro e-mail
         </button>
@@ -106,7 +121,7 @@ export const RecoverPasswordForm = () => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {apiError && (
-          <div className="rounded-xl bg-red-50 p-4 text-center">
+          <div className="animate-in fade-in zoom-in-95 rounded-xl bg-red-50 p-4 text-center duration-300">
             <p className="text-[10px] font-black tracking-widest text-red-500 uppercase">
               {apiError}
             </p>
@@ -146,7 +161,7 @@ export const RecoverPasswordForm = () => {
           showArrow={!isLoading}
           disabled={isLoading}
         >
-          {isLoading ? "ENVIANDO..." : "ENVIAR INSTRUÇÕES"}
+          {isLoading ? "PROCESSANDO..." : "ENVIAR INSTRUÇÕES"}
         </ActionButton>
       </form>
     </div>
