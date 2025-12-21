@@ -1,21 +1,44 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, CheckCircle2, Store } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 import { ActionButton } from "@/components/action-button";
 import { PasswordField } from "@/components/password-field";
+import { passwordSchema } from "@/schemas/password.schema";
+
+const resetPasswordSchema = z
+  .object({
+    password: passwordSchema,
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "As senhas não coincidem",
+    path: ["confirmPassword"],
+  });
+
+type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 
 export const ResetPasswordForm = () => {
   const [isReset, setIsReset] = useState(false);
-  const [formData, setFormData] = useState({
-    password: "",
-    confirmPassword: "",
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ResetPasswordValues>({
+    resolver: zodResolver(resetPasswordSchema),
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
+    },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = (data: ResetPasswordValues) => {
     setIsReset(true);
   };
 
@@ -74,14 +97,14 @@ export const ResetPasswordForm = () => {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div className="space-y-2 text-left">
           <label className="ml-1 text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase">
             Nova Senha
           </label>
           <PasswordField
-            value={formData.password}
-            onChange={(value) => setFormData({ ...formData, password: value })}
+            {...register("password")}
+            error={errors.password?.message}
           />
         </div>
 
@@ -90,13 +113,8 @@ export const ResetPasswordForm = () => {
             Confirmar Senha
           </label>
           <PasswordField
-            value={formData.confirmPassword}
-            onChange={(value) =>
-              setFormData({
-                ...formData,
-                confirmPassword: value,
-              })
-            }
+            {...register("confirmPassword")}
+            error={errors.confirmPassword?.message}
           />
         </div>
 
