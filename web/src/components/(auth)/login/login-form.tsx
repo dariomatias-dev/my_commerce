@@ -9,6 +9,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
+import { ApiError } from "@/@types/api";
 import { ActionButton } from "@/components/buttons/action-button";
 import { PasswordField } from "@/components/password-field";
 import { useAuth } from "@/hooks/use-auth";
@@ -20,24 +21,22 @@ export const LoginForm = () => {
   const router = useRouter();
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [apiError, setApiError] = useState<string | null>(null);
+  const [globalError, setGlobalError] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    defaultValues: { email: "", password: "" },
   });
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
       setIsLoading(true);
-      setApiError(null);
+      setGlobalError(null);
 
       const response = await login(data);
 
@@ -46,7 +45,6 @@ export const LoginForm = () => {
         secure: true,
         sameSite: "strict",
       });
-
       Cookies.set("refreshToken", response.refreshToken, {
         expires: 7,
         secure: true,
@@ -54,8 +52,20 @@ export const LoginForm = () => {
       });
 
       router.push("/dashboard");
-    } catch (error: any) {
-      setApiError(error.message || "Erro ao realizar login");
+    } catch (error) {
+      if (error instanceof ApiError) {
+        if (error.errors) {
+          error.errors.forEach((err) => {
+            setError(err.field as keyof LoginFormValues, {
+              message: err.error,
+            });
+          });
+        } else {
+          setGlobalError(error.message);
+        }
+      } else {
+        setGlobalError("Ocorreu um erro inesperado. Tente novamente.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -63,10 +73,10 @@ export const LoginForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {apiError && (
-        <div className="rounded-xl bg-red-50 p-4 text-center">
+      {globalError && (
+        <div className="animate-in fade-in zoom-in-95 rounded-xl bg-red-50 p-4 text-center duration-300">
           <p className="text-[10px] font-black tracking-widest text-red-500 uppercase">
-            {apiError}
+            {globalError}
           </p>
         </div>
       )}
@@ -86,7 +96,7 @@ export const LoginForm = () => {
             placeholder="seu@email.com"
             className={`w-full rounded-2xl border bg-slate-50 py-4 pr-4 pl-12 font-bold text-slate-900 transition-all placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:outline-none disabled:opacity-50 ${
               errors.email
-                ? "border-red-500 focus:border-red-500 focus:ring-red-500/5"
+                ? "border-red-500 focus:ring-red-500/5"
                 : "border-slate-100 focus:border-indigo-600 focus:ring-indigo-600/5"
             }`}
           />
@@ -105,12 +115,12 @@ export const LoginForm = () => {
           </label>
           <Link
             href="/recover-password"
+            title="Esqueceu a senha?"
             className="text-[10px] font-black tracking-widest text-indigo-600 uppercase transition-colors hover:text-indigo-700"
           >
             Esqueceu a senha?
           </Link>
         </div>
-
         <PasswordField
           {...register("password")}
           disabled={isLoading}
