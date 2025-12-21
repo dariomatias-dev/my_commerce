@@ -1,31 +1,11 @@
 "use client";
 
-import {
-  ArrowLeft,
-  CheckCircle2,
-  Mail,
-  Sparkles,
-  Store,
-  User,
-} from "lucide-react";
+import { ArrowLeft, CheckCircle2, Sparkles, Store } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
 
-import { ActionButton } from "@/components/action-button";
-import { PasswordField } from "@/components/password-field";
+import { SignupForm } from "@/components/(auth)/signup/signup-form";
 
 export default function SignupPage() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-  };
-
   return (
     <div className="flex min-h-screen flex-col overflow-hidden bg-white font-sans text-slate-900 lg:flex-row">
       <div className="relative hidden flex-col justify-between overflow-hidden bg-slate-950 p-16 lg:flex lg:w-1/2">
@@ -105,73 +85,7 @@ export default function SignupPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label className="ml-1 text-xs font-black tracking-widest text-slate-400 uppercase">
-                Nome Completo
-              </label>
-              <div className="group relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-300 transition-colors group-focus-within:text-indigo-600">
-                  <User size={18} />
-                </div>
-                <input
-                  type="text"
-                  required
-                  placeholder="Ex: João Silva"
-                  className="w-full rounded-2xl border border-slate-100 bg-slate-50 py-4 pr-4 pl-12 font-bold text-slate-900 shadow-sm transition-all placeholder:text-slate-300 focus:border-indigo-600 focus:bg-white focus:ring-2 focus:ring-indigo-600/20 focus:outline-none"
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="ml-1 text-xs font-black tracking-widest text-slate-400 uppercase">
-                E-mail Corporativo
-              </label>
-              <div className="group relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-300 transition-colors group-focus-within:text-indigo-600">
-                  <Mail size={18} />
-                </div>
-                <input
-                  type="email"
-                  required
-                  placeholder="seu@email.com"
-                  className="w-full rounded-2xl border border-slate-100 bg-slate-50 py-4 pr-4 pl-12 font-bold text-slate-900 shadow-sm transition-all placeholder:text-slate-300 focus:border-indigo-600 focus:bg-white focus:ring-2 focus:ring-indigo-600/20 focus:outline-none"
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="ml-1 text-xs font-black tracking-widest text-slate-400 uppercase">
-                Senha
-              </label>
-              <PasswordField
-                value={formData.password}
-                onChange={(value) =>
-                  setFormData({ ...formData, password: value })
-                }
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="ml-1 text-xs font-black tracking-widest text-slate-400 uppercase">
-                Confirmar Senha
-              </label>
-              <PasswordField
-                value={formData.confirmPassword}
-                onChange={(value) =>
-                  setFormData({ ...formData, confirmPassword: value })
-                }
-              />
-            </div>
-
-            <ActionButton label="CRIAR MINHA CONTA" />
-          </form>
+          <SignupForm />
 
           <div className="mt-10 text-center">
             <p className="text-sm font-bold text-slate-500">
