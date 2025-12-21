@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
+import { ApiError } from "@/@types/api";
 import { ActionButton } from "@/components/buttons/action-button";
 import { PasswordField } from "@/components/password-field";
 import { useAuth } from "@/hooks/use-auth";
@@ -33,6 +34,7 @@ export const SignupForm = ({ onSuccess }: SignupFormProps) => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
@@ -59,7 +61,20 @@ export const SignupForm = ({ onSuccess }: SignupFormProps) => {
       setIsSuccess(true);
       onSuccess();
     } catch (error: any) {
-      setApiError(error.message || "Erro ao criar conta. Tente novamente.");
+      if (error instanceof ApiError) {
+        if (error.errors && error.errors.length > 0) {
+          error.errors.forEach((fError) => {
+            setError(fError.field as keyof SignupFormValues, {
+              type: "server",
+              message: fError.error,
+            });
+          });
+        } else {
+          setApiError(error.message);
+        }
+      } else {
+        setApiError("Erro ao criar conta. Tente novamente.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -75,8 +90,10 @@ export const SignupForm = ({ onSuccess }: SignupFormProps) => {
         type: "success",
       });
     } catch (error: any) {
+      const message =
+        error instanceof ApiError ? error.message : "Erro ao reenviar e-mail.";
       setResendFeedback({
-        message: error.message || "Erro ao reenviar e-mail.",
+        message: message,
         type: "error",
       });
     } finally {
@@ -109,20 +126,24 @@ export const SignupForm = ({ onSuccess }: SignupFormProps) => {
           </p>
 
           <div className="rounded-2xl border border-slate-100 bg-slate-50 p-6 text-left">
-            <p className="flex items-center gap-3 text-xs leading-relaxed font-bold text-slate-600">
+            <div className="flex items-center gap-3">
               <CheckCircle2
                 size={14}
                 className="flex-shrink-0 text-indigo-500"
               />
-              Verifique sua caixa de entrada e spam.
-            </p>
-            <p className="mt-3 flex items-center gap-3 text-xs leading-relaxed font-bold text-slate-600">
+              <p className="text-xs leading-relaxed font-bold text-slate-600">
+                Verifique sua caixa de entrada e spam.
+              </p>
+            </div>
+            <div className="mt-3 flex items-center gap-3">
               <CheckCircle2
                 size={14}
                 className="flex-shrink-0 text-indigo-500"
               />
-              Clique no botão para validar seu acesso.
-            </p>
+              <p className="text-xs leading-relaxed font-bold text-slate-600">
+                Clique no botão para validar seu acesso.
+              </p>
+            </div>
           </div>
 
           <div className="pt-2">
@@ -166,7 +187,7 @@ export const SignupForm = ({ onSuccess }: SignupFormProps) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {apiError && (
-        <div className="rounded-xl bg-red-50 p-4 text-center">
+        <div className="animate-in fade-in zoom-in-95 rounded-xl bg-red-50 p-4 text-center duration-300">
           <p className="text-[10px] font-black tracking-widest text-red-500 uppercase">
             {apiError}
           </p>
