@@ -3,18 +3,26 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, CheckCircle2, Store } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 import { ActionButton } from "@/components/action-button";
 import { PasswordField } from "@/components/password-field";
+import { useAuth } from "@/hooks/use-auth";
 import { resetPasswordSchema } from "@/schemas/reset-password.schema";
 
 type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 
 export const ResetPasswordForm = () => {
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token") || "";
+  const { resetPassword } = useAuth();
+
   const [isReset, setIsReset] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const {
     register,
@@ -28,8 +36,27 @@ export const ResetPasswordForm = () => {
     },
   });
 
-  const onSubmit = (data: ResetPasswordValues) => {
-    setIsReset(true);
+  const onSubmit = async (data: ResetPasswordValues) => {
+    if (!token) {
+      setApiError("Token de redefinição inválido ou ausente.");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setApiError(null);
+
+      await resetPassword({
+        token,
+        newPassword: data.password,
+      });
+
+      setIsReset(true);
+    } catch (error: any) {
+      setApiError(error.message || "Erro ao atualizar senha. Tente novamente.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (isReset) {
@@ -58,7 +85,7 @@ export const ResetPasswordForm = () => {
           href="/login"
           className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-slate-950 px-10 py-4 text-xs font-black tracking-widest text-white shadow-2xl transition-all hover:bg-indigo-600 active:scale-95"
         >
-          ACESSAR DASHBOARD
+          ACESSAR CONSOLE
           <ArrowRight
             size={16}
             className="transition-transform group-hover:translate-x-1"
@@ -88,12 +115,29 @@ export const ResetPasswordForm = () => {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        {apiError && (
+          <div className="rounded-xl bg-red-50 p-4 text-center">
+            <p className="text-[10px] font-black tracking-widest text-red-500 uppercase">
+              {apiError}
+            </p>
+          </div>
+        )}
+
+        {!token && (
+          <div className="rounded-xl bg-amber-50 p-4 text-center">
+            <p className="text-[10px] font-black tracking-widest text-amber-600 uppercase">
+              Aviso: Nenhum token detectado na URL
+            </p>
+          </div>
+        )}
+
         <div className="space-y-2 text-left">
           <label className="ml-1 text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase">
             Nova Senha
           </label>
           <PasswordField
             {...register("password")}
+            disabled={isLoading || !token}
             error={errors.password?.message}
           />
         </div>
@@ -104,11 +148,17 @@ export const ResetPasswordForm = () => {
           </label>
           <PasswordField
             {...register("confirmPassword")}
+            disabled={isLoading || !token}
             error={errors.confirmPassword?.message}
           />
         </div>
 
-        <ActionButton label="ATUALIZAR SENHA" variant="dark" size="sm" />
+        <ActionButton
+          label={isLoading ? "ATUALIZANDO..." : "ATUALIZAR SENHA"}
+          variant="dark"
+          size="sm"
+          disabled={isLoading || !token}
+        />
       </form>
     </div>
   );
