@@ -1,24 +1,50 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 import { ActionButton } from "@/components/action-button";
 import { PasswordField } from "@/components/password-field";
 
+const loginSchema = z.object({
+  email: z.string().email("Insira um e-mail válido"),
+
+  password: z
+    .string()
+    .min(8, "A senha deve ter pelo menos 8 caracteres")
+    .regex(/[a-z]/, "A senha deve conter pelo menos uma letra minúscula")
+    .regex(/[A-Z]/, "A senha deve conter pelo menos uma letra maiúscula")
+    .regex(/[0-9]/, "A senha deve conter pelo menos um número")
+    .regex(
+      /[^a-zA-Z0-9]/,
+      "A senha deve conter pelo menos um caractere especial",
+    ),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
+
 export const LoginForm = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = (data: LoginFormValues) => {
+    console.log(data);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-2">
         <label className="ml-1 text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase">
           E-mail
@@ -28,15 +54,21 @@ export const LoginForm = () => {
             <Mail size={18} />
           </div>
           <input
+            {...register("email")}
             type="email"
-            required
             placeholder="seu@email.com"
-            className="w-full rounded-2xl border border-slate-100 bg-slate-50 py-4 pr-4 pl-12 font-bold text-slate-900 transition-all placeholder:text-slate-300 focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-600/5 focus:outline-none"
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
+            className={`w-full rounded-2xl border bg-slate-50 py-4 pr-4 pl-12 font-bold text-slate-900 transition-all placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:outline-none ${
+              errors.email
+                ? "border-red-500 focus:border-red-500 focus:ring-red-500/5"
+                : "border-slate-100 focus:border-indigo-600 focus:ring-indigo-600/5"
+            }`}
           />
         </div>
+        {errors.email && (
+          <p className="ml-1 text-[10px] font-bold tracking-wider text-red-500 uppercase">
+            {errors.email.message}
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -53,8 +85,8 @@ export const LoginForm = () => {
         </div>
 
         <PasswordField
-          value={formData.password}
-          onChange={(value) => setFormData({ ...formData, password: value })}
+          {...register("password")}
+          error={errors.password?.message}
         />
       </div>
 
