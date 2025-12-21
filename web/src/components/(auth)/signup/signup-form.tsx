@@ -1,25 +1,49 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, User } from "lucide-react";
-import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 import { ActionButton } from "@/components/action-button";
 import { PasswordField } from "@/components/password-field";
+import { passwordSchema } from "@/schemas/password.schema";
 
-export const SignupForm = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+const signupSchema = z
+  .object({
+    name: z.string().min(3, "Insira seu nome completo"),
+    email: z.email("Insira um e-mail válido"),
+    password: passwordSchema,
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "As senhas não coincidem",
+    path: ["confirmPassword"],
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+type SignupFormValues = z.infer<typeof signupSchema>;
+
+export const SignupForm = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignupFormValues>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  const onSubmit = (data: SignupFormValues) => {
+    console.log(data);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-2">
         <label className="ml-1 text-xs font-black tracking-widest text-slate-400 uppercase">
           Nome Completo
@@ -29,13 +53,21 @@ export const SignupForm = () => {
             <User size={18} />
           </div>
           <input
+            {...register("name")}
             type="text"
-            required
             placeholder="Ex: João Silva"
-            className="w-full rounded-2xl border border-slate-100 bg-slate-50 py-4 pr-4 pl-12 font-bold text-slate-900 shadow-sm transition-all placeholder:text-slate-300 focus:border-indigo-600 focus:bg-white focus:ring-2 focus:ring-indigo-600/20 focus:outline-none"
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            className={`w-full rounded-2xl border bg-slate-50 py-4 pr-4 pl-12 font-bold text-slate-900 shadow-sm transition-all placeholder:text-slate-300 focus:bg-white focus:ring-2 focus:outline-none ${
+              errors.name
+                ? "border-red-500 focus:border-red-500 focus:ring-red-500/10"
+                : "border-slate-100 focus:border-indigo-600 focus:ring-indigo-600/20"
+            }`}
           />
         </div>
+        {errors.name && (
+          <p className="ml-1 text-[10px] font-bold tracking-wider text-red-500 uppercase">
+            {errors.name.message}
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -47,15 +79,21 @@ export const SignupForm = () => {
             <Mail size={18} />
           </div>
           <input
+            {...register("email")}
             type="email"
-            required
             placeholder="seu@email.com"
-            className="w-full rounded-2xl border border-slate-100 bg-slate-50 py-4 pr-4 pl-12 font-bold text-slate-900 shadow-sm transition-all placeholder:text-slate-300 focus:border-indigo-600 focus:bg-white focus:ring-2 focus:ring-indigo-600/20 focus:outline-none"
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
+            className={`w-full rounded-2xl border bg-slate-50 py-4 pr-4 pl-12 font-bold text-slate-900 shadow-sm transition-all placeholder:text-slate-300 focus:bg-white focus:ring-2 focus:outline-none ${
+              errors.email
+                ? "border-red-500 focus:border-red-500 focus:ring-red-500/10"
+                : "border-slate-100 focus:border-indigo-600 focus:ring-indigo-600/20"
+            }`}
           />
         </div>
+        {errors.email && (
+          <p className="ml-1 text-[10px] font-bold tracking-wider text-red-500 uppercase">
+            {errors.email.message}
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -63,8 +101,8 @@ export const SignupForm = () => {
           Senha
         </label>
         <PasswordField
-          value={formData.password}
-          onChange={(value) => setFormData({ ...formData, password: value })}
+          {...register("password")}
+          error={errors.password?.message}
         />
       </div>
 
@@ -73,10 +111,8 @@ export const SignupForm = () => {
           Confirmar Senha
         </label>
         <PasswordField
-          value={formData.confirmPassword}
-          onChange={(value) =>
-            setFormData({ ...formData, confirmPassword: value })
-          }
+          {...register("confirmPassword")}
+          error={errors.confirmPassword?.message}
         />
       </div>
 

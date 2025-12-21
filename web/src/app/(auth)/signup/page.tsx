@@ -74,7 +74,7 @@ const SignupPage = () => {
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1">
               <Sparkles size={12} className="text-indigo-600" />
               <span className="text-[10px] font-black tracking-widest text-indigo-600 uppercase">
-                Start your journey
+                Comece sua jornada
               </span>
             </div>
             <h2 className="mb-2 text-4xl font-black tracking-tighter text-slate-950 uppercase italic">
