@@ -12,6 +12,7 @@ import * as z from "zod";
 import { ApiError } from "@/@types/api";
 import { ActionButton } from "@/components/buttons/action-button";
 import { PasswordField } from "@/components/password-field";
+import { useAuthContext } from "@/contexts/auth-context";
 import { useAuth } from "@/hooks/use-auth";
 import { loginSchema } from "@/schemas/login.schema";
 
@@ -20,6 +21,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export const LoginForm = () => {
   const router = useRouter();
   const { login } = useAuth();
+  const { refreshUser } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [globalError, setGlobalError] = useState<string | null>(null);
 
@@ -50,6 +52,8 @@ export const LoginForm = () => {
         secure: true,
         sameSite: "strict",
       });
+
+      await refreshUser();
 
       router.push("/dashboard");
     } catch (error) {

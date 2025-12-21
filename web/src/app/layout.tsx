@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 
 import "./globals.css";
 
+import { AuthProvider } from "@/contexts/auth-context";
+
 export const metadata: Metadata = {
   title: "My Ecommerce",
   description:
@@ -15,7 +17,9 @@ interface RootLayoutProps {
 const RootLayout = ({ children }: Readonly<RootLayoutProps>) => {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 };
