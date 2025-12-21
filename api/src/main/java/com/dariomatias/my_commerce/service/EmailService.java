@@ -57,12 +57,12 @@ public class EmailService {
 
     public void sendVerificationEmail(String to, String token) throws MessagingException {
         String subject = "Confirme seu e-mail";
-        String link = "http://localhost:8080/api/auth/verify-email?token=" + token;
+        String link = "http://localhost:3000/verify-email?token=" + token;
         String bodyContent = """
                 <p>Olá,</p>
                 <p>Obrigado por se cadastrar no <strong>My Commerce</strong>! Para ativar sua conta e começar a usar nossos serviços, clique no botão abaixo:</p>
                 <p style="text-align:center; margin:40px 0;">
-                    <a href="http://localhost:3000/verify-email?token=%s" style="background-color:#4CAF50; color:white; padding:15px 30px; text-decoration:none; border-radius:8px; font-weight:bold; box-shadow:0 4px 10px rgba(0,0,0,0.1); display:inline-block;">
+                    <a href="%s" style="background-color:#4CAF50; color:white; padding:15px 30px; text-decoration:none; border-radius:8px; font-weight:bold; box-shadow:0 4px 10px rgba(0,0,0,0.1); display:inline-block;">
                         Confirmar E-mail
                     </a>
                 </p>

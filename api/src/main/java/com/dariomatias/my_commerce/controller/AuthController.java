@@ -4,7 +4,6 @@ import com.dariomatias.my_commerce.dto.*;
 import com.dariomatias.my_commerce.dto.refresh_token.RefreshTokenRequest;
 import com.dariomatias.my_commerce.dto.refresh_token.RefreshTokenResponse;
 import com.dariomatias.my_commerce.dto.user.UserResponse;
-import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
