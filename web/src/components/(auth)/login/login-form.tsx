@@ -8,12 +8,7 @@ import * as z from "zod";
 
 import { ActionButton } from "@/components/action-button";
 import { PasswordField } from "@/components/password-field";
-import { passwordSchema } from "@/schemas/password.schema";
-
-export const loginSchema = z.object({
-  email: z.email("Insira um e-mail válido"),
-  password: passwordSchema,
-});
+import { loginSchema } from "@/schemas/login.schema";
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 

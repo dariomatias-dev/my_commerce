@@ -7,19 +7,7 @@ import * as z from "zod";
 
 import { ActionButton } from "@/components/action-button";
 import { PasswordField } from "@/components/password-field";
-import { passwordSchema } from "@/schemas/password.schema";
-
-const signupSchema = z
-  .object({
-    name: z.string().min(3, "Insira seu nome completo"),
-    email: z.email("Insira um e-mail válido"),
-    password: passwordSchema,
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "As senhas não coincidem",
-    path: ["confirmPassword"],
-  });
+import { signupSchema } from "@/schemas/signup.schema";
 
 type SignupFormValues = z.infer<typeof signupSchema>;
 

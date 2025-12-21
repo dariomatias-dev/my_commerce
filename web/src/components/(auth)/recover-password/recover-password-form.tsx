@@ -7,10 +7,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 import { ActionButton } from "@/components/action-button";
-
-const recoverSchema = z.object({
-  email: z.email("Insira um e-mail válido"),
-});
+import { recoverSchema } from "@/schemas/recover.schema";
 
 type RecoverFormValues = z.infer<typeof recoverSchema>;
 

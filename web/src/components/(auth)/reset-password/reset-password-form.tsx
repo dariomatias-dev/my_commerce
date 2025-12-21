@@ -9,17 +9,7 @@ import * as z from "zod";
 
 import { ActionButton } from "@/components/action-button";
 import { PasswordField } from "@/components/password-field";
-import { passwordSchema } from "@/schemas/password.schema";
-
-const resetPasswordSchema = z
-  .object({
-    password: passwordSchema,
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "As senhas não coincidem",
-    path: ["confirmPassword"],
-  });
+import { resetPasswordSchema } from "@/schemas/reset-password.schema";
 
 type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 
