@@ -1,18 +1,20 @@
 import clsx from "clsx";
 import { ArrowRight } from "lucide-react";
-import { ButtonHTMLAttributes } from "react";
+import { ButtonHTMLAttributes, ReactNode } from "react";
 
 type ActionButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  label: string;
   variant?: "primary" | "dark";
   size?: "lg" | "sm";
+  showArrow?: boolean;
+  children: ReactNode;
 };
 
 export const ActionButton = ({
-  label,
   variant = "primary",
   size = "lg",
   className,
+  showArrow = false,
+  children,
   ...props
 }: ActionButtonProps) => {
   const isPrimary = variant === "primary";
@@ -31,11 +33,14 @@ export const ActionButton = ({
       )}
     >
       <span className="relative z-10 flex items-center justify-center gap-2">
-        {label}
-        <ArrowRight
-          size={isLarge ? 20 : 16}
-          className="transition-transform group-hover:translate-x-1"
-        />
+        {children}
+
+        {showArrow && (
+          <ArrowRight
+            size={isLarge ? 20 : 16}
+            className="transition-transform group-hover:translate-x-1"
+          />
+        )}
       </span>
 
       <div
