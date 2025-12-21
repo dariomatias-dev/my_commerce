@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { ActionButton } from "@/components/action-button";
+import { ActionButton } from "@/components/buttons/action-button";
 import { PasswordField } from "@/components/password-field";
 import { useAuth } from "@/hooks/use-auth";
 import { signupSchema } from "@/schemas/signup.schema";
@@ -249,10 +249,9 @@ export const SignupForm = ({ onSuccess }: SignupFormProps) => {
         />
       </div>
 
-      <ActionButton
-        label={isLoading ? "CRIANDO CONTA..." : "CRIAR MINHA CONTA"}
-        disabled={isLoading}
-      />
+      <ActionButton showArrow={!isLoading} disabled={isLoading}>
+        {isLoading ? "CRIANDO CONTA..." : "CRIAR MINHA CONTA"}
+      </ActionButton>
     </form>
   );
 };

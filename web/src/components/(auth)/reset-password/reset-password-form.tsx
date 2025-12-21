@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { ActionButton } from "@/components/action-button";
+import { ActionButton } from "@/components/buttons/action-button";
 import { PasswordField } from "@/components/password-field";
 import { useAuth } from "@/hooks/use-auth";
 import { resetPasswordSchema } from "@/schemas/reset-password.schema";
@@ -154,11 +154,13 @@ export const ResetPasswordForm = () => {
         </div>
 
         <ActionButton
-          label={isLoading ? "ATUALIZANDO..." : "ATUALIZAR SENHA"}
           variant="dark"
           size="sm"
+          showArrow={!isLoading}
           disabled={isLoading || !token}
-        />
+        >
+          {isLoading ? "ATUALIZANDO..." : "ATUALIZAR SENHA"}
+        </ActionButton>
       </form>
     </div>
   );

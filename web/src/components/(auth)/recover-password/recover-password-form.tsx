@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { ActionButton } from "@/components/action-button";
+import { ActionButton } from "@/components/buttons/action-button";
 import { useAuth } from "@/hooks/use-auth";
 import { recoverSchema } from "@/schemas/recover.schema";
 
@@ -141,11 +141,13 @@ export const RecoverPasswordForm = () => {
         </div>
 
         <ActionButton
-          label={isLoading ? "ENVIANDO..." : "ENVIAR INSTRUÇÕES"}
           variant="dark"
           size="sm"
+          showArrow={!isLoading}
           disabled={isLoading}
-        />
+        >
+          {isLoading ? "ENVIANDO..." : "ENVIAR INSTRUÇÕES"}
+        </ActionButton>
       </form>
     </div>
   );

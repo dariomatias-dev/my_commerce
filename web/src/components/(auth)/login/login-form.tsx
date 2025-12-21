@@ -9,7 +9,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { ActionButton } from "@/components/action-button";
+import { ActionButton } from "@/components/buttons/action-button";
 import { PasswordField } from "@/components/password-field";
 import { useAuth } from "@/hooks/use-auth";
 import { loginSchema } from "@/schemas/login.schema";
@@ -118,10 +118,9 @@ export const LoginForm = () => {
         />
       </div>
 
-      <ActionButton
-        label={isLoading ? "ENTRANDO..." : "ENTRAR"}
-        disabled={isLoading}
-      />
+      <ActionButton disabled={isLoading} showArrow={!isLoading}>
+        {isLoading ? "ENTRANDO..." : "ENTRAR"}
+      </ActionButton>
     </form>
   );
 };
