@@ -1,13 +1,43 @@
-import { AxiosRequestConfig, AxiosResponse } from "axios";
+import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { useCallback } from "react";
 
+import { ApiError, ApiResponse } from "@/@types/api";
 import { api } from "@/lib/axios";
 
 export const useApi = () => {
   const request = useCallback(
     async <T>(config: AxiosRequestConfig): Promise<T> => {
-      const response: AxiosResponse<T> = await api.request<T>(config);
-      return response.data;
+      try {
+        const response: AxiosResponse<ApiResponse<T>> =
+          await api.request<ApiResponse<T>>(config);
+
+        const apiResponse = response.data;
+
+        if (apiResponse.status === "error") {
+          throw new ApiError(
+            apiResponse.message,
+            apiResponse.code,
+            apiResponse.errors,
+          );
+        }
+
+        return apiResponse.data;
+      } catch (error) {
+        if (error instanceof ApiError) {
+          throw error;
+        }
+
+        if (error instanceof AxiosError && error.response) {
+          const apiData = error.response.data as ApiResponse<null>;
+          throw new ApiError(
+            apiData.message || "Erro na requisição",
+            apiData.code || error.response.status,
+            apiData.errors,
+          );
+        }
+
+        throw new ApiError("Erro de conexão com o servidor", 500);
+      }
     },
     [],
   );
