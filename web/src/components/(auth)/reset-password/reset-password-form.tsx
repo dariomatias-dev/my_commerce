@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
+import { ApiError } from "@/@types/api";
 import { ActionButton } from "@/components/buttons/action-button";
 import { PasswordField } from "@/components/password-field";
 import { useAuth } from "@/hooks/use-auth";
@@ -27,6 +28,7 @@ export const ResetPasswordForm = () => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<ResetPasswordValues>({
     resolver: zodResolver(resetPasswordSchema),
@@ -53,7 +55,20 @@ export const ResetPasswordForm = () => {
 
       setIsReset(true);
     } catch (error: any) {
-      setApiError(error.message || "Erro ao atualizar senha. Tente novamente.");
+      if (error instanceof ApiError) {
+        if (error.errors && error.errors.length > 0) {
+          error.errors.forEach((fError) => {
+            setError(fError.field as keyof ResetPasswordValues, {
+              type: "server",
+              message: fError.error,
+            });
+          });
+        } else {
+          setApiError(error.message);
+        }
+      } else {
+        setApiError("Erro ao atualizar senha. Tente novamente.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -116,7 +131,7 @@ export const ResetPasswordForm = () => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {apiError && (
-          <div className="rounded-xl bg-red-50 p-4 text-center">
+          <div className="animate-in fade-in zoom-in-95 rounded-xl bg-red-50 p-4 text-center duration-300">
             <p className="text-[10px] font-black tracking-widest text-red-500 uppercase">
               {apiError}
             </p>
@@ -159,7 +174,7 @@ export const ResetPasswordForm = () => {
           showArrow={!isLoading}
           disabled={isLoading || !token}
         >
-          {isLoading ? "ATUALIZANDO..." : "ATUALIZAR SENHA"}
+          {isLoading ? "PROCESSANDO..." : "ATUALIZAR SENHA"}
         </ActionButton>
       </form>
     </div>
