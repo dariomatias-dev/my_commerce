@@ -8,20 +8,11 @@ import * as z from "zod";
 
 import { ActionButton } from "@/components/action-button";
 import { PasswordField } from "@/components/password-field";
+import { passwordSchema } from "@/schemas/password.schema";
 
-const loginSchema = z.object({
-  email: z.string().email("Insira um e-mail válido"),
-
-  password: z
-    .string()
-    .min(8, "A senha deve ter pelo menos 8 caracteres")
-    .regex(/[a-z]/, "A senha deve conter pelo menos uma letra minúscula")
-    .regex(/[A-Z]/, "A senha deve conter pelo menos uma letra maiúscula")
-    .regex(/[0-9]/, "A senha deve conter pelo menos um número")
-    .regex(
-      /[^a-zA-Z0-9]/,
-      "A senha deve conter pelo menos um caractere especial",
-    ),
+export const loginSchema = z.object({
+  email: z.email("Insira um e-mail válido"),
+  password: passwordSchema,
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
