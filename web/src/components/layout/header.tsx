@@ -1,10 +1,14 @@
 "use client";
 
-import { Menu, Store, X } from "lucide-react";
+import { LayoutDashboard, Menu, Store, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { useAuthContext } from "@/contexts/auth-context";
+import { UserProfileDropdown } from "../user-profile-dropdown";
+
 export const Header = () => {
+  const { isAuthenticated } = useAuthContext();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -56,19 +60,25 @@ export const Header = () => {
             </div>
 
             <div className="flex items-center gap-5">
-              <Link
-                href="/login"
-                className="text-[10px] font-black tracking-widest text-slate-950 uppercase transition-colors hover:text-indigo-600"
-              >
-                Login
-              </Link>
+              {isAuthenticated ? (
+                <UserProfileDropdown />
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="text-[10px] font-black tracking-widest text-slate-950 uppercase transition-colors hover:text-indigo-600"
+                  >
+                    Login
+                  </Link>
 
-              <Link
-                href="/signup"
-                className="rounded-xl bg-slate-950 px-8 py-3.5 text-[10px] font-black tracking-widest text-white uppercase shadow-2xl shadow-slate-200 transition-all hover:bg-indigo-600 active:scale-95"
-              >
-                Criar Conta
-              </Link>
+                  <Link
+                    href="/signup"
+                    className="rounded-xl bg-slate-950 px-8 py-3.5 text-[10px] font-black tracking-widest text-white uppercase shadow-2xl shadow-slate-200 transition-all hover:bg-indigo-600 active:scale-95"
+                  >
+                    Criar Conta
+                  </Link>
+                </>
+              )}
             </div>
           </div>
 
@@ -95,15 +105,29 @@ export const Header = () => {
               ))}
               <hr className="border-slate-100" />
               <div className="flex flex-col gap-4">
-                <Link
-                  href="/login"
-                  className="flex h-14 items-center justify-center rounded-2xl border border-slate-200 font-black tracking-widest text-slate-950 uppercase italic"
-                >
-                  Fazer Login
-                </Link>
-                <button className="h-14 rounded-2xl bg-indigo-600 font-black tracking-widest text-white uppercase italic">
-                  Começar Agora
-                </button>
+                {isAuthenticated ? (
+                  <Link
+                    href="/dashboard"
+                    className="flex h-14 items-center justify-center gap-3 rounded-2xl bg-indigo-600 font-black tracking-widest text-white uppercase italic"
+                  >
+                    <LayoutDashboard size={20} /> Painel de Controle
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      className="flex h-14 items-center justify-center rounded-2xl border border-slate-200 font-black tracking-widest text-slate-950 uppercase italic"
+                    >
+                      Fazer Login
+                    </Link>
+                    <Link
+                      href="/signup"
+                      className="flex h-14 items-center justify-center rounded-2xl bg-indigo-600 font-black tracking-widest text-white uppercase italic"
+                    >
+                      Começar Agora
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
