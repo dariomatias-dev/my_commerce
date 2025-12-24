@@ -5,6 +5,7 @@ import com.dariomatias.my_commerce.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -43,6 +44,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/api/orders/**").authenticated()
                         .requestMatchers("/api/products/**").authenticated()
                         .requestMatchers("/api/stores/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/subscription-plans/**").permitAll()
                         .requestMatchers("/api/subscription-plans/**").authenticated()
                         .requestMatchers("/api/subscriptions/**").authenticated()
                         .requestMatchers("/api/transactions/**").authenticated()
