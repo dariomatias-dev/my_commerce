@@ -80,6 +80,21 @@ public class SubscriptionController {
         );
     }
 
+    @GetMapping("/me/active")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
+    public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> getActiveByMe(
+            @AuthenticationPrincipal User user
+    ) {
+        Subscription subscription = service.getActiveByUser(user.getId());
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Assinatura ativa obtida com sucesso",
+                        SubscriptionResponseDTO.from(subscription)
+                )
+        );
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> getById(@PathVariable UUID id) {

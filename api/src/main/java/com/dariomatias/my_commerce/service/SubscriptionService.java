@@ -74,6 +74,17 @@ public class SubscriptionService {
         return subscriptionRepository.findAllByUser_Id(userId, pageable);
     }
 
+    public Subscription getActiveByUser(UUID userId) {
+        return subscriptionRepository
+                .findActiveByUserId(userId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Nenhuma assinatura ativa encontrada"
+                        )
+                );
+    }
+
     public Subscription getById(UUID id) {
         return subscriptionRepository.findById(id)
                 .orElseThrow(() ->

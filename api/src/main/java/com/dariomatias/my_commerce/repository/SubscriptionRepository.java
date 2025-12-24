@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -14,4 +15,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, UUID
     Page<Subscription> findAllByUser_Id(UUID userId, Pageable pageable);
 
     boolean existsByUser_IdAndIsActiveTrue(UUID userId);
+
+    Optional<Subscription> findByUser_IdAndIsActiveTrue(UUID userId);
 }

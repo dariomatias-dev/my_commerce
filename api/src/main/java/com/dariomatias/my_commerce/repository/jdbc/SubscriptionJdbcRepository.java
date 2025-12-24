@@ -109,6 +109,26 @@ public class SubscriptionJdbcRepository implements SubscriptionContract {
     }
 
     @Override
+    public Optional<Subscription> findActiveByUserId(UUID userId) {
+        String sql = """
+        SELECT *
+        FROM subscriptions
+        WHERE user_id = :user_id
+          AND is_active = true
+        ORDER BY created_at DESC
+        LIMIT 1
+    """;
+
+        List<Subscription> list = jdbc.query(
+                sql,
+                new MapSqlParameterSource("user_id", userId),
+                mapper
+        );
+
+        return list.stream().findFirst();
+    }
+
+    @Override
     public boolean existsActiveSubscriptionByUserId(UUID userId) {
         String sql = """
         SELECT COUNT(1)

@@ -11,11 +11,13 @@ public interface SubscriptionContract {
 
     Subscription save(Subscription subscription);
 
-    Optional<Subscription> findById(UUID id);
-
     Page<Subscription> findAll(Pageable pageable);
 
     Page<Subscription> findAllByUser_Id(UUID userId, Pageable pageable);
+
+    Optional<Subscription> findActiveByUserId(UUID userId);
+
+    Optional<Subscription> findById(UUID id);
 
     boolean existsActiveSubscriptionByUserId(UUID userId);
 
