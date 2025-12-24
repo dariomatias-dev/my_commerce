@@ -25,18 +25,36 @@ import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
+import { TransactionResponse } from "@/@types/transaction/transaction-response";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { Footer } from "@/components/layout/footer";
+import { PaymentMethod } from "@/enums/payment-method";
 import { useStore } from "@/hooks/use-store";
+import { useTransaction } from "@/hooks/use-transaction";
 
 const StoreDashboardPage = () => {
   const params = useParams();
   const slug = params.slug as string;
   const { getStoreBySlug } = useStore();
+  const { getTransactionsByStoreSlug } = useTransaction();
 
   const [store, setStore] = useState<StoreResponse | null>(null);
+  const [transactions, setTransactions] = useState<TransactionResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isTransactionsLoading, setIsTransactionsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const fetchTransactions = useCallback(async () => {
+    try {
+      setIsTransactionsLoading(true);
+      const response = await getTransactionsByStoreSlug(slug, 0, 10);
+      setTransactions(response.content);
+    } catch (err) {
+      console.error("Erro ao carregar transações", err);
+    } finally {
+      setIsTransactionsLoading(false);
+    }
+  }, [slug, getTransactionsByStoreSlug]);
 
   const fetchStoreData = useCallback(async () => {
     try {
@@ -44,6 +62,7 @@ const StoreDashboardPage = () => {
       setError(null);
       const data = await getStoreBySlug(slug);
       setStore(data);
+      await fetchTransactions();
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message);
@@ -53,11 +72,22 @@ const StoreDashboardPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [slug, getStoreBySlug]);
+  }, [slug, getStoreBySlug, fetchTransactions]);
 
   useEffect(() => {
     fetchStoreData();
   }, [fetchStoreData]);
+
+  const getPaymentMethodLabel = (method: string) => {
+    const labels: Record<string, string> = {
+      [PaymentMethod.CREDIT_CARD]: "Cartão de Crédito",
+      [PaymentMethod.DEBIT_CARD]: "Cartão de Débito",
+      [PaymentMethod.PIX]: "Pix",
+      [PaymentMethod.BOLETO]: "Boleto",
+      [PaymentMethod.CASH]: "Dinheiro",
+    };
+    return labels[method] || method;
+  };
 
   if (isLoading) {
     return (
@@ -211,10 +241,14 @@ const StoreDashboardPage = () => {
                   </h2>
                 </div>
                 <button
-                  onClick={fetchStoreData}
-                  className="rounded-lg bg-slate-50 p-2 text-slate-400 transition-colors hover:text-indigo-600"
+                  onClick={fetchTransactions}
+                  disabled={isTransactionsLoading}
+                  className="rounded-lg bg-slate-50 p-2 text-slate-400 transition-colors hover:text-indigo-600 disabled:opacity-50"
                 >
-                  <RefreshCcw size={14} />
+                  <RefreshCcw
+                    size={14}
+                    className={isTransactionsLoading ? "animate-spin" : ""}
+                  />
                 </button>
               </div>
 
@@ -223,20 +257,46 @@ const StoreDashboardPage = () => {
                   <thead>
                     <tr className="border-b border-slate-50 bg-slate-50/50 text-[9px] font-black tracking-widest text-slate-400 uppercase">
                       <th className="py-4 pl-8">ID DA TRANSAÇÃO</th>
-                      <th className="py-4">GATEWAY</th>
+                      <th className="py-4">MÉTODO</th>
                       <th className="py-4">STATUS</th>
                       <th className="py-4 pr-8 text-right">VALOR</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <tr>
-                      <td
-                        colSpan={4}
-                        className="py-20 text-center text-[10px] font-black tracking-widest text-slate-300 uppercase italic"
-                      >
-                        Nenhuma transação registrada no período
-                      </td>
-                    </tr>
+                  <tbody className="divide-y divide-slate-50">
+                    {transactions.length > 0 ? (
+                      transactions.map((tx) => (
+                        <tr
+                          key={tx.id}
+                          className="group transition-colors hover:bg-slate-50/80"
+                        >
+                          <td className="py-5 pl-8 text-sm font-black text-slate-950 italic">
+                            #TXN-{tx.id.slice(0, 8).toUpperCase()}
+                          </td>
+                          <td className="py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                            {getPaymentMethodLabel(tx.paymentMethod)}
+                          </td>
+                          <td className="py-5">
+                            <span className="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2 py-0.5 text-[9px] font-black tracking-widest text-emerald-600 uppercase">
+                              {tx.status}
+                            </span>
+                          </td>
+                          <td className="py-5 pr-8 text-right text-sm font-black text-slate-950">
+                            R$ {tx.amount.toFixed(2)}
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td
+                          colSpan={4}
+                          className="py-20 text-center text-[10px] font-black tracking-widest text-slate-300 uppercase italic"
+                        >
+                          {isTransactionsLoading
+                            ? "Sincronizando logs..."
+                            : "Nenhuma transação registrada no período"}
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
