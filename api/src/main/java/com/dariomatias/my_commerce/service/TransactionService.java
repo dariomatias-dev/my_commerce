@@ -42,6 +42,10 @@ public class TransactionService {
         return transactionRepository.findAll(pageable);
     }
 
+    public Page<Transaction> getAllByStoreSlug(String storeSlug, Pageable pageable) {
+        return transactionRepository.findAllByOrderStoreSlug(storeSlug, pageable);
+    }
+
     public Page<Transaction> getAllByUser(UUID userId, Pageable pageable) {
         return transactionRepository.findAllByOrderUserId(userId, pageable);
     }

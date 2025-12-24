@@ -45,6 +45,19 @@ public class TransactionController {
         return ResponseEntity.ok(ApiResponse.success("Transações obtidas com sucesso", transactions));
     }
 
+    @GetMapping("/store/slug/{storeSlug}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
+    public ResponseEntity<ApiResponse<Page<TransactionResponseDTO>>> getAllByStoreSlug(
+            @PathVariable String storeSlug,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<TransactionResponseDTO> transactions = service.getAllByStoreSlug(storeSlug, pageable)
+                .map(TransactionResponseDTO::from);
+        return ResponseEntity.ok(ApiResponse.success("Transações da loja obtidas com sucesso", transactions));
+    }
+
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<Page<TransactionResponseDTO>>> getAllByUser(

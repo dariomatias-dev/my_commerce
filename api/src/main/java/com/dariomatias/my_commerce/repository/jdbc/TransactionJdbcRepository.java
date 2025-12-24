@@ -98,6 +98,42 @@ public class TransactionJdbcRepository implements TransactionContract {
     }
 
     @Override
+    public Page<Transaction> findAllByOrderStoreSlug(String storeSlug, Pageable pageable) {
+        String sql = """
+        SELECT t.*
+        FROM transactions t
+        INNER JOIN orders o ON t.order_id = o.id
+        INNER JOIN stores s ON o.store_id = s.id
+        WHERE s.slug = :store_slug
+        ORDER BY t.created_at DESC
+        OFFSET :offset LIMIT :limit
+    """;
+
+        List<Transaction> content = jdbc.query(sql,
+                new MapSqlParameterSource()
+                        .addValue("store_slug", storeSlug)
+                        .addValue("offset", pageable.getOffset())
+                        .addValue("limit", pageable.getPageSize()),
+                mapper);
+
+        String countSql = """
+        SELECT COUNT(*)
+        FROM transactions t
+        INNER JOIN orders o ON t.order_id = o.id
+        INNER JOIN stores s ON o.store_id = s.id
+        WHERE s.slug = :store_slug
+    """;
+
+        long total = jdbc.queryForObject(
+                countSql,
+                new MapSqlParameterSource("store_slug", storeSlug),
+                Long.class
+        );
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
     public Page<Transaction> findAllByOrderUserId(UUID userId, Pageable pageable) {
         String sql = """
         SELECT t.*

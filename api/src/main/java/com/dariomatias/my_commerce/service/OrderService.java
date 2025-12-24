@@ -163,9 +163,6 @@ public class OrderService {
         boolean isAdmin = authenticatedUser.getRole() == UserRole.ADMIN;
         boolean isOwner = order.getUser().getId().equals(authenticatedUser.getId());
 
-        System.out.println("====" + order.getUser().getId());
-        System.out.println("====" + authenticatedUser.getId());
-
         if (!isAdmin && !isOwner) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,

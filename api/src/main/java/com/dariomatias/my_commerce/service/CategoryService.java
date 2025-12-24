@@ -31,7 +31,7 @@ public class CategoryService {
 
         Category category = new Category();
         category.setName(request.getName());
-        category.setStoreId(store.getId());
+        category.setStore(store);
 
         return categoryRepository.save(category);
     }

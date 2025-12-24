@@ -33,6 +33,11 @@ public class TransactionJpaRepository implements TransactionContract {
     }
 
     @Override
+    public Page<Transaction> findAllByOrderStoreSlug(String storeSlug, Pageable pageable) {
+        return repository.findAllByOrder_Store_Slug(storeSlug, pageable);
+    }
+
+    @Override
     public Page<Transaction> findAllByOrderUserId(UUID userId, Pageable pageable) {
         return repository.findAllByOrder_User_Id(userId, pageable);
     }
