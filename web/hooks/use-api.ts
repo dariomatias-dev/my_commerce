@@ -1,5 +1,5 @@
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 import { ApiError, ApiResponse } from "@/@types/api";
 import { api } from "@/lib/axios";
@@ -8,8 +8,9 @@ export const useApi = () => {
   const request = useCallback(
     async <T>(config: AxiosRequestConfig): Promise<T> => {
       try {
-        const response: AxiosResponse<ApiResponse<T>> =
-          await api.request<ApiResponse<T>>(config);
+        const response: AxiosResponse<ApiResponse<T>> = await api.request<
+          ApiResponse<T>
+        >(config);
 
         const apiResponse = response.data;
 
@@ -17,7 +18,7 @@ export const useApi = () => {
           throw new ApiError(
             apiResponse.message,
             apiResponse.code,
-            apiResponse.errors,
+            apiResponse.errors
           );
         }
 
@@ -32,45 +33,48 @@ export const useApi = () => {
           throw new ApiError(
             apiData.message || "Erro na requisição",
             apiData.code || error.response.status,
-            apiData.errors,
+            apiData.errors
           );
         }
 
         throw new ApiError("Erro de conexão com o servidor", 500);
       }
     },
-    [],
+    []
   );
 
   const get = useCallback(
     <T>(url: string, config?: AxiosRequestConfig) =>
       request<T>({ ...config, method: "GET", url }),
-    [request],
+    [request]
   );
 
   const post = useCallback(
     <T>(url: string, data?: unknown, config?: AxiosRequestConfig) =>
       request<T>({ ...config, method: "POST", url, data }),
-    [request],
+    [request]
   );
 
   const put = useCallback(
     <T>(url: string, data?: unknown, config?: AxiosRequestConfig) =>
       request<T>({ ...config, method: "PUT", url, data }),
-    [request],
+    [request]
   );
 
   const patch = useCallback(
     <T>(url: string, data?: unknown, config?: AxiosRequestConfig) =>
       request<T>({ ...config, method: "PATCH", url, data }),
-    [request],
+    [request]
   );
 
   const del = useCallback(
     <T>(url: string, config?: AxiosRequestConfig) =>
       request<T>({ ...config, method: "DELETE", url }),
-    [request],
+    [request]
   );
 
-  return { get, post, put, patch, delete: del };
+  return useMemo(
+    () => ({ get, post, put, patch, delete: del }),
+    [get, post, put, patch, del]
+  );
 };
