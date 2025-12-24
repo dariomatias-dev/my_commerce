@@ -2,6 +2,7 @@
 
 import {
   Activity,
+  AlertCircle,
   AlertTriangle,
   ArrowLeft,
   ArrowRight,
@@ -13,40 +14,102 @@ import {
   Cpu,
   Download,
   ExternalLink,
+  Loader2,
   Plus,
   RefreshCcw,
   ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
+import { ApiError } from "@/@types/api";
+import { StoreResponse } from "@/@types/store/store-response";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { Footer } from "@/components/layout/footer";
+import { useStore } from "@/hooks/use-store";
 
 const StoreDashboardPage = () => {
   const params = useParams();
   const slug = params.slug as string;
+  const { getStoreBySlug } = useStore();
 
-  const [storeName, setStoreName] = useState("");
+  const [store, setStore] = useState<StoreResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchStoreData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await getStoreBySlug(slug);
+      setStore(data);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message);
+      } else {
+        setError("Não foi possível carregar os dados desta instância.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [slug, getStoreBySlug]);
 
   useEffect(() => {
-    const onAction = () => {
-      const name = slug
-        .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
-      setStoreName(name);
-    };
+    fetchStoreData();
+  }, [fetchStoreData]);
 
-    onAction();
-  }, [slug]);
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#F4F7FA] font-sans text-slate-900">
+        <DashboardHeader />
+        <main className="flex min-h-[80vh] items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-12 w-12 animate-spin text-indigo-600" />
+            <p className="text-[10px] font-black tracking-[0.5em] text-slate-400 uppercase">
+              Carregando Engine...
+            </p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !store) {
+    return (
+      <div className="min-h-screen bg-[#F4F7FA] font-sans text-slate-900">
+        <DashboardHeader />
+        <main className="mx-auto max-w-400 px-6 pt-40 pb-20">
+          <div className="flex flex-col items-center justify-center gap-6 rounded-[3rem] border border-red-100 bg-red-50/30 p-16 text-center">
+            <AlertCircle size={64} className="text-red-500" />
+            <div className="max-w-xl space-y-4">
+              <h2 className="text-4xl font-black tracking-tighter text-slate-950 uppercase italic">
+                Instância Não Localizada.
+              </h2>
+              <p className="text-lg font-medium text-slate-500 italic leading-relaxed">
+                {error ||
+                  "A loja solicitada não responde aos protocolos de rede."}
+              </p>
+            </div>
+            <Link
+              href="/dashboard"
+              className="flex items-center gap-3 rounded-2xl bg-slate-950 px-10 py-5 text-xs font-black tracking-widest text-white uppercase transition-all hover:bg-indigo-600"
+            >
+              <ArrowLeft size={18} /> VOLTAR AO PAINEL GLOBAL
+            </Link>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#F4F7FA] font-sans text-slate-900">
+    <>
       <DashboardHeader />
 
-      <main className="mx-auto max-w-400 px-6 pt-32 pb-12">
+      <main className="min-h-screen bg-[#F4F7FA] font-sans text-slate-900 mx-auto max-w-400 px-6 pt-32 pb-12">
         <div className="animate-in fade-in zoom-in-95 duration-500">
           <div className="mb-10 flex flex-col items-start justify-between gap-6 border-b border-slate-200 pb-8 lg:flex-row lg:items-end">
             <div>
@@ -58,15 +121,19 @@ const StoreDashboardPage = () => {
               </Link>
 
               <div className="mb-2 flex items-center gap-2">
-                <div className="flex h-5 items-center rounded bg-indigo-600 px-2 text-[9px] font-black tracking-widest text-white uppercase">
-                  MODO DASHBOARD: {slug.toUpperCase()}
+                <div
+                  className={`flex h-5 items-center rounded px-2 text-[9px] font-black tracking-widest text-white uppercase ${
+                    store.isActive ? "bg-indigo-600" : "bg-slate-400"
+                  }`}
+                >
+                  {store.isActive ? "OPERACIONAL" : "OFFLINE"}
                 </div>
                 <span className="text-[10px] font-black tracking-[0.3em] text-slate-400 uppercase italic">
-                  ID: {slug}-SECURED
+                  ID: {store.id.slice(0, 8).toUpperCase()}-SECURED
                 </span>
               </div>
-              <h1 className="text-5xl font-black tracking-tighter text-slate-950 uppercase italic">
-                CONSOLE DE <span className="text-indigo-600">{storeName}.</span>
+              <h1 className="text-5xl font-black tracking-tighter text-slate-950 uppercase italic leading-none">
+                CONSOLE: <span className="text-indigo-600">{store.name}.</span>
               </h1>
             </div>
 
@@ -84,7 +151,7 @@ const StoreDashboardPage = () => {
             {[
               {
                 rotulo: "Fluxo de Vendas",
-                valor: "R$ 142.380,44",
+                valor: "R$ 0,00",
                 sub: "Volume acumulado 24h",
                 icon: Activity,
               },
@@ -102,8 +169,8 @@ const StoreDashboardPage = () => {
               },
               {
                 rotulo: "Conversão Global",
-                valor: "4.12%",
-                sub: "+0.8% em relação a ontem",
+                valor: "0.00%",
+                sub: "Métrica em sincronização",
                 icon: BarChart3,
               },
             ].map((stat, i) => (
@@ -115,7 +182,11 @@ const StoreDashboardPage = () => {
                   <div className="rounded-lg bg-slate-50 p-2 text-indigo-600">
                     <stat.icon size={18} />
                   </div>
-                  <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+                  <div
+                    className={`h-1.5 w-1.5 rounded-full bg-emerald-500 ${
+                      store.isActive ? "animate-pulse" : "opacity-20"
+                    }`}
+                  />
                 </div>
                 <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
                   {stat.rotulo}
@@ -123,7 +194,7 @@ const StoreDashboardPage = () => {
                 <h3 className="mt-1 text-2xl font-black tracking-tighter text-slate-950 italic">
                   {stat.valor}
                 </h3>
-                <p className="mt-2 text-[9px] font-bold tracking-tight text-slate-400 uppercase">
+                <p className="mt-2 text-[9px] font-bold text-slate-400 uppercase tracking-tight">
                   {stat.sub}
                 </p>
               </div>
@@ -136,10 +207,13 @@ const StoreDashboardPage = () => {
                 <div className="flex items-center gap-3">
                   <CheckCircle size={18} className="text-emerald-500" />
                   <h2 className="text-xs font-black tracking-widest text-slate-950 uppercase italic">
-                    TRANSAÇÕES BEM SUCEDIDAS
+                    ÚLTIMAS TRANSAÇÕES
                   </h2>
                 </div>
-                <button className="rounded-lg bg-slate-50 p-2 text-slate-400 transition-colors hover:text-indigo-600">
+                <button
+                  onClick={fetchStoreData}
+                  className="rounded-lg bg-slate-50 p-2 text-slate-400 transition-colors hover:text-indigo-600"
+                >
                   <RefreshCcw size={14} />
                 </button>
               </div>
@@ -149,33 +223,20 @@ const StoreDashboardPage = () => {
                   <thead>
                     <tr className="border-b border-slate-50 bg-slate-50/50 text-[9px] font-black tracking-widest text-slate-400 uppercase">
                       <th className="py-4 pl-8">ID DA TRANSAÇÃO</th>
-                      <th className="py-4">CLIENTE</th>
+                      <th className="py-4">GATEWAY</th>
                       <th className="py-4">STATUS</th>
-                      <th className="py-4 pr-8 text-right">VALOR LÍQUIDO</th>
+                      <th className="py-4 pr-8 text-right">VALOR</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-50">
-                    {[1, 2, 3, 4, 5, 6].map((row) => (
-                      <tr
-                        key={row}
-                        className="group transition-colors hover:bg-slate-50/80"
+                  <tbody>
+                    <tr>
+                      <td
+                        colSpan={4}
+                        className="py-20 text-center text-[10px] font-black tracking-widest text-slate-300 uppercase italic"
                       >
-                        <td className="py-5 pl-8 text-sm font-black text-slate-950 italic">
-                          #TXN-{9420 + row}B-SUCCESS
-                        </td>
-                        <td className="py-5 text-xs font-bold text-slate-600">
-                          Lead Client {row}
-                        </td>
-                        <td className="py-5">
-                          <span className="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2 py-0.5 text-[9px] font-black tracking-widest text-emerald-600 uppercase">
-                            Aprovado
-                          </span>
-                        </td>
-                        <td className="py-5 pr-8 text-right text-sm font-black text-slate-950">
-                          <RandomPrice />
-                        </td>
-                      </tr>
-                    ))}
+                        Nenhuma transação registrada no período
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -184,50 +245,15 @@ const StoreDashboardPage = () => {
             <div className="space-y-6 lg:col-span-4">
               <div className="rounded-[2rem] bg-slate-950 p-8 text-white shadow-xl shadow-slate-200">
                 <div className="mb-8 flex items-center justify-between">
-                  <h3 className="text-xl font-black tracking-tighter text-indigo-400 uppercase italic">
-                    Estoques Baixos
+                  <h3 className="text-xl font-black tracking-tighter uppercase italic text-indigo-400">
+                    Inventory Alert
                   </h3>
                   <AlertTriangle className="text-orange-500" size={20} />
                 </div>
-                <div className="space-y-6">
-                  {[
-                    {
-                      label: "Sneaker Urban X",
-                      sku: "SKU-9920",
-                      stock: 3,
-                      alert: 85,
-                    },
-                    {
-                      label: "Relógio Minimalist",
-                      sku: "SKU-1042",
-                      stock: 1,
-                      alert: 95,
-                    },
-                  ].map((item, i) => (
-                    <div key={i} className="group cursor-pointer">
-                      <div className="mb-2 flex items-center justify-between">
-                        <div>
-                          <p className="text-[11px] font-black tracking-tight text-white uppercase italic">
-                            {item.label}
-                          </p>
-                          <p className="text-[9px] font-bold text-slate-500 uppercase">
-                            {item.sku}
-                          </p>
-                        </div>
-                        <p className="text-[11px] font-black text-orange-500 italic">
-                          {item.stock} un.
-                        </p>
-                      </div>
-                      <div className="h-1.5 w-full rounded-full bg-white/10">
-                        <div
-                          className={`h-full rounded-full transition-all duration-1000 ${
-                            item.stock <= 2 ? "bg-red-500" : "bg-orange-500"
-                          }`}
-                          style={{ width: `${item.alert}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                <div className="py-4 text-center">
+                  <p className="text-[10px] font-black tracking-widest text-slate-500 uppercase italic">
+                    Estoque em conformidade técnica
+                  </p>
                 </div>
                 <button className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-white py-4 text-[10px] font-black tracking-widest text-slate-950 uppercase transition-all hover:bg-indigo-500 hover:text-white">
                   REABASTECER AGORA <ArrowRight size={14} />
@@ -243,9 +269,9 @@ const StoreDashboardPage = () => {
                 </div>
                 <div className="space-y-3">
                   {[
-                    { label: "Análise de Faturamento", icon: BarChart3 },
-                    { label: "Gestão de Inventário", icon: Box },
-                    { label: "Configurações Globais", icon: ExternalLink },
+                    { label: "Configurações do Checkout", icon: ShieldCheck },
+                    { label: "Personalizar Vitrine", icon: Box },
+                    { label: "Logs de Integração", icon: ExternalLink },
                   ].map((action, i) => (
                     <button
                       key={i}
@@ -274,25 +300,8 @@ const StoreDashboardPage = () => {
       </main>
 
       <Footer />
-    </div>
+    </>
   );
-};
-
-const RandomPrice = () => {
-  const [price, setPrice] = useState<string | null>(null);
-
-  useEffect(() => {
-    const onAction = () => {
-      const value = (Math.random() * 800 + 100).toFixed(2);
-      setPrice(value);
-    };
-
-    onAction();
-  }, []);
-
-  if (!price) return null;
-
-  return <span>R$ {price}</span>;
 };
 
 export default StoreDashboardPage;
