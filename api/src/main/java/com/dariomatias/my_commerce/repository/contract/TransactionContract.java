@@ -15,6 +15,8 @@ public interface TransactionContract {
 
     Page<Transaction> findAll(Pageable pageable);
 
+    Page<Transaction> findAllByOrderUserId(UUID userId, Pageable pageable);
+
     Page<Transaction> findAllByOrderId(UUID orderId, Pageable pageable);
 
     Transaction update(Transaction transaction);

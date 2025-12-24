@@ -1,6 +1,7 @@
 package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.transaction.TransactionRequestDTO;
+import com.dariomatias.my_commerce.model.Order;
 import com.dariomatias.my_commerce.model.Transaction;
 import com.dariomatias.my_commerce.repository.contract.TransactionContract;
 import org.springframework.data.domain.Page;
@@ -26,8 +27,11 @@ public class TransactionService {
         if (request.getPaymentMethod() == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Método de pagamento é obrigatório");
 
+        Order order = new Order();
+        order.setId(request.getOrderId());
+
         Transaction transaction = new Transaction();
-        transaction.setOrderId(request.getOrderId());
+        transaction.setOrder(order);
         transaction.setPaymentMethod(request.getPaymentMethod());
         transaction.setAmount(request.getAmount());
 
@@ -38,13 +42,17 @@ public class TransactionService {
         return transactionRepository.findAll(pageable);
     }
 
-    public Transaction getById(UUID id) {
-        return transactionRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Transação não encontrada"));
+    public Page<Transaction> getAllByUser(UUID userId, Pageable pageable) {
+        return transactionRepository.findAllByOrderUserId(userId, pageable);
     }
 
     public Page<Transaction> getAllByOrder(UUID orderId, Pageable pageable) {
         return transactionRepository.findAllByOrderId(orderId, pageable);
+    }
+
+    public Transaction getById(UUID id) {
+        return transactionRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Transação não encontrada"));
     }
 
     public Transaction update(UUID id, TransactionRequestDTO request) {
