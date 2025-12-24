@@ -129,7 +129,7 @@ export const SignupForm = ({ onSuccess }: SignupFormProps) => {
             <div className="flex items-center gap-3">
               <CheckCircle2
                 size={14}
-                className="flex-shrink-0 text-indigo-500"
+                className="shrink-0 text-indigo-500"
               />
               <p className="text-xs leading-relaxed font-bold text-slate-600">
                 Verifique sua caixa de entrada e spam.
@@ -138,7 +138,7 @@ export const SignupForm = ({ onSuccess }: SignupFormProps) => {
             <div className="mt-3 flex items-center gap-3">
               <CheckCircle2
                 size={14}
-                className="flex-shrink-0 text-indigo-500"
+                className="shrink-0 text-indigo-500"
               />
               <p className="text-xs leading-relaxed font-bold text-slate-600">
                 Clique no botão para validar seu acesso.
