@@ -1,36 +1,53 @@
 "use client";
 
+import { useCallback } from "react";
+
 import { PaginatedResponse } from "@/@types/paginated-response";
 import { AdminUserResponse } from "@/@types/user/admin-user-response";
 import { PasswordUpdateRequest } from "@/@types/user/password-update-request";
 import { UserResponse } from "@/@types/user/user-response";
-import { useApi } from "./use-api";
+import { apiClient } from "@/services/api-client";
 
 export const useUser = () => {
-  const api = useApi();
+  const getAllUsers = useCallback(
+    (page = 0, size = 10) =>
+      apiClient.get<PaginatedResponse<AdminUserResponse>>("/users", {
+        params: { page, size },
+      }),
+    []
+  );
 
-  const getAllUsers = (page = 0, size = 10) =>
-    api.get<PaginatedResponse<AdminUserResponse>>("/users", {
-      params: { page, size },
-    });
+  const getUserById = useCallback(
+    (id: string) => apiClient.get<AdminUserResponse>(`/users/${id}`),
+    []
+  );
 
-  const getUserById = (id: string) =>
-    api.get<AdminUserResponse>(`/users/${id}`);
+  const updateUser = useCallback(
+    (id: string, data: Partial<AdminUserResponse>) =>
+      apiClient.patch<AdminUserResponse>(`/users/${id}`, data),
+    []
+  );
 
-  const updateUser = (id: string, data: Partial<AdminUserResponse>) =>
-    api.patch<AdminUserResponse>(`/users/${id}`, data);
+  const deleteUser = useCallback(
+    (id: string) => apiClient.delete<void>(`/users/${id}`),
+    []
+  );
 
-  const deleteUser = (id: string) => api.delete<void>(`/users/${id}`);
+  const getMe = useCallback(() => apiClient.get<UserResponse>("/users/me"), []);
 
-  const getMe = () => api.get<UserResponse>("/users/me");
+  const updateMe = useCallback(
+    (data: Partial<UserResponse>) =>
+      apiClient.patch<UserResponse>("/users/me", data),
+    []
+  );
 
-  const updateMe = (data: Partial<UserResponse>) =>
-    api.patch<UserResponse>("/users/me", data);
+  const changePassword = useCallback(
+    (data: PasswordUpdateRequest) =>
+      apiClient.post<void>("/users/me/change-password", data),
+    []
+  );
 
-  const changePassword = (data: PasswordUpdateRequest) =>
-    api.post<void>("/users/me/change-password", data);
-
-  const deleteMe = () => api.delete<void>("/users/me");
+  const deleteMe = useCallback(() => apiClient.delete<void>("/users/me"), []);
 
   return {
     getAllUsers,
