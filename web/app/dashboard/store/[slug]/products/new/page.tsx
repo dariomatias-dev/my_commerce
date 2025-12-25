@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import * as z from "zod";
@@ -24,6 +24,7 @@ import { ActionButton } from "@/components/buttons/action-button";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { Footer } from "@/components/layout/footer";
 import { useCategory } from "@/services/hooks/use-category";
+import { useProduct } from "@/services/hooks/use-product";
 import { useStore } from "@/services/hooks/use-store";
 
 const productSchema = z.object({
@@ -42,7 +43,9 @@ type ProductFormValues = z.infer<typeof productSchema>;
 
 const ProductPage = () => {
   const { slug } = useParams() as { slug: string };
+  const router = useRouter();
 
+  const { createProduct } = useProduct();
   const { getStoreBySlug } = useStore();
   const { getCategoriesByStoreId } = useCategory();
 
@@ -120,9 +123,6 @@ const ProductPage = () => {
       setIsSubmitting(true);
       setApiError(null);
 
-      const formData = new FormData();
-      data.images.forEach((file) => formData.append("images", file));
-
       const payload = {
         name: data.name,
         description: data.description,
@@ -133,10 +133,9 @@ const ProductPage = () => {
         storeId,
       };
 
-      formData.append(
-        "data",
-        new Blob([JSON.stringify(payload)], { type: "application/json" })
-      );
+      await createProduct(payload, data.images);
+
+      router.push(`/dashboard/store/${slug}/products`);
     } catch (error) {
       if (error instanceof ApiError) {
         setApiError(error.message);
@@ -315,7 +314,7 @@ const ProductPage = () => {
                       <DollarSign size={12} /> Preço de Venda (R$)
                     </label>
                     <input
-                      {...register("price")}
+                      {...register("price", { valueAsNumber: true })}
                       type="number"
                       step="0.01"
                       placeholder="0.00"
@@ -332,7 +331,7 @@ const ProductPage = () => {
                       <Box size={12} /> Volume em Estoque
                     </label>
                     <input
-                      {...register("stock")}
+                      {...register("stock", { valueAsNumber: true })}
                       type="number"
                       placeholder="0"
                       className={`w-full rounded-2xl border-2 bg-slate-50 py-4 px-6 font-bold text-slate-950 outline-none transition-all focus:bg-white ${
