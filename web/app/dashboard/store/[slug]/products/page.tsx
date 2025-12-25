@@ -8,8 +8,6 @@ import { useEffect, useState } from "react";
 import { StoreResponse } from "@/@types/store/store-response";
 import { CategoryManager } from "@/components/dashboard/store/[slug]/products/category-manager";
 import { ProductManager } from "@/components/dashboard/store/[slug]/products/product-manager";
-import { DashboardHeader } from "@/components/layout/dashboard-header";
-import { Footer } from "@/components/layout/footer";
 import { useStore } from "@/hooks/use-store";
 
 export default function StoreInventoryPage() {
@@ -32,68 +30,62 @@ export default function StoreInventoryPage() {
   }, [getStoreBySlug, slug]);
 
   return (
-    <>
-      <DashboardHeader />
-      <main className="mx-auto max-w-400 px-6 pt-32 pb-12 font-sans text-slate-900 min-h-screen bg-[#F4F7FA]">
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="mb-10 flex flex-col items-start justify-between gap-6 border-b border-slate-200 pb-8 lg:flex-row lg:items-end">
-            <div>
-              <Link
-                href={`/dashboard/store/${slug}`}
-                className="mb-6 flex items-center gap-2 text-[10px] font-black tracking-widest text-slate-400 uppercase hover:text-indigo-600 transition-colors"
-              >
-                <ArrowLeft size={14} /> Voltar ao Console
-              </Link>
-              <div className="mb-2 flex items-center gap-2">
-                <div className="flex h-5 items-center rounded bg-indigo-600 px-2 text-[9px] font-black tracking-widest text-white uppercase">
-                  Gestão de Ativos
-                </div>
-                <span className="text-[10px] font-black tracking-[0.3em] text-slate-400 uppercase italic">
-                  {store?.name || slug}
-                </span>
+    <main className="mx-auto max-w-400 px-6 pt-32 pb-12 font-sans text-slate-900 min-h-screen bg-[#F4F7FA]">
+      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="mb-10 flex flex-col items-start justify-between gap-6 border-b border-slate-200 pb-8 lg:flex-row lg:items-end">
+          <div>
+            <Link
+              href={`/dashboard/store/${slug}`}
+              className="mb-6 flex items-center gap-2 text-[10px] font-black tracking-widest text-slate-400 uppercase hover:text-indigo-600 transition-colors"
+            >
+              <ArrowLeft size={14} /> Voltar ao Console
+            </Link>
+            <div className="mb-2 flex items-center gap-2">
+              <div className="flex h-5 items-center rounded bg-indigo-600 px-2 text-[9px] font-black tracking-widest text-white uppercase">
+                Gestão de Ativos
               </div>
-              <h1 className="text-5xl font-black tracking-tighter text-slate-950 uppercase italic">
-                INVENTÁRIO <span className="text-indigo-600">CENTRAL.</span>
-              </h1>
+              <span className="text-[10px] font-black tracking-[0.3em] text-slate-400 uppercase italic">
+                {store?.name || slug}
+              </span>
             </div>
-
-            <div className="flex w-full flex-wrap gap-3 lg:w-auto">
-              <div className="flex rounded-xl bg-slate-200/50 p-1">
-                <button
-                  onClick={() => setView("products")}
-                  className={`flex items-center gap-2 px-4 py-2 text-[10px] font-black tracking-widest uppercase transition-all rounded-lg ${
-                    view === "products"
-                      ? "bg-white text-indigo-600 shadow-sm"
-                      : "text-slate-500"
-                  }`}
-                >
-                  <Package size={14} /> Produtos
-                </button>
-                <button
-                  onClick={() => setView("categories")}
-                  className={`flex items-center gap-2 px-4 py-2 text-[10px] font-black tracking-widest uppercase transition-all rounded-lg ${
-                    view === "categories"
-                      ? "bg-white text-indigo-600 shadow-sm"
-                      : "text-slate-500"
-                  }`}
-                >
-                  <Tag size={14} /> Categorias
-                </button>
-              </div>
-              <button className="flex items-center justify-center gap-2 rounded-xl bg-slate-950 px-6 py-4 text-[10px] font-black tracking-widest text-white shadow-2xl hover:bg-indigo-600 transition-all border-2 border-transparent focus:border-indigo-400 outline-none">
-                <Plus size={16} />{" "}
-                {view === "products" ? "NOVO PRODUTO" : "NOVA CATEGORIA"}
-              </button>
-            </div>
+            <h1 className="text-5xl font-black tracking-tighter text-slate-950 uppercase italic">
+              INVENTÁRIO <span className="text-indigo-600">CENTRAL.</span>
+            </h1>
           </div>
 
-          {view === "products" && store && (
-            <ProductManager storeId={store.id} />
-          )}
-          {view === "categories" && <CategoryManager />}
+          <div className="flex w-full flex-wrap gap-3 lg:w-auto">
+            <div className="flex rounded-xl bg-slate-200/50 p-1">
+              <button
+                onClick={() => setView("products")}
+                className={`flex items-center gap-2 px-4 py-2 text-[10px] font-black tracking-widest uppercase transition-all rounded-lg ${
+                  view === "products"
+                    ? "bg-white text-indigo-600 shadow-sm"
+                    : "text-slate-500"
+                }`}
+              >
+                <Package size={14} /> Produtos
+              </button>
+              <button
+                onClick={() => setView("categories")}
+                className={`flex items-center gap-2 px-4 py-2 text-[10px] font-black tracking-widest uppercase transition-all rounded-lg ${
+                  view === "categories"
+                    ? "bg-white text-indigo-600 shadow-sm"
+                    : "text-slate-500"
+                }`}
+              >
+                <Tag size={14} /> Categorias
+              </button>
+            </div>
+            <button className="flex items-center justify-center gap-2 rounded-xl bg-slate-950 px-6 py-4 text-[10px] font-black tracking-widest text-white shadow-2xl hover:bg-indigo-600 transition-all border-2 border-transparent focus:border-indigo-400 outline-none">
+              <Plus size={16} />{" "}
+              {view === "products" ? "NOVO PRODUTO" : "NOVA CATEGORIA"}
+            </button>
+          </div>
         </div>
-      </main>
-      <Footer />
-    </>
+
+        {view === "products" && store && <ProductManager storeId={store.id} />}
+        {view === "categories" && <CategoryManager />}
+      </div>
+    </main>
   );
 }
