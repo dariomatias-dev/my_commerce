@@ -84,7 +84,9 @@ export default function StoreInventoryPage() {
         </div>
 
         {view === "products" && store && <ProductManager storeId={store.id} />}
-        {view === "categories" && <CategoryManager />}
+        {view === "categories" && store && (
+          <CategoryManager storeId={store.id} />
+        )}
       </div>
     </main>
   );
