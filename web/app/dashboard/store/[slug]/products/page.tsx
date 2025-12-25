@@ -3,31 +3,51 @@
 import { ArrowLeft, Package, Plus, Tag } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { StoreResponse } from "@/@types/store/store-response";
-import { CategoryManager } from "@/components/dashboard/store/[slug]/products/category-manager";
+import {
+  CategoryManager,
+  CategoryManagerRef,
+} from "@/components/dashboard/store/[slug]/products/category-manager";
+import { CreateCategoryDialog } from "@/components/dashboard/store/[slug]/products/create-category-dialog";
 import { ProductManager } from "@/components/dashboard/store/[slug]/products/product-manager";
 import { useStore } from "@/hooks/use-store";
 
 export default function StoreInventoryPage() {
   const { slug } = useParams() as { slug: string };
   const { getStoreBySlug } = useStore();
+
   const [view, setView] = useState<"products" | "categories">("products");
   const [store, setStore] = useState<StoreResponse | null>(null);
+
+  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
+
+  const categoryManagerRef = useRef<CategoryManagerRef>(null);
 
   useEffect(() => {
     const fetchStore = async () => {
       try {
         const data = await getStoreBySlug(slug);
         setStore(data);
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.error(error);
       }
     };
 
     fetchStore();
   }, [getStoreBySlug, slug]);
+
+  const handleRefresh = () => {
+    categoryManagerRef.current?.refresh();
+  };
+
+  const handleCreateClick = () => {
+    if (view === "products") {
+    } else {
+      setIsCategoryDialogOpen(true);
+    }
+  };
 
   return (
     <main className="mx-auto max-w-400 px-6 pt-32 pb-12 font-sans text-slate-900 min-h-screen bg-[#F4F7FA]">
@@ -76,7 +96,11 @@ export default function StoreInventoryPage() {
                 <Tag size={14} /> Categorias
               </button>
             </div>
-            <button className="flex items-center justify-center gap-2 rounded-xl bg-slate-950 px-6 py-4 text-[10px] font-black tracking-widest text-white shadow-2xl hover:bg-indigo-600 transition-all border-2 border-transparent focus:border-indigo-400 outline-none">
+
+            <button
+              onClick={handleCreateClick}
+              className="flex items-center justify-center gap-2 rounded-xl bg-slate-950 px-6 py-4 text-[10px] font-black tracking-widest text-white shadow-2xl hover:bg-indigo-600 transition-all border-2 border-transparent focus:border-indigo-400 outline-none"
+            >
               <Plus size={16} />{" "}
               {view === "products" ? "NOVO PRODUTO" : "NOVA CATEGORIA"}
             </button>
@@ -84,10 +108,20 @@ export default function StoreInventoryPage() {
         </div>
 
         {view === "products" && store && <ProductManager storeId={store.id} />}
+
         {view === "categories" && store && (
-          <CategoryManager storeId={store.id} />
+          <CategoryManager storeId={store.id} ref={categoryManagerRef} />
         )}
       </div>
+
+      {store && (
+        <CreateCategoryDialog
+          isOpen={isCategoryDialogOpen}
+          onClose={() => setIsCategoryDialogOpen(false)}
+          storeId={store.id}
+          onSuccess={handleRefresh}
+        />
+      )}
     </main>
   );
 }

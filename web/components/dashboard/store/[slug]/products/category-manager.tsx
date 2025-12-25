@@ -11,17 +11,31 @@ import {
   Tag,
   Trash2,
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 
 import { ApiError } from "@/@types/api";
 import { CategoryResponse } from "@/@types/category/category-response";
 import { useCategory } from "@/hooks/use-category";
 
+export interface CategoryManagerRef {
+  refresh: () => void;
+}
+
 interface CategoryManagerProps {
   storeId: string;
 }
 
-export const CategoryManager = ({ storeId }: CategoryManagerProps) => {
+export const CategoryManager = forwardRef<
+  CategoryManagerRef,
+  CategoryManagerProps
+>(({ storeId }, ref) => {
   const { getCategoriesByStoreId } = useCategory();
   const listTopRef = useRef<HTMLDivElement>(null);
 
@@ -37,12 +51,14 @@ export const CategoryManager = ({ storeId }: CategoryManagerProps) => {
     try {
       setIsLoading(true);
       setError(null);
+
       const data = await getCategoriesByStoreId(storeId, currentPage, pageSize);
+
       setCategories(data.content);
       setTotalPages(data.totalPages);
-    } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setError(error.message);
       } else {
         setError("Erro ao carregar as taxonomias da loja.");
       }
@@ -50,6 +66,10 @@ export const CategoryManager = ({ storeId }: CategoryManagerProps) => {
       setIsLoading(false);
     }
   }, [storeId, currentPage, getCategoriesByStoreId]);
+
+  useImperativeHandle(ref, () => ({
+    refresh: fetchCategories,
+  }));
 
   useEffect(() => {
     fetchCategories();
@@ -191,4 +211,6 @@ export const CategoryManager = ({ storeId }: CategoryManagerProps) => {
       )}
     </div>
   );
-};
+});
+
+CategoryManager.displayName = "CategoryManager";
