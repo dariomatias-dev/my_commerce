@@ -2,11 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Tag, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 import { ApiError } from "@/@types/api";
+import { CategoryResponse } from "@/@types/category/category-response";
 import { ActionButton } from "@/components/buttons/action-button";
 import { useCategory } from "@/hooks/use-category";
 
@@ -16,23 +17,26 @@ const categorySchema = z.object({
 
 type CategoryFormValues = z.infer<typeof categorySchema>;
 
-interface CreateCategoryDialogProps {
+interface CategoryFormDialogProps {
   isOpen: boolean;
   onClose: () => void;
   storeId: string;
   onSuccess: () => void;
+  initialData?: CategoryResponse | null;
 }
 
-export const CreateCategoryDialog = ({
+export const CategoryFormDialog = ({
   isOpen,
   onClose,
   storeId,
   onSuccess,
-}: CreateCategoryDialogProps) => {
+  initialData,
+}: CategoryFormDialogProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
-  const { createCategory } = useCategory();
+  const { createCategory, updateCategory } = useCategory();
+  const isEditing = !!initialData;
 
   const {
     register,
@@ -44,24 +48,43 @@ export const CreateCategoryDialog = ({
     defaultValues: { name: "" },
   });
 
+  useEffect(() => {
+    if (isOpen) {
+      reset({
+        name: initialData?.name || "",
+      });
+      setApiError(null);
+    }
+  }, [isOpen, initialData, reset]);
+
   const onSubmit = async (data: CategoryFormValues) => {
     try {
       setIsLoading(true);
       setApiError(null);
 
-      await createCategory({
-        name: data.name,
-        storeId: storeId,
-      });
+      if (isEditing && initialData) {
+        await updateCategory(initialData.id, {
+          name: data.name,
+          storeId: storeId,
+        });
+      } else {
+        await createCategory({
+          name: data.name,
+          storeId: storeId,
+        });
+      }
 
-      reset();
       onSuccess();
       onClose();
     } catch (error) {
       if (error instanceof ApiError) {
         setApiError(error.message);
       } else {
-        setApiError("Erro ao registrar categoria.");
+        setApiError(
+          isEditing
+            ? "Erro ao atualizar categoria."
+            : "Erro ao registrar categoria."
+        );
       }
     } finally {
       setIsLoading(false);
@@ -84,7 +107,8 @@ export const CreateCategoryDialog = ({
               <Tag size={20} />
             </div>
             <h2 className="text-xl font-black tracking-tighter text-slate-950 uppercase italic">
-              Nova <span className="text-indigo-600">Categoria.</span>
+              {isEditing ? "Editar" : "Nova"}{" "}
+              <span className="text-indigo-600">Categoria.</span>
             </h2>
           </div>
           <button
@@ -132,8 +156,10 @@ export const CreateCategoryDialog = ({
                 {isLoading ? (
                   <span className="flex items-center gap-2">
                     <Loader2 size={16} className="animate-spin" />{" "}
-                    REGISTRANDO...
+                    {isEditing ? "SALVANDO..." : "REGISTRANDO..."}
                   </span>
+                ) : isEditing ? (
+                  "SALVAR ALTERAÇÕES"
                 ) : (
                   "CRIAR CATEGORIA"
                 )}
@@ -144,7 +170,9 @@ export const CreateCategoryDialog = ({
 
         <div className="bg-slate-50/50 px-8 py-4">
           <p className="text-center text-[9px] font-bold tracking-widest text-slate-400 uppercase">
-            A categoria ficará disponível para vínculo imediato com produtos.
+            {isEditing
+              ? "As alterações serão aplicadas a todos os produtos vinculados."
+              : "A categoria ficará disponível para vínculo imediato com produtos."}
           </p>
         </div>
       </div>

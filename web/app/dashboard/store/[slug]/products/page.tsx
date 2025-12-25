@@ -10,7 +10,7 @@ import {
   CategoryManager,
   CategoryManagerRef,
 } from "@/components/dashboard/store/[slug]/products/category-manager";
-import { CreateCategoryDialog } from "@/components/dashboard/store/[slug]/products/create-category-dialog";
+import { CategoryFormDialog } from "@/components/dashboard/store/[slug]/products/category-form-dialog";
 import { ProductManager } from "@/components/dashboard/store/[slug]/products/product-manager";
 import { useStore } from "@/hooks/use-store";
 
@@ -21,7 +21,7 @@ export default function StoreInventoryPage() {
   const [view, setView] = useState<"products" | "categories">("products");
   const [store, setStore] = useState<StoreResponse | null>(null);
 
-  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
+  const [isCategoryFormDialogOpen, setIsCategoryFormDialogOpen] = useState(false);
 
   const categoryManagerRef = useRef<CategoryManagerRef>(null);
 
@@ -45,7 +45,7 @@ export default function StoreInventoryPage() {
   const handleCreateClick = () => {
     if (view === "products") {
     } else {
-      setIsCategoryDialogOpen(true);
+      setIsCategoryFormDialogOpen(true);
     }
   };
 
@@ -115,9 +115,9 @@ export default function StoreInventoryPage() {
       </div>
 
       {store && (
-        <CreateCategoryDialog
-          isOpen={isCategoryDialogOpen}
-          onClose={() => setIsCategoryDialogOpen(false)}
+        <CategoryFormDialog
+          isOpen={isCategoryFormDialogOpen}
+          onClose={() => setIsCategoryFormDialogOpen(false)}
           storeId={store.id}
           onSuccess={handleRefresh}
         />
