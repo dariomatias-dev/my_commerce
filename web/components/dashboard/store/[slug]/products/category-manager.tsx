@@ -23,6 +23,7 @@ import {
 import { ApiError } from "@/@types/api";
 import { CategoryResponse } from "@/@types/category/category-response";
 import { useCategory } from "@/hooks/use-category";
+import { CategoryFormDialog } from "./category-form-dialog";
 
 export interface CategoryManagerRef {
   refresh: () => void;
@@ -42,6 +43,10 @@ export const CategoryManager = forwardRef<
   const [categories, setCategories] = useState<CategoryResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] =
+    useState<CategoryResponse | null>(null);
 
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -78,6 +83,16 @@ export const CategoryManager = forwardRef<
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     listTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const handleEdit = (category: CategoryResponse) => {
+    setSelectedCategory(category);
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+    setSelectedCategory(null);
   };
 
   if (isLoading) {
@@ -155,7 +170,10 @@ export const CategoryManager = forwardRef<
             </p>
 
             <div className="mt-8 flex gap-2 border-t border-slate-50 pt-6">
-              <button className="flex-1 flex items-center justify-center gap-2 rounded-xl border-2 border-slate-100 py-2.5 text-[9px] font-black uppercase tracking-widest text-slate-500 hover:border-indigo-600 hover:text-indigo-600 transition-all">
+              <button
+                onClick={() => handleEdit(category)}
+                className="flex-1 flex items-center justify-center gap-2 rounded-xl border-2 border-slate-100 py-2.5 text-[9px] font-black uppercase tracking-widest text-slate-500 hover:border-indigo-600 hover:text-indigo-600 transition-all"
+              >
                 <Edit3 size={14} /> Editar
               </button>
               <button className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-slate-100 text-slate-300 hover:text-red-500 hover:border-red-500 transition-all">
@@ -179,7 +197,7 @@ export const CategoryManager = forwardRef<
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 0}
-            className="flex h-12 w-12 items-center justify-center rounded-xl border-2 border-slate-200 bg-white text-slate-600 disabled:opacity-20"
+            className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 disabled:opacity-20"
           >
             <ChevronLeft size={20} />
           </button>
@@ -203,12 +221,20 @@ export const CategoryManager = forwardRef<
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages - 1}
-            className="flex h-12 w-12 items-center justify-center rounded-xl border-2 border-slate-200 bg-white text-slate-600 disabled:opacity-20"
+            className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 disabled:opacity-20"
           >
             <ChevronRight size={20} />
           </button>
         </div>
       )}
+
+      <CategoryFormDialog
+        isOpen={isDialogOpen}
+        onClose={handleCloseDialog}
+        storeId={storeId}
+        initialData={selectedCategory}
+        onSuccess={fetchCategories}
+      />
     </div>
   );
 });
