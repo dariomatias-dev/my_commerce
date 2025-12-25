@@ -1,0 +1,58 @@
+"use client";
+
+import { useCallback } from "react";
+
+import { PaginatedResponse } from "@/@types/paginated-response";
+import { ProductRequest } from "@/@types/product/product-request";
+import { ProductResponse } from "@/@types/product/product-response";
+import { apiClient } from "@/services/api-client";
+
+export const useProduct = () => {
+  const createProduct = useCallback(
+    (data: ProductRequest) =>
+      apiClient.post<ProductResponse>("/products", data),
+    []
+  );
+
+  const getAllProducts = useCallback(
+    (page = 0, size = 10) =>
+      apiClient.get<PaginatedResponse<ProductResponse>>("/products", {
+        params: { page, size },
+      }),
+    []
+  );
+
+  const getProductsByStoreId = useCallback(
+    (storeId: string, page = 0, size = 10) =>
+      apiClient.get<PaginatedResponse<ProductResponse>>(
+        `/products/store/${storeId}`,
+        { params: { page, size } }
+      ),
+    []
+  );
+
+  const getProductById = useCallback(
+    (id: string) => apiClient.get<ProductResponse>(`/products/${id}`),
+    []
+  );
+
+  const updateProduct = useCallback(
+    (id: string, data: Partial<ProductRequest>) =>
+      apiClient.patch<ProductResponse>(`/products/${id}`, data),
+    []
+  );
+
+  const deleteProduct = useCallback(
+    (id: string) => apiClient.delete<void>(`/products/${id}`),
+    []
+  );
+
+  return {
+    createProduct,
+    getAllProducts,
+    getProductsByStoreId,
+    getProductById,
+    updateProduct,
+    deleteProduct,
+  };
+};
