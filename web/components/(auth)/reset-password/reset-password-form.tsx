@@ -11,7 +11,7 @@ import * as z from "zod";
 import { ApiError } from "@/@types/api";
 import { ActionButton } from "@/components/buttons/action-button";
 import { PasswordField } from "@/components/password-field";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/services/hooks/use-auth";
 import { resetPasswordSchema } from "@/schemas/reset-password.schema";
 
 type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
@@ -54,7 +54,7 @@ export const ResetPasswordForm = () => {
       });
 
       setIsReset(true);
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof ApiError) {
         if (error.errors && error.errors.length > 0) {
           error.errors.forEach((fError) => {

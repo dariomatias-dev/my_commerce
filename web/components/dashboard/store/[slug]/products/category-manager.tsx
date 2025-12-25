@@ -23,7 +23,7 @@ import {
 import { ApiError } from "@/@types/api";
 import { CategoryResponse } from "@/@types/category/category-response";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
-import { useCategory } from "@/hooks/use-category";
+import { useCategory } from "@/services/hooks/use-category";
 import { CategoryFormDialog } from "./category-form-dialog";
 
 export interface CategoryManagerRef {

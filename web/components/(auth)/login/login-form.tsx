@@ -13,7 +13,7 @@ import { ApiError } from "@/@types/api";
 import { ActionButton } from "@/components/buttons/action-button";
 import { PasswordField } from "@/components/password-field";
 import { useAuthContext } from "@/contexts/auth-context";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/services/hooks/use-auth";
 import { loginSchema } from "@/schemas/login.schema";
 
 type LoginFormValues = z.infer<typeof loginSchema>;

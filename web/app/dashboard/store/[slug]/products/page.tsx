@@ -12,7 +12,7 @@ import {
 } from "@/components/dashboard/store/[slug]/products/category-manager";
 import { CategoryFormDialog } from "@/components/dashboard/store/[slug]/products/category-form-dialog";
 import { ProductManager } from "@/components/dashboard/store/[slug]/products/product-manager";
-import { useStore } from "@/hooks/use-store";
+import { useStore } from "@/services/hooks/use-store";
 
 export default function StoreInventoryPage() {
   const { slug } = useParams() as { slug: string };
@@ -21,7 +21,8 @@ export default function StoreInventoryPage() {
   const [view, setView] = useState<"products" | "categories">("products");
   const [store, setStore] = useState<StoreResponse | null>(null);
 
-  const [isCategoryFormDialogOpen, setIsCategoryFormDialogOpen] = useState(false);
+  const [isCategoryFormDialogOpen, setIsCategoryFormDialogOpen] =
+    useState(false);
 
   const categoryManagerRef = useRef<CategoryManagerRef>(null);
 

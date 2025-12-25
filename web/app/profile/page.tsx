@@ -18,7 +18,7 @@ import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { Footer } from "@/components/layout/footer";
 import { PasswordField } from "@/components/password-field";
 import { useAuthContext } from "@/contexts/auth-context";
-import { useUser } from "@/hooks/use-user";
+import { useUser } from "@/services/hooks/use-user";
 
 const profileSchema = z.object({
   name: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
@@ -77,7 +77,7 @@ export default function ProfilePage() {
         message: "Perfil atualizado com sucesso.",
         type: "success",
       });
-    } catch (error: unknown) {
+    } catch (error) {
       const message =
         error instanceof Error ? error.message : "Erro ao atualizar perfil.";
 

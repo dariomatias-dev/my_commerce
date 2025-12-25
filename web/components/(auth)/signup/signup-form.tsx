@@ -10,7 +10,7 @@ import * as z from "zod";
 import { ApiError } from "@/@types/api";
 import { ActionButton } from "@/components/buttons/action-button";
 import { PasswordField } from "@/components/password-field";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/services/hooks/use-auth";
 import { signupSchema } from "@/schemas/signup.schema";
 
 type SignupFormValues = z.infer<typeof signupSchema>;
@@ -60,7 +60,7 @@ export const SignupForm = ({ onSuccess }: SignupFormProps) => {
       setRegisteredEmail(data.email);
       setIsSuccess(true);
       onSuccess();
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof ApiError) {
         if (error.errors && error.errors.length > 0) {
           error.errors.forEach((fError) => {
@@ -84,12 +84,14 @@ export const SignupForm = ({ onSuccess }: SignupFormProps) => {
     try {
       setIsResending(true);
       setResendFeedback(null);
+
       await resendVerificationEmail({ email: registeredEmail });
+
       setResendFeedback({
         message: "E-mail reenviado com sucesso!",
         type: "success",
       });
-    } catch (error: any) {
+    } catch (error) {
       const message =
         error instanceof ApiError ? error.message : "Erro ao reenviar e-mail.";
       setResendFeedback({
@@ -127,19 +129,13 @@ export const SignupForm = ({ onSuccess }: SignupFormProps) => {
 
           <div className="rounded-2xl border border-slate-100 bg-slate-50 p-6 text-left">
             <div className="flex items-center gap-3">
-              <CheckCircle2
-                size={14}
-                className="shrink-0 text-indigo-500"
-              />
+              <CheckCircle2 size={14} className="shrink-0 text-indigo-500" />
               <p className="text-xs leading-relaxed font-bold text-slate-600">
                 Verifique sua caixa de entrada e spam.
               </p>
             </div>
             <div className="mt-3 flex items-center gap-3">
-              <CheckCircle2
-                size={14}
-                className="shrink-0 text-indigo-500"
-              />
+              <CheckCircle2 size={14} className="shrink-0 text-indigo-500" />
               <p className="text-xs leading-relaxed font-bold text-slate-600">
                 Clique no botão para validar seu acesso.
               </p>

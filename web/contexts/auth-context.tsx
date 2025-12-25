@@ -12,8 +12,8 @@ import {
 
 import { SubscriptionResponse } from "@/@types/subscription/subscription-response";
 import { UserResponse } from "@/@types/user/user-response";
-import { useSubscription } from "@/hooks/use-subscription";
-import { useUser } from "@/hooks/use-user";
+import { useSubscription } from "@/services/hooks/use-subscription";
+import { useUser } from "@/services/hooks/use-user";
 
 interface AuthContextData {
   user: UserResponse | null;

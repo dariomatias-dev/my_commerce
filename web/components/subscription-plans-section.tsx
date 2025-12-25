@@ -13,7 +13,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { SubscriptionPlanResponse } from "@/@types/subscription-plan/subscription-plan-response";
-import { useSubscriptionPlan } from "@/hooks/use-subscription-plan";
+import { useSubscriptionPlan } from "@/services/hooks/use-subscription-plan";
 
 const FeaturedPlanCard = ({ plan }: { plan: SubscriptionPlanResponse }) => {
   const featuresList = plan.features?.split(",").map((f) => f.trim()) || [];

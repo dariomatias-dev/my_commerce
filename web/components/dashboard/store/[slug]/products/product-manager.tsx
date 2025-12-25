@@ -16,7 +16,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { ProductResponse } from "@/@types/product/product-response";
-import { useProduct } from "@/hooks/use-product";
+import { useProduct } from "@/services/hooks/use-product";
 
 interface ProductManagerProps {
   storeId: string;
@@ -40,10 +40,12 @@ export const ProductManager = ({ storeId }: ProductManagerProps) => {
       const data = await getProductsByStoreId(storeId, currentPage, pageSize);
       setProducts(data.content);
       setTotalPages(data.totalPages);
-    } catch (err) {
-      setError(
-        err instanceof ApiError ? err.message : "Erro ao carregar produtos."
-      );
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setError(error.message);
+      } else {
+        setError("Erro ao carregar produtos.");
+      }
     } finally {
       setIsLoading(false);
     }

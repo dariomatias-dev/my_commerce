@@ -29,8 +29,8 @@ import { TransactionResponse } from "@/@types/transaction/transaction-response";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { Footer } from "@/components/layout/footer";
 import { PaymentMethod } from "@/enums/payment-method";
-import { useStore } from "@/hooks/use-store";
-import { useTransaction } from "@/hooks/use-transaction";
+import { useStore } from "@/services/hooks/use-store";
+import { useTransaction } from "@/services/hooks/use-transaction";
 
 const StoreDashboardPage = () => {
   const params = useParams();
@@ -60,12 +60,14 @@ const StoreDashboardPage = () => {
     try {
       setIsLoading(true);
       setError(null);
+
       const data = await getStoreBySlug(slug);
       setStore(data);
+
       await fetchTransactions();
-    } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setError(error.message);
       } else {
         setError("Não foi possível carregar os dados desta instância.");
       }

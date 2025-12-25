@@ -16,7 +16,7 @@ import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
 import { StoreCard } from "@/components/dashboard/dashboard-store-card";
 import { useAuthContext } from "@/contexts/auth-context";
-import { useStore } from "@/hooks/use-store";
+import { useStore } from "@/services/hooks/use-store";
 
 const DashboardPage = () => {
   const { user } = useAuthContext();
@@ -40,9 +40,9 @@ const DashboardPage = () => {
       const response = await getStoresByUserId(user.id, currentPage, pageSize);
       setStores(response.content);
       setTotalPages(response.totalPages);
-    } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setError(error.message);
       } else {
         setError("Não foi possível carregar suas instâncias operacionais.");
       }

@@ -9,7 +9,7 @@ import * as z from "zod";
 import { ApiError } from "@/@types/api";
 import { CategoryResponse } from "@/@types/category/category-response";
 import { ActionButton } from "@/components/buttons/action-button";
-import { useCategory } from "@/hooks/use-category";
+import { useCategory } from "@/services/hooks/use-category";
 
 const categorySchema = z.object({
   name: z.string().min(2, "O nome deve ter pelo menos 2 caracteres"),

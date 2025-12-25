@@ -8,7 +8,7 @@ import * as z from "zod";
 
 import { ApiError } from "@/@types/api";
 import { ActionButton } from "@/components/buttons/action-button";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/services/hooks/use-auth";
 import { recoverSchema } from "@/schemas/recover.schema";
 
 type RecoverFormValues = z.infer<typeof recoverSchema>;
@@ -42,7 +42,7 @@ export const RecoverPasswordForm = () => {
 
       setSubmittedEmail(data.email);
       setEmailSent(true);
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof ApiError) {
         if (error.errors && error.errors.length > 0) {
           error.errors.forEach((fError) => {

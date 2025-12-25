@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { ApiError } from "@/@types/api";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/services/hooks/use-auth";
 
 export const EmailVerificationCard = () => {
   const searchParams = useSearchParams();

@@ -9,7 +9,7 @@ import * as z from "zod";
 
 import { ApiError } from "@/@types/api";
 import { ActionButton } from "@/components/buttons/action-button";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/services/hooks/use-auth";
 
 const resendSchema = z.object({
   email: z.email("Insira um e-mail válido"),
@@ -41,7 +41,7 @@ export const ResendVerificationForm = () => {
       await resendVerificationEmail({ email: data.email });
       setLastEmail(data.email);
       setIsSuccess(true);
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof ApiError) {
         if (error.errors && error.errors.length > 0) {
           error.errors.forEach((fError) => {
