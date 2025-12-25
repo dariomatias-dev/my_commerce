@@ -5,43 +5,44 @@ import { useCallback } from "react";
 import { PaginatedResponse } from "@/@types/paginated-response";
 import { SubscriptionPlanRequest } from "@/@types/subscription-plan/subscription-plan-request";
 import { SubscriptionPlanResponse } from "@/@types/subscription-plan/subscription-plan-response";
-import { useApi } from "./use-api";
+import { apiClient } from "@/services/api-client";
 
 export const useSubscriptionPlan = () => {
-  const api = useApi();
-
   const createPlan = useCallback(
     (data: SubscriptionPlanRequest) =>
-      api.post<SubscriptionPlanResponse>("/subscription-plans", data),
-    [api]
+      apiClient.post<SubscriptionPlanResponse>("/subscription-plans", data),
+    []
   );
 
   const getAllPlans = useCallback(
     (page = 0, size = 10) =>
-      api.get<PaginatedResponse<SubscriptionPlanResponse>>(
+      apiClient.get<PaginatedResponse<SubscriptionPlanResponse>>(
         "/subscription-plans",
         {
           params: { page, size },
         }
       ),
-    [api]
+    []
   );
 
   const getPlanById = useCallback(
     (id: string) =>
-      api.get<SubscriptionPlanResponse>(`/subscription-plans/${id}`),
-    [api]
+      apiClient.get<SubscriptionPlanResponse>(`/subscription-plans/${id}`),
+    []
   );
 
   const updatePlan = useCallback(
     (id: string, data: Partial<SubscriptionPlanRequest>) =>
-      api.patch<SubscriptionPlanResponse>(`/subscription-plans/${id}`, data),
-    [api]
+      apiClient.patch<SubscriptionPlanResponse>(
+        `/subscription-plans/${id}`,
+        data
+      ),
+    []
   );
 
   const deletePlan = useCallback(
-    (id: string) => api.delete<void>(`/subscription-plans/${id}`),
-    [api]
+    (id: string) => apiClient.delete<void>(`/subscription-plans/${id}`),
+    []
   );
 
   return {

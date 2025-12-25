@@ -5,11 +5,9 @@ import { useCallback } from "react";
 import { PaginatedResponse } from "@/@types/paginated-response";
 import { StoreRequest } from "@/@types/store/store-request";
 import { StoreResponse } from "@/@types/store/store-response";
-import { useApi } from "./use-api";
+import { apiClient } from "@/services/api-client";
 
 export const useStore = () => {
-  const api = useApi();
-
   const createStore = useCallback(
     (data: StoreRequest, logo: File, banner: File) => {
       const formData = new FormData();
@@ -20,37 +18,40 @@ export const useStore = () => {
       formData.append("logo", logo);
       formData.append("banner", banner);
 
-      return api.post<StoreResponse>("/stores", formData, {
+      return apiClient.post<StoreResponse>("/stores", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
     },
-    [api]
+    []
   );
 
   const getAllStores = useCallback(
     (page = 0, size = 10) =>
-      api.get<PaginatedResponse<StoreResponse>>("/stores", {
+      apiClient.get<PaginatedResponse<StoreResponse>>("/stores", {
         params: { page, size },
       }),
-    [api]
+    []
   );
 
   const getStoresByUserId = useCallback(
     (userId: string, page = 0, size = 10) =>
-      api.get<PaginatedResponse<StoreResponse>>(`/stores/user/${userId}`, {
-        params: { page, size },
-      }),
-    [api]
+      apiClient.get<PaginatedResponse<StoreResponse>>(
+        `/stores/user/${userId}`,
+        {
+          params: { page, size },
+        }
+      ),
+    []
   );
 
   const getStoreById = useCallback(
-    (id: string) => api.get<StoreResponse>(`/stores/${id}`),
-    [api]
+    (id: string) => apiClient.get<StoreResponse>(`/stores/${id}`),
+    []
   );
 
   const getStoreBySlug = useCallback(
-    (slug: string) => api.get<StoreResponse>(`/stores/slug/${slug}`),
-    [api]
+    (slug: string) => apiClient.get<StoreResponse>(`/stores/slug/${slug}`),
+    []
   );
 
   const updateStore = useCallback(
@@ -65,16 +66,16 @@ export const useStore = () => {
       if (logo) formData.append("logo", logo);
       if (banner) formData.append("banner", banner);
 
-      return api.patch<StoreResponse>(`/stores/${id}`, formData, {
+      return apiClient.patch<StoreResponse>(`/stores/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
     },
-    [api]
+    []
   );
 
   const deleteStore = useCallback(
-    (id: string) => api.delete<void>(`/stores/${id}`),
-    [api]
+    (id: string) => apiClient.delete<void>(`/stores/${id}`),
+    []
   );
 
   return {
