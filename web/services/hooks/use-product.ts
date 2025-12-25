@@ -8,11 +8,22 @@ import { ProductResponse } from "@/@types/product/product-response";
 import { apiClient } from "@/services/api-client";
 
 export const useProduct = () => {
-  const createProduct = useCallback(
-    (data: ProductRequest) =>
-      apiClient.post<ProductResponse>("/products", data),
-    []
-  );
+  const createProduct = useCallback((data: ProductRequest, images: File[]) => {
+    const formData = new FormData();
+
+    formData.append(
+      "data",
+      new Blob([JSON.stringify(data)], { type: "application/json" })
+    );
+
+    images.forEach((image) => {
+      formData.append("images", image);
+    });
+
+    return apiClient.post<ProductResponse>("/products", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  }, []);
 
   const getAllProducts = useCallback(
     (page = 0, size = 10) =>
@@ -37,8 +48,26 @@ export const useProduct = () => {
   );
 
   const updateProduct = useCallback(
-    (id: string, data: Partial<ProductRequest>) =>
-      apiClient.patch<ProductResponse>(`/products/${id}`, data),
+    (id: string, data?: Partial<ProductRequest>, images?: File[]) => {
+      const formData = new FormData();
+
+      if (data) {
+        formData.append(
+          "data",
+          new Blob([JSON.stringify(data)], { type: "application/json" })
+        );
+      }
+
+      if (images) {
+        images.forEach((image) => {
+          formData.append("images", image);
+        });
+      }
+
+      return apiClient.patch<ProductResponse>(`/products/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+    },
     []
   );
 
