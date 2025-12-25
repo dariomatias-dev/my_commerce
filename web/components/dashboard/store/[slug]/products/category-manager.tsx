@@ -22,6 +22,7 @@ import {
 
 import { ApiError } from "@/@types/api";
 import { CategoryResponse } from "@/@types/category/category-response";
+import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { useCategory } from "@/hooks/use-category";
 import { CategoryFormDialog } from "./category-form-dialog";
 
@@ -37,14 +38,16 @@ export const CategoryManager = forwardRef<
   CategoryManagerRef,
   CategoryManagerProps
 >(({ storeId }, ref) => {
-  const { getCategoriesByStoreId } = useCategory();
+  const { getCategoriesByStoreId, deleteCategory } = useCategory();
   const listTopRef = useRef<HTMLDivElement>(null);
 
   const [categories, setCategories] = useState<CategoryResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [selectedCategory, setSelectedCategory] =
     useState<CategoryResponse | null>(null);
 
@@ -87,12 +90,34 @@ export const CategoryManager = forwardRef<
 
   const handleEdit = (category: CategoryResponse) => {
     setSelectedCategory(category);
-    setIsDialogOpen(true);
+    setIsFormOpen(true);
   };
 
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
-    setSelectedCategory(null);
+  const handleDeleteClick = (category: CategoryResponse) => {
+    setSelectedCategory(category);
+    setIsConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedCategory) return;
+    try {
+      setIsDeleting(true);
+
+      await deleteCategory(selectedCategory.id);
+      await fetchCategories();
+
+      setIsConfirmOpen(false);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setError(error.message);
+        alert(error.message);
+      } else {
+        alert("Erro ao excluir categoria.");
+      }
+    } finally {
+      setIsDeleting(false);
+      setSelectedCategory(null);
+    }
   };
 
   if (isLoading) {
@@ -176,7 +201,10 @@ export const CategoryManager = forwardRef<
               >
                 <Edit3 size={14} /> Editar
               </button>
-              <button className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-slate-100 text-slate-300 hover:text-red-500 hover:border-red-500 transition-all">
+              <button
+                onClick={() => handleDeleteClick(category)}
+                className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-slate-100 text-slate-300 hover:text-red-500 hover:border-red-500 transition-all"
+              >
                 <Trash2 size={14} />
               </button>
             </div>
@@ -197,11 +225,10 @@ export const CategoryManager = forwardRef<
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 0}
-            className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 disabled:opacity-20"
+            className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 disabled:opacity-20 shadow-sm"
           >
             <ChevronLeft size={20} />
           </button>
-
           <div className="flex items-center gap-2">
             {Array.from({ length: totalPages }, (_, i) => (
               <button
@@ -217,11 +244,10 @@ export const CategoryManager = forwardRef<
               </button>
             ))}
           </div>
-
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages - 1}
-            className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 disabled:opacity-20"
+            className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 disabled:opacity-20 shadow-sm"
           >
             <ChevronRight size={20} />
           </button>
@@ -229,11 +255,28 @@ export const CategoryManager = forwardRef<
       )}
 
       <CategoryFormDialog
-        isOpen={isDialogOpen}
-        onClose={handleCloseDialog}
+        isOpen={isFormOpen}
+        onClose={() => {
+          setIsFormOpen(false);
+          setSelectedCategory(null);
+        }}
         storeId={storeId}
         initialData={selectedCategory}
         onSuccess={fetchCategories}
+      />
+
+      <ConfirmDialog
+        isOpen={isConfirmOpen}
+        isLoading={isDeleting}
+        onClose={() => {
+          setIsConfirmOpen(false);
+          setSelectedCategory(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        title="Remover Categoria?"
+        description={`Você está prestes a excluir a categoria "${selectedCategory?.name}". Esta ação não poderá ser desfeita.`}
+        confirmText="EXCLUIR PERMANENTEMENTE"
+        variant="danger"
       />
     </div>
   );
