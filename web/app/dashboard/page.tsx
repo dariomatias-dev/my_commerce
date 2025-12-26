@@ -36,15 +36,16 @@ const DashboardPage = () => {
 
     try {
       setIsLoading(true);
-      setError(null);
+
       const response = await getStoresByUserId(user.id, currentPage, pageSize);
+
       setStores(response.content);
       setTotalPages(response.totalPages);
     } catch (error) {
       if (error instanceof ApiError) {
         setError(error.message);
       } else {
-        setError("Não foi possível carregar suas instâncias operacionais.");
+        setError("Não foi possível carregar as informações da loja.");
       }
     } finally {
       setIsLoading(false);
@@ -57,6 +58,7 @@ const DashboardPage = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+
     listTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 

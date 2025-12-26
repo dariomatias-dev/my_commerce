@@ -1,10 +1,10 @@
 "use client";
 
 import { ArrowLeft, ShieldCheck, Store } from "lucide-react";
-import Link from "next/link";
-import { FaFacebookF, FaGoogle } from "react-icons/fa";
+import Link from "next/link";;
 
 import { LoginForm } from "@/components/(auth)/login/login-form";
+import { FaFacebookF, FaGoogle } from "react-icons/fa6";
 
 const LoginPage = () => {
   return (

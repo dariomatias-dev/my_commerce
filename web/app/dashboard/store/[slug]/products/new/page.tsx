@@ -1,124 +1,39 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  ArrowLeft,
-  Box,
-  ChevronDown,
-  DollarSign,
-  Layers,
-  Type,
-} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import * as z from "zod";
+import { useState } from "react";
 
 import { ApiError } from "@/@types/api";
-import { CategoryResponse } from "@/@types/category/category-response";
-import { ActionButton } from "@/components/buttons/action-button";
-import { ProductMediaGallery } from "@/components/dashboard/store/[slug]/products/new/product-gallery";
-import { DashboardHeader } from "@/components/layout/dashboard-header";
-import { Footer } from "@/components/layout/footer";
-import { useCategory } from "@/services/hooks/use-category";
+import {
+  ProductForm,
+  ProductFormValues,
+} from "@/components/dashboard/store/[slug]/products/product-form";
 import { useProduct } from "@/services/hooks/use-product";
-import { useStore } from "@/services/hooks/use-store";
 
-const productSchema = z.object({
-  name: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
-  description: z.string().min(10, "A descrição deve ser mais detalhada"),
-  price: z.number().min(0.01, "O preço deve ser maior que zero"),
-  stock: z.number().int().min(0, "O estoque não pode ser negativo"),
-  categoryId: z.string().min(1, "Selecione uma categoria"),
-  active: z.boolean(),
-  images: z
-    .array(z.custom<File>((val) => val instanceof File))
-    .min(1, "Adicione pelo menos uma imagem"),
-});
-
-export type ProductFormValues = z.infer<typeof productSchema>;
-
-const ProductPage = () => {
+export default function NewProductPage() {
   const { slug } = useParams() as { slug: string };
   const router = useRouter();
-
   const { createProduct } = useProduct();
-  const { getStoreBySlug } = useStore();
-  const { getCategoriesByStoreId } = useCategory();
 
-  const [storeId, setStoreId] = useState<string | null>(null);
-  const [categories, setCategories] = useState<CategoryResponse[]>([]);
-  const [isLoadingData, setIsLoadingData] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<ProductFormValues>({
-    resolver: zodResolver(productSchema),
-    defaultValues: {
-      active: true,
-      price: 0,
-      stock: 0,
-      images: [],
-    },
-  });
-
-  const isActive = watch("active");
-
-  const fetchDependencies = useCallback(async () => {
-    try {
-      setIsLoadingData(true);
-      const storeData = await getStoreBySlug(slug);
-      setStoreId(storeData.id);
-
-      const catData = await getCategoriesByStoreId(storeData.id, 0, 100);
-      setCategories(catData.content);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setApiError(error.message);
-      } else {
-        setApiError("Falha ao carregar parâmetros da loja.");
-      }
-    } finally {
-      setIsLoadingData(false);
-    }
-  }, [slug, getStoreBySlug, getCategoriesByStoreId]);
-
-  useEffect(() => {
-    fetchDependencies();
-  }, [fetchDependencies]);
-
-  const onSubmit: SubmitHandler<ProductFormValues> = async (data) => {
-    if (!storeId) return;
-
+  const handleSubmit = async (data: ProductFormValues, storeId: string) => {
     try {
       setIsSubmitting(true);
       setApiError(null);
 
-      const payload = {
-        name: data.name,
-        description: data.description,
-        price: data.price,
-        stock: data.stock,
-        categoryId: data.categoryId,
-        active: data.active,
-        storeId,
-      };
-
-      await createProduct(payload, data.images);
+      const payload = { ...data, storeId };
+      await createProduct(payload, data.images || []);
 
       router.push(`/dashboard/store/${slug}/products`);
     } catch (error) {
       if (error instanceof ApiError) {
         setApiError(error.message);
       } else {
-        setApiError("Erro ao registrar produto no inventário.");
+        setApiError("Erro ao registrar novo produto.");
       }
     } finally {
       setIsSubmitting(false);
@@ -126,211 +41,30 @@ const ProductPage = () => {
   };
 
   return (
-    <>
-      <DashboardHeader />
+    <main className="min-h-screen bg-[#F4F7FA] mx-auto max-w-4xl px-6 pt-32 pb-20">
+      <div className="mb-10">
+        <Link
+          href={`/dashboard/store/${slug}/products`}
+          className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase hover:text-indigo-600"
+        >
+          <ArrowLeft size={14} /> Voltar ao Inventário
+        </Link>
+        <h1 className="text-5xl font-black text-slate-950 uppercase italic mt-4">
+          NOVO <span className="text-indigo-600">PRODUTO.</span>
+        </h1>
+      </div>
 
-      <main className="min-h-screen bg-[#F4F7FA] font-sans text-slate-900 mx-auto max-w-350 px-6 pt-32 pb-20">
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="mb-10 flex flex-col items-start justify-between gap-6 border-b border-slate-200 pb-8 lg:flex-row lg:items-end">
-            <div>
-              <Link
-                href={`/dashboard/store/${slug}/products`}
-                className="mb-6 flex items-center gap-2 text-[10px] font-black tracking-widest text-slate-400 uppercase hover:text-indigo-600 transition-colors"
-              >
-                <ArrowLeft size={14} /> Voltar ao Inventário
-              </Link>
-              <div className="mb-2 flex items-center gap-2">
-                <div className="flex h-5 items-center rounded bg-indigo-600 px-2 text-[9px] font-black tracking-widest text-white uppercase">
-                  Novo Ativo
-                </div>
-                <span className="text-[10px] font-black tracking-[0.3em] text-slate-400 uppercase italic">
-                  Registro de Unidade
-                </span>
-              </div>
-              <h1 className="text-5xl font-black tracking-tighter text-slate-950 uppercase italic leading-none">
-                CRIAR <span className="text-indigo-600">PRODUTO.</span>
-              </h1>
-            </div>
-          </div>
-
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="lg:col-span-8 space-y-8">
-              <section className="rounded-[2.5rem] border-2 border-slate-200 bg-white p-8 md:p-12 shadow-sm">
-                <div className="grid gap-10">
-                  <div className="space-y-2">
-                    <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase flex items-center gap-2">
-                      <Type size={12} /> Título do Produto
-                    </label>
-                    <input
-                      {...register("name")}
-                      placeholder="Ex: Alpha Pro Sneakers v2"
-                      className={`w-full rounded-2xl border-2 bg-slate-50 py-4 px-6 font-bold text-slate-900 outline-none transition-all focus:bg-white ${
-                        errors.name
-                          ? "border-red-500"
-                          : "border-slate-100 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/5"
-                      }`}
-                    />
-                    {errors.name && (
-                      <p className="text-[10px] font-bold text-red-500 uppercase ml-1">
-                        {errors.name.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase flex items-center gap-2">
-                      <Layers size={12} /> Categoria Vinculada
-                    </label>
-                    <div className="relative">
-                      <select
-                        {...register("categoryId")}
-                        disabled={isLoadingData}
-                        className={`w-full appearance-none rounded-2xl border-2 bg-slate-50 py-4 px-6 font-bold text-slate-950 outline-none transition-all focus:bg-white ${
-                          errors.categoryId
-                            ? "border-red-500"
-                            : "border-slate-100 focus:border-indigo-600"
-                        }`}
-                      >
-                        <option value="">
-                          {isLoadingData
-                            ? "Carregando..."
-                            : "Selecione uma categoria..."}
-                        </option>
-                        {categories.map((cat) => (
-                          <option key={cat.id} value={cat.id}>
-                            {cat.name}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown
-                        className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-                        size={18}
-                      />
-                    </div>
-                    {errors.categoryId && (
-                      <p className="text-[10px] font-bold text-red-500 uppercase ml-1">
-                        {errors.categoryId.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase">
-                      Descrição e Especificações
-                    </label>
-                    <textarea
-                      {...register("description")}
-                      rows={6}
-                      placeholder="Descreva as características do produto..."
-                      className={`w-full resize-none rounded-[2rem] border-2 bg-slate-50 py-4 px-6 font-bold text-slate-950 outline-none transition-all focus:bg-white ${
-                        errors.description
-                          ? "border-red-500"
-                          : "border-slate-100 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/5"
-                      }`}
-                    />
-                    {errors.description && (
-                      <p className="text-[10px] font-bold text-red-500 uppercase ml-1">
-                        {errors.description.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </section>
-
-              <ProductMediaGallery
-                watch={watch}
-                setValue={setValue}
-                error={errors.images?.message}
-              />
-
-              <section className="rounded-[2.5rem] border-2 border-slate-200 bg-white p-8 md:p-12 shadow-sm">
-                <div className="grid gap-10 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase flex items-center gap-2">
-                      <DollarSign size={12} /> Preço de Venda (R$)
-                    </label>
-                    <input
-                      {...register("price", { valueAsNumber: true })}
-                      type="number"
-                      step="0.01"
-                      placeholder="0.00"
-                      className={`w-full rounded-2xl border-2 bg-slate-50 py-4 px-6 font-bold text-slate-950 outline-none transition-all focus:bg-white ${
-                        errors.price
-                          ? "border-red-500"
-                          : "border-slate-100 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/5"
-                      }`}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase flex items-center gap-2">
-                      <Box size={12} /> Volume em Estoque
-                    </label>
-                    <input
-                      {...register("stock", { valueAsNumber: true })}
-                      type="number"
-                      placeholder="0"
-                      className={`w-full rounded-2xl border-2 bg-slate-50 py-4 px-6 font-bold text-slate-950 outline-none transition-all focus:bg-white ${
-                        errors.stock
-                          ? "border-red-500"
-                          : "border-slate-100 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/5"
-                      }`}
-                    />
-                  </div>
-                </div>
-              </section>
-
-              <section className="rounded-[2.5rem] border-2 border-slate-200 bg-white p-8 md:p-12 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-[10px] font-black tracking-widest text-slate-950 uppercase">
-                      Publicação Imediata
-                    </p>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase italic">
-                      O produto ficará disponível após a criação
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setValue("active", !isActive)}
-                    className={`relative h-8 w-14 rounded-full transition-all ${
-                      isActive ? "bg-indigo-600" : "bg-slate-200"
-                    }`}
-                  >
-                    <div
-                      className={`absolute top-1 h-6 w-6 rounded-full bg-white shadow-sm transition-all ${
-                        isActive ? "left-7" : "left-1"
-                      }`}
-                    />
-                  </button>
-                </div>
-              </section>
-
-              <div className="pt-6">
-                {apiError && (
-                  <div className="mb-6 rounded-xl bg-red-50 p-4 text-center border border-red-100">
-                    <p className="text-[10px] font-black text-red-500 uppercase tracking-widest">
-                      {apiError}
-                    </p>
-                  </div>
-                )}
-                <ActionButton
-                  disabled={isSubmitting || isLoadingData}
-                  showArrow={!isSubmitting}
-                >
-                  {isSubmitting
-                    ? "SINCRONIZANDO..."
-                    : "FINALIZAR CADASTRO DO PRODUTO"}
-                </ActionButton>
-              </div>
-            </div>
-          </form>
+      {apiError && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-500 text-xs font-black uppercase text-center">
+          {apiError}
         </div>
-      </main>
+      )}
 
-      <Footer />
-    </>
+      <ProductForm
+        slug={slug}
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+      />
+    </main>
   );
-};
-
-export default ProductPage;
+}
