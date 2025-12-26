@@ -5,36 +5,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, ChevronDown, DollarSign, Layers, Type } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
 
 import { CategoryResponse } from "@/@types/category/category-response";
 import { ProductResponse } from "@/@types/product/product-response";
 import { ActionButton } from "@/components/buttons/action-button";
 import { ProductMediaGallery } from "@/components/dashboard/store/[slug]/products/product-form/product-media-gallery";
 import { s3Client } from "@/lib/s3-client";
+import { ProductFormValues, productSchema } from "@/schemas/product.schema";
 import { useCategory } from "@/services/hooks/use-category";
 import { useStore } from "@/services/hooks/use-store";
 import { ProductFormField } from "./product-form-field";
 import { ProductFormSection } from "./product-form-section";
 import { ProductStatusToggleSection } from "./product-status-toggle-section";
-
-const productSchema = z
-  .object({
-    name: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
-    description: z.string().min(10, "A descrição deve ser mais detalhada"),
-    price: z.number().min(0.01, "O preço deve ser maior que zero"),
-    stock: z.number().int().min(0, "O estoque não pode ser negativo"),
-    categoryId: z.string().min(1, "Selecione uma categoria"),
-    active: z.boolean(),
-    images: z.array(z.any()),
-    existingCount: z.number(),
-  })
-  .refine((data) => data.images.length + data.existingCount > 0, {
-    message: "O produto precisa ter pelo menos uma imagem",
-    path: ["images"],
-  });
-
-export type ProductFormValues = z.infer<typeof productSchema>;
 
 interface ProductFormProps {
   initialData?: ProductResponse;
