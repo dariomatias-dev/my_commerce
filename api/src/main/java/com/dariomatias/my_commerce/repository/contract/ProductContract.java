@@ -18,7 +18,7 @@ public interface ProductContract {
 
     Optional<Product> findById(UUID id);
 
-    Optional<Product> findBySlug(String slug);
+    Optional<Product> findByStoreSlugAndProductSlug(String storeSlug, String productSlug);
 
     Product update(Product product);
 

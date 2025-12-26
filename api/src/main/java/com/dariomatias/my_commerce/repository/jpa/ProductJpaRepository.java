@@ -53,8 +53,8 @@ public class ProductJpaRepository implements ProductContract {
     }
 
     @Override
-    public Optional<Product> findBySlug(String slug) {
-        return repository.findBySlug(slug);
+    public Optional<Product> findByStoreSlugAndProductSlug(String storeSlug, String productSlug) {
+        return repository.findByStore_SlugAndSlug(storeSlug,  productSlug);
     }
 
     @Override

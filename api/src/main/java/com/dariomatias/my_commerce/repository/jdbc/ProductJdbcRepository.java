@@ -153,11 +153,18 @@ public class ProductJdbcRepository implements ProductContract {
     }
 
     @Override
-    public Optional<Product> findBySlug(String slug) {
-        String sql = "SELECT * FROM products WHERE slug = :slug";
+    public Optional<Product> findByStoreSlugAndProductSlug(String storeSlug, String productSlug) {
+        String sql = """
+        SELECT p.*
+        FROM products p
+        INNER JOIN stores s ON p.store_id = s.id
+        WHERE s.slug = :storeSlug AND p.slug = :productSlug
+    """;
 
         List<Product> list = jdbc.query(sql,
-                new MapSqlParameterSource("slug", slug),
+                new MapSqlParameterSource()
+                        .addValue("storeSlug", storeSlug)
+                        .addValue("productSlug", productSlug),
                 mapper);
 
         return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));

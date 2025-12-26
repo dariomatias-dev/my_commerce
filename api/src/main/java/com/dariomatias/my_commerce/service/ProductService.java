@@ -57,9 +57,9 @@ public class ProductService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A categoria não pertence à loja informada");
         }
 
-        String slug = SlugUtil.generateSlug(request.getName());
+        String productSlug = SlugUtil.generateSlug(request.getName());
 
-        Optional<Product> existing = productRepository.findBySlug(slug);
+        Optional<Product> existing = productRepository.findByStoreSlugAndProductSlug(store.getSlug(), productSlug);
         if (existing.isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um produto com este nome na loja");
         }
@@ -68,7 +68,7 @@ public class ProductService {
         product.setStore(store);
         product.setCategory(category);
         product.setName(request.getName());
-        product.setSlug(slug);
+        product.setSlug(productSlug);
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setStock(request.getStock());
@@ -81,11 +81,6 @@ public class ProductService {
         return productRepository.update(product);
     }
 
-    public Product getById(UUID id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
-    }
-
     public Page<Product> getAll(Pageable pageable) {
         return productRepository.findAll(pageable);
     }
@@ -96,6 +91,19 @@ public class ProductService {
 
     public Page<Product> getAllByCategory(UUID categoryId, Pageable pageable) {
         return productRepository.findAllByCategory(categoryId, pageable);
+    }
+
+    public Product getByStoreSlugAndProductSlug(String storeSlug, String productSlug) {
+        Store store = storeRepository.findBySlug(storeSlug)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
+
+        return productRepository.findByStoreSlugAndProductSlug(store.getSlug(), productSlug)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
+    }
+
+    public Product getById(UUID id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
     }
 
     public Product update(User user, UUID id, ProductRequestDTO request, MultipartFile[] newImages) {
@@ -121,7 +129,7 @@ public class ProductService {
 
         if (request.getName() != null && !request.getName().equals(product.getName())) {
             String newSlug = SlugUtil.generateSlug(request.getName());
-            Optional<Product> existing = productRepository.findBySlug(newSlug);
+            Optional<Product> existing = productRepository.findByStoreSlugAndProductSlug(store.getSlug(), newSlug);
 
             if (existing.isPresent()) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um produto com este nome na loja");
