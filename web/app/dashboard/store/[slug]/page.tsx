@@ -20,7 +20,6 @@ import { DashboardStats } from "@/components/dashboard/store/[slug]/dashboard-st
 import { DashboardTransactionTable } from "@/components/dashboard/store/[slug]/dashboard-transaction-table";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { Footer } from "@/components/layout/footer";
-import { PaymentMethod } from "@/enums/payment-method";
 import { useStore } from "@/services/hooks/use-store";
 import { useTransaction } from "@/services/hooks/use-transaction";
 
@@ -66,17 +65,6 @@ const StoreDashboardPage = () => {
   useEffect(() => {
     fetchStoreData();
   }, [fetchStoreData]);
-
-  const getPaymentMethodLabel = (method: string) => {
-    const labels: Record<string, string> = {
-      [PaymentMethod.CREDIT_CARD]: "Cartão de Crédito",
-      [PaymentMethod.DEBIT_CARD]: "Cartão de Débito",
-      [PaymentMethod.PIX]: "Pix",
-      [PaymentMethod.BOLETO]: "Boleto",
-      [PaymentMethod.CASH]: "Dinheiro",
-    };
-    return labels[method] || method;
-  };
 
   if (isLoading) {
     return (
@@ -179,7 +167,6 @@ const StoreDashboardPage = () => {
             transactions={transactions}
             isLoading={isTransactionsLoading}
             onRefresh={fetchTransactions}
-            getPaymentMethodLabel={getPaymentMethodLabel}
           />
 
           <DashboardSidebarActions />

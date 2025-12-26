@@ -1,19 +1,18 @@
 import { CheckCircle, RefreshCcw } from "lucide-react";
 
 import { TransactionResponse } from "@/@types/transaction/transaction-response";
+import { getPaymentMethodLabel } from "@/utils/payment-method";
 
 interface DashboardTransactionTableProps {
   transactions: TransactionResponse[];
   isLoading: boolean;
   onRefresh: () => void;
-  getPaymentMethodLabel: (method: string) => string;
 }
 
 export const DashboardTransactionTable = ({
   transactions,
   isLoading,
   onRefresh,
-  getPaymentMethodLabel,
 }: DashboardTransactionTableProps) => (
   <div className="rounded-[2rem] border border-slate-200 bg-white shadow-sm lg:col-span-8">
     <div className="flex items-center justify-between border-b border-slate-100 px-8 py-6">
@@ -42,6 +41,7 @@ export const DashboardTransactionTable = ({
             <th className="py-4 pr-8 text-right">VALOR</th>
           </tr>
         </thead>
+
         <tbody className="divide-y divide-slate-50">
           {transactions.length > 0 ? (
             transactions.map((tx) => (
@@ -52,14 +52,17 @@ export const DashboardTransactionTable = ({
                 <td className="py-5 pl-8 text-sm font-black text-slate-950 italic">
                   #TXN-{tx.id.slice(0, 8).toUpperCase()}
                 </td>
+
                 <td className="py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                   {getPaymentMethodLabel(tx.paymentMethod)}
                 </td>
+
                 <td className="py-5">
                   <span className="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2 py-0.5 text-[9px] font-black tracking-widest text-emerald-600 uppercase">
                     {tx.status}
                   </span>
                 </td>
+
                 <td className="py-5 pr-8 text-right text-sm font-black text-slate-950">
                   R$ {tx.amount.toFixed(2)}
                 </td>
