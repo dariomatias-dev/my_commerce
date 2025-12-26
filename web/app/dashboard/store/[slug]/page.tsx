@@ -1,16 +1,12 @@
 "use client";
 
 import {
-  Activity,
   AlertCircle,
   ArrowLeft,
-  BarChart3,
-  Cpu,
   Download,
   Eye,
   Loader2,
   Plus,
-  ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -20,7 +16,7 @@ import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
 import { TransactionResponse } from "@/@types/transaction/transaction-response";
 import { DashboardSidebarActions } from "@/components/dashboard/store/[slug]/dashboard-sidebar-actions";
-import { DashboardStatCard } from "@/components/dashboard/store/[slug]/dashboard-stat-card";
+import { DashboardStats } from "@/components/dashboard/store/[slug]/dashboard-stats";
 import { DashboardTransactionTable } from "@/components/dashboard/store/[slug]/dashboard-transaction-table";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { Footer } from "@/components/layout/footer";
@@ -176,36 +172,7 @@ const StoreDashboardPage = () => {
           </div>
         </div>
 
-        <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <DashboardStatCard
-            label="Fluxo de Vendas"
-            value="R$ 0,00"
-            sub="Volume acumulado 24h"
-            icon={Activity}
-            isActive={store.isActive}
-          />
-          <DashboardStatCard
-            label="Disponibilidade"
-            value="99.99%"
-            sub="SLA de serviço estável"
-            icon={ShieldCheck}
-            isActive={store.isActive}
-          />
-          <DashboardStatCard
-            label="Taxa de Requisições"
-            value="1.240 req/s"
-            sub="Pico de processamento"
-            icon={Cpu}
-            isActive={store.isActive}
-          />
-          <DashboardStatCard
-            label="Conversão Global"
-            value="0.00%"
-            sub="Métrica em sincronização"
-            icon={BarChart3}
-            isActive={store.isActive}
-          />
-        </div>
+        <DashboardStats isActive={store.isActive} />
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
           <DashboardTransactionTable
