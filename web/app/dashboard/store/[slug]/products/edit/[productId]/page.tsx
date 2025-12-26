@@ -10,9 +10,9 @@ import { ProductResponse } from "@/@types/product/product-response";
 import { ProductRequest } from "@/@types/product/product-request";
 import {
   ProductForm,
-  ProductFormValues,
 } from "@/components/dashboard/store/[slug]/products/product-form";
 import { useProduct } from "@/services/hooks/use-product";
+import { ProductFormValues } from "@/schemas/product.schema";
 
 export default function EditProductPage() {
   const { slug, productId } = useParams() as {

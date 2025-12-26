@@ -1,31 +1,15 @@
 import {
-  AlertTriangle,
-  ArrowRight,
   Box,
   ChevronRight,
   Clock,
   ExternalLink,
   ShieldCheck,
 } from "lucide-react";
+import { InventoryAlert } from "./inventory-alert";
 
 export const DashboardSidebarActions = () => (
   <div className="space-y-6 lg:col-span-4">
-    <div className="rounded-[2rem] bg-slate-950 p-8 text-white shadow-xl shadow-slate-200">
-      <div className="mb-8 flex items-center justify-between">
-        <h3 className="text-xl font-black tracking-tighter uppercase italic text-indigo-400">
-          Alerta de Inventário
-        </h3>
-        <AlertTriangle className="text-orange-500" size={20} />
-      </div>
-      <div className="py-4 text-center">
-        <p className="text-[10px] font-black tracking-widest text-slate-500 uppercase italic">
-          Estoque em conformidade técnica
-        </p>
-      </div>
-      <button className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-white py-4 text-[10px] font-black tracking-widest text-slate-950 uppercase transition-all hover:bg-indigo-500 hover:text-white">
-        REABASTECER AGORA <ArrowRight size={14} />
-      </button>
-    </div>
+    <InventoryAlert />
 
     <div className="rounded-[2rem] border border-slate-200 bg-white p-8">
       <div className="mb-6 flex items-center justify-between">
@@ -34,6 +18,7 @@ export const DashboardSidebarActions = () => (
         </h3>
         <Clock size={16} className="text-slate-300" />
       </div>
+
       <div className="space-y-3">
         {[
           { label: "Configurações do Checkout", icon: ShieldCheck },
