@@ -32,7 +32,9 @@ export default function EditProductPage() {
   const loadProduct = useCallback(async () => {
     try {
       setIsLoading(true);
+
       const data = await getProductById(productId);
+
       setProduct(data);
     } catch (error) {
       if (error instanceof ApiError) {

@@ -2,21 +2,23 @@
 
 import { ArrowLeft, Package, Plus, Tag } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { StoreResponse } from "@/@types/store/store-response";
+import { CategoryFormDialog } from "@/components/dashboard/store/[slug]/products/category-form-dialog";
 import {
   CategoryManager,
   CategoryManagerRef,
 } from "@/components/dashboard/store/[slug]/products/category-manager";
-import { CategoryFormDialog } from "@/components/dashboard/store/[slug]/products/category-form-dialog";
 import { ProductManager } from "@/components/dashboard/store/[slug]/products/product-manager";
 import { useStore } from "@/services/hooks/use-store";
 
 export default function StoreInventoryPage() {
   const { slug } = useParams() as { slug: string };
   const { getStoreBySlug } = useStore();
+
+  const router = useRouter();
 
   const [view, setView] = useState<"products" | "categories">("products");
   const [store, setStore] = useState<StoreResponse | null>(null);
@@ -45,6 +47,7 @@ export default function StoreInventoryPage() {
 
   const handleCreateClick = () => {
     if (view === "products") {
+      router.push("products/new");
     } else {
       setIsCategoryFormDialogOpen(true);
     }
