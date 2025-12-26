@@ -47,6 +47,48 @@ public class MinioService {
         }
     }
 
+    public List<String> listObjects(String bucket, String prefix) {
+        return StreamSupport.stream(
+                minioClient.listObjects(
+                        ListObjectsArgs.builder()
+                                .bucket(bucket)
+                                .prefix(prefix)
+                                .recursive(true)
+                                .build()
+                ).spliterator(),
+                false
+        ).map(item -> {
+            try {
+                return item.get().objectName();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).toList();
+    }
+
+    public void copyFile(String bucketName, String sourceObject, String targetObject) {
+        try {
+            minioClient.copyObject(
+                    CopyObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(targetObject)
+                            .source(
+                                    CopySource.builder()
+                                            .bucket(bucketName)
+                                            .object(sourceObject)
+                                            .build()
+                            )
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Erro ao copiar arquivo de " + sourceObject + " para " + targetObject,
+                    e
+            );
+        }
+    }
+
     public void deleteBucket(String bucketName) {
         try {
             Iterable<Result<Item>> results = minioClient.listObjects(
