@@ -1,6 +1,6 @@
 "use client";
 
-import { ListObjectsV2Command, S3Client } from "@aws-sdk/client-s3";
+import { ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, ChevronDown, DollarSign, Layers, Type } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
@@ -11,18 +11,9 @@ import { CategoryResponse } from "@/@types/category/category-response";
 import { ProductResponse } from "@/@types/product/product-response";
 import { ActionButton } from "@/components/buttons/action-button";
 import { ProductMediaGallery } from "@/components/dashboard/store/[slug]/products/new/product-gallery";
+import { s3Client } from "@/lib/s3-client";
 import { useCategory } from "@/services/hooks/use-category";
 import { useStore } from "@/services/hooks/use-store";
-
-const s3Client = new S3Client({
-  region: process.env.NEXT_PUBLIC_S3_REGION,
-  endpoint: process.env.NEXT_PUBLIC_S3_ENDPOINT,
-  credentials: {
-    accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY!,
-    secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_KEY!,
-  },
-  forcePathStyle: process.env.NEXT_PUBLIC_S3_FORCE_PATH_STYLE === "true",
-});
 
 const productSchema = z
   .object({
