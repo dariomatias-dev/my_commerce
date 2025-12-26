@@ -21,8 +21,8 @@ export const InventoryItem = ({ product, threshold }: InventoryItemProps) => {
           <span className="text-[13px] font-black tracking-tight text-slate-100 uppercase italic truncate max-w-40">
             {product.name}
           </span>
-          <span className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">
-            SKU: {product.slug.slice(0, 10).toUpperCase()}
+          <span className="text-[9px] font-bold text-slate-600 tracking-widest">
+            {product.slug}
           </span>
         </div>
       </div>

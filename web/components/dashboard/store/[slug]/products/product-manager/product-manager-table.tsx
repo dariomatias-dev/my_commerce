@@ -13,11 +13,11 @@ export const ProductManagerTable = ({ products }: ProductManagerTableProps) => (
       <table className="w-full text-left">
         <thead>
           <tr className="border-b border-slate-100 bg-slate-50/50 text-[9px] font-black tracking-[0.2em] text-slate-400 uppercase">
-            <th className="py-5 pl-10">Ativo / SKU</th>
+            <th className="py-5 pl-10">Produto</th>
             <th className="py-5 text-center">Status</th>
             <th className="py-5 text-center">Volume</th>
             <th className="py-5">Precificação</th>
-            <th className="py-5 pr-10 text-right">Controle</th>
+            <th className="py-5 pr-10 text-right">Ações</th>
           </tr>
         </thead>
 
@@ -32,6 +32,7 @@ export const ProductManagerTable = ({ products }: ProductManagerTableProps) => (
                   <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border-2 border-slate-100 bg-slate-50">
                     <Package className="h-full w-full p-3 text-slate-300" />
                   </div>
+
                   <div>
                     <p className="text-sm font-black text-slate-950 uppercase italic tracking-tight">
                       {product.name}
@@ -51,7 +52,7 @@ export const ProductManagerTable = ({ products }: ProductManagerTableProps) => (
                       : "bg-slate-100 text-slate-400"
                   }`}
                 >
-                  {product.active ? "Operacional" : "Offline"}
+                  {product.active ? "Publicado" : "Oculto"}
                 </span>
               </td>
 

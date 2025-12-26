@@ -181,7 +181,7 @@ export const CategoryManager = forwardRef<
                 <Tag size={24} />
               </div>
               <span className="text-[9px] font-black uppercase tracking-widest text-slate-300">
-                Taxonomia
+                Produto
               </span>
             </div>
 

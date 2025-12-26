@@ -69,7 +69,7 @@ export const InventoryAlert = ({
             />
             <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">
               {lowStockProducts.length > 0
-                ? "Ação Requerida"
+                ? "Ação Necessária"
                 : "Status Nominal"}
             </p>
           </div>

@@ -121,7 +121,7 @@ const StoreDashboardPage = () => {
               href="/dashboard"
               className="mb-6 flex items-center gap-2 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors hover:text-indigo-600"
             >
-              <ArrowLeft size={14} /> Voltar para instâncias
+              <ArrowLeft size={14} /> Voltar para dashboard
             </Link>
 
             <div className="mb-2 flex items-center gap-2">
