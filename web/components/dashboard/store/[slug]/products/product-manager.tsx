@@ -12,6 +12,7 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ApiError } from "@/@types/api";
@@ -169,9 +170,12 @@ export const ProductManager = ({ storeId }: ProductManagerProps) => {
                   </td>
                   <td className="py-6 pr-10 text-right">
                     <div className="flex justify-end gap-2">
-                      <button className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-slate-100 bg-white text-slate-400 hover:text-indigo-600">
+                      <Link
+                        href={`products/edit/${product.id}`}
+                        className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-slate-100 bg-white text-slate-400 hover:text-indigo-600"
+                      >
                         <Edit3 size={18} />
-                      </button>
+                      </Link>
                       <button className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-slate-100 bg-white text-slate-400 hover:text-red-500">
                         <Trash2 size={18} />
                       </button>
