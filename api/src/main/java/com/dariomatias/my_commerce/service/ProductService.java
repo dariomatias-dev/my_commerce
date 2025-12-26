@@ -2,13 +2,13 @@ package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.product.ProductRequestDTO;
 import com.dariomatias.my_commerce.enums.UserRole;
+import com.dariomatias.my_commerce.model.Category;
 import com.dariomatias.my_commerce.model.Product;
 import com.dariomatias.my_commerce.model.Store;
-import com.dariomatias.my_commerce.model.Category;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.contract.CategoryContract;
-import com.dariomatias.my_commerce.repository.contract.StoreContract;
 import com.dariomatias.my_commerce.repository.contract.ProductContract;
+import com.dariomatias.my_commerce.repository.contract.StoreContract;
 import com.dariomatias.my_commerce.util.SlugUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,17 +28,18 @@ public class ProductService {
     private final ProductContract productRepository;
     private final StoreContract storeRepository;
     private final CategoryContract categoryRepository;
-    private final MinioService minioService;
-    private static final String BUCKET_NAME = "stores";
+    private final ProductImageService productImageService;
 
-    public ProductService(ProductContract productRepository,
-                          StoreContract storeRepository,
-                          CategoryContract categoryRepository,
-                          MinioService minioService) {
+    public ProductService(
+            ProductContract productRepository,
+            StoreContract storeRepository,
+            CategoryContract categoryRepository,
+            ProductImageService productImageService
+    ) {
         this.productRepository = productRepository;
         this.storeRepository = storeRepository;
         this.categoryRepository = categoryRepository;
-        this.minioService = minioService;
+        this.productImageService = productImageService;
     }
 
     public Product create(User user, ProductRequestDTO request, MultipartFile[] images) {
@@ -56,10 +57,10 @@ public class ProductService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A categoria não pertence à loja informada");
         }
 
-        String productSlug = SlugUtil.generateSlug(request.getName());
-        Optional<Product> existingProduct = productRepository.findBySlug(productSlug);
+        String slug = SlugUtil.generateSlug(request.getName());
 
-        if (existingProduct.isPresent()) {
+        Optional<Product> existing = productRepository.findBySlug(slug);
+        if (existing.isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um produto com este nome na loja");
         }
 
@@ -67,15 +68,22 @@ public class ProductService {
         product.setStore(store);
         product.setCategory(category);
         product.setName(request.getName());
-        product.setSlug(productSlug);
+        product.setSlug(slug);
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setStock(request.getStock());
         product.setActive(request.getActive());
 
-        uploadProductImages(store, product, images);
+        productRepository.save(product);
 
-        return productRepository.save(product);
+        productImageService.upload(store.getSlug(), product.getSlug(), images);
+
+        return productRepository.update(product);
+    }
+
+    public Product getById(UUID id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
     }
 
     public Page<Product> getAll(Pageable pageable) {
@@ -90,12 +98,7 @@ public class ProductService {
         return productRepository.findAllByCategory(categoryId, pageable);
     }
 
-    public Product getById(UUID id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
-    }
-
-    public Product update(User user, UUID id, ProductRequestDTO request, MultipartFile[] images) {
+    public Product update(User user, UUID id, ProductRequestDTO request, MultipartFile[] newImages) {
         Product product = getById(id);
 
         Store store = storeRepository.findById(product.getStoreId())
@@ -113,16 +116,22 @@ public class ProductService {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A categoria não pertence à loja");
             }
 
-            product.setCategoryId(category.getId());
+            product.setCategory(category);
         }
 
         if (request.getName() != null && !request.getName().equals(product.getName())) {
             String newSlug = SlugUtil.generateSlug(request.getName());
-            Optional<Product> existingProduct = productRepository.findBySlug(newSlug);
+            Optional<Product> existing = productRepository.findBySlug(newSlug);
 
-            if (existingProduct.isPresent()) {
+            if (existing.isPresent()) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um produto com este nome na loja");
             }
+
+            productImageService.rename(
+                    store.getSlug(),
+                    product.getSlug(),
+                    newSlug
+            );
 
             product.setName(request.getName());
             product.setSlug(newSlug);
@@ -133,7 +142,11 @@ public class ProductService {
         if (request.getStock() != null) product.setStock(request.getStock());
         if (request.getActive() != null) product.setActive(request.getActive());
 
-        uploadProductImages(store, product, images);
+        if (request.getRemovedImageNames() != null) {
+            productImageService.delete(store.getSlug(), product.getSlug(), request.getRemovedImageNames());
+        }
+
+        productImageService.upload(store.getSlug(), product.getSlug(), newImages);
 
         return productRepository.update(product);
     }
@@ -148,17 +161,7 @@ public class ProductService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
         }
 
+        productImageService.deleteAll(store.getSlug(), product.getSlug());
         productRepository.deleteById(id);
-    }
-
-    private void uploadProductImages(Store store, Product product, MultipartFile[] images) {
-        if (images == null || images.length == 0) return;
-
-        String folder = store.getSlug() + "/products/" + product.getSlug() + "/";
-
-        for (int i = 0; i < images.length; i++) {
-            String objectName = folder + "image_" + (i + 1) + ".jpeg";
-            minioService.uploadFile(BUCKET_NAME, objectName, images[i]);
-        }
     }
 }
