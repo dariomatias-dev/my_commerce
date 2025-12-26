@@ -142,17 +142,6 @@ public class ProductJdbcRepository implements ProductContract {
     }
 
     @Override
-    public Optional<Product> findById(UUID id) {
-        String sql = "SELECT * FROM products WHERE id = :id";
-
-        List<Product> list = jdbc.query(sql,
-                new MapSqlParameterSource("id", id),
-                mapper);
-
-        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
-    }
-
-    @Override
     public Optional<Product> findByStoreSlugAndProductSlug(String storeSlug, String productSlug) {
         String sql = """
         SELECT p.*
@@ -165,6 +154,52 @@ public class ProductJdbcRepository implements ProductContract {
                 new MapSqlParameterSource()
                         .addValue("storeSlug", storeSlug)
                         .addValue("productSlug", productSlug),
+                mapper);
+
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+    }
+
+    @Override
+    public Page<Product> findAllByStoreSlugAndStockLessThanEqual(String storeSlug, int stockThreshold, Pageable pageable) {
+        String sql = """
+        SELECT p.*
+        FROM products p
+        INNER JOIN stores s ON p.store_id = s.id
+        WHERE s.slug = :storeSlug AND p.stock <= :stockThreshold
+        ORDER BY p.created_at DESC
+        OFFSET :offset LIMIT :limit
+    """;
+
+        List<Product> content = jdbc.query(sql,
+                new MapSqlParameterSource()
+                        .addValue("storeSlug", storeSlug)
+                        .addValue("stockThreshold", stockThreshold)
+                        .addValue("offset", pageable.getOffset())
+                        .addValue("limit", pageable.getPageSize()),
+                mapper);
+
+        String countSql = """
+        SELECT COUNT(*)
+        FROM products p
+        INNER JOIN stores s ON p.store_id = s.id
+        WHERE s.slug = :storeSlug AND p.stock <= :stockThreshold
+    """;
+
+        long total = jdbc.queryForObject(countSql,
+                new MapSqlParameterSource()
+                        .addValue("storeSlug", storeSlug)
+                        .addValue("stockThreshold", stockThreshold),
+                Long.class);
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public Optional<Product> findById(UUID id) {
+        String sql = "SELECT * FROM products WHERE id = :id";
+
+        List<Product> list = jdbc.query(sql,
+                new MapSqlParameterSource("id", id),
                 mapper);
 
         return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));

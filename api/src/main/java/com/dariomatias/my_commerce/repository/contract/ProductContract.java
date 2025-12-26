@@ -16,9 +16,11 @@ public interface ProductContract {
 
     Page<Product> findAllByCategory(UUID categoryId, Pageable pageable);
 
-    Optional<Product> findById(UUID id);
-
     Optional<Product> findByStoreSlugAndProductSlug(String storeSlug, String productSlug);
+
+    Page<Product> findAllByStoreSlugAndStockLessThanEqual(String storeSlug, int stockThreshold, Pageable pageable);
+
+    Optional<Product> findById(UUID id);
 
     Product update(Product product);
 

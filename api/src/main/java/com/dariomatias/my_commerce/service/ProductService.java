@@ -101,6 +101,10 @@ public class ProductService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
     }
 
+    public Page<Product> getLowStockByStore(String storeSlug, int threshold, Pageable pageable) {
+        return productRepository.findAllByStoreSlugAndStockLessThanEqual(storeSlug, threshold, pageable);
+    }
+
     public Product getById(UUID id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));

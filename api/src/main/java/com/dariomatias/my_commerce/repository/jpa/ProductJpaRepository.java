@@ -48,13 +48,18 @@ public class ProductJpaRepository implements ProductContract {
     }
 
     @Override
-    public Optional<Product> findById(UUID id) {
-        return repository.findById(id);
+    public Optional<Product> findByStoreSlugAndProductSlug(String storeSlug, String productSlug) {
+        return repository.findByStore_SlugAndSlug(storeSlug,  productSlug);
     }
 
     @Override
-    public Optional<Product> findByStoreSlugAndProductSlug(String storeSlug, String productSlug) {
-        return repository.findByStore_SlugAndSlug(storeSlug,  productSlug);
+    public Page<Product> findAllByStoreSlugAndStockLessThanEqual(String storeSlug, int threshold, Pageable pageable) {
+        return repository.findAllByStore_SlugAndStockLessThanEqual(storeSlug, threshold, pageable);
+    }
+
+    @Override
+    public Optional<Product> findById(UUID id) {
+        return repository.findById(id);
     }
 
     @Override

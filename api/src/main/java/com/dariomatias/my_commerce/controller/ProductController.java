@@ -80,6 +80,19 @@ public class ProductController {
         return ResponseEntity.ok(ApiResponse.success("Produto obtido com sucesso", ProductResponseDTO.from(product)));
     }
 
+    @GetMapping("/store/{storeSlug}/low-stock")
+    public ResponseEntity<ApiResponse<Page<ProductResponseDTO>>> getLowStockByStore(
+            @PathVariable String storeSlug,
+            @RequestParam(defaultValue = "10") int threshold,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProductResponseDTO> products = service.getLowStockByStore(storeSlug, threshold, pageable)
+                .map(ProductResponseDTO::from);
+        return ResponseEntity.ok(ApiResponse.success("Produtos com estoque baixo obtidos com sucesso", products));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<ProductResponseDTO>> getById(@PathVariable UUID id) {
         Product product = service.getById(id);

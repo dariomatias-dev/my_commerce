@@ -11,15 +11,15 @@ public interface StoreContract {
 
     Store save(Store store);
 
-    Optional<Store> findById(UUID id);
-
-    Optional<Store> findBySlug(String slug);
-
     boolean existsBySlug(String slug);
 
     Page<Store> findAll(Pageable pageable);
 
     Page<Store> findAllByUser(UUID userId, Pageable pageable);
+
+    Optional<Store> findById(UUID id);
+
+    Optional<Store> findBySlug(String slug);
 
     Store update(Store store);
 
