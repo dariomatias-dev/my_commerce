@@ -2,7 +2,7 @@
 
 import { ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, ChevronDown, DollarSign, Layers, Type } from "lucide-react";
+import { Box, DollarSign, Type } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -14,6 +14,7 @@ import { s3Client } from "@/lib/s3-client";
 import { ProductFormValues, productSchema } from "@/schemas/product.schema";
 import { useCategory } from "@/services/hooks/use-category";
 import { useStore } from "@/services/hooks/use-store";
+import { ProductFormCategorySelect } from "./product-form-category";
 import { ProductFormField } from "./product-form-field";
 import { ProductFormSection } from "./product-form-section";
 import { ProductStatusToggleSection } from "./product-status-toggle-section";
@@ -153,38 +154,14 @@ export const ProductForm = ({
             />
           </ProductFormField>
 
-          <ProductFormField
-            label="Categoria Vinculada"
-            icon={Layers}
+          <ProductFormCategorySelect
+            name="categoryId"
+            categories={categories}
+            isLoading={isLoadingData}
             error={errors.categoryId?.message}
-          >
-            <div className="relative">
-              <select
-                {...register("categoryId")}
-                disabled={isLoadingData}
-                className={`w-full appearance-none rounded-2xl border-2 bg-slate-50 py-4 px-6 font-bold text-slate-950 outline-none transition-all focus:bg-white ${
-                  errors.categoryId
-                    ? "border-red-500"
-                    : "border-slate-100 focus:border-indigo-600"
-                }`}
-              >
-                <option value="">
-                  {isLoadingData
-                    ? "Carregando..."
-                    : "Selecione uma categoria..."}
-                </option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown
-                className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-                size={18}
-              />
-            </div>
-          </ProductFormField>
+            setValue={setValue}
+            watch={watch}
+          />
 
           <ProductFormField
             label="Descrição"
