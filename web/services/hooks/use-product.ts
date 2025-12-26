@@ -42,6 +42,23 @@ export const useProduct = () => {
     []
   );
 
+  const getProductBySlug = useCallback(
+    (storeSlug: string, productSlug: string) =>
+      apiClient.get<ProductResponse>(
+        `/products/store/${storeSlug}/product/${productSlug}`
+      ),
+    []
+  );
+
+  const getLowStockProductsByStore = useCallback(
+    (storeSlug: string, threshold = 10, page = 0, size = 10) =>
+      apiClient.get<PaginatedResponse<ProductResponse>>(
+        `/products/store/${storeSlug}/low-stock`,
+        { params: { threshold, page, size } }
+      ),
+    []
+  );
+
   const getProductById = useCallback(
     (id: string) => apiClient.get<ProductResponse>(`/products/${id}`),
     []
@@ -79,6 +96,8 @@ export const useProduct = () => {
     getAllProducts,
     getProductsByStoreId,
     getProductById,
+    getProductBySlug,
+    getLowStockProductsByStore,
     updateProduct,
     deleteProduct,
   };
