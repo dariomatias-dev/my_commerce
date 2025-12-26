@@ -10,10 +10,13 @@ import * as z from "zod";
 import { CategoryResponse } from "@/@types/category/category-response";
 import { ProductResponse } from "@/@types/product/product-response";
 import { ActionButton } from "@/components/buttons/action-button";
-import { ProductMediaGallery } from "@/components/dashboard/store/[slug]/products/new/product-gallery";
+import { ProductMediaGallery } from "@/components/dashboard/store/[slug]/products/product-form/product-media-gallery";
 import { s3Client } from "@/lib/s3-client";
 import { useCategory } from "@/services/hooks/use-category";
 import { useStore } from "@/services/hooks/use-store";
+import { ProductFormField } from "./product-form-field";
+import { ProductFormSection } from "./product-form-section";
+import { ProductStatusToggleSection } from "./product-status-toggle-section";
 
 const productSchema = z
   .object({
@@ -84,32 +87,22 @@ export const ProductForm = ({
 
   useEffect(() => {
     setValue("existingCount", existingImages.length);
-    if (isLoadingData === false) {
-      trigger("images");
-    }
+    if (!isLoadingData) trigger("images");
   }, [existingImages, setValue, trigger, isLoadingData]);
 
   const fetchExistingImages = useCallback(async () => {
     if (!initialData?.slug) return;
-
     try {
-      const prefix = `${slug}/products/${initialData.slug}/`;
       const command = new ListObjectsV2Command({
         Bucket: "stores",
-        Prefix: prefix,
+        Prefix: `${slug}/products/${initialData.slug}/`,
       });
-
       const response = await s3Client.send(command);
-
       if (response.Contents) {
-        const images = response.Contents.map((item) => {
-          const fileName = item.Key?.split("/").pop() || "";
-          return {
-            name: fileName,
-            url: `http://localhost:9000/stores/${item.Key}`,
-          };
-        }).filter((img) => img.name !== "");
-
+        const images = response.Contents.map((item) => ({
+          name: item.Key?.split("/").pop() || "",
+          url: `http://localhost:9000/stores/${item.Key}`,
+        })).filter((img) => img.name !== "");
         setExistingImages(images);
       }
     } catch (error) {
@@ -117,29 +110,11 @@ export const ProductForm = ({
     }
   }, [initialData?.slug, slug]);
 
-  useEffect(() => {
-    if (initialData) {
-      reset({
-        name: initialData.name,
-        description: initialData.description,
-        price: initialData.price,
-        stock: initialData.stock,
-        categoryId: initialData.categoryId,
-        active: initialData.active,
-        images: [],
-        existingCount: 0,
-      });
-      fetchExistingImages();
-    }
-  }, [initialData, reset, fetchExistingImages]);
-
   const fetchDependencies = useCallback(async () => {
     try {
       setIsLoadingData(true);
-
       const storeData = await getStoreBySlug(slug);
       setStoreId(storeData.id);
-
       const catData = await getCategoriesByStoreId(storeData.id, 0, 100);
       setCategories(catData.content);
     } catch (error) {
@@ -150,18 +125,15 @@ export const ProductForm = ({
   }, [slug, getStoreBySlug, getCategoriesByStoreId]);
 
   useEffect(() => {
+    if (initialData) {
+      reset({ ...initialData, images: [], existingCount: 0 });
+      fetchExistingImages();
+    }
+  }, [initialData, reset, fetchExistingImages]);
+
+  useEffect(() => {
     fetchDependencies();
   }, [fetchDependencies]);
-
-  const handleFormSubmit = (data: ProductFormValues) => {
-    if (storeId) {
-      onSubmit(
-        data,
-        storeId,
-        removedImages.length > 0 ? removedImages : undefined
-      );
-    }
-  };
 
   const handleRemoveExisting = (imageName: string) => {
     setExistingImages((prev) => prev.filter((img) => img.name !== imageName));
@@ -169,13 +141,25 @@ export const ProductForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
-      <section className="rounded-[2.5rem] border-2 border-slate-200 bg-white p-8 md:p-12 shadow-sm">
+    <form
+      onSubmit={handleSubmit(
+        (data) =>
+          storeId &&
+          onSubmit(
+            data,
+            storeId,
+            removedImages.length > 0 ? removedImages : undefined
+          )
+      )}
+      className="space-y-8"
+    >
+      <ProductFormSection>
         <div className="grid gap-10">
-          <div className="space-y-2">
-            <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase flex items-center gap-2">
-              <Type size={12} /> Nome do Produto
-            </label>
+          <ProductFormField
+            label="Nome do Produto"
+            icon={Type}
+            error={errors.name?.message}
+          >
             <input
               {...register("name")}
               placeholder="Ex: Alpha Pro Sneakers v2"
@@ -185,17 +169,13 @@ export const ProductForm = ({
                   : "border-slate-100 focus:border-indigo-600"
               }`}
             />
-            {errors.name && (
-              <p className="text-[10px] font-bold text-red-500 uppercase ml-1">
-                {errors.name.message}
-              </p>
-            )}
-          </div>
+          </ProductFormField>
 
-          <div className="space-y-2">
-            <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase flex items-center gap-2">
-              <Layers size={12} /> Categoria Vinculada
-            </label>
+          <ProductFormField
+            label="Categoria Vinculada"
+            icon={Layers}
+            error={errors.categoryId?.message}
+          >
             <div className="relative">
               <select
                 {...register("categoryId")}
@@ -222,12 +202,12 @@ export const ProductForm = ({
                 size={18}
               />
             </div>
-          </div>
+          </ProductFormField>
 
-          <div className="space-y-2">
-            <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase">
-              Descrição
-            </label>
+          <ProductFormField
+            label="Descrição"
+            error={errors.description?.message}
+          >
             <textarea
               {...register("description")}
               rows={6}
@@ -237,9 +217,9 @@ export const ProductForm = ({
                   : "border-slate-100 focus:border-indigo-600"
               }`}
             />
-          </div>
+          </ProductFormField>
         </div>
-      </section>
+      </ProductFormSection>
 
       <ProductMediaGallery
         watch={watch}
@@ -249,53 +229,30 @@ export const ProductForm = ({
         onRemoveExisting={handleRemoveExisting}
       />
 
-      <section className="rounded-[2.5rem] border-2 border-slate-200 bg-white p-8 md:p-12 shadow-sm">
+      <ProductFormSection>
         <div className="grid gap-10 md:grid-cols-2">
-          <div className="space-y-2">
-            <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase flex items-center gap-2">
-              <DollarSign size={12} /> Preço (R$)
-            </label>
+          <ProductFormField label="Preço (R$)" icon={DollarSign}>
             <input
               {...register("price", { valueAsNumber: true })}
               type="number"
               step="0.01"
               className="w-full rounded-2xl border-2 bg-slate-50 py-4 px-6 font-bold text-slate-950 border-slate-100 outline-none focus:border-indigo-600"
             />
-          </div>
-
-          <div className="space-y-2">
-            <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase flex items-center gap-2">
-              <Box size={12} /> Estoque
-            </label>
+          </ProductFormField>
+          <ProductFormField label="Estoque" icon={Box}>
             <input
               {...register("stock", { valueAsNumber: true })}
               type="number"
               className="w-full rounded-2xl border-2 bg-slate-50 py-4 px-6 font-bold text-slate-950 border-slate-100 outline-none focus:border-indigo-600"
             />
-          </div>
+          </ProductFormField>
         </div>
-      </section>
+      </ProductFormSection>
 
-      <section className="rounded-[2.5rem] border-2 border-slate-200 bg-white p-8 md:p-12 shadow-sm">
-        <div className="flex items-center justify-between">
-          <p className="text-[10px] font-black tracking-widest text-slate-950 uppercase">
-            Publicação Ativa
-          </p>
-          <button
-            type="button"
-            onClick={() => setValue("active", !isActive)}
-            className={`relative h-8 w-14 rounded-full transition-all ${
-              isActive ? "bg-indigo-600" : "bg-slate-200"
-            }`}
-          >
-            <div
-              className={`absolute top-1 h-6 w-6 rounded-full bg-white shadow-sm transition-all ${
-                isActive ? "left-7" : "left-1"
-              }`}
-            />
-          </button>
-        </div>
-      </section>
+      <ProductStatusToggleSection
+        isActive={isActive}
+        onToggle={(value) => setValue("active", value)}
+      />
 
       <ActionButton
         disabled={isSubmitting || isLoadingData}
