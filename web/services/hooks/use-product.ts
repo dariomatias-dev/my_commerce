@@ -48,7 +48,7 @@ export const useProduct = () => {
   );
 
   const updateProduct = useCallback(
-    (id: string, data?: Partial<ProductRequest>, images?: File[]) => {
+    (id: string, data?: Partial<ProductRequest>, newImages?: File[]) => {
       const formData = new FormData();
 
       if (data) {
@@ -58,11 +58,9 @@ export const useProduct = () => {
         );
       }
 
-      if (images) {
-        images.forEach((image) => {
-          formData.append("images", image);
-        });
-      }
+      newImages?.forEach((image) => {
+        formData.append("images", image);
+      });
 
       return apiClient.patch<ProductResponse>(`/products/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
