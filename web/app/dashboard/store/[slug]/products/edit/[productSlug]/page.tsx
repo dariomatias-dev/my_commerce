@@ -8,19 +8,17 @@ import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "@/@types/api";
 import { ProductResponse } from "@/@types/product/product-response";
 import { ProductRequest } from "@/@types/product/product-request";
-import {
-  ProductForm,
-} from "@/components/dashboard/store/[slug]/products/product-form";
+import { ProductForm } from "@/components/dashboard/store/[slug]/products/product-form";
 import { useProduct } from "@/services/hooks/use-product";
 import { ProductFormValues } from "@/schemas/product.schema";
 
 export default function EditProductPage() {
-  const { slug, productId } = useParams() as {
+  const { slug, productSlug } = useParams() as {
     slug: string;
-    productId: string;
+    productSlug: string;
   };
   const router = useRouter();
-  const { getProductById, updateProduct } = useProduct();
+  const { getProductBySlug, updateProduct } = useProduct();
 
   const [product, setProduct] = useState<ProductResponse | undefined>(
     undefined
@@ -33,7 +31,7 @@ export default function EditProductPage() {
     try {
       setIsLoading(true);
 
-      const data = await getProductById(productId);
+      const data = await getProductBySlug(slug, productSlug);
 
       setProduct(data);
     } catch (error) {
@@ -45,7 +43,7 @@ export default function EditProductPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [productId, getProductById]);
+  }, [slug, productSlug, getProductBySlug]);
 
   useEffect(() => {
     loadProduct();
@@ -71,7 +69,7 @@ export default function EditProductPage() {
         removedImages,
       };
 
-      await updateProduct(productId, payload, data.images);
+      await updateProduct(product!.id, payload, data.images);
 
       router.push(`/dashboard/store/${slug}/products`);
     } catch (error) {
