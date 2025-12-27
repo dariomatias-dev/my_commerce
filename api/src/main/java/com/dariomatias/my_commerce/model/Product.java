@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -59,6 +61,16 @@ public class Product {
     @Getter
     @Setter
     private Boolean active;
+
+    @OneToMany(
+            mappedBy = "product",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @OrderBy("position ASC")
+    @Getter
+    @Setter
+    private List<ProductImage> images = new ArrayList<>();
 
     @Embedded
     @Getter
