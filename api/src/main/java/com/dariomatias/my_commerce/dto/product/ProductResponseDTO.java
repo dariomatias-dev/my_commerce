@@ -1,11 +1,13 @@
 package com.dariomatias.my_commerce.dto.product;
 
+import com.dariomatias.my_commerce.dto.product_image.ProductImageResponseDTO;
 import com.dariomatias.my_commerce.model.Product;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -24,6 +26,8 @@ public class ProductResponseDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private List<ProductImageResponseDTO> images;
+
     public ProductResponseDTO() {}
 
     public static ProductResponseDTO from(Product product) {
@@ -37,9 +41,13 @@ public class ProductResponseDTO {
         dto.price = product.getPrice();
         dto.stock = product.getStock();
         dto.active = product.getActive();
+        dto.images = product.getImages()
+                .stream()
+                .map(ProductImageResponseDTO::from)
+                .toList();
         dto.createdAt = product.getAudit().getCreatedAt();
         dto.updatedAt = product.getAudit().getUpdatedAt();
+
         return dto;
     }
-
 }

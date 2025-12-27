@@ -1,5 +1,6 @@
 package com.dariomatias.my_commerce.dto.product;
 
+import com.dariomatias.my_commerce.dto.product_image.ProductImageOrderDTO;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,6 +37,8 @@ public class ProductRequestDTO {
 
     @NotNull(message = "O campo active é obrigatório")
     private Boolean active;
+
+    private List<ProductImageOrderDTO> images;
 
     private List<String> removedImageNames;
 }
