@@ -1,6 +1,7 @@
 package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.product.ProductRequestDTO;
+import com.dariomatias.my_commerce.dto.product_image.ProductImageOrderDTO;
 import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.Category;
 import com.dariomatias.my_commerce.model.Product;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -59,7 +61,9 @@ public class ProductService {
 
         String productSlug = SlugUtil.generateSlug(request.getName());
 
-        Optional<Product> existing = productRepository.findByStoreSlugAndProductSlug(store.getSlug(), productSlug);
+        Optional<Product> existing =
+                productRepository.findByStoreSlugAndProductSlug(store.getSlug(), productSlug);
+
         if (existing.isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um produto com este nome na loja");
         }
@@ -76,7 +80,13 @@ public class ProductService {
 
         productRepository.save(product);
 
-        productImageService.upload(store.getSlug(), product.getSlug(), images);
+        List<String> uploadedUrls =
+                productImageService.upload(store.getSlug(), product.getSlug(), images);
+
+        if (request.getImages() != null) {
+            mergeUploadedImages(request.getImages(), uploadedUrls);
+            productImageService.syncImages(product, request.getImages());
+        }
 
         return productRepository.update(product);
     }
@@ -110,7 +120,13 @@ public class ProductService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
     }
 
-    public Product update(User user, UUID id, ProductRequestDTO request, MultipartFile[] newImages) {
+    public Product update(
+            User user,
+            UUID id,
+            ProductRequestDTO request,
+            MultipartFile[] newImages
+    ) {
+
         Product product = getById(id);
 
         Store store = storeRepository.findById(product.getStoreId())
@@ -132,8 +148,11 @@ public class ProductService {
         }
 
         if (request.getName() != null && !request.getName().equals(product.getName())) {
+
             String newSlug = SlugUtil.generateSlug(request.getName());
-            Optional<Product> existing = productRepository.findByStoreSlugAndProductSlug(store.getSlug(), newSlug);
+
+            Optional<Product> existing =
+                    productRepository.findByStoreSlugAndProductSlug(store.getSlug(), newSlug);
 
             if (existing.isPresent()) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um produto com este nome na loja");
@@ -154,16 +173,19 @@ public class ProductService {
         if (request.getStock() != null) product.setStock(request.getStock());
         if (request.getActive() != null) product.setActive(request.getActive());
 
-        if (request.getRemovedImageNames() != null) {
-            productImageService.delete(store.getSlug(), product.getSlug(), request.getRemovedImageNames());
-        }
+        List<String> uploadedUrls =
+                productImageService.upload(store.getSlug(), product.getSlug(), newImages);
 
-        productImageService.upload(store.getSlug(), product.getSlug(), newImages);
+        if (request.getImages() != null) {
+            mergeUploadedImages(request.getImages(), uploadedUrls);
+            productImageService.syncImages(product, request.getImages());
+        }
 
         return productRepository.update(product);
     }
 
     public void delete(User user, UUID id) {
+
         Product product = getById(id);
 
         Store store = storeRepository.findById(product.getStoreId())
@@ -175,5 +197,19 @@ public class ProductService {
 
         productImageService.deleteAll(store.getSlug(), product.getSlug());
         productRepository.deleteById(id);
+    }
+
+    private void mergeUploadedImages(
+            List<ProductImageOrderDTO> images,
+            List<String> uploadedUrls
+    ) {
+        int uploadIndex = 0;
+
+        for (ProductImageOrderDTO dto : images) {
+            if (dto.getId() == null && dto.getUrl() == null) {
+                dto.setUrl(uploadedUrls.get(uploadIndex));
+                uploadIndex++;
+            }
+        }
     }
 }
