@@ -16,7 +16,7 @@ interface ProductManagerProps {
 }
 
 export const ProductManager = ({ storeId }: ProductManagerProps) => {
-  const { getProductsByStoreId } = useProduct();
+  const { getProductsByStoreId, deleteProduct } = useProduct();
   const listTopRef = useRef<HTMLDivElement>(null);
 
   const [products, setProducts] = useState<ProductResponse[]>([]);
@@ -53,6 +53,12 @@ export const ProductManager = ({ storeId }: ProductManagerProps) => {
     listTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const onDelete = async (productId: string) => {
+    await deleteProduct(productId);
+
+    fetchProducts();
+  };
+
   if (isLoading) return <ProductManagerLoading />;
 
   if (error) {
@@ -66,7 +72,7 @@ export const ProductManager = ({ storeId }: ProductManagerProps) => {
     >
       <ProductManagerFilter />
 
-      <ProductManagerTable products={products} />
+      <ProductManagerTable products={products} onDelete={onDelete} />
 
       <ProductManagerPagination
         currentPage={currentPage}
