@@ -6,7 +6,7 @@ import { useState } from "react";
 
 import { ProductResponse } from "@/@types/product/product-response";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
-import { ProductImageThumb } from "./product-image-thumb";
+import { ProductImageThumb } from "../../../../../product-image-thumb";
 
 interface ProductManagerTableProps {
   products: ProductResponse[];
@@ -69,10 +69,7 @@ export const ProductManagerTable = ({
                 >
                   <td className="py-6 pl-10">
                     <div className="flex items-center gap-5">
-                      <ProductImageThumb
-                        src={product.images?.[0]?.url}
-                        alt={product.name}
-                      />
+                      <ProductImageThumb product={product} alt={product.name} />
 
                       <div>
                         <p className="text-sm font-black text-slate-950 uppercase italic tracking-tight">
