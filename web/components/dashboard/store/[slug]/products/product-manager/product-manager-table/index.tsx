@@ -1,11 +1,12 @@
 "use client";
 
-import { Edit3, Package, Trash2 } from "lucide-react";
+import { Edit3, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
 import { ProductResponse } from "@/@types/product/product-response";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
+import { ProductImageThumb } from "./product-image-thumb";
 
 interface ProductManagerTableProps {
   products: ProductResponse[];
@@ -28,7 +29,6 @@ export const ProductManagerTable = ({
 
   const handleCloseConfirm = () => {
     if (isDeleting) return;
-
     setIsConfirmOpen(false);
     setProductToDelete(null);
   };
@@ -38,13 +38,9 @@ export const ProductManagerTable = ({
 
     try {
       setIsDeleting(true);
-
       await onDelete(productToDelete.id);
-
       setIsConfirmOpen(false);
       setProductToDelete(null);
-    } catch (error) {
-      console.error(error);
     } finally {
       setIsDeleting(false);
     }
@@ -73,9 +69,10 @@ export const ProductManagerTable = ({
                 >
                   <td className="py-6 pl-10">
                     <div className="flex items-center gap-5">
-                      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border-2 border-slate-100 bg-slate-50">
-                        <Package className="h-full w-full p-3 text-slate-300" />
-                      </div>
+                      <ProductImageThumb
+                        src={product.images?.[0]?.url}
+                        alt={product.name}
+                      />
 
                       <div>
                         <p className="text-sm font-black text-slate-950 uppercase italic tracking-tight">
@@ -122,6 +119,7 @@ export const ProductManagerTable = ({
                       >
                         <Edit3 size={18} />
                       </Link>
+
                       <button
                         onClick={() => handleOpenConfirm(product)}
                         className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-slate-100 bg-white text-slate-400 hover:text-red-500"
