@@ -13,15 +13,15 @@ import { ApiError } from "@/@types/api";
 import { ActionButton } from "@/components/buttons/action-button";
 import { PasswordField } from "@/components/password-field";
 import { useAuthContext } from "@/contexts/auth-context";
-import { useAuth } from "@/services/hooks/use-auth";
 import { loginSchema } from "@/schemas/login.schema";
+import { useAuth } from "@/services/hooks/use-auth";
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export const LoginForm = () => {
   const router = useRouter();
   const { login } = useAuth();
-  const { refreshUser } = useAuthContext();
+  const { user, refreshUser } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [globalError, setGlobalError] = useState<string | null>(null);
 
@@ -55,7 +55,14 @@ export const LoginForm = () => {
 
       await refreshUser();
 
-      router.push("/dashboard");
+      switch (user?.role) {
+        case "SUBSCRIBER":
+        case "ADMIN":
+          router.push("/dashboard");
+          break;
+        default:
+          router.push("/profile");
+      }
     } catch (error) {
       if (error instanceof ApiError) {
         if (error.errors) {
