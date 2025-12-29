@@ -1,16 +1,17 @@
 "use client";
 
-import { ApiError } from "@/@types/api";
-import { StoreResponse } from "@/@types/store/store-response";
-import { StoreCard } from "@/components/dashboard/dashboard-store-card";
-import { useAuthContext } from "@/contexts/auth-context";
-import { useStore } from "@/services/hooks/use-store";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { ApiError } from "@/@types/api";
+import { StoreResponse } from "@/@types/store/store-response";
+import { DashboardEmptyStores } from "@/components/dashboard/dashboard-empty-stores";
 import { DashboardError } from "@/components/dashboard/dashboard-error";
 import { DashboardLoading } from "@/components/dashboard/dashboard-loading";
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header";
 import { DashboardPagination } from "@/components/dashboard/dashboard-pagination";
+import { StoreCard } from "@/components/dashboard/dashboard-store-card";
+import { useAuthContext } from "@/contexts/auth-context";
+import { useStore } from "@/services/hooks/use-store";
 
 const DashboardPage = () => {
   const { user } = useAuthContext();
@@ -53,40 +54,43 @@ const DashboardPage = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-
     listTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
-    <main className="mx-auto max-w-400 px-6 pt-40 pb-20">
-      <div
-        ref={listTopRef}
-        className="animate-in fade-in slide-in-from-bottom-4 duration-700 scroll-mt-40"
-      >
-        <DashboardPageHeader
-          currentPage={currentPage}
-          totalPages={totalPages}
-        />
+    <main className="min-h-screen bg-[#F4F7FA] font-sans text-slate-900">
+      <div className="mx-auto max-w-400 px-6 pt-40 pb-20">
+        <div
+          ref={listTopRef}
+          className="animate-in fade-in slide-in-from-bottom-4 duration-700 scroll-mt-40"
+        >
+          <DashboardPageHeader
+            currentPage={currentPage}
+            totalPages={totalPages}
+          />
 
-        {isLoading ? (
-          <DashboardLoading />
-        ) : error ? (
-          <DashboardError message={error} onRetry={fetchStores} />
-        ) : (
-          <>
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {stores.map((store) => (
-                <StoreCard key={store.id} store={store} />
-              ))}
-            </div>
+          {isLoading ? (
+            <DashboardLoading />
+          ) : error ? (
+            <DashboardError message={error} onRetry={fetchStores} />
+          ) : stores.length === 0 ? (
+            <DashboardEmptyStores />
+          ) : (
+            <>
+              <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                {stores.map((store) => (
+                  <StoreCard key={store.id} store={store} />
+                ))}
+              </div>
 
-            <DashboardPagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
-          </>
-        )}
+              <DashboardPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            </>
+          )}
+        </div>
       </div>
     </main>
   );
