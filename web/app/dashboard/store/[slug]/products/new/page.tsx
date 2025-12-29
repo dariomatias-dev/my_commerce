@@ -6,13 +6,11 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { ApiError } from "@/@types/api";
-import {
-  ProductForm,
-  ProductFormValues,
-} from "@/components/dashboard/store/[slug]/products/product-form";
+import { ProductForm } from "@/components/dashboard/store/[slug]/products/product-form";
+import { ProductFormValues } from "@/schemas/product.schema";
 import { useProduct } from "@/services/hooks/use-product";
 
-export default function NewProductPage() {
+const NewProductPage = () => {
   const { slug } = useParams() as { slug: string };
   const router = useRouter();
   const { createProduct } = useProduct();
@@ -67,4 +65,6 @@ export default function NewProductPage() {
       />
     </main>
   );
-}
+};
+
+export default NewProductPage;

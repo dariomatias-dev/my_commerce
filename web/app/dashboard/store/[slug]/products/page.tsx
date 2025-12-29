@@ -14,7 +14,7 @@ import {
 import { ProductManager } from "@/components/dashboard/store/[slug]/products/product-manager";
 import { useStore } from "@/services/hooks/use-store";
 
-export default function StoreInventoryPage() {
+const StoreInventoryPage = () => {
   const { slug } = useParams() as { slug: string };
   const { getStoreBySlug } = useStore();
 
@@ -128,4 +128,6 @@ export default function StoreInventoryPage() {
       )}
     </main>
   );
-}
+};
+
+export default StoreInventoryPage;

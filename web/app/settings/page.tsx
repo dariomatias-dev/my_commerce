@@ -1,24 +1,24 @@
 "use client";
 
 import {
-    Bell,
-    ChevronRight,
-    Code2,
-    CreditCard,
-    Database,
-    Globe,
-    Lock,
-    Save,
-    ShieldCheck,
-    Store,
-    Terminal,
+  Bell,
+  ChevronRight,
+  Code2,
+  CreditCard,
+  Database,
+  Globe,
+  Lock,
+  Save,
+  ShieldCheck,
+  Store,
+  Terminal,
 } from "lucide-react";
 import { useState } from "react";
 
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { Footer } from "@/components/layout/footer";
 
-export default function SettingsPage() {
+const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState("loja");
 
   const tabs = [
@@ -299,4 +299,6 @@ export default function SettingsPage() {
       <Footer />
     </>
   );
-}
+};
+
+export default SettingsPage;

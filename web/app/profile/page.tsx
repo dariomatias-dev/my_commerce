@@ -41,7 +41,7 @@ const passwordSchema = z
 type ProfileFormValues = z.infer<typeof profileSchema>;
 type PasswordFormValues = z.infer<typeof passwordSchema>;
 
-export default function ProfilePage() {
+const ProfilePage = () => {
   const { user, refreshUser } = useAuthContext();
   const { updateMe, changePassword, deleteMe } = useUser();
 
@@ -319,4 +319,6 @@ export default function ProfilePage() {
       <Footer />
     </div>
   );
-}
+};
+
+export default ProfilePage;

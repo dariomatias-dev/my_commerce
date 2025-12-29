@@ -6,7 +6,7 @@ import { ResendVerificationForm } from "@/components/(auth)/resend-verification-
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 
-export default function ResendVerificationPage() {
+const ResendVerificationPage = () => {
   return (
     <>
       <Header />
@@ -35,4 +35,6 @@ export default function ResendVerificationPage() {
       <Footer />
     </>
   );
-}
+};
+
+export default ResendVerificationPage;

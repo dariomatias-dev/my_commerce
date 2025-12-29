@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 
-export default function NotFound() {
+const NotFoundPage = () => {
   return (
     <>
       <Header />
@@ -85,4 +85,6 @@ export default function NotFound() {
       <Footer />
     </>
   );
-}
+};
+
+export default NotFoundPage;

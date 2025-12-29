@@ -5,7 +5,7 @@ import { ArrowUpRight, FileLock, Globe, ShieldCheck } from "lucide-react";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 
-export default function PrivacyPolicyPage() {
+const PrivacyPolicyPage = () => {
   const policyClauses = [
     {
       id: "01",
@@ -157,4 +157,6 @@ export default function PrivacyPolicyPage() {
       <Footer />
     </>
   );
-}
+};
+
+export default PrivacyPolicyPage;

@@ -160,7 +160,7 @@ const ProductCard = ({ product }: { product: (typeof PRODUCTS)[0] }) => (
   </div>
 );
 
-export default function StorefrontPage() {
+const StorefrontPage = () => {
   const [activeCategory, setActiveCategory] = useState("Todos");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -463,4 +463,6 @@ export default function StorefrontPage() {
       <Footer />
     </div>
   );
-}
+};
+
+export default StorefrontPage;

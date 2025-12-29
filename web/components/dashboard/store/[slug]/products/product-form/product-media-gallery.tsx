@@ -4,7 +4,7 @@ import { ImagePlus, X } from "lucide-react";
 import Image from "next/image";
 import { UseFormSetValue, UseFormWatch } from "react-hook-form";
 
-import { ProductFormValues } from "@/components/dashboard/store/[slug]/products/product-form";
+import { ProductFormValues } from "@/schemas/product.schema";
 
 interface ExistingImage {
   name: string;

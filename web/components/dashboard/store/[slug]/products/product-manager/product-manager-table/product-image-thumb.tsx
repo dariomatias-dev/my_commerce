@@ -1,4 +1,5 @@
 import { Package } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 
 interface ProductImageThumbProps {
@@ -17,13 +18,14 @@ export const ProductImageThumb = ({ src, alt }: ProductImageThumbProps) => {
       {showFallback && <Package className="h-full w-full p-3 text-slate-300" />}
 
       {src && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           src={process.env.NEXT_PUBLIC_API_URL + "/files/stores/" + src}
           alt={alt}
           className={`h-full w-full object-cover transition-opacity ${
             loaded && !error ? "opacity-100" : "opacity-0"
           }`}
+          fill
+          unoptimized
           onLoad={() => setLoaded(true)}
           onError={() => setError(true)}
         />

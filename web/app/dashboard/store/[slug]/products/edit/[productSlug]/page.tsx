@@ -6,13 +6,13 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
-import { ProductResponse } from "@/@types/product/product-response";
 import { ProductRequest } from "@/@types/product/product-request";
+import { ProductResponse } from "@/@types/product/product-response";
 import { ProductForm } from "@/components/dashboard/store/[slug]/products/product-form";
-import { useProduct } from "@/services/hooks/use-product";
 import { ProductFormValues } from "@/schemas/product.schema";
+import { useProduct } from "@/services/hooks/use-product";
 
-export default function EditProductPage() {
+const EditProductPage = () => {
   const { slug, productSlug } = useParams() as {
     slug: string;
     productSlug: string;
@@ -81,12 +81,13 @@ export default function EditProductPage() {
     }
   };
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <div className="pt-40 text-center font-black animate-pulse">
         CARREGANDO PRODUTO...
       </div>
     );
+  }
 
   return (
     <main className="min-h-screen bg-[#F4F7FA] mx-auto max-w-4xl px-6 pt-32 pb-20">
@@ -116,4 +117,6 @@ export default function EditProductPage() {
       />
     </main>
   );
-}
+};
+
+export default EditProductPage;
