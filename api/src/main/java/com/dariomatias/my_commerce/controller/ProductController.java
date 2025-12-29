@@ -32,7 +32,7 @@ public class ProductController {
     public ResponseEntity<ApiResponse<ProductResponseDTO>> create(
             @AuthenticationPrincipal User user,
             @RequestPart("data") ProductRequestDTO request,
-            @RequestPart(value = "images", required = false) MultipartFile[] images
+            @RequestPart(value = "images") MultipartFile[] images
     ) {
         Product product = service.create(user, request, images);
         return ResponseEntity.ok(

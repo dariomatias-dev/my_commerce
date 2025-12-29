@@ -23,9 +23,15 @@ public class MinioService {
 
     public void createBucket(String bucketName) {
         try {
-            boolean exists = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
+            boolean exists = minioClient.bucketExists(
+                    BucketExistsArgs.builder().bucket(bucketName).build()
+            );
+
             if (!exists) {
-                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
+                minioClient.makeBucket(
+                        MakeBucketArgs.builder().bucket(bucketName).build()
+                );
+
                 String policyJson = "{\n" +
                         "  \"Version\":\"2012-10-17\",\n" +
                         "  \"Statement\":[{\n" +
@@ -35,6 +41,7 @@ public class MinioService {
                         "    \"Resource\":[\"arn:aws:s3:::" + bucketName + "/*\"]\n" +
                         "  }]\n" +
                         "}";
+
                 minioClient.setBucketPolicy(
                         SetBucketPolicyArgs.builder()
                                 .bucket(bucketName)
@@ -43,27 +50,40 @@ public class MinioService {
                 );
             }
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao criar bucket: " + bucketName, e);
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Erro ao criar bucket: " + bucketName,
+                    e
+            );
         }
     }
 
-    public List<String> listObjects(String bucket, String prefix) {
-        return StreamSupport.stream(
-                minioClient.listObjects(
-                        ListObjectsArgs.builder()
-                                .bucket(bucket)
-                                .prefix(prefix)
-                                .recursive(true)
-                                .build()
-                ).spliterator(),
-                false
-        ).map(item -> {
-            try {
-                return item.get().objectName();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }).toList();
+    public List<String> listObjects(String bucketName, String prefix) {
+        try {
+            Iterable<Result<Item>> results = minioClient.listObjects(
+                    ListObjectsArgs.builder()
+                            .bucket(bucketName)
+                            .prefix(prefix)
+                            .recursive(true)
+                            .build()
+            );
+
+            return StreamSupport.stream(results.spliterator(), false)
+                    .map(result -> {
+                        try {
+                            return result.get().objectName();
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Erro ao listar objetos",
+                    e
+            );
+        }
     }
 
     public void copyFile(String bucketName, String sourceObject, String targetObject) {
@@ -78,6 +98,7 @@ public class MinioService {
                                             .object(sourceObject)
                                             .build()
                             )
+                            .metadataDirective(Directive.COPY)
                             .build()
             );
         } catch (Exception e) {
@@ -89,65 +110,58 @@ public class MinioService {
         }
     }
 
-    public void deleteBucket(String bucketName) {
-        try {
-            Iterable<Result<Item>> results = minioClient.listObjects(
-                    ListObjectsArgs.builder().bucket(bucketName).recursive(true).build()
-            );
-            for (Result<Item> result : results) {
-                minioClient.removeObject(
-                        RemoveObjectArgs.builder().bucket(bucketName).object(result.get().objectName()).build()
-                );
-            }
-            minioClient.removeBucket(RemoveBucketArgs.builder().bucket(bucketName).build());
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao excluir bucket: " + bucketName, e);
-        }
-    }
-
     public void deleteFolder(String bucketName, String folder) {
         try {
             Iterable<Result<Item>> results = minioClient.listObjects(
-                    ListObjectsArgs.builder().bucket(bucketName).prefix(folder).recursive(true).build()
+                    ListObjectsArgs.builder()
+                            .bucket(bucketName)
+                            .prefix(folder)
+                            .recursive(true)
+                            .build()
             );
+
             for (Result<Item> result : results) {
                 minioClient.removeObject(
-                        RemoveObjectArgs.builder().bucket(bucketName).object(result.get().objectName()).build()
+                        RemoveObjectArgs.builder()
+                                .bucket(bucketName)
+                                .object(result.get().objectName())
+                                .build()
                 );
             }
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao excluir pasta: " + folder, e);
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Erro ao excluir pasta: " + folder,
+                    e
+            );
         }
     }
 
     public void uploadFile(String bucketName, String objectName, MultipartFile file) {
         try {
             createBucket(bucketName);
+
+            String contentType = file.getContentType();
+            if (contentType == null || contentType.isBlank()) {
+                contentType = "application/octet-stream";
+            }
+
             try (InputStream inputStream = file.getInputStream()) {
                 minioClient.putObject(
                         PutObjectArgs.builder()
                                 .bucket(bucketName)
                                 .object(objectName)
                                 .stream(inputStream, file.getSize(), -1)
-                                .contentType(file.getContentType())
+                                .contentType(contentType)
                                 .build()
                 );
             }
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao enviar arquivo: " + objectName, e);
-        }
-    }
-
-    public InputStream getFile(String bucketName, String objectName) {
-        try {
-            return minioClient.getObject(
-                    GetObjectArgs.builder()
-                            .bucket(bucketName)
-                            .object(objectName)
-                            .build()
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Erro ao enviar arquivo: " + objectName,
+                    e
             );
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Arquivo não encontrado: " + objectName, e);
         }
     }
 
@@ -160,32 +174,11 @@ public class MinioService {
                             .build()
             );
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao excluir arquivo: " + objectName, e);
-        }
-    }
-
-    public List<String> listFiles(String bucketName) {
-        try {
-            createBucket(bucketName);
-            Iterable<Result<Item>> results = minioClient.listObjects(
-                    ListObjectsArgs.builder()
-                            .bucket(bucketName)
-                            .recursive(true)
-                            .build()
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Erro ao excluir arquivo: " + objectName,
+                    e
             );
-            return StreamSupport.stream(results.spliterator(), false)
-                    .map(result -> {
-                        try {
-                            return result.get().objectName();
-                        } catch (Exception e) {
-                            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao listar arquivos", e);
-                        }
-                    })
-                    .collect(Collectors.toList());
-        } catch (ResponseStatusException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao listar arquivos", e);
         }
     }
 }
