@@ -81,7 +81,7 @@ public class ProductService {
         productRepository.save(product);
 
         List<String> uploadedUrls =
-                productImageService.upload(store.getSlug(), product.getSlug(), images);
+                productImageService.upload(store.getSlug(), product, images);
 
         if (request.getImages() != null) {
             mergeUploadedImages(request.getImages(), uploadedUrls);
@@ -174,7 +174,7 @@ public class ProductService {
         if (request.getActive() != null) product.setActive(request.getActive());
 
         List<String> uploadedUrls =
-                productImageService.upload(store.getSlug(), product.getSlug(), newImages);
+                productImageService.upload(store.getSlug(), product, newImages);
 
         if (request.getImages() != null) {
             mergeUploadedImages(request.getImages(), uploadedUrls);

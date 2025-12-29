@@ -29,23 +29,33 @@ public class ProductImageService {
 
     public List<String> upload(
             String storeSlug,
-            String productSlug,
+            Product product,
             MultipartFile[] images
     ) {
         if (images == null || images.length == 0) {
             return List.of();
         }
 
-        String folder = buildFolder(storeSlug, productSlug);
-        List<String> uploadedUrls = new ArrayList<>();
+        String folder = buildFolder(storeSlug, product.getSlug());
+        List<String> savedImages = new ArrayList<>();
 
-        for (MultipartFile image : images) {
+        for (int position = 0; position < images.length; position++) {
+            MultipartFile imageFile = images[position];
             String objectName = folder + UUID.randomUUID() + ".jpeg";
-            minioService.uploadFile(BUCKET_NAME, objectName, image);
-            uploadedUrls.add(objectName);
+
+            minioService.uploadFile(BUCKET_NAME, objectName, imageFile);
+
+            ProductImage image = new ProductImage();
+            image.setProduct(product);
+            image.setUrl(objectName);
+            image.setPosition(position);
+
+            productImageRepository.save(image);
+
+            savedImages.add(objectName);
         }
 
-        return uploadedUrls;
+        return savedImages;
     }
 
     @Transactional
