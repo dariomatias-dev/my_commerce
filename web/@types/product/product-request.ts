@@ -6,5 +6,9 @@ export interface ProductRequest {
   price: number;
   stock: number;
   active: boolean;
+  images?: {
+    file: File;
+    position: number;
+  }[];
   removedImages?: string[];
 }

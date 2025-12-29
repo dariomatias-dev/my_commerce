@@ -8,6 +8,13 @@ export interface ProductResponse {
   price: number;
   stock: number;
   active: boolean;
+  images: ProductImage[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ProductImage {
+  id: string;
+  url: string;
+  position: number;
 }
