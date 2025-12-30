@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 import { Mail } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -54,15 +54,6 @@ export const LoginForm = () => {
       });
 
       await refreshUser();
-
-      switch (user?.role) {
-        case "SUBSCRIBER":
-        case "ADMIN":
-          router.push("/dashboard");
-          break;
-        default:
-          router.push("/profile");
-      }
     } catch (error) {
       if (error instanceof ApiError) {
         if (error.errors) {
@@ -81,6 +72,19 @@ export const LoginForm = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!user) return;
+
+    switch (user.role) {
+      case "SUBSCRIBER":
+      case "ADMIN":
+        router.push("/dashboard");
+        break;
+      default:
+        router.push("/profile");
+    }
+  }, [user, router]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
