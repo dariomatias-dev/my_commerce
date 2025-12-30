@@ -10,5 +10,4 @@ public class VerifyEmailRequest {
 
     @NotBlank(message = "Token é obrigatório")
     private String token;
-
 }

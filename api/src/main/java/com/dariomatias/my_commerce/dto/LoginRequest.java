@@ -2,6 +2,7 @@ package com.dariomatias.my_commerce.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,6 +15,6 @@ public class LoginRequest {
     private String email;
 
     @NotBlank(message = "A senha é obrigatória")
+    @Size(min = 6, max = 100, message = "A senha deve ter no mínimo 6 caracteres")
     private String password;
-
 }

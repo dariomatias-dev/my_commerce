@@ -12,5 +12,4 @@ public class ResendVerificationEmailRequest {
     @Email(message = "O e-mail deve ser válido")
     @NotBlank(message = "O e-mail é obrigatório")
     private String email;
-
 }
