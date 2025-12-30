@@ -15,7 +15,7 @@ import { useStore } from "@/services/hooks/use-store";
 
 const DashboardPage = () => {
   const { user } = useAuthContext();
-  const { getStoresByUserId } = useStore();
+  const { getStoresByUserId, deleteStore } = useStore();
   const listTopRef = useRef<HTMLDivElement>(null);
 
   const [stores, setStores] = useState<StoreResponse[]>([]);
@@ -52,6 +52,26 @@ const DashboardPage = () => {
     fetchStores();
   }, [fetchStores]);
 
+  const handleDeleteStore = async (id: string) => {
+    try {
+      setError(null);
+
+      await deleteStore(id);
+
+      setStores((prev) => prev.filter((store) => store.id !== id));
+
+      if (stores.length === 1 && currentPage > 0) {
+        setCurrentPage((prev) => prev - 1);
+      }
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setError(error.message);
+      } else {
+        setError("Não foi possível excluir a instância da loja.");
+      }
+    }
+  };
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     listTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -69,17 +89,25 @@ const DashboardPage = () => {
             totalPages={totalPages}
           />
 
+          {error && (
+            <div className="mb-8">
+              <DashboardError message={error} onRetry={fetchStores} />
+            </div>
+          )}
+
           {isLoading ? (
             <DashboardLoading />
-          ) : error ? (
-            <DashboardError message={error} onRetry={fetchStores} />
-          ) : stores.length === 0 ? (
+          ) : stores.length === 0 && !error ? (
             <DashboardEmptyStores />
           ) : (
             <>
               <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {stores.map((store) => (
-                  <StoreCard key={store.id} store={store} />
+                  <StoreCard
+                    key={store.id}
+                    store={store}
+                    onDelete={handleDeleteStore}
+                  />
                 ))}
               </div>
 
