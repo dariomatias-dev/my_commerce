@@ -3,6 +3,7 @@ package com.dariomatias.my_commerce.controller;
 import com.dariomatias.my_commerce.dto.ApiResponse;
 import com.dariomatias.my_commerce.dto.PasswordUpdateRequest;
 import com.dariomatias.my_commerce.dto.user.AdminUserResponse;
+import com.dariomatias.my_commerce.dto.user.UserRequest;
 import com.dariomatias.my_commerce.dto.user.UserResponse;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.service.UserService;
@@ -48,7 +49,7 @@ public class UserController {
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<AdminUserResponse>> updateUser(@PathVariable UUID id,
-                                                                     @RequestBody User updatedUser) {
+                                                                     @RequestBody UserRequest updatedUser) {
         User updated = userService.update(id, updatedUser);
         return ResponseEntity.ok(ApiResponse.success("Usuário atualizado com sucesso.", AdminUserResponse.from(updated)));
     }
@@ -68,7 +69,7 @@ public class UserController {
 
     @PatchMapping("/me")
     public ResponseEntity<ApiResponse<UserResponse>> updateCurrentUser(@AuthenticationPrincipal User user,
-                                                                       @RequestBody User updatedUser) {
+                                                                       @RequestBody UserRequest updatedUser) {
         User updated = userService.update(user.getId(), updatedUser);
         return ResponseEntity.ok(ApiResponse.success("Usuário atualizado com sucesso.", UserResponse.from(updated)));
     }

@@ -1,6 +1,7 @@
 package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.PasswordUpdateRequest;
+import com.dariomatias.my_commerce.dto.user.UserRequest;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.contract.UserContract;
 import jakarta.transaction.Transactional;
@@ -37,7 +38,7 @@ public class UserService {
         return getUserOrThrow(id);
     }
 
-    public User update(UUID id, User updatedUser) {
+    public User update(UUID id, UserRequest updatedUser) {
         User user = getUserOrThrow(id);
 
         if (updatedUser.getName() != null) {
