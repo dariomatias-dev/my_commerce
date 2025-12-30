@@ -74,12 +74,14 @@ export const UserProfileDropdown = () => {
             <User size={16} /> Meu Perfil
           </Link>
 
-          <Link
-            href="/dashboard"
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition-all hover:bg-slate-50 hover:text-indigo-600"
-          >
-            <Home size={16} /> Dashboard
-          </Link>
+          {user?.role === "SUBSCRIBER" && (
+            <Link
+              href="/dashboard"
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition-all hover:bg-slate-50 hover:text-indigo-600"
+            >
+              <Home size={16} /> Dashboard
+            </Link>
+          )}
 
           <Link
             href="/settings"
