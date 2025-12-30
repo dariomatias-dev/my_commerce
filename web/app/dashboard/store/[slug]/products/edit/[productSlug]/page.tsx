@@ -30,9 +30,7 @@ const EditProductPage = () => {
   const loadProduct = useCallback(async () => {
     try {
       setIsLoading(true);
-
       const data = await getProductBySlug(slug, productSlug);
-
       setProduct(data);
     } catch (error) {
       if (error instanceof ApiError) {
@@ -52,7 +50,7 @@ const EditProductPage = () => {
   const handleSubmit = async (
     data: ProductFormValues,
     storeId: string,
-    removedImages?: string[]
+    removedImageNames?: string[]
   ) => {
     try {
       setIsSubmitting(true);
@@ -66,7 +64,8 @@ const EditProductPage = () => {
         categoryId: data.categoryId,
         active: data.active,
         storeId,
-        removedImages,
+        images: data.images,
+        removedImageNames,
       };
 
       await updateProduct(product!.id, payload, data.images);

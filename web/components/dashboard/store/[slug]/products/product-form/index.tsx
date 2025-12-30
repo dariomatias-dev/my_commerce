@@ -1,6 +1,5 @@
 "use client";
 
-import { ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, DollarSign, Type } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
@@ -10,7 +9,6 @@ import { CategoryResponse } from "@/@types/category/category-response";
 import { ProductResponse } from "@/@types/product/product-response";
 import { ActionButton } from "@/components/buttons/action-button";
 import { ProductMediaGallery } from "@/components/dashboard/store/[slug]/products/product-form/product-media-gallery";
-import { s3Client } from "@/lib/s3-client";
 import { ProductFormValues, productSchema } from "@/schemas/product.schema";
 import { useCategory } from "@/services/hooks/use-category";
 import { useStore } from "@/services/hooks/use-store";
@@ -43,9 +41,7 @@ export const ProductForm = ({
   const [categories, setCategories] = useState<CategoryResponse[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [removedImages, setRemovedImages] = useState<string[]>([]);
-  const [existingImages, setExistingImages] = useState<
-    { name: string; url: string }[]
-  >([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
 
   const {
     register,
@@ -73,26 +69,6 @@ export const ProductForm = ({
     if (!isLoadingData) trigger("images");
   }, [existingImages, setValue, trigger, isLoadingData]);
 
-  const fetchExistingImages = useCallback(async () => {
-    if (!initialData?.slug) return;
-    try {
-      const command = new ListObjectsV2Command({
-        Bucket: "stores",
-        Prefix: `${slug}/products/${initialData.slug}/`,
-      });
-      const response = await s3Client.send(command);
-      if (response.Contents) {
-        const images = response.Contents.map((item) => ({
-          name: item.Key?.split("/").pop() || "",
-          url: `http://localhost:9000/stores/${item.Key}`,
-        })).filter((img) => img.name !== "");
-        setExistingImages(images);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }, [initialData?.slug, slug]);
-
   const fetchDependencies = useCallback(async () => {
     try {
       setIsLoadingData(true);
@@ -109,17 +85,30 @@ export const ProductForm = ({
 
   useEffect(() => {
     if (initialData) {
-      reset({ ...initialData, images: [], existingCount: 0 });
-      fetchExistingImages();
+      reset({
+        name: initialData.name,
+        description: initialData.description,
+        price: initialData.price,
+        stock: initialData.stock,
+        categoryId: initialData.categoryId,
+        active: initialData.active,
+        images: [],
+        existingCount: initialData.images.length,
+      });
+
+      const images = initialData.images.map((image) => {
+        return image.url;
+      });
+      setExistingImages(images);
     }
-  }, [initialData, reset, fetchExistingImages]);
+  }, [initialData, reset]);
 
   useEffect(() => {
     fetchDependencies();
   }, [fetchDependencies]);
 
   const handleRemoveExisting = (imageName: string) => {
-    setExistingImages((prev) => prev.filter((img) => img.name !== imageName));
+    setExistingImages((prev) => prev.filter((img) => img !== imageName));
     setRemovedImages((prev) => [...prev, imageName]);
   };
 

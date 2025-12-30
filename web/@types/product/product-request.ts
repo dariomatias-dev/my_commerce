@@ -10,5 +10,5 @@ export interface ProductRequest {
     file: File;
     position: number;
   }[];
-  removedImages?: string[];
+  removedImageNames?: string[];
 }
