@@ -24,7 +24,7 @@ export const ActionButton = ({
     <button
       {...props}
       className={clsx(
-        "group relative w-full overflow-hidden rounded-2xl font-black text-white transition-all active:scale-95",
+        "group relative w-full overflow-hidden rounded-2xl font-black text-white transition-all active:scale-95 px-8",
         isLarge ? "py-5 text-lg shadow-xl" : "py-4 text-xs tracking-widest",
         isPrimary
           ? "bg-indigo-600 hover:bg-indigo-700 hover:shadow-[0_20px_40px_rgba(79,70,229,0.2)]"
