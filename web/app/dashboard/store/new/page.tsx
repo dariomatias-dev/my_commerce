@@ -12,14 +12,14 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ElementType, useEffect, useState } from "react";
+import { ElementType, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 import { ApiError } from "@/@types/api";
+import { StoreRequest } from "@/@types/store/store-request";
 import { ActionButton } from "@/components/buttons/action-button";
-import { DashboardLoading } from "@/components/dashboard/dashboard-loading";
-import { useAuthContext } from "@/contexts/auth-context";
+import { useStore } from "@/services/hooks/use-store";
 
 const createStoreSchema = z.object({
   name: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
@@ -50,10 +50,12 @@ const FormSection = ({
       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-950 text-white">
         <Icon size={20} />
       </div>
+
       <h2 className="text-xl font-black tracking-tight text-slate-950 uppercase italic">
         {title}
       </h2>
     </div>
+
     {children}
   </section>
 );
@@ -75,6 +77,7 @@ const FileUploadField = ({
     <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase">
       {label}
     </label>
+
     <label className="group relative flex aspect-square cursor-pointer flex-col items-center justify-center overflow-hidden rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50 transition-all hover:border-indigo-600 hover:bg-indigo-50/30">
       {preview ? (
         <Image src={preview} alt={label} fill className="object-cover" />
@@ -86,6 +89,7 @@ const FileUploadField = ({
           </span>
         </div>
       )}
+
       <input
         type="file"
         className="hidden"
@@ -93,13 +97,15 @@ const FileUploadField = ({
         onChange={onChange}
       />
     </label>
+
     {error && <p className="text-[10px] font-bold text-red-500">{error}</p>}
   </div>
 );
 
 const NewStorePage = () => {
   const router = useRouter();
-  const { user, isLoading: isAuthLoading } = useAuthContext();
+
+  const { createStore } = useStore();
 
   const [isLoading, setIsLoading] = useState(false);
   const [globalError, setGlobalError] = useState<string | null>(null);
@@ -122,53 +128,50 @@ const NewStorePage = () => {
     },
   });
 
-  useEffect(() => {
-    if (!isAuthLoading && (!user || user.role === "USER")) {
-      router.push(user ? "/profile" : "/login");
-    }
-  }, [user, isAuthLoading, router]);
-
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     field: "logo" | "banner"
   ) => {
     const file = e.target.files?.[0];
+
     if (file) {
       const reader = new FileReader();
+
       reader.onloadend = () => {
         if (field === "logo") setLogoPreview(reader.result as string);
         else setBannerPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
+
       setValue(field, e.target.files);
     }
   };
 
-  const onSubmit = async (data: CreateStoreFormValues) => {
+  const onSubmit = async (values: CreateStoreFormValues) => {
     try {
       setIsLoading(true);
       setGlobalError(null);
 
-      const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("description", data.description);
-      formData.append("themeColor", data.themeColor);
-      formData.append("isActive", String(data.isActive));
-      formData.append("logo", data.logo[0]);
-      formData.append("banner", data.banner[0]);
+      const data: StoreRequest = {
+        name: values.name,
+        description: values.description,
+        themeColor: values.themeColor,
+        isActive: values.isActive,
+      };
+
+      await createStore(data, values.logo[0], values.banner[0]);
+
+      router.push("/dashboard");
     } catch (error) {
-      setGlobalError(
-        error instanceof ApiError
-          ? error.message
-          : "Erro ao inicializar nova instância."
-      );
+      if (error instanceof ApiError) {
+        setGlobalError(error.message);
+      } else {
+        setGlobalError("Erro ao inicializar nova instância.");
+      }
     } finally {
       setIsLoading(false);
     }
   };
-
-  if (isAuthLoading || !user || user.role === "USER")
-    return <DashboardLoading />;
 
   return (
     <main className="min-h-screen bg-[#F4F7FA] font-sans text-slate-900 mx-auto max-w-400 px-6 pt-32 pb-20">
@@ -180,6 +183,7 @@ const NewStorePage = () => {
           >
             <ArrowLeft size={14} /> Voltar ao Painel
           </Link>
+
           <div className="mb-2 flex items-center gap-2">
             <div className="flex h-5 items-center rounded bg-indigo-600 px-2 text-[9px] font-black tracking-widest text-white uppercase">
               Nova Infraestrutura
@@ -188,6 +192,7 @@ const NewStorePage = () => {
               Deploy de Unidade
             </span>
           </div>
+
           <h1 className="text-5xl font-black tracking-tighter text-slate-950 uppercase italic leading-none">
             CRIAR NOVA <span className="text-indigo-600">LOJA.</span>
           </h1>
@@ -204,27 +209,32 @@ const NewStorePage = () => {
                   <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase">
                     Nome da Loja
                   </label>
+
                   <input
                     {...register("name")}
                     placeholder="Ex: Minha Loja Tech"
                     className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 font-bold focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-600/5 focus:outline-none transition-all"
                   />
+
                   {errors.name && (
                     <p className="ml-1 text-[10px] font-bold text-red-500">
                       {errors.name.message}
                     </p>
                   )}
                 </div>
+
                 <div className="space-y-2">
                   <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase">
                     Descrição Operacional
                   </label>
+
                   <textarea
                     {...register("description")}
                     rows={4}
                     placeholder="Descreva o propósito..."
                     className="w-full resize-none rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 font-bold focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-600/5 focus:outline-none transition-all"
                   />
+
                   {errors.description && (
                     <p className="ml-1 text-[10px] font-bold text-red-500">
                       {errors.description.message}
@@ -269,6 +279,7 @@ const NewStorePage = () => {
                   <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
                     Cor de Identidade
                   </label>
+
                   <div className="flex items-center gap-4">
                     <input
                       type="color"
@@ -285,6 +296,7 @@ const NewStorePage = () => {
                   <span className="text-[10px] font-black tracking-widest text-slate-600 uppercase">
                     Status Ativo
                   </span>
+
                   <label className="relative inline-flex cursor-pointer items-center">
                     <input
                       type="checkbox"
@@ -305,9 +317,11 @@ const NewStorePage = () => {
                   </p>
                 </div>
               )}
+
               <ActionButton disabled={isLoading} showArrow={!isLoading}>
                 {isLoading ? "INICIALIZANDO..." : "CRIAR LOJA"}
               </ActionButton>
+
               <p className="px-4 text-center text-[9px] font-bold leading-relaxed text-slate-400 uppercase tracking-tight">
                 Ao criar uma loja, você concorda com os protocolos de
                 infraestrutura.
