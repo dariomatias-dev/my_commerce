@@ -64,7 +64,6 @@ public class Product {
 
     @OneToMany(
             mappedBy = "product",
-            cascade = CascadeType.ALL,
             orphanRemoval = true
     )
     @OrderBy("position ASC")

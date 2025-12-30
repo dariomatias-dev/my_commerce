@@ -39,8 +39,11 @@ public class ProductImageService {
         String folder = buildFolder(storeSlug, product.getSlug());
         List<String> savedImages = new ArrayList<>();
 
-        for (int position = 0; position < images.length; position++) {
-            MultipartFile imageFile = images[position];
+        List<ProductImage> existingImages = productImageRepository.findAllByProduct(product.getId());
+        int startPosition = existingImages.size();
+
+        for (int i = 0; i < images.length; i++) {
+            MultipartFile imageFile = images[i];
             String objectName = folder + UUID.randomUUID() + ".jpeg";
 
             minioService.uploadFile(BUCKET_NAME, objectName, imageFile);
@@ -48,7 +51,7 @@ public class ProductImageService {
             ProductImage image = new ProductImage();
             image.setProduct(product);
             image.setUrl(objectName);
-            image.setPosition(position);
+            image.setPosition(startPosition + i);
 
             productImageRepository.save(image);
 
@@ -59,43 +62,37 @@ public class ProductImageService {
     }
 
     @Transactional
-    public void syncImages(Product product, List<ProductImageOrderDTO> images) {
+    public void removeImages(Product product, List<String> removedImageNames) {
+
+        if (removedImageNames == null || removedImageNames.isEmpty()) {
+            return;
+        }
 
         List<ProductImage> existingImages =
                 productImageRepository.findAllByProduct(product.getId());
 
-        Map<UUID, ProductImage> existingMap = existingImages.stream()
-                .collect(Collectors.toMap(ProductImage::getId, i -> i));
-
-        Set<UUID> receivedIds = images.stream()
-                .map(ProductImageOrderDTO::getId)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
-
         for (ProductImage image : existingImages) {
-            if (!receivedIds.contains(image.getId())) {
+            if (removedImageNames.contains(image.getUrl())) {
+
+                minioService.deleteFile(BUCKET_NAME, image.getUrl());
+
                 productImageRepository.delete(image);
             }
         }
 
-        for (int position = 0; position < images.size(); position++) {
+        List<ProductImage> remainingImages =
+                productImageRepository.findAllByProduct(product.getId())
+                        .stream()
+                        .sorted(Comparator.comparingInt(ProductImage::getPosition))
+                        .toList();
 
-            ProductImageOrderDTO dto = images.get(position);
-
-            if (dto.getId() != null) {
-                ProductImage image = existingMap.get(dto.getId());
-                image.setPosition(position);
-                productImageRepository.save(image);
-
-            } else {
-                ProductImage image = new ProductImage();
-                image.setProduct(product);
-                image.setUrl(dto.getUrl());
-                image.setPosition(position);
-                productImageRepository.save(image);
-            }
+        for (int i = 0; i < remainingImages.size(); i++) {
+            ProductImage image = remainingImages.get(i);
+            image.setPosition(i);
+            productImageRepository.save(image);
         }
     }
+
 
     public void rename(String storeSlug, String oldProductSlug, String newProductSlug) {
         String oldFolder = buildFolder(storeSlug, oldProductSlug);

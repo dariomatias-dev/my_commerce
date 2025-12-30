@@ -80,13 +80,7 @@ public class ProductService {
 
         productRepository.save(product);
 
-        List<String> uploadedUrls =
-                productImageService.upload(store.getSlug(), product, images);
-
-        if (request.getImages() != null) {
-            mergeUploadedImages(request.getImages(), uploadedUrls);
-            productImageService.syncImages(product, request.getImages());
-        }
+        productImageService.upload(store.getSlug(), product, images);
 
         return productRepository.update(product);
     }
@@ -173,13 +167,13 @@ public class ProductService {
         if (request.getStock() != null) product.setStock(request.getStock());
         if (request.getActive() != null) product.setActive(request.getActive());
 
-        List<String> uploadedUrls =
-                productImageService.upload(store.getSlug(), product, newImages);
+        System.out.println("=========================="+request.getRemovedImageNames());
+        productImageService.removeImages(
+                product,
+                request.getRemovedImageNames()
+        );
 
-        if (request.getImages() != null) {
-            mergeUploadedImages(request.getImages(), uploadedUrls);
-            productImageService.syncImages(product, request.getImages());
-        }
+        productImageService.upload(store.getSlug(), product, newImages);
 
         return productRepository.update(product);
     }
