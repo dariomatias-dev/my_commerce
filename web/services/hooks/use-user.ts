@@ -5,6 +5,7 @@ import { useCallback } from "react";
 import { PaginatedResponse } from "@/@types/paginated-response";
 import { AdminUserResponse } from "@/@types/user/admin-user-response";
 import { PasswordUpdateRequest } from "@/@types/user/password-update-request";
+import { UserRequest } from "@/@types/user/user-request";
 import { UserResponse } from "@/@types/user/user-response";
 import { apiClient } from "@/services/api-client";
 
@@ -24,7 +25,7 @@ export const useUser = () => {
 
   const updateUser = useCallback(
     (id: string, data: Partial<AdminUserResponse>) =>
-      apiClient.patch<AdminUserResponse>(`/users/${id}`, data),
+      apiClient.patch<UserRequest>(`/users/${id}`, data),
     []
   );
 
@@ -37,7 +38,7 @@ export const useUser = () => {
 
   const updateMe = useCallback(
     (data: Partial<UserResponse>) =>
-      apiClient.patch<UserResponse>("/users/me", data),
+      apiClient.patch<UserRequest>("/users/me", data),
     []
   );
 
