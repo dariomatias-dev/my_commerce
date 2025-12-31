@@ -4,11 +4,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { ProductResponse } from "@/@types/product/product-response";
+import { Pagination } from "@/components/pagination";
 import { useProduct } from "@/services/hooks/use-product";
 import { ProductManagerError } from "./product-manager-error";
 import { ProductManagerFilter } from "./product-manager-filter";
 import { ProductManagerLoading } from "./product-manager-loading";
-import { ProductManagerPagination } from "./product-manager-pagination";
 import { ProductManagerTable } from "./product-manager-table";
 
 interface ProductManagerProps {
@@ -74,7 +74,7 @@ export const ProductManager = ({ storeId }: ProductManagerProps) => {
 
       <ProductManagerTable products={products} onDelete={onDelete} />
 
-      <ProductManagerPagination
+      <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}

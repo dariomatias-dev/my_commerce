@@ -8,8 +8,8 @@ import { DashboardEmptyStores } from "@/components/dashboard/dashboard-empty-sto
 import { DashboardError } from "@/components/dashboard/dashboard-error";
 import { DashboardLoading } from "@/components/dashboard/dashboard-loading";
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header";
-import { DashboardPagination } from "@/components/dashboard/dashboard-pagination";
 import { StoreCard } from "@/components/dashboard/dashboard-store-card";
+import { Pagination } from "@/components/pagination";
 import { useAuthContext } from "@/contexts/auth-context";
 import { useStore } from "@/services/hooks/use-store";
 
@@ -111,7 +111,7 @@ const DashboardPage = () => {
                 ))}
               </div>
 
-              <DashboardPagination
+              <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={handlePageChange}

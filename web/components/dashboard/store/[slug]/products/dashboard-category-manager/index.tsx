@@ -13,12 +13,12 @@ import { ApiError } from "@/@types/api";
 import { CategoryResponse } from "@/@types/category/category-response";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { DeleteConfirmationDialog } from "@/components/dialogs/delete-confirmation-dialog";
+import { Pagination } from "@/components/pagination";
 import { useCategory } from "@/services/hooks/use-category";
 import { CategoryFormDialog } from "../category-form-dialog";
 import { DashboardCategoryCard } from "./dashboard-category-card";
 import { DashboardCategoryManagerError } from "./dashboard-category-manager-error";
 import { DashboardCategoryManagerLoading } from "./dashboard-category-manager-loading";
-import { DashboardCategoryPagination } from "./dashboard-category-pagination";
 import { DashboardCategorySearchBar } from "./dashboard-category-search-bar";
 
 export interface DashboardCategoryManagerRef {
@@ -156,7 +156,7 @@ export const DashboardCategoryManager = forwardRef<
       </div>
 
       {totalPages > 1 && (
-        <DashboardCategoryPagination
+        <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={handlePageChange}
