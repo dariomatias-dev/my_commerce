@@ -3,6 +3,7 @@
 import { useCallback } from "react";
 
 import { PaginatedResponse } from "@/@types/paginated-response";
+import { ProductFilters } from "@/@types/product/product-filters";
 import { ProductRequest } from "@/@types/product/product-request";
 import { ProductResponse } from "@/@types/product/product-response";
 import { apiClient } from "@/services/api-client";
@@ -25,21 +26,28 @@ export const useProduct = () => {
     });
   }, []);
 
-  const getAllProducts = useCallback(
-    (page = 0, size = 10) =>
-      apiClient.get<PaginatedResponse<ProductResponse>>("/products", {
-        params: { page, size },
+  const getProducts = useCallback(
+    (url: string, filters: ProductFilters = {}, page = 0, size = 10) =>
+      apiClient.get<PaginatedResponse<ProductResponse>>(url, {
+        params: {
+          ...filters,
+          page,
+          size,
+        },
       }),
     []
   );
 
+  const getAllProducts = useCallback(
+    (filters: ProductFilters = {}, page = 0, size = 10) =>
+      getProducts("/products", filters, page, size),
+    [getProducts]
+  );
+
   const getProductsByStoreId = useCallback(
-    (storeId: string, page = 0, size = 10) =>
-      apiClient.get<PaginatedResponse<ProductResponse>>(
-        `/products/store/${storeId}`,
-        { params: { page, size } }
-      ),
-    []
+    (storeId: string, filters: ProductFilters = {}, page = 0, size = 10) =>
+      getProducts(`/products/store/${storeId}`, filters, page, size),
+    [getProducts]
   );
 
   const getProductBySlug = useCallback(
@@ -93,6 +101,7 @@ export const useProduct = () => {
 
   return {
     createProduct,
+    getProducts,
     getAllProducts,
     getProductsByStoreId,
     getProductById,

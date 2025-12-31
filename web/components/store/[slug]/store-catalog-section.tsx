@@ -29,7 +29,7 @@ export const StoreCatalogSection = ({
   useEffect(() => {
     const loadData = async () => {
       const [productsData, categoriesData] = await Promise.all([
-        getProductsByStoreId(storeId, 0, 100),
+        getProductsByStoreId(storeId, {}, 0, 100),
         getCategoriesByStoreId(storeId, 0, 100),
       ]);
       setProducts(productsData.content);

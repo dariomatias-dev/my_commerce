@@ -31,7 +31,7 @@ export const ProductManager = ({ storeId }: ProductManagerProps) => {
       setIsLoading(true);
       setError(null);
 
-      const data = await getProductsByStoreId(storeId, currentPage, pageSize);
+      const data = await getProductsByStoreId(storeId, {}, currentPage, pageSize);
 
       setProducts(data.content);
       setTotalPages(data.totalPages);

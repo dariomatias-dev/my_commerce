@@ -55,7 +55,9 @@ export const DashboardCategoryManager = forwardRef<
     try {
       setIsLoading(true);
       setError(null);
+
       const data = await getCategoriesByStoreId(storeId, currentPage, pageSize);
+      
       setCategories(data.content);
       setTotalPages(data.totalPages);
     } catch (error) {
@@ -108,8 +110,10 @@ export const DashboardCategoryManager = forwardRef<
     if (!selectedCategory) return;
     try {
       setIsDeleting(true);
+
       await deleteCategory(selectedCategory.id);
       await fetchCategories();
+      
       setIsSecondConfirmOpen(false);
       setSelectedCategory(null);
     } catch (error) {
