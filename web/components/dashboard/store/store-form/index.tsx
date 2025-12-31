@@ -2,13 +2,14 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ImagePlus, Layout, Palette, Store, UploadCloud } from "lucide-react";
-import Image from "next/image";
-import { ElementType, ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import * as z from "zod";
 
 import { StoreResponse } from "@/@types/store/store-response";
 import { ActionButton } from "@/components/buttons/action-button";
+import { StoreFileUploadField } from "./store-file-upload-field";
+import { StoreFormSection } from "./store-form-section";
 
 const storeSchema = z.object({
   name: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
@@ -28,98 +29,6 @@ interface StoreFormProps {
   onSubmit: (values: StoreFormValues) => Promise<void>;
   isLoading: boolean;
 }
-
-const FormSection = ({
-  title,
-  icon: Icon,
-  children,
-}: {
-  title: string;
-  icon: ElementType;
-  children: ReactNode;
-}) => (
-  <section className="rounded-[2.5rem] border border-slate-200 bg-white p-10 shadow-sm">
-    <div className="mb-8 flex items-center gap-3 border-b border-slate-50 pb-6">
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-950 text-white">
-        <Icon size={20} />
-      </div>
-      <h2 className="text-xl font-black tracking-tight text-slate-950 uppercase italic">
-        {title}
-      </h2>
-    </div>
-    {children}
-  </section>
-);
-
-const FileUploadField = ({
-  label,
-  file,
-  existingUrl,
-  error,
-  onChange,
-  icon: Icon,
-}: {
-  label: string;
-  file?: FileList;
-  existingUrl: string | null;
-  error?: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  icon: ElementType;
-}) => {
-  const [preview, setPreview] = useState<string | null>(null);
-
-  useEffect(() => {
-    const handlePreviewUpdate = () => {
-      if (file && file.length > 0) {
-        const url = URL.createObjectURL(file[0]);
-        setPreview(url);
-        return () => URL.revokeObjectURL(url);
-      }
-      setPreview(existingUrl);
-    };
-
-    const cleanup = handlePreviewUpdate();
-    return () => {
-      if (cleanup) cleanup();
-    };
-  }, [file, existingUrl]);
-
-  return (
-    <div className="space-y-4">
-      <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase">
-        {label}
-      </label>
-
-      <label className="group relative flex aspect-square cursor-pointer flex-col items-center justify-center overflow-hidden rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50 transition-all hover:border-indigo-600 hover:bg-indigo-50/30">
-        {preview ? (
-          <Image
-            src={preview}
-            alt={label}
-            fill
-            unoptimized
-            className="object-cover"
-          />
-        ) : (
-          <div className="flex flex-col items-center gap-2 text-slate-400 group-hover:text-indigo-600">
-            <Icon size={32} />
-            <span className="text-[10px] font-black tracking-widest uppercase">
-              Upload {label.split(" ")[0]}
-            </span>
-          </div>
-        )}
-
-        <input
-          type="file"
-          accept="image/jpeg,image/png,image/webp,image/jpg"
-          className="hidden"
-          onChange={onChange}
-        />
-      </label>
-
-      {error && <p className="text-[10px] font-bold text-red-500">{error}</p>}
-    </div>
-  );
-};
 
 export const StoreForm = ({
   initialData,
@@ -185,7 +94,7 @@ export const StoreForm = ({
       className="grid grid-cols-1 gap-8 lg:grid-cols-12"
     >
       <div className="space-y-8 lg:col-span-8">
-        <FormSection title="Dados da Instância" icon={Store}>
+        <StoreFormSection title="Dados da Instância" icon={Store}>
           <div className="space-y-6">
             <div className="space-y-2">
               <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase">
@@ -218,11 +127,11 @@ export const StoreForm = ({
               )}
             </div>
           </div>
-        </FormSection>
+        </StoreFormSection>
 
-        <FormSection title="Assets Visuais" icon={Layout}>
+        <StoreFormSection title="Assets Visuais" icon={Layout}>
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-            <FileUploadField
+            <StoreFileUploadField
               label="Logo da Loja (1:1)"
               file={logoFile}
               existingUrl={existingLogo}
@@ -231,7 +140,7 @@ export const StoreForm = ({
               onChange={(e) => handleFileChange(e, "logo")}
             />
 
-            <FileUploadField
+            <StoreFileUploadField
               label="Banner Principal"
               file={bannerFile}
               existingUrl={existingBanner}
@@ -240,7 +149,7 @@ export const StoreForm = ({
               onChange={(e) => handleFileChange(e, "banner")}
             />
           </div>
-        </FormSection>
+        </StoreFormSection>
       </div>
 
       <aside className="space-y-8 lg:col-span-4">
@@ -290,7 +199,7 @@ export const StoreForm = ({
             {isLoading
               ? "SINCRONIZANDO..."
               : initialData
-              ? "ATUALIZAR UNIDADE"
+              ? "ATUALIZAR LOJA"
               : "CRIAR LOJA"}
           </ActionButton>
         </div>
