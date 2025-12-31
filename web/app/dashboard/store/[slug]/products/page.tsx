@@ -8,9 +8,9 @@ import { useEffect, useRef, useState } from "react";
 import { StoreResponse } from "@/@types/store/store-response";
 import { CategoryFormDialog } from "@/components/dashboard/store/[slug]/products/category-form-dialog";
 import {
-  CategoryManager,
-  CategoryManagerRef,
-} from "@/components/dashboard/store/[slug]/products/category-manager";
+  DashboardCategoryManager,
+  DashboardCategoryManagerRef,
+} from "@/components/dashboard/store/[slug]/products/dashboard-category-manager";
 import { ProductManager } from "@/components/dashboard/store/[slug]/products/product-manager";
 import { useStore } from "@/services/hooks/use-store";
 
@@ -26,7 +26,7 @@ const StoreInventoryPage = () => {
   const [isCategoryFormDialogOpen, setIsCategoryFormDialogOpen] =
     useState(false);
 
-  const categoryManagerRef = useRef<CategoryManagerRef>(null);
+  const categoryManagerRef = useRef<DashboardCategoryManagerRef>(null);
 
   useEffect(() => {
     const fetchStore = async () => {
@@ -114,7 +114,10 @@ const StoreInventoryPage = () => {
         {view === "products" && store && <ProductManager storeId={store.id} />}
 
         {view === "categories" && store && (
-          <CategoryManager storeId={store.id} ref={categoryManagerRef} />
+          <DashboardCategoryManager
+            storeId={store.id}
+            ref={categoryManagerRef}
+          />
         )}
       </div>
 
