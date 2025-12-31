@@ -23,6 +23,7 @@ import {
 import { ApiError } from "@/@types/api";
 import { CategoryResponse } from "@/@types/category/category-response";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
+import { DeleteConfirmationDialog } from "@/components/dialogs/delete-confirmation-dialog";
 import { useCategory } from "@/services/hooks/use-category";
 import { CategoryFormDialog } from "./category-form-dialog";
 
@@ -46,7 +47,8 @@ export const CategoryManager = forwardRef<
   const [error, setError] = useState<string | null>(null);
 
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isFirstConfirmOpen, setIsFirstConfirmOpen] = useState(false);
+  const [isSecondConfirmOpen, setIsSecondConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedCategory, setSelectedCategory] =
     useState<CategoryResponse | null>(null);
@@ -59,17 +61,15 @@ export const CategoryManager = forwardRef<
     try {
       setIsLoading(true);
       setError(null);
-
       const data = await getCategoriesByStoreId(storeId, currentPage, pageSize);
-
       setCategories(data.content);
       setTotalPages(data.totalPages);
     } catch (error) {
-      if (error instanceof ApiError) {
-        setError(error.message);
-      } else {
-        setError("Erro ao carregar as taxonomias da loja.");
-      }
+      setError(
+        error instanceof ApiError
+          ? error.message
+          : "Erro ao carregar as taxonomias da loja."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -95,28 +95,35 @@ export const CategoryManager = forwardRef<
 
   const handleDeleteClick = (category: CategoryResponse) => {
     setSelectedCategory(category);
-    setIsConfirmOpen(true);
+    setIsFirstConfirmOpen(true);
+  };
+
+  const handleProceedToFinalDelete = () => {
+    setIsFirstConfirmOpen(false);
+    setIsSecondConfirmOpen(true);
+  };
+
+  const handleCloseDialogs = () => {
+    if (isDeleting) return;
+    setIsFirstConfirmOpen(false);
+    setIsSecondConfirmOpen(false);
+    setSelectedCategory(null);
   };
 
   const handleConfirmDelete = async () => {
     if (!selectedCategory) return;
     try {
       setIsDeleting(true);
-
       await deleteCategory(selectedCategory.id);
       await fetchCategories();
-
-      setIsConfirmOpen(false);
+      setIsSecondConfirmOpen(false);
+      setSelectedCategory(null);
     } catch (error) {
-      if (error instanceof ApiError) {
-        setError(error.message);
-        alert(error.message);
-      } else {
-        alert("Erro ao excluir categoria.");
-      }
+      alert(
+        error instanceof ApiError ? error.message : "Erro ao excluir categoria."
+      );
     } finally {
       setIsDeleting(false);
-      setSelectedCategory(null);
     }
   };
 
@@ -181,7 +188,7 @@ export const CategoryManager = forwardRef<
                 <Tag size={24} />
               </div>
               <span className="text-[9px] font-black uppercase tracking-widest text-slate-300">
-                Produto
+                Taxonomia
               </span>
             </div>
 
@@ -266,17 +273,23 @@ export const CategoryManager = forwardRef<
       />
 
       <ConfirmDialog
-        isOpen={isConfirmOpen}
-        isLoading={isDeleting}
-        onClose={() => {
-          setIsConfirmOpen(false);
-          setSelectedCategory(null);
-        }}
-        onConfirm={handleConfirmDelete}
+        isOpen={isFirstConfirmOpen}
+        onClose={handleCloseDialogs}
+        onConfirm={handleProceedToFinalDelete}
         title="Remover Categoria?"
-        description={`Você está prestes a excluir a categoria "${selectedCategory?.name}". Esta ação não poderá ser desfeita.`}
-        confirmText="EXCLUIR PERMANENTEMENTE"
+        description={`Você está prestes a iniciar a exclusão da categoria "${selectedCategory?.name}".`}
+        confirmText="Sim, prosseguir"
         variant="danger"
+      />
+
+      <DeleteConfirmationDialog
+        isOpen={isSecondConfirmOpen}
+        onClose={handleCloseDialogs}
+        onConfirm={handleConfirmDelete}
+        isLoading={isDeleting}
+        title="Confirmar Remoção"
+        description="Esta ação excluirá permanentemente a categoria. Produtos vinculados poderão ficar sem categoria."
+        confirmationName={selectedCategory?.name || ""}
       />
     </div>
   );
