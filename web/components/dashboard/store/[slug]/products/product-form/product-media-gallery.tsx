@@ -69,10 +69,10 @@ export const ProductMediaGallery = ({
             <Image
               src={`${process.env.NEXT_PUBLIC_API_URL}/files/stores/${img}`}
               alt="Existing"
-              fill
-              className="object-cover"
               unoptimized
+              fill
               priority
+              className="object-cover"
             />
             <button
               type="button"

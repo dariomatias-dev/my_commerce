@@ -79,7 +79,7 @@ export const StoreCard = ({ store, onDelete }: StoreCardProps) => {
 
           <div className="flex items-center gap-3">
             <Link
-              href={`/dashboard/store/${store.slug}/edit`}
+              href={`/dashboard/store/edit/${store.slug}`}
               className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-100 bg-white text-slate-400 transition-all hover:border-indigo-600 hover:text-indigo-600"
             >
               <Pencil size={18} />
