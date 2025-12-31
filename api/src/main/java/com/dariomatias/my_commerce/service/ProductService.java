@@ -113,11 +113,6 @@ public class ProductService {
         return productRepository.findAllByStore(storeId, pageable);
     }
 
-
-    public Page<Product> getAllByCategory(UUID categoryId, Pageable pageable) {
-        return productRepository.findAllByCategory(categoryId, pageable);
-    }
-
     public Product getByStoreSlugAndProductSlug(String storeSlug, String productSlug) {
         Store store = storeRepository.findBySlug(storeSlug)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));

@@ -44,7 +44,7 @@ export const useProduct = () => {
     [getProducts]
   );
 
-  const getProductsByStoreId = useCallback(
+  const getAllProductsByStoreId = useCallback(
     (storeId: string, filters: ProductFilters = {}, page = 0, size = 10) =>
       getProducts(`/products/store/${storeId}`, filters, page, size),
     [getProducts]
@@ -103,7 +103,7 @@ export const useProduct = () => {
     createProduct,
     getProducts,
     getAllProducts,
-    getProductsByStoreId,
+    getAllProductsByStoreId,
     getProductById,
     getProductBySlug,
     getLowStockProductsByStore,

@@ -11,16 +11,16 @@ interface StoreStockHighlightsSectionProps {
 export const StoreStockHighlightsSection = ({
   storeId,
 }: StoreStockHighlightsSectionProps) => {
-  const { getProductsByStoreId } = useProduct();
+  const { getAllProductsByStoreId } = useProduct();
   const [products, setProducts] = useState<ProductResponse[]>([]);
 
   useEffect(() => {
     const loadProducts = async () => {
-      const data = await getProductsByStoreId(storeId, 0, 100);
+      const data = await getAllProductsByStoreId(storeId, 0, 100);
       setProducts(data.content);
     };
     loadProducts();
-  }, [storeId, getProductsByStoreId]);
+  }, [storeId, getAllProductsByStoreId]);
 
   const lastUnits = useMemo(
     () => products.filter((p) => p.stock > 0 && p.stock <= 5).slice(0, 2),

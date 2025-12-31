@@ -85,16 +85,6 @@ public class ProductController {
         );
     }
 
-    @GetMapping("/category/{categoryId}")
-    public ResponseEntity<ApiResponse<Page<ProductResponseDTO>>> getAllByCategory(@PathVariable UUID categoryId,
-                                                                                  @RequestParam(defaultValue = "0") int page,
-                                                                                  @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<ProductResponseDTO> products = service.getAllByCategory(categoryId, pageable)
-                .map(ProductResponseDTO::from);
-        return ResponseEntity.ok(ApiResponse.success("Produtos da categoria obtidos com sucesso", products));
-    }
-
     @GetMapping("/store/{storeSlug}/product/{productSlug}")
     public ResponseEntity<ApiResponse<ProductResponseDTO>> getBySlug(
             @PathVariable String storeSlug,

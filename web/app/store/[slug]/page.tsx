@@ -18,7 +18,7 @@ import { useStore } from "@/services/hooks/use-store";
 const StorePage = () => {
   const { slug } = useParams() as { slug: string };
   const { getStoreBySlug } = useStore();
-  const { getProductsByStoreId } = useProduct();
+  const { getAllProductsByStoreId } = useProduct();
 
   const [store, setStore] = useState<StoreResponse | null>(null);
   const [spotlightProduct, setSpotlightProduct] =
@@ -33,14 +33,14 @@ const StorePage = () => {
       const storeData = await getStoreBySlug(slug);
       setStore(storeData);
 
-      const productsData = await getProductsByStoreId(storeData.id, 0, 1);
+      const productsData = await getAllProductsByStoreId(storeData.id, 0, 1);
       setSpotlightProduct(productsData.content[0] || null);
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoading(false);
     }
-  }, [slug, getStoreBySlug, getProductsByStoreId]);
+  }, [slug, getStoreBySlug, getAllProductsByStoreId]);
 
   useEffect(() => {
     loadStore();
