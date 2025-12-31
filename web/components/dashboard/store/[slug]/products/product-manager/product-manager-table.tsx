@@ -6,7 +6,8 @@ import { useState } from "react";
 
 import { ProductResponse } from "@/@types/product/product-response";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
-import { ProductImageThumb } from "../../../../../product-image-thumb";
+import { DeleteConfirmationDialog } from "@/components/dialogs/delete-confirmation-dialog";
+import { ProductImageThumb } from "@/components/product-image-thumb";
 
 interface ProductManagerTableProps {
   products: ProductResponse[];
@@ -17,19 +18,30 @@ export const ProductManagerTable = ({
   products,
   onDelete,
 }: ProductManagerTableProps) => {
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isFirstConfirmOpen, setIsFirstConfirmOpen] = useState(false);
+  const [isSecondConfirmOpen, setIsSecondConfirmOpen] = useState(false);
   const [productToDelete, setProductToDelete] =
     useState<ProductResponse | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleOpenConfirm = (product: ProductResponse) => {
+  const handleOpenFirstConfirm = (product: ProductResponse) => {
     setProductToDelete(product);
-    setIsConfirmOpen(true);
+    setIsFirstConfirmOpen(true);
   };
 
-  const handleCloseConfirm = () => {
+  const handleCloseFirstConfirm = () => {
+    setIsFirstConfirmOpen(false);
+    if (!isSecondConfirmOpen) setProductToDelete(null);
+  };
+
+  const handleProceedToFinalDelete = () => {
+    setIsFirstConfirmOpen(false);
+    setIsSecondConfirmOpen(true);
+  };
+
+  const handleCloseSecondConfirm = () => {
     if (isDeleting) return;
-    setIsConfirmOpen(false);
+    setIsSecondConfirmOpen(false);
     setProductToDelete(null);
   };
 
@@ -39,7 +51,7 @@ export const ProductManagerTable = ({
     try {
       setIsDeleting(true);
       await onDelete(productToDelete.id);
-      setIsConfirmOpen(false);
+      setIsSecondConfirmOpen(false);
       setProductToDelete(null);
     } finally {
       setIsDeleting(false);
@@ -118,7 +130,7 @@ export const ProductManagerTable = ({
                       </Link>
 
                       <button
-                        onClick={() => handleOpenConfirm(product)}
+                        onClick={() => handleOpenFirstConfirm(product)}
                         className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-slate-100 bg-white text-slate-400 hover:text-red-500"
                       >
                         <Trash2 size={18} />
@@ -144,14 +156,23 @@ export const ProductManagerTable = ({
       </div>
 
       <ConfirmDialog
-        isOpen={isConfirmOpen}
-        onClose={handleCloseConfirm}
+        isOpen={isFirstConfirmOpen}
+        onClose={handleCloseFirstConfirm}
+        onConfirm={handleProceedToFinalDelete}
+        variant="danger"
+        title="Remover Produto?"
+        description={`Você está prestes a remover o produto "${productToDelete?.name}". Esta ação precede a exclusão definitiva.`}
+        confirmText="Sim, prosseguir"
+      />
+
+      <DeleteConfirmationDialog
+        isOpen={isSecondConfirmOpen}
+        onClose={handleCloseSecondConfirm}
         onConfirm={handleConfirmDelete}
         isLoading={isDeleting}
-        variant="danger"
-        title="Remover Produto"
-        description={`Você está prestes a remover permanentemente o produto "${productToDelete?.name}" do sistema. Esta ação não poderá ser desfeita.`}
-        confirmText="Remover"
+        title="Confirmar Exclusão"
+        description="Esta é a última etapa. Ao confirmar, o produto e todos os seus registros de mídia serão removidos permanentemente da loja."
+        confirmationName={productToDelete?.name || ""}
       />
     </>
   );
