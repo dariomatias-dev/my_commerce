@@ -41,6 +41,21 @@ public class ProductJpaRepository implements ProductContract {
     }
 
     @Override
+    public Page<Product> findAllByStoreAndCategory(
+            UUID storeId,
+            UUID categoryId,
+            Pageable pageable
+    ) {
+        Store store = new Store();
+        store.setId(storeId);
+
+        Category category = new Category();
+        category.setId(categoryId);
+
+        return repository.findAllByStoreAndCategory(store, category, pageable);
+    }
+
+    @Override
     public Page<Product> findAllByCategory(UUID categoryId, Pageable pageable) {
         Category category = new Category();
         category.setId(categoryId);

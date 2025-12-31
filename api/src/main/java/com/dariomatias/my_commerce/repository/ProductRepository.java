@@ -15,6 +15,12 @@ import java.util.UUID;
 public interface ProductRepository extends JpaRepository<Product, UUID> {
     Page<Product> findAllByStore(Store store, Pageable pageable);
 
+    Page<Product> findAllByStoreAndCategory(
+            Store store,
+            Category category,
+            Pageable pageable
+    );
+
     Page<Product> findAllByCategory(Category category, Pageable pageable);
 
     Optional<Product> findByStore_SlugAndSlug(String storeSlug, String productSlug);

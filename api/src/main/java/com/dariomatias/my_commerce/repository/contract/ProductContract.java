@@ -10,9 +10,16 @@ import java.util.UUID;
 public interface ProductContract {
 
     Product save(Product product);
+
     Page<Product> findAll(Pageable pageable);
 
     Page<Product> findAllByStore(UUID storeId, Pageable pageable);
+
+    Page<Product> findAllByStoreAndCategory(
+            UUID storeId,
+            UUID categoryId,
+            Pageable pageable
+    );
 
     Page<Product> findAllByCategory(UUID categoryId, Pageable pageable);
 

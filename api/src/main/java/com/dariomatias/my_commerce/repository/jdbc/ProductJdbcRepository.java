@@ -117,6 +117,47 @@ public class ProductJdbcRepository implements ProductContract {
     }
 
     @Override
+    public Page<Product> findAllByStoreAndCategory(
+            UUID storeId,
+            UUID categoryId,
+            Pageable pageable
+    ) {
+        String sql = """
+            SELECT *
+            FROM products
+            WHERE store_id = :store_id
+              AND category_id = :category_id
+            ORDER BY created_at DESC
+            OFFSET :offset LIMIT :limit
+        """;
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("store_id", storeId)
+                .addValue("category_id", categoryId)
+                .addValue("offset", pageable.getOffset())
+                .addValue("limit", pageable.getPageSize());
+
+        List<Product> content = jdbc.query(sql, params, mapper);
+
+        String countSql = """
+            SELECT COUNT(*)
+            FROM products
+            WHERE store_id = :store_id
+              AND category_id = :category_id
+        """;
+
+        long total = jdbc.queryForObject(
+                countSql,
+                new MapSqlParameterSource()
+                        .addValue("store_id", storeId)
+                        .addValue("category_id", categoryId),
+                Long.class
+        );
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
     public Page<Product> findAllByCategory(UUID categoryId, Pageable pageable) {
         String sql = """
             SELECT * FROM products

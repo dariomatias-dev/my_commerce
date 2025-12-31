@@ -1,5 +1,6 @@
 package com.dariomatias.my_commerce.service;
 
+import com.dariomatias.my_commerce.dto.product.ProductFilterDTO;
 import com.dariomatias.my_commerce.dto.product.ProductRequestDTO;
 import com.dariomatias.my_commerce.dto.product_image.ProductImageOrderDTO;
 import com.dariomatias.my_commerce.enums.UserRole;
@@ -85,13 +86,33 @@ public class ProductService {
         return productRepository.update(product);
     }
 
-    public Page<Product> getAll(Pageable pageable) {
+    public Page<Product> getAll(ProductFilterDTO filter, Pageable pageable) {
+        if (filter != null && filter.getCategoryId() != null) {
+            return productRepository.findAllByCategory(
+                    filter.getCategoryId(),
+                    pageable
+            );
+        }
+
         return productRepository.findAll(pageable);
     }
 
-    public Page<Product> getAllByStore(UUID storeId, Pageable pageable) {
+    public Page<Product> getAllByStore(
+            UUID storeId,
+            ProductFilterDTO filter,
+            Pageable pageable
+    ) {
+        if (filter != null && filter.getCategoryId() != null) {
+            return productRepository.findAllByStoreAndCategory(
+                    storeId,
+                    filter.getCategoryId(),
+                    pageable
+            );
+        }
+
         return productRepository.findAllByStore(storeId, pageable);
     }
+
 
     public Page<Product> getAllByCategory(UUID categoryId, Pageable pageable) {
         return productRepository.findAllByCategory(categoryId, pageable);

@@ -1,6 +1,7 @@
 package com.dariomatias.my_commerce.controller;
 
 import com.dariomatias.my_commerce.dto.ApiResponse;
+import com.dariomatias.my_commerce.dto.product.ProductFilterDTO;
 import com.dariomatias.my_commerce.dto.product.ProductRequestDTO;
 import com.dariomatias.my_commerce.dto.product.ProductResponseDTO;
 import com.dariomatias.my_commerce.model.Product;
@@ -44,21 +45,44 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<ProductResponseDTO>>> getAll(@RequestParam(defaultValue = "0") int page,
-                                                                        @RequestParam(defaultValue = "10") int size) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Page<ProductResponseDTO>>> getAll(
+            ProductFilterDTO filter,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ProductResponseDTO> products = service.getAll(pageable).map(ProductResponseDTO::from);
-        return ResponseEntity.ok(ApiResponse.success("Produtos obtidos com sucesso", products));
+
+        Page<ProductResponseDTO> products = service
+                .getAll(filter, pageable)
+                .map(ProductResponseDTO::from);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Produtos obtidos com sucesso", products)
+        );
     }
 
+
     @GetMapping("/store/{storeId}")
-    public ResponseEntity<ApiResponse<Page<ProductResponseDTO>>> getAllByStore(@PathVariable UUID storeId,
-                                                                               @RequestParam(defaultValue = "0") int page,
-                                                                               @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<ApiResponse<Page<ProductResponseDTO>>> getAllByStore(
+            @PathVariable UUID storeId,
+            ProductFilterDTO filter,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        System.out.println("===" + storeId);
+        System.out.println("===" + filter);
+        System.out.println("===" + page);
+        System.out.println("===" + size);
         Pageable pageable = PageRequest.of(page, size);
-        Page<ProductResponseDTO> products = service.getAllByStore(storeId, pageable)
+
+        Page<ProductResponseDTO> products = service
+                .getAllByStore(storeId, filter, pageable)
                 .map(ProductResponseDTO::from);
-        return ResponseEntity.ok(ApiResponse.success("Produtos da loja obtidos com sucesso", products));
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Produtos da loja obtidos com sucesso", products)
+        );
     }
 
     @GetMapping("/category/{categoryId}")
