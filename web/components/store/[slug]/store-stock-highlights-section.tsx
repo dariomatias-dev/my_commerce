@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ProductResponse } from "@/@types/product/product-response";
 import { useProduct } from "@/services/hooks/use-product";
@@ -16,18 +16,16 @@ export const StoreStockHighlightsSection = ({
 
   useEffect(() => {
     const loadProducts = async () => {
-      const data = await getAllProductsByStoreId(storeId, 0, 100);
+      const data = await getAllProductsByStoreId(
+        storeId,
+        { lowStockThreshold: 2 },
+        0,
+        2
+      );
       setProducts(data.content);
     };
     loadProducts();
   }, [storeId, getAllProductsByStoreId]);
-
-  const lastUnits = useMemo(
-    () => products.filter((p) => p.stock > 0 && p.stock <= 5).slice(0, 2),
-    [products]
-  );
-
-  const newEntries = useMemo(() => products.slice(-2), [products]);
 
   if (products.length === 0) return null;
 
@@ -38,8 +36,9 @@ export const StoreStockHighlightsSection = ({
           <h3 className="text-4xl font-black tracking-tighter text-orange-600 uppercase italic mb-12">
             ÚLTIMAS <span className="text-slate-950">UNIDADES.</span>
           </h3>
+
           <div className="grid gap-8 sm:grid-cols-2">
-            {lastUnits.map((p) => (
+            {products.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>
@@ -49,8 +48,9 @@ export const StoreStockHighlightsSection = ({
           <h3 className="text-4xl font-black tracking-tighter text-emerald-600 uppercase italic mb-12">
             NOVIDADES <span className="text-slate-950">RECENTES.</span>
           </h3>
+
           <div className="grid gap-8 sm:grid-cols-2">
-            {newEntries.map((p) => (
+            {products.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>

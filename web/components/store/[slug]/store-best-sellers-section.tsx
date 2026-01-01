@@ -17,7 +17,7 @@ export const StoreBestSellersSection = ({
 
   useEffect(() => {
     const loadProducts = async () => {
-      const data = await getAllProductsByStoreId(storeId, 0, 4);
+      const data = await getAllProductsByStoreId(storeId, {}, 0, 4);
       setProducts(data.content);
     };
     loadProducts();

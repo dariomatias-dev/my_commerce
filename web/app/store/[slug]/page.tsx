@@ -33,7 +33,7 @@ const StorePage = () => {
       const storeData = await getStoreBySlug(slug);
       setStore(storeData);
 
-      const productsData = await getAllProductsByStoreId(storeData.id, 0, 1);
+      const productsData = await getAllProductsByStoreId(storeData.id, {}, 0, 1);
       setSpotlightProduct(productsData.content[0] || null);
     } catch (error) {
       console.error(error);
