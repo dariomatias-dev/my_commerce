@@ -27,7 +27,7 @@ export const useProduct = () => {
   }, []);
 
   const getProducts = useCallback(
-    (url: string, filters: ProductFilters = {}, page = 0, size = 10) =>
+    (url: string, filters: ProductFilters, page = 0, size = 10) =>
       apiClient.get<PaginatedResponse<ProductResponse>>(url, {
         params: {
           ...filters,
@@ -39,14 +39,8 @@ export const useProduct = () => {
   );
 
   const getAllProducts = useCallback(
-    (filters: ProductFilters = {}, page = 0, size = 10) =>
-      getProducts("/products", filters, page, size),
-    [getProducts]
-  );
-
-  const getAllProductsByStoreId = useCallback(
-    (storeId: string, filters: ProductFilters = {}, page = 0, size = 10) =>
-      getProducts(`/products/store/${storeId}`, filters, page, size),
+    (filters: ProductFilters, page = 0, size = 10) =>
+      getProducts(`/products`, filters, page, size),
     [getProducts]
   );
 
@@ -94,7 +88,6 @@ export const useProduct = () => {
     createProduct,
     getProducts,
     getAllProducts,
-    getAllProductsByStoreId,
     getProductById,
     getProductBySlug,
     updateProduct,

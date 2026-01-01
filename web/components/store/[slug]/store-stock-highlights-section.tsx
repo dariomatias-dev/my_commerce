@@ -11,21 +11,20 @@ interface StoreStockHighlightsSectionProps {
 export const StoreStockHighlightsSection = ({
   storeId,
 }: StoreStockHighlightsSectionProps) => {
-  const { getAllProductsByStoreId } = useProduct();
+  const { getAllProducts } = useProduct();
   const [products, setProducts] = useState<ProductResponse[]>([]);
 
   useEffect(() => {
     const loadProducts = async () => {
-      const data = await getAllProductsByStoreId(
-        storeId,
-        { lowStockThreshold: 2 },
+      const data = await getAllProducts(
+        { storeId, lowStockThreshold: 2 },
         0,
         2
       );
       setProducts(data.content);
     };
     loadProducts();
-  }, [storeId, getAllProductsByStoreId]);
+  }, [storeId, getAllProducts]);
 
   if (products.length === 0) return null;
 

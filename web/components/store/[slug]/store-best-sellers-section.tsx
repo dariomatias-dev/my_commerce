@@ -12,16 +12,16 @@ interface StoreBestSellersSectionProps {
 export const StoreBestSellersSection = ({
   storeId,
 }: StoreBestSellersSectionProps) => {
-  const { getAllProductsByStoreId } = useProduct();
+  const { getAllProducts } = useProduct();
   const [products, setProducts] = useState<ProductResponse[]>([]);
 
   useEffect(() => {
     const loadProducts = async () => {
-      const data = await getAllProductsByStoreId(storeId, {}, 0, 4);
+      const data = await getAllProducts({ storeId }, 0, 4);
       setProducts(data.content);
     };
     loadProducts();
-  }, [storeId, getAllProductsByStoreId]);
+  }, [storeId, getAllProducts]);
 
   if (products.length === 0) return null;
 

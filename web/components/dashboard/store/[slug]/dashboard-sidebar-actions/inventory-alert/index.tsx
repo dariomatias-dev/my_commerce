@@ -27,7 +27,7 @@ export const InventoryAlert = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { getAllProductsByStoreId } = useProduct();
+  const { getAllProducts } = useProduct();
 
   useEffect(() => {
     const fetchLowStock = async () => {
@@ -36,9 +36,8 @@ export const InventoryAlert = ({
 
       try {
         const response: PaginatedResponse<ProductResponse> =
-          await getAllProductsByStoreId(
-            storeId,
-            { lowStockThreshold: threshold },
+          await getAllProducts(
+            { storeId, lowStockThreshold: threshold },
             0,
             pageSize
           );
@@ -55,7 +54,7 @@ export const InventoryAlert = ({
     };
 
     fetchLowStock();
-  }, [storeId, threshold, pageSize, getAllProductsByStoreId]);
+  }, [storeId, threshold, pageSize, getAllProducts]);
 
   return (
     <div className="rounded-[2.5rem] bg-slate-950 p-8 text-white shadow-2xl border border-slate-900">

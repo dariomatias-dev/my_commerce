@@ -16,7 +16,7 @@ interface ProductManagerProps {
 }
 
 export const ProductManager = ({ storeId }: ProductManagerProps) => {
-  const { getAllProductsByStoreId, deleteProduct } = useProduct();
+  const { getAllProducts, deleteProduct } = useProduct();
   const listTopRef = useRef<HTMLDivElement>(null);
 
   const [products, setProducts] = useState<ProductResponse[]>([]);
@@ -31,12 +31,7 @@ export const ProductManager = ({ storeId }: ProductManagerProps) => {
       setIsLoading(true);
       setError(null);
 
-      const data = await getAllProductsByStoreId(
-        storeId,
-        {},
-        currentPage,
-        pageSize
-      );
+      const data = await getAllProducts({ storeId }, currentPage, pageSize);
 
       setProducts(data.content);
       setTotalPages(data.totalPages);
@@ -46,7 +41,7 @@ export const ProductManager = ({ storeId }: ProductManagerProps) => {
     } finally {
       setIsLoading(false);
     }
-  }, [storeId, currentPage, getAllProductsByStoreId]);
+  }, [storeId, currentPage, getAllProducts]);
 
   useEffect(() => {
     fetchProducts();

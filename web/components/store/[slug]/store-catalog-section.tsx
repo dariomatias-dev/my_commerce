@@ -24,7 +24,7 @@ export const StoreCatalogSection = ({
   storeId,
   searchQuery,
 }: StoreCatalogSectionProps) => {
-  const { getAllProductsByStoreId } = useProduct();
+  const { getAllProducts } = useProduct();
   const { getCategoriesByStoreId } = useCategory();
 
   const [products, setProducts] = useState<ProductResponse[]>([]);
@@ -53,9 +53,9 @@ export const StoreCatalogSection = ({
       setIsLoading(true);
       setError(null);
 
-      const res = await getAllProductsByStoreId(
-        storeId,
+      const res = await getAllProducts(
         {
+          storeId,
           categoryId: activeCategoryId === "all" ? undefined : activeCategoryId,
         },
         currentPage,
@@ -73,7 +73,7 @@ export const StoreCatalogSection = ({
     } finally {
       setIsLoading(false);
     }
-  }, [storeId, activeCategoryId, currentPage, getAllProductsByStoreId]);
+  }, [storeId, activeCategoryId, currentPage, getAllProducts]);
 
   useEffect(() => {
     fetchCategories();
