@@ -34,6 +34,11 @@ public interface ProductContract {
             Pageable pageable
     );
 
+    Optional<Product> findByStoreSlugAndProductSlugAndDeletedAtIsNull(
+            String storeSlug,
+            String productSlug
+    );
+
     Optional<Product> findById(UUID id);
 
     Product update(Product product);

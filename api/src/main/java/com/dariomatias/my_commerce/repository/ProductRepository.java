@@ -35,4 +35,9 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
             int stockThreshold,
             Pageable pageable
     );
+
+    Optional<Product> findByStoreSlugAndSlugAndDeletedAtIsNull(
+            String storeSlug,
+            String productSlug
+    );
 }

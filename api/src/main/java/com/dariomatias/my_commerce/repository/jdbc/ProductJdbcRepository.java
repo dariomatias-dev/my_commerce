@@ -240,6 +240,31 @@ public class ProductJdbcRepository implements ProductContract {
     }
 
     @Override
+    public Optional<Product> findByStoreSlugAndProductSlugAndDeletedAtIsNull(
+            String storeSlug,
+            String productSlug
+    ) {
+        String sql = """
+            SELECT p.*
+            FROM products p
+            INNER JOIN stores s ON p.store_id = s.id
+            WHERE s.slug = :storeSlug
+              AND p.slug = :productSlug
+              AND p.deleted_at IS NULL
+        """;
+
+        List<Product> list = jdbc.query(
+                sql,
+                new MapSqlParameterSource()
+                        .addValue("storeSlug", storeSlug)
+                        .addValue("productSlug", productSlug),
+                mapper
+        );
+
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+    }
+
+    @Override
     public Optional<Product> findById(UUID id) {
         String sql = "SELECT * FROM products WHERE id = :id";
 

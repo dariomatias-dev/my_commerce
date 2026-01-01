@@ -84,6 +84,14 @@ public class ProductJpaRepository implements ProductContract {
     }
 
     @Override
+    public Optional<Product> findByStoreSlugAndProductSlugAndDeletedAtIsNull(
+            String storeSlug,
+            String productSlug
+    ) {
+        return repository.findByStoreSlugAndSlugAndDeletedAtIsNull(storeSlug, productSlug);
+    }
+
+    @Override
     public Optional<Product> findById(UUID id) {
         return repository.findById(id);
     }
