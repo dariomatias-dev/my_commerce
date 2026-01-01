@@ -1,13 +1,15 @@
 package com.dariomatias.my_commerce.repository.jpa;
 
+import com.dariomatias.my_commerce.dto.product.ProductFilterDTO;
+import com.dariomatias.my_commerce.enums.ProductStatus;
 import com.dariomatias.my_commerce.model.Product;
-import com.dariomatias.my_commerce.model.Store;
-import com.dariomatias.my_commerce.model.Category;
 import com.dariomatias.my_commerce.repository.ProductRepository;
 import com.dariomatias.my_commerce.repository.contract.ProductContract;
+import com.dariomatias.my_commerce.repository.specification.ProductSpecification;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -29,66 +31,33 @@ public class ProductJpaRepository implements ProductContract {
     }
 
     @Override
-    public Page<Product> findAllByStore(UUID storeId, Pageable pageable) {
-        Store store = new Store();
-        store.setId(storeId);
-        return repository.findAllByStore(store, pageable);
-    }
-
-    @Override
-    public Page<Product> findAllByStoreAndCategory(
-            UUID storeId,
-            UUID categoryId,
-            Pageable pageable
-    ) {
-        Store store = new Store();
-        store.setId(storeId);
-
-        Category category = new Category();
-        category.setId(categoryId);
-
-        return repository.findAllByStoreAndCategory(store, category, pageable);
-    }
-
-    @Override
     public Optional<Product> findByStoreSlugAndProductSlug(String storeSlug, String productSlug) {
-        return repository.findByStore_SlugAndSlug(storeSlug,  productSlug);
+        return repository.findByStore_SlugAndSlugAndDeletedAtIsNull(storeSlug, productSlug);
     }
 
     @Override
-    public Page<Product> findAllByStoreAndStockLessThanEqual(
-            UUID storeId,
-            int stockThreshold,
-            Pageable pageable
-    ) {
-        Store store = new Store();
-        store.setId(storeId);
+    public Page<Product> findAll(ProductFilterDTO filter, Pageable pageable) {
+        Specification<Product> spec = (root, query, cb) -> null;
 
-        return repository.findAllByStoreAndStockLessThanEqual(store, stockThreshold, pageable);
-    }
+        spec = spec.and(ProductSpecification.store(filter.getStoreId()));
 
-    @Override
-    public Page<Product> findAllByStoreAndCategoryAndStockLessThanEqual(
-            UUID storeId,
-            UUID categoryId,
-            int stockThreshold,
-            Pageable pageable
-    ) {
-        Store store = new Store();
-        store.setId(storeId);
+        if (filter.getCategoryId() != null) {
+            spec = spec.and(ProductSpecification.category(filter.getCategoryId()));
+        }
 
-        Category category = new Category();
-        category.setId(categoryId);
+        if (filter.getLowStockThreshold() != null) {
+            spec = spec.and(ProductSpecification.lowStock(filter.getLowStockThreshold()));
+        }
 
-        return repository.findAllByStoreAndCategoryAndStockLessThanEqual(store, category, stockThreshold, pageable);
-    }
+        ProductStatus status = filter.getStatus() != null ? filter.getStatus() : ProductStatus.ACTIVE;
 
-    @Override
-    public Optional<Product> findByStoreSlugAndProductSlugAndDeletedAtIsNull(
-            String storeSlug,
-            String productSlug
-    ) {
-        return repository.findByStoreSlugAndSlugAndDeletedAtIsNull(storeSlug, productSlug);
+        if (status == ProductStatus.ACTIVE) {
+            spec = spec.and(ProductSpecification.active());
+        } else if (status == ProductStatus.DELETED) {
+            spec = spec.and(ProductSpecification.deleted());
+        }
+
+        return repository.findAll(spec, pageable);
     }
 
     @Override
@@ -107,6 +76,7 @@ public class ProductJpaRepository implements ProductContract {
                 .orElseThrow();
 
         product.delete();
+
         repository.save(product);
     }
 }

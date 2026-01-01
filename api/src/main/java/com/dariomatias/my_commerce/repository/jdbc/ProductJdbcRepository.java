@@ -1,16 +1,23 @@
 package com.dariomatias.my_commerce.repository.jdbc;
 
+import com.dariomatias.my_commerce.dto.product.ProductFilterDTO;
+import com.dariomatias.my_commerce.enums.ProductStatus;
 import com.dariomatias.my_commerce.model.Product;
 import com.dariomatias.my_commerce.repository.contract.ProductContract;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 @ConditionalOnProperty(name = "app.persistence", havingValue = "jdbc")
@@ -43,12 +50,10 @@ public class ProductJdbcRepository implements ProductContract {
         UUID id = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
 
-        String sql = """
+        jdbc.update("""
             INSERT INTO products (id, store_id, category_id, name, slug, description, price, stock, active, created_at, updated_at)
             VALUES (:id, :store_id, :category_id, :name, :slug, :description, :price, :stock, :active, :created_at, :updated_at)
-        """;
-
-        jdbc.update(sql, new MapSqlParameterSource()
+        """, new MapSqlParameterSource()
                 .addValue("id", id)
                 .addValue("store_id", product.getStoreId())
                 .addValue("category_id", product.getCategoryId())
@@ -69,208 +74,84 @@ public class ProductJdbcRepository implements ProductContract {
     }
 
     @Override
-    public Page<Product> findAllByStore(UUID storeId, Pageable pageable) {
-        String sql = """
-            SELECT * FROM products
-            WHERE store_id = :store_id
-            ORDER BY created_at DESC
-            OFFSET :offset LIMIT :limit
-        """;
+    public Page<Product> findAll(ProductFilterDTO filter, Pageable pageable) {
+        List<String> conditions = new ArrayList<>();
+        MapSqlParameterSource params = new MapSqlParameterSource();
 
-        List<Product> content = jdbc.query(sql,
-                new MapSqlParameterSource()
-                        .addValue("store_id", storeId)
-                        .addValue("offset", pageable.getOffset())
-                        .addValue("limit", pageable.getPageSize()),
-                mapper);
+        params.addValue("storeId", filter.getStoreId());
+        conditions.add("store_id = :storeId");
 
-        long total = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM products WHERE store_id = :store_id",
-                new MapSqlParameterSource("store_id", storeId),
-                Long.class
-        );
+        if (filter.getCategoryId() != null) {
+            conditions.add("category_id = :categoryId");
+            params.addValue("categoryId", filter.getCategoryId());
+        }
 
-        return new PageImpl<>(content, pageable, total);
-    }
+        if (filter.getLowStockThreshold() != null) {
+            conditions.add("stock <= :lowStock");
+            params.addValue("lowStock", filter.getLowStockThreshold());
+        }
 
-    @Override
-    public Page<Product> findAllByStoreAndCategory(
-            UUID storeId,
-            UUID categoryId,
-            Pageable pageable
-    ) {
+        ProductStatus status = filter.getStatus();
+        if (status == null) {
+            status = ProductStatus.ACTIVE;
+        }
+
+        if (status == ProductStatus.ACTIVE) {
+            conditions.add("deleted_at IS NULL");
+        } else if (status == ProductStatus.DELETED) {
+            conditions.add("deleted_at IS NOT NULL");
+        }
+
+        String where = String.join(" AND ", conditions);
+
         String sql = """
             SELECT *
             FROM products
-            WHERE store_id = :store_id
-              AND category_id = :category_id
+            WHERE %s
             ORDER BY created_at DESC
             OFFSET :offset LIMIT :limit
-        """;
+        """.formatted(where);
 
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("store_id", storeId)
-                .addValue("category_id", categoryId)
-                .addValue("offset", pageable.getOffset())
-                .addValue("limit", pageable.getPageSize());
+        params.addValue("offset", pageable.getOffset());
+        params.addValue("limit", pageable.getPageSize());
 
         List<Product> content = jdbc.query(sql, params, mapper);
 
         String countSql = """
             SELECT COUNT(*)
             FROM products
-            WHERE store_id = :store_id
-              AND category_id = :category_id
-        """;
+            WHERE %s
+        """.formatted(where);
 
-        long total = jdbc.queryForObject(
-                countSql,
-                new MapSqlParameterSource()
-                        .addValue("store_id", storeId)
-                        .addValue("category_id", categoryId),
-                Long.class
-        );
+        long total = jdbc.queryForObject(countSql, params, Long.class);
 
         return new PageImpl<>(content, pageable, total);
     }
 
     @Override
     public Optional<Product> findByStoreSlugAndProductSlug(String storeSlug, String productSlug) {
-        String sql = """
-        SELECT p.*
-        FROM products p
-        INNER JOIN stores s ON p.store_id = s.id
-        WHERE s.slug = :storeSlug AND p.slug = :productSlug
-    """;
-
-        List<Product> list = jdbc.query(sql,
-                new MapSqlParameterSource()
-                        .addValue("storeSlug", storeSlug)
-                        .addValue("productSlug", productSlug),
-                mapper);
-
-        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
-    }
-
-    @Override
-    public Page<Product> findAllByStoreAndStockLessThanEqual(
-            UUID storeId,
-            int stockThreshold,
-            Pageable pageable
-    ) {
-        String sql = """
-            SELECT *
-            FROM products
-            WHERE store_id = :store_id
-              AND stock <= :stockThreshold
-            ORDER BY created_at DESC
-            OFFSET :offset LIMIT :limit
-        """;
-
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("store_id", storeId)
-                .addValue("stockThreshold", stockThreshold)
-                .addValue("offset", pageable.getOffset())
-                .addValue("limit", pageable.getPageSize());
-
-        List<Product> content = jdbc.query(sql, params, mapper);
-
-        String countSql = """
-            SELECT COUNT(*)
-            FROM products
-            WHERE store_id = :store_id
-              AND stock <= :stockThreshold
-        """;
-
-        long total = jdbc.queryForObject(
-                countSql,
-                new MapSqlParameterSource()
-                        .addValue("store_id", storeId)
-                        .addValue("stockThreshold", stockThreshold),
-                Long.class
-        );
-
-        return new PageImpl<>(content, pageable, total);
-    }
-
-    @Override
-    public Page<Product> findAllByStoreAndCategoryAndStockLessThanEqual(
-            UUID storeId,
-            UUID categoryId,
-            int stockThreshold,
-            Pageable pageable
-    ) {
-        String sql = """
-            SELECT *
-            FROM products
-            WHERE store_id = :store_id
-              AND category_id = :category_id
-              AND stock <= :stockThreshold
-            ORDER BY created_at DESC
-            OFFSET :offset LIMIT :limit
-        """;
-
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("store_id", storeId)
-                .addValue("category_id", categoryId)
-                .addValue("stockThreshold", stockThreshold)
-                .addValue("offset", pageable.getOffset())
-                .addValue("limit", pageable.getPageSize());
-
-        List<Product> content = jdbc.query(sql, params, mapper);
-
-        String countSql = """
-            SELECT COUNT(*)
-            FROM products
-            WHERE store_id = :store_id
-              AND category_id = :category_id
-              AND stock <= :stockThreshold
-        """;
-
-        long total = jdbc.queryForObject(
-                countSql,
-                new MapSqlParameterSource()
-                        .addValue("store_id", storeId)
-                        .addValue("category_id", categoryId)
-                        .addValue("stockThreshold", stockThreshold),
-                Long.class
-        );
-
-        return new PageImpl<>(content, pageable, total);
-    }
-
-    @Override
-    public Optional<Product> findByStoreSlugAndProductSlugAndDeletedAtIsNull(
-            String storeSlug,
-            String productSlug
-    ) {
-        String sql = """
+        List<Product> list = jdbc.query("""
             SELECT p.*
             FROM products p
             INNER JOIN stores s ON p.store_id = s.id
             WHERE s.slug = :storeSlug
               AND p.slug = :productSlug
               AND p.deleted_at IS NULL
-        """;
-
-        List<Product> list = jdbc.query(
-                sql,
-                new MapSqlParameterSource()
+        """, new MapSqlParameterSource()
                         .addValue("storeSlug", storeSlug)
                         .addValue("productSlug", productSlug),
-                mapper
-        );
+                mapper);
 
         return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
     }
 
     @Override
     public Optional<Product> findById(UUID id) {
-        String sql = "SELECT * FROM products WHERE id = :id";
-
-        List<Product> list = jdbc.query(sql,
+        List<Product> list = jdbc.query(
+                "SELECT * FROM products WHERE id = :id",
                 new MapSqlParameterSource("id", id),
-                mapper);
+                mapper
+        );
 
         return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
     }
@@ -279,7 +160,7 @@ public class ProductJdbcRepository implements ProductContract {
     public Product update(Product product) {
         LocalDateTime now = LocalDateTime.now();
 
-        String sql = """
+        jdbc.update("""
             UPDATE products
             SET store_id = :store_id,
                 category_id = :category_id,
@@ -291,9 +172,7 @@ public class ProductJdbcRepository implements ProductContract {
                 active = :active,
                 updated_at = :updated_at
             WHERE id = :id
-        """;
-
-        jdbc.update(sql, new MapSqlParameterSource()
+        """, new MapSqlParameterSource()
                 .addValue("id", product.getId())
                 .addValue("store_id", product.getStoreId())
                 .addValue("category_id", product.getCategoryId())
@@ -316,10 +195,8 @@ public class ProductJdbcRepository implements ProductContract {
             SET deleted_at = :deletedAt,
                 active = false
             WHERE id = :id
-        """,
-                new MapSqlParameterSource()
-                        .addValue("id", id)
-                        .addValue("deletedAt", LocalDateTime.now())
-        );
+        """, new MapSqlParameterSource()
+                .addValue("id", id)
+                .addValue("deletedAt", LocalDateTime.now()));
     }
 }

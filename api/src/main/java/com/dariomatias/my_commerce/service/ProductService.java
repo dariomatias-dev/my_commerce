@@ -3,14 +3,17 @@ package com.dariomatias.my_commerce.service;
 import com.dariomatias.my_commerce.dto.product.ProductFilterDTO;
 import com.dariomatias.my_commerce.dto.product.ProductRequestDTO;
 import com.dariomatias.my_commerce.dto.product_image.ProductImageOrderDTO;
+import com.dariomatias.my_commerce.enums.ProductStatus;
 import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.*;
 import com.dariomatias.my_commerce.repository.contract.CategoryContract;
 import com.dariomatias.my_commerce.repository.contract.ProductContract;
 import com.dariomatias.my_commerce.repository.contract.StoreContract;
+import com.dariomatias.my_commerce.repository.specification.ProductSpecification;
 import com.dariomatias.my_commerce.util.SlugUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,39 +87,25 @@ public class ProductService {
     }
 
     public Page<Product> getAllByStore(
-            UUID storeId,
+            User user,
             ProductFilterDTO filter,
             Pageable pageable
     ) {
-        if (filter != null) {
+        ProductStatus status = (filter != null && filter.getStatus() != null)
+                ? filter.getStatus()
+                : ProductStatus.ACTIVE;
 
-            if (filter.getCategoryId() != null && filter.getLowStockThreshold() != null) {
-                return productRepository.findAllByStoreAndCategoryAndStockLessThanEqual(
-                        storeId,
-                        filter.getCategoryId(),
-                        filter.getLowStockThreshold(),
-                        pageable
-                );
-            }
-
-            if (filter.getCategoryId() != null) {
-                return productRepository.findAllByStoreAndCategory(
-                        storeId,
-                        filter.getCategoryId(),
-                        pageable
-                );
-            }
-
-            if (filter.getLowStockThreshold() != null) {
-                return productRepository.findAllByStoreAndStockLessThanEqual(
-                        storeId,
-                        filter.getLowStockThreshold(),
-                        pageable
-                );
-            }
+        if ((status == ProductStatus.DELETED || status == ProductStatus.ALL)
+                && !user.getRole().equals(UserRole.ADMIN)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
-        return productRepository.findAllByStore(storeId, pageable);
+        if (filter == null) {
+            filter = new ProductFilterDTO();
+        }
+        filter.setStatus(status);
+
+        return productRepository.findAll(filter, pageable);
     }
 
     public Product getByStoreSlugAndProductSlug(String storeSlug, String productSlug) {

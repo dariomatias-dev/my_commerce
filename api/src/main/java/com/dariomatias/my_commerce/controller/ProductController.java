@@ -44,9 +44,9 @@ public class ProductController {
         );
     }
 
-    @GetMapping("/store/{storeId}")
+    @GetMapping("")
     public ResponseEntity<ApiResponse<Page<ProductResponseDTO>>> getAllByStore(
-            @PathVariable UUID storeId,
+            @AuthenticationPrincipal User user,
             ProductFilterDTO filter,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -54,7 +54,7 @@ public class ProductController {
         Pageable pageable = PageRequest.of(page, size);
 
         Page<ProductResponseDTO> products = service
-                .getAllByStore(storeId, filter, pageable)
+                .getAllByStore(user, filter, pageable)
                 .map(ProductResponseDTO::from);
 
         return ResponseEntity.ok(
