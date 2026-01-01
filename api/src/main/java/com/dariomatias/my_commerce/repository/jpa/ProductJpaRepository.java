@@ -29,11 +29,6 @@ public class ProductJpaRepository implements ProductContract {
     }
 
     @Override
-    public Page<Product> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
-    }
-
-    @Override
     public Page<Product> findAllByStore(UUID storeId, Pageable pageable) {
         Store store = new Store();
         store.setId(storeId);
@@ -53,13 +48,6 @@ public class ProductJpaRepository implements ProductContract {
         category.setId(categoryId);
 
         return repository.findAllByStoreAndCategory(store, category, pageable);
-    }
-
-    @Override
-    public Page<Product> findAllByCategory(UUID categoryId, Pageable pageable) {
-        Category category = new Category();
-        category.setId(categoryId);
-        return repository.findAllByCategory(category, pageable);
     }
 
     @Override

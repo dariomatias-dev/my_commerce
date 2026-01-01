@@ -21,8 +21,6 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
             Pageable pageable
     );
 
-    Page<Product> findAllByCategory(Category category, Pageable pageable);
-
     Optional<Product> findByStore_SlugAndSlug(String storeSlug, String productSlug);
 
     Page<Product> findAllByStoreAndStockLessThanEqual(

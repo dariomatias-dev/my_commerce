@@ -69,29 +69,6 @@ public class ProductJdbcRepository implements ProductContract {
     }
 
     @Override
-    public Page<Product> findAll(Pageable pageable) {
-        String sql = """
-            SELECT * FROM products
-            ORDER BY created_at DESC
-            OFFSET :offset LIMIT :limit
-        """;
-
-        List<Product> content = jdbc.query(sql,
-                new MapSqlParameterSource()
-                        .addValue("offset", pageable.getOffset())
-                        .addValue("limit", pageable.getPageSize()),
-                mapper);
-
-        long total = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM products",
-                new MapSqlParameterSource(),
-                Long.class
-        );
-
-        return new PageImpl<>(content, pageable, total);
-    }
-
-    @Override
     public Page<Product> findAllByStore(UUID storeId, Pageable pageable) {
         String sql = """
             SELECT * FROM products
@@ -151,31 +128,6 @@ public class ProductJdbcRepository implements ProductContract {
                 new MapSqlParameterSource()
                         .addValue("store_id", storeId)
                         .addValue("category_id", categoryId),
-                Long.class
-        );
-
-        return new PageImpl<>(content, pageable, total);
-    }
-
-    @Override
-    public Page<Product> findAllByCategory(UUID categoryId, Pageable pageable) {
-        String sql = """
-            SELECT * FROM products
-            WHERE category_id = :category_id
-            ORDER BY created_at DESC
-            OFFSET :offset LIMIT :limit
-        """;
-
-        List<Product> content = jdbc.query(sql,
-                new MapSqlParameterSource()
-                        .addValue("category_id", categoryId)
-                        .addValue("offset", pageable.getOffset())
-                        .addValue("limit", pageable.getPageSize()),
-                mapper);
-
-        long total = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM products WHERE category_id = :category_id",
-                new MapSqlParameterSource("category_id", categoryId),
                 Long.class
         );
 

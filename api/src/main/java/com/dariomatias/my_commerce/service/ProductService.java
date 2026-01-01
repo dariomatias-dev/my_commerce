@@ -86,17 +86,6 @@ public class ProductService {
         return productRepository.update(product);
     }
 
-    public Page<Product> getAll(ProductFilterDTO filter, Pageable pageable) {
-        if (filter != null && filter.getCategoryId() != null) {
-            return productRepository.findAllByCategory(
-                    filter.getCategoryId(),
-                    pageable
-            );
-        }
-
-        return productRepository.findAll(pageable);
-    }
-
     public Page<Product> getAllByStore(
             UUID storeId,
             ProductFilterDTO filter,

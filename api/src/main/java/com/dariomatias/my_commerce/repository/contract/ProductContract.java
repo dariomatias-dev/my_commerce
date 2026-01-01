@@ -11,8 +11,6 @@ public interface ProductContract {
 
     Product save(Product product);
 
-    Page<Product> findAll(Pageable pageable);
-
     Page<Product> findAllByStore(UUID storeId, Pageable pageable);
 
     Page<Product> findAllByStoreAndCategory(
@@ -20,8 +18,6 @@ public interface ProductContract {
             UUID categoryId,
             Pageable pageable
     );
-
-    Page<Product> findAllByCategory(UUID categoryId, Pageable pageable);
 
     Optional<Product> findByStoreSlugAndProductSlug(String storeSlug, String productSlug);
 
