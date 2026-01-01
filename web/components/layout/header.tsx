@@ -1,14 +1,12 @@
 "use client";
 
-import { LayoutDashboard, Menu, Store, X } from "lucide-react";
+import { Menu, Store, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { useAuthContext } from "@/contexts/auth-context";
-import { UserProfileDropdown } from "../user-profile-dropdown";
+import { HeaderNavAuth } from "./header-nav-auth";
 
 export const Header = () => {
-  const { isAuthenticated } = useAuthContext();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -33,12 +31,15 @@ export const Header = () => {
               <div className="rounded-xl bg-indigo-600 p-1.5 shadow-lg shadow-indigo-100 transition-transform group-hover:rotate-12">
                 <Store className="h-5 w-5 text-white" />
               </div>
+
               <div className="absolute -top-1 -right-1 h-2 w-2 rounded-full border-2 border-white bg-indigo-400" />
             </div>
+
             <div className="flex flex-col leading-none">
               <span className="text-xl font-black tracking-tighter text-slate-950 uppercase italic">
                 My<span className="text-indigo-600">Ecommerce</span>
               </span>
+
               <span className="text-[8px] font-black tracking-[0.3em] text-slate-400 uppercase">
                 Sistema SaaS de Lojas
               </span>
@@ -59,27 +60,7 @@ export const Header = () => {
               ))}
             </div>
 
-            <div className="flex items-center gap-5">
-              {isAuthenticated ? (
-                <UserProfileDropdown />
-              ) : (
-                <>
-                  <Link
-                    href="/login"
-                    className="text-[10px] font-black tracking-widest text-slate-950 uppercase transition-colors hover:text-indigo-600"
-                  >
-                    Login
-                  </Link>
-
-                  <Link
-                    href="/signup"
-                    className="rounded-xl bg-slate-950 px-8 py-3.5 text-[10px] font-black tracking-widest text-white uppercase shadow-2xl shadow-slate-200 transition-all hover:bg-indigo-600 active:scale-95"
-                  >
-                    Criar Conta
-                  </Link>
-                </>
-              )}
-            </div>
+            <HeaderNavAuth />
           </div>
 
           <button
@@ -103,32 +84,13 @@ export const Header = () => {
                   {item}
                 </Link>
               ))}
+
               <hr className="border-slate-100" />
-              <div className="flex flex-col gap-4">
-                {isAuthenticated ? (
-                  <Link
-                    href="/dashboard"
-                    className="flex h-14 items-center justify-center gap-3 rounded-2xl bg-indigo-600 font-black tracking-widest text-white uppercase italic"
-                  >
-                    <LayoutDashboard size={20} /> Painel de Controle
-                  </Link>
-                ) : (
-                  <>
-                    <Link
-                      href="/login"
-                      className="flex h-14 items-center justify-center rounded-2xl border border-slate-200 font-black tracking-widest text-slate-950 uppercase italic"
-                    >
-                      Fazer Login
-                    </Link>
-                    <Link
-                      href="/signup"
-                      className="flex h-14 items-center justify-center rounded-2xl bg-indigo-600 font-black tracking-widest text-white uppercase italic"
-                    >
-                      Começar Agora
-                    </Link>
-                  </>
-                )}
-              </div>
+
+              <HeaderNavAuth
+                isMobile
+                onActionClick={() => setIsMenuOpen(false)}
+              />
             </div>
           </div>
         )}
