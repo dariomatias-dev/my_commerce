@@ -102,12 +102,32 @@ public class ProductService {
             ProductFilterDTO filter,
             Pageable pageable
     ) {
-        if (filter != null && filter.getCategoryId() != null) {
-            return productRepository.findAllByStoreAndCategory(
-                    storeId,
-                    filter.getCategoryId(),
-                    pageable
-            );
+        if (filter != null) {
+
+            if (filter.getCategoryId() != null && filter.getLowStockThreshold() != null) {
+                return productRepository.findAllByStoreAndCategoryAndStockLessThanEqual(
+                        storeId,
+                        filter.getCategoryId(),
+                        filter.getLowStockThreshold(),
+                        pageable
+                );
+            }
+
+            if (filter.getCategoryId() != null) {
+                return productRepository.findAllByStoreAndCategory(
+                        storeId,
+                        filter.getCategoryId(),
+                        pageable
+                );
+            }
+
+            if (filter.getLowStockThreshold() != null) {
+                return productRepository.findAllByStoreAndStockLessThanEqual(
+                        storeId,
+                        filter.getLowStockThreshold(),
+                        pageable
+                );
+            }
         }
 
         return productRepository.findAllByStore(storeId, pageable);
@@ -119,10 +139,6 @@ public class ProductService {
 
         return productRepository.findByStoreSlugAndProductSlug(store.getSlug(), productSlug)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
-    }
-
-    public Page<Product> getLowStockByStore(String storeSlug, int threshold, Pageable pageable) {
-        return productRepository.findAllByStoreSlugAndStockLessThanEqual(storeSlug, threshold, pageable);
     }
 
     public Product getById(UUID id) {

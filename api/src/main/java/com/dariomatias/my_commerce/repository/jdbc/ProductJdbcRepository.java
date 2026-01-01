@@ -201,36 +201,88 @@ public class ProductJdbcRepository implements ProductContract {
     }
 
     @Override
-    public Page<Product> findAllByStoreSlugAndStockLessThanEqual(String storeSlug, int stockThreshold, Pageable pageable) {
+    public Page<Product> findAllByStoreAndStockLessThanEqual(
+            UUID storeId,
+            int stockThreshold,
+            Pageable pageable
+    ) {
         String sql = """
-        SELECT p.*
-        FROM products p
-        INNER JOIN stores s ON p.store_id = s.id
-        WHERE s.slug = :storeSlug AND p.stock <= :stockThreshold
-        ORDER BY p.created_at DESC
-        OFFSET :offset LIMIT :limit
-    """;
+            SELECT *
+            FROM products
+            WHERE store_id = :store_id
+              AND stock <= :stockThreshold
+            ORDER BY created_at DESC
+            OFFSET :offset LIMIT :limit
+        """;
 
-        List<Product> content = jdbc.query(sql,
-                new MapSqlParameterSource()
-                        .addValue("storeSlug", storeSlug)
-                        .addValue("stockThreshold", stockThreshold)
-                        .addValue("offset", pageable.getOffset())
-                        .addValue("limit", pageable.getPageSize()),
-                mapper);
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("store_id", storeId)
+                .addValue("stockThreshold", stockThreshold)
+                .addValue("offset", pageable.getOffset())
+                .addValue("limit", pageable.getPageSize());
+
+        List<Product> content = jdbc.query(sql, params, mapper);
 
         String countSql = """
-        SELECT COUNT(*)
-        FROM products p
-        INNER JOIN stores s ON p.store_id = s.id
-        WHERE s.slug = :storeSlug AND p.stock <= :stockThreshold
-    """;
+            SELECT COUNT(*)
+            FROM products
+            WHERE store_id = :store_id
+              AND stock <= :stockThreshold
+        """;
 
-        long total = jdbc.queryForObject(countSql,
+        long total = jdbc.queryForObject(
+                countSql,
                 new MapSqlParameterSource()
-                        .addValue("storeSlug", storeSlug)
+                        .addValue("store_id", storeId)
                         .addValue("stockThreshold", stockThreshold),
-                Long.class);
+                Long.class
+        );
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public Page<Product> findAllByStoreAndCategoryAndStockLessThanEqual(
+            UUID storeId,
+            UUID categoryId,
+            int stockThreshold,
+            Pageable pageable
+    ) {
+        String sql = """
+            SELECT *
+            FROM products
+            WHERE store_id = :store_id
+              AND category_id = :category_id
+              AND stock <= :stockThreshold
+            ORDER BY created_at DESC
+            OFFSET :offset LIMIT :limit
+        """;
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("store_id", storeId)
+                .addValue("category_id", categoryId)
+                .addValue("stockThreshold", stockThreshold)
+                .addValue("offset", pageable.getOffset())
+                .addValue("limit", pageable.getPageSize());
+
+        List<Product> content = jdbc.query(sql, params, mapper);
+
+        String countSql = """
+            SELECT COUNT(*)
+            FROM products
+            WHERE store_id = :store_id
+              AND category_id = :category_id
+              AND stock <= :stockThreshold
+        """;
+
+        long total = jdbc.queryForObject(
+                countSql,
+                new MapSqlParameterSource()
+                        .addValue("store_id", storeId)
+                        .addValue("category_id", categoryId)
+                        .addValue("stockThreshold", stockThreshold),
+                Long.class
+        );
 
         return new PageImpl<>(content, pageable, total);
     }

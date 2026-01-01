@@ -25,7 +25,18 @@ public interface ProductContract {
 
     Optional<Product> findByStoreSlugAndProductSlug(String storeSlug, String productSlug);
 
-    Page<Product> findAllByStoreSlugAndStockLessThanEqual(String storeSlug, int stockThreshold, Pageable pageable);
+    Page<Product> findAllByStoreAndStockLessThanEqual(
+            UUID storeId,
+            int stockThreshold,
+            Pageable pageable
+    );
+
+    Page<Product> findAllByStoreAndCategoryAndStockLessThanEqual(
+            UUID storeId,
+            UUID categoryId,
+            int stockThreshold,
+            Pageable pageable
+    );
 
     Optional<Product> findById(UUID id);
 

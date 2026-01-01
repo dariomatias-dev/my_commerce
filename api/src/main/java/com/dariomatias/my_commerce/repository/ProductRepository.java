@@ -25,5 +25,16 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
     Optional<Product> findByStore_SlugAndSlug(String storeSlug, String productSlug);
 
-    Page<Product> findAllByStore_SlugAndStockLessThanEqual(String storeSlug, int stockThreshold, Pageable pageable);
+    Page<Product> findAllByStoreAndStockLessThanEqual(
+            Store store,
+            int stockThreshold,
+            Pageable pageable
+    );
+
+    Page<Product> findAllByStoreAndCategoryAndStockLessThanEqual(
+            Store store,
+            Category category,
+            int stockThreshold,
+            Pageable pageable
+    );
 }

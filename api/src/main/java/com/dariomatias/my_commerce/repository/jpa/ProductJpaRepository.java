@@ -68,8 +68,31 @@ public class ProductJpaRepository implements ProductContract {
     }
 
     @Override
-    public Page<Product> findAllByStoreSlugAndStockLessThanEqual(String storeSlug, int threshold, Pageable pageable) {
-        return repository.findAllByStore_SlugAndStockLessThanEqual(storeSlug, threshold, pageable);
+    public Page<Product> findAllByStoreAndStockLessThanEqual(
+            UUID storeId,
+            int stockThreshold,
+            Pageable pageable
+    ) {
+        Store store = new Store();
+        store.setId(storeId);
+
+        return repository.findAllByStoreAndStockLessThanEqual(store, stockThreshold, pageable);
+    }
+
+    @Override
+    public Page<Product> findAllByStoreAndCategoryAndStockLessThanEqual(
+            UUID storeId,
+            UUID categoryId,
+            int stockThreshold,
+            Pageable pageable
+    ) {
+        Store store = new Store();
+        store.setId(storeId);
+
+        Category category = new Category();
+        category.setId(categoryId);
+
+        return repository.findAllByStoreAndCategoryAndStockLessThanEqual(store, category, stockThreshold, pageable);
     }
 
     @Override

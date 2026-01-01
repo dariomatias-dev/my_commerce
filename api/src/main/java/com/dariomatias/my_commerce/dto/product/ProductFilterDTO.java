@@ -1,16 +1,15 @@
 package com.dariomatias.my_commerce.dto.product;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.UUID;
 
+@Getter
+@Setter
 public class ProductFilterDTO {
 
     private UUID categoryId;
 
-    public UUID getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(UUID categoryId) {
-        this.categoryId = categoryId;
-    }
+    private Integer lowStockThreshold;
 }
