@@ -6,12 +6,18 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "products")
+@Table(
+        name = "products",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"store_id", "slug"})
+        }
+)
 public class Product {
 
     @Id
@@ -60,7 +66,12 @@ public class Product {
     @Column(nullable = false)
     @Getter
     @Setter
-    private Boolean active;
+    private Boolean active = true;
+
+    @Column
+    @Getter
+    @Setter
+    private LocalDateTime deletedAt;
 
     @OneToMany(
             mappedBy = "product",
@@ -92,5 +103,14 @@ public class Product {
 
     public UUID getCategoryId() {
         return category != null ? category.getId() : categoryId;
+    }
+
+    public boolean isDeleted() {
+        return deletedAt != null;
+    }
+
+    public void delete() {
+        this.active = false;
+        this.deletedAt = LocalDateTime.now();
     }
 }
