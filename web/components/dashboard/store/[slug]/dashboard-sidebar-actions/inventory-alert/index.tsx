@@ -1,7 +1,6 @@
 "use client";
 
 import { AlertTriangle, ArrowRight, Package } from "lucide-react";
-import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
@@ -11,15 +10,16 @@ import { useProduct } from "@/services/hooks/use-product";
 import { InventoryItem } from "./inventory-alert-item";
 
 interface InventoryAlertProps {
+  storeId: string;
   threshold?: number;
   pageSize?: number;
 }
 
 export const InventoryAlert = ({
+  storeId,
   threshold = 10,
   pageSize = 4,
 }: InventoryAlertProps) => {
-  const { slug } = useParams() as { slug: string };
   const [lowStockCount, setLowStockCount] = useState<number | null>(null);
   const [lowStockProducts, setLowStockProducts] = useState<ProductResponse[]>(
     []
@@ -27,7 +27,7 @@ export const InventoryAlert = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { getLowStockProductsByStore } = useProduct();
+  const { getAllProductsByStoreId } = useProduct();
 
   useEffect(() => {
     const fetchLowStock = async () => {
@@ -36,7 +36,12 @@ export const InventoryAlert = ({
 
       try {
         const response: PaginatedResponse<ProductResponse> =
-          await getLowStockProductsByStore(slug, threshold, 0, pageSize);
+          await getAllProductsByStoreId(
+            storeId,
+            { lowStockThreshold: threshold },
+            0,
+            pageSize
+          );
 
         setLowStockCount(response.totalElements);
         setLowStockProducts(response.content);
@@ -50,7 +55,7 @@ export const InventoryAlert = ({
     };
 
     fetchLowStock();
-  }, [slug, threshold, pageSize, getLowStockProductsByStore]);
+  }, [storeId, threshold, pageSize, getAllProductsByStoreId]);
 
   return (
     <div className="rounded-[2.5rem] bg-slate-950 p-8 text-white shadow-2xl border border-slate-900">

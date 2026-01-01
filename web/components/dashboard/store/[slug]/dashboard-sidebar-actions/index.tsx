@@ -5,11 +5,16 @@ import {
   ExternalLink,
   ShieldCheck,
 } from "lucide-react";
+
 import { InventoryAlert } from "./inventory-alert";
 
-export const DashboardSidebarActions = () => (
+interface DashboardSidebarActionsProps {
+  storeId: string;
+}
+
+export const DashboardSidebarActions = ({ storeId }: DashboardSidebarActionsProps) => (
   <div className="space-y-6 lg:col-span-4">
-    <InventoryAlert />
+    <InventoryAlert storeId={storeId} />
 
     <div className="rounded-[2rem] border border-slate-200 bg-white p-8">
       <div className="mb-6 flex items-center justify-between">

@@ -58,15 +58,6 @@ export const useProduct = () => {
     []
   );
 
-  const getLowStockProductsByStore = useCallback(
-    (storeSlug: string, threshold = 10, page = 0, size = 10) =>
-      apiClient.get<PaginatedResponse<ProductResponse>>(
-        `/products/store/${storeSlug}/low-stock`,
-        { params: { threshold, page, size } }
-      ),
-    []
-  );
-
   const getProductById = useCallback(
     (id: string) => apiClient.get<ProductResponse>(`/products/${id}`),
     []
@@ -106,7 +97,6 @@ export const useProduct = () => {
     getAllProductsByStoreId,
     getProductById,
     getProductBySlug,
-    getLowStockProductsByStore,
     updateProduct,
     deleteProduct,
   };

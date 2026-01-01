@@ -169,7 +169,7 @@ const StoreDashboardPage = () => {
             onRefresh={fetchTransactions}
           />
 
-          <DashboardSidebarActions />
+          <DashboardSidebarActions storeId={store.id} />
         </div>
       </div>
     </main>

@@ -3,6 +3,5 @@ export interface ProductFilters {
   minPrice?: number;
   maxPrice?: number;
   active?: boolean;
-  lowStock?: boolean;
-  stockThreshold?: number;
+  lowStockThreshold?: number;
 }
