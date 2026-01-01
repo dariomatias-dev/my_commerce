@@ -8,15 +8,6 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Entity
-@Table(
-        name = "product_images",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uk_product_image_position",
-                        columnNames = {"product_id", "position"}
-                )
-        }
-)
 public class ProductImage {
 
     @Id

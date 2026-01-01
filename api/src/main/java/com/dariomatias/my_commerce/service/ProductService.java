@@ -4,10 +4,7 @@ import com.dariomatias.my_commerce.dto.product.ProductFilterDTO;
 import com.dariomatias.my_commerce.dto.product.ProductRequestDTO;
 import com.dariomatias.my_commerce.dto.product_image.ProductImageOrderDTO;
 import com.dariomatias.my_commerce.enums.UserRole;
-import com.dariomatias.my_commerce.model.Category;
-import com.dariomatias.my_commerce.model.Product;
-import com.dariomatias.my_commerce.model.Store;
-import com.dariomatias.my_commerce.model.User;
+import com.dariomatias.my_commerce.model.*;
 import com.dariomatias.my_commerce.repository.contract.CategoryContract;
 import com.dariomatias.my_commerce.repository.contract.ProductContract;
 import com.dariomatias.my_commerce.repository.contract.StoreContract;
@@ -188,7 +185,6 @@ public class ProductService {
         if (request.getStock() != null) product.setStock(request.getStock());
         if (request.getActive() != null) product.setActive(request.getActive());
 
-        System.out.println("=========================="+request.getRemovedImageNames());
         productImageService.removeImages(
                 product,
                 request.getRemovedImageNames()
@@ -199,6 +195,7 @@ public class ProductService {
         return productRepository.update(product);
     }
 
+    @Transactional
     public void delete(User user, UUID id) {
         Product product = getById(id);
 
@@ -208,6 +205,14 @@ public class ProductService {
         if (!user.getRole().equals(UserRole.ADMIN) && !store.getUserId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
         }
+
+        productImageService.removeImages(
+                product,
+                product.getImages()
+                        .stream()
+                        .map(ProductImage::getUrl)
+                        .toList()
+        );
 
         productRepository.delete(product.getId());
     }

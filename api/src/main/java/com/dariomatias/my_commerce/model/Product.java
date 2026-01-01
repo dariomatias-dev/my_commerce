@@ -12,12 +12,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(
-        name = "products",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"store_id", "slug"})
-        }
-)
 public class Product {
 
     @Id
