@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,15 +24,16 @@ public class ProductResponseDTO {
     private BigDecimal price;
     private Integer stock;
     private Boolean active;
+    private List<ProductImageResponseDTO> images;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-    private List<ProductImageResponseDTO> images;
+    private LocalDateTime deletedAt;
 
     public ProductResponseDTO() {}
 
     public static ProductResponseDTO from(Product product) {
         ProductResponseDTO dto = new ProductResponseDTO();
+
         dto.id = product.getId();
         dto.storeId = product.getStoreId();
         dto.categoryId = product.getCategoryId();
@@ -41,12 +43,15 @@ public class ProductResponseDTO {
         dto.price = product.getPrice();
         dto.stock = product.getStock();
         dto.active = product.getActive();
-        dto.images = product.getImages()
+        dto.images = product.getImages() != null
+                ? product.getImages()
                 .stream()
                 .map(ProductImageResponseDTO::from)
-                .toList();
+                .toList()
+                : Collections.emptyList();
         dto.createdAt = product.getAudit().getCreatedAt();
         dto.updatedAt = product.getAudit().getUpdatedAt();
+        dto.deletedAt = product.getDeletedAt();
 
         return dto;
     }

@@ -285,8 +285,16 @@ public class ProductJdbcRepository implements ProductContract {
     }
 
     @Override
-    public void deleteById(UUID id) {
-        jdbc.update("DELETE FROM products WHERE id = :id",
-                new MapSqlParameterSource("id", id));
+    public void delete(UUID id) {
+        jdbc.update("""
+            UPDATE products
+            SET deleted_at = :deletedAt,
+                active = false
+            WHERE id = :id
+        """,
+                new MapSqlParameterSource()
+                        .addValue("id", id)
+                        .addValue("deletedAt", LocalDateTime.now())
+        );
     }
 }

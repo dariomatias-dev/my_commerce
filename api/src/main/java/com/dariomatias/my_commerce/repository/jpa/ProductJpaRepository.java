@@ -94,7 +94,11 @@ public class ProductJpaRepository implements ProductContract {
     }
 
     @Override
-    public void deleteById(UUID id) {
-        repository.deleteById(id);
+    public void delete(UUID id) {
+        Product product = repository.findById(id)
+                .orElseThrow();
+
+        product.delete();
+        repository.save(product);
     }
 }

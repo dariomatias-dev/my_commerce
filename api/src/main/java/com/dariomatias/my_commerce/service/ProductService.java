@@ -200,7 +200,6 @@ public class ProductService {
     }
 
     public void delete(User user, UUID id) {
-
         Product product = getById(id);
 
         Store store = storeRepository.findById(product.getStoreId())
@@ -210,21 +209,6 @@ public class ProductService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
         }
 
-        productImageService.deleteAll(store.getSlug(), product.getSlug());
-        productRepository.deleteById(id);
-    }
-
-    private void mergeUploadedImages(
-            List<ProductImageOrderDTO> images,
-            List<String> uploadedUrls
-    ) {
-        int uploadIndex = 0;
-
-        for (ProductImageOrderDTO dto : images) {
-            if (dto.getId() == null && dto.getUrl() == null) {
-                dto.setUrl(uploadedUrls.get(uploadIndex));
-                uploadIndex++;
-            }
-        }
+        productRepository.delete(product.getId());
     }
 }

@@ -68,11 +68,6 @@ public class Product {
     @Setter
     private Boolean active = true;
 
-    @Column
-    @Getter
-    @Setter
-    private LocalDateTime deletedAt;
-
     @OneToMany(
             mappedBy = "product",
             orphanRemoval = true
@@ -86,6 +81,11 @@ public class Product {
     @Getter
     @Setter
     private AuditMetadata audit = new AuditMetadata();
+
+    @Column
+    @Getter
+    @Setter
+    private LocalDateTime deletedAt;
 
     @Transient
     @Setter
