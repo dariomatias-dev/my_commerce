@@ -44,6 +44,16 @@ export const useProduct = () => {
     [getProducts]
   );
 
+  const getProductsByIds = useCallback(
+    (storeId: string, productIds: string[], page = 0, size = 10) =>
+      apiClient.post<PaginatedResponse<ProductResponse>>(
+        `/products/store/products-by-ids`,
+        { storeId, productIds },
+        { params: { page, size } }
+      ),
+    []
+  );
+
   const getProductBySlug = useCallback(
     (storeSlug: string, productSlug: string) =>
       apiClient.get<ProductResponse>(
@@ -92,5 +102,6 @@ export const useProduct = () => {
     getProductBySlug,
     updateProduct,
     deleteProduct,
+    getProductsByIds,
   };
 };
