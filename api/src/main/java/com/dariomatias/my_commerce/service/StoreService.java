@@ -1,6 +1,8 @@
 package com.dariomatias.my_commerce.service;
 
+import com.dariomatias.my_commerce.dto.stores.StoreFilterDTO;
 import com.dariomatias.my_commerce.dto.stores.StoreRequestDTO;
+import com.dariomatias.my_commerce.enums.StatusFilter;
 import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.User;
@@ -77,9 +79,18 @@ public class StoreService {
         return storeRepository.save(store);
     }
 
-    public Page<Store> getAllByUser(UUID userId, Pageable pageable) {
-        User user = getUserById(userId);
-        return storeRepository.findAllByUser(user.getId(), pageable);
+    public Page<Store> getAllStores(User authUser, StoreFilterDTO filter, Pageable pageable) {
+        if (filter == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Filtro obrigatório");
+        }
+
+        if (filter.getStatus() == StatusFilter.DELETED || filter.getStatus() == StatusFilter.ALL) {
+            if (!authUser.getRole().equals(UserRole.ADMIN)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado para filtragem por status");
+            }
+        }
+
+        return storeRepository.findAll(filter, pageable);
     }
 
     public Store getById(UUID id, User user) {
@@ -141,6 +152,7 @@ public class StoreService {
         String folder = store.getSlug() + "/";
 
         storeRepository.deleteById(id);
+
         minioService.deleteFolder(BUCKET_NAME, folder);
     }
 

@@ -1,14 +1,19 @@
 package com.dariomatias.my_commerce.repository.jpa;
 
+import com.dariomatias.my_commerce.dto.stores.StoreFilterDTO;
+import com.dariomatias.my_commerce.enums.StatusFilter;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.StoreRepository;
 import com.dariomatias.my_commerce.repository.contract.StoreContract;
+import com.dariomatias.my_commerce.repository.specification.StoreSpecification;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,15 +33,20 @@ public class StoreJpaRepository implements StoreContract {
     }
 
     @Override
-    public Page<Store> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
-    }
+    public Page<Store> findAll(StoreFilterDTO filter, Pageable pageable) {
+        Specification<Store> spec = (root, query, cb) -> null;
 
-    @Override
-    public Page<Store> findAllByUser(UUID userId, Pageable pageable) {
-        User user = new User();
-        user.setId(userId);
-        return repository.findAllByUser(user, pageable);
+        spec = spec.and(StoreSpecification.user(filter.getUserId()));
+
+        StatusFilter status = filter.getStatus() != null ? filter.getStatus() : StatusFilter.ACTIVE;
+
+        if (status == StatusFilter.ACTIVE) {
+            spec = spec.and(StoreSpecification.active());
+        } else if (status == StatusFilter.DELETED) {
+            spec = spec.and(StoreSpecification.deleted());
+        }
+
+        return repository.findAll(spec, pageable);
     }
 
     @Override

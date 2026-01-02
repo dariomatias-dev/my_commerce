@@ -25,7 +25,7 @@ public class StoreSeed {
 
         for (int i = 1; i <= 10; i++) {
             String slug = "loja-" + i;
-            if (storeRepository.existsBySlug(slug)) continue;
+            if (storeRepository.existsBySlugAndDeletedAtIsNull(slug)) continue;
 
             Store store = new Store();
             store.setName("Loja " + i);

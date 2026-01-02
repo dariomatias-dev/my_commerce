@@ -1,5 +1,7 @@
 package com.dariomatias.my_commerce.repository.jdbc;
 
+import com.dariomatias.my_commerce.dto.stores.StoreFilterDTO;
+import com.dariomatias.my_commerce.enums.StatusFilter;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.repository.contract.StoreContract;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -70,50 +72,36 @@ public class StoreJdbcRepository implements StoreContract {
     }
 
     @Override
-    public Page<Store> findAll(Pageable pageable) {
-        String sql = """
-            SELECT * FROM stores
-            WHERE deleted_at IS NULL
-            ORDER BY created_at DESC
-            OFFSET :offset LIMIT :limit
-        """;
+    public Page<Store> findAll(StoreFilterDTO filter, Pageable pageable) {
+        StringBuilder sql = new StringBuilder("SELECT * FROM stores WHERE 1=1");
+        StringBuilder countSql = new StringBuilder("SELECT COUNT(*) FROM stores WHERE 1=1");
+        MapSqlParameterSource params = new MapSqlParameterSource();
 
-        List<Store> content = jdbc.query(sql,
-                new MapSqlParameterSource()
-                        .addValue("offset", pageable.getOffset())
-                        .addValue("limit", pageable.getPageSize()),
-                mapper);
+        sql.append(" AND deleted_at IS NULL");
+        countSql.append(" AND deleted_at IS NULL");
 
-        String countSql = "SELECT COUNT(*) FROM stores WHERE deleted_at IS NULL";
-        long total = jdbc.queryForObject(countSql, new MapSqlParameterSource(), Long.class);
+        if (filter.getUserId() != null) {
+            sql.append(" AND user_id = :userId");
+            countSql.append(" AND user_id = :userId");
+            params.addValue("userId", filter.getUserId());
+        }
 
-        return new PageImpl<>(content, pageable, total);
-    }
+        if (filter.getStatus() != null) {
+            if (filter.getStatus() == StatusFilter.DELETED) {
+                sql.append(" AND deleted_at IS NOT NULL");
+                countSql.append(" AND deleted_at IS NOT NULL");
+            } else if (filter.getStatus() == StatusFilter.ACTIVE) {
+                sql.append(" AND deleted_at IS NULL");
+                countSql.append(" AND deleted_at IS NULL");
+            }
+        }
 
-    @Override
-    public Page<Store> findAllByUser(UUID userId, Pageable pageable) {
-        String sql = """
-            SELECT * FROM stores
-            WHERE user_id = :user_id AND deleted_at IS NULL
-            ORDER BY created_at DESC
-            OFFSET :offset LIMIT :limit
-        """;
+        sql.append(" ORDER BY created_at DESC OFFSET :offset LIMIT :limit");
+        params.addValue("offset", pageable.getOffset());
+        params.addValue("limit", pageable.getPageSize());
 
-        List<Store> content = jdbc.query(sql,
-                new MapSqlParameterSource()
-                        .addValue("user_id", userId)
-                        .addValue("offset", pageable.getOffset())
-                        .addValue("limit", pageable.getPageSize()),
-                mapper);
-
-        String countSql = """
-            SELECT COUNT(*) FROM stores
-            WHERE user_id = :user_id AND deleted_at IS NULL
-        """;
-
-        long total = jdbc.queryForObject(countSql,
-                new MapSqlParameterSource("user_id", userId),
-                Long.class);
+        List<Store> content = jdbc.query(sql.toString(), params, mapper);
+        long total = jdbc.queryForObject(countSql.toString(), params, Long.class);
 
         return new PageImpl<>(content, pageable, total);
     }

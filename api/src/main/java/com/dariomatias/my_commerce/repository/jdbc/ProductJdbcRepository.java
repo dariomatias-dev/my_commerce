@@ -1,7 +1,7 @@
 package com.dariomatias.my_commerce.repository.jdbc;
 
 import com.dariomatias.my_commerce.dto.product.ProductFilterDTO;
-import com.dariomatias.my_commerce.enums.ProductStatus;
+import com.dariomatias.my_commerce.enums.StatusFilter;
 import com.dariomatias.my_commerce.model.Product;
 import com.dariomatias.my_commerce.repository.contract.ProductContract;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -91,14 +91,14 @@ public class ProductJdbcRepository implements ProductContract {
             params.addValue("lowStock", filter.getLowStockThreshold());
         }
 
-        ProductStatus status = filter.getStatus();
+        StatusFilter status = filter.getStatus();
         if (status == null) {
-            status = ProductStatus.ACTIVE;
+            status = StatusFilter.ACTIVE;
         }
 
-        if (status == ProductStatus.ACTIVE) {
+        if (status == StatusFilter.ACTIVE) {
             conditions.add("deleted_at IS NULL");
-        } else if (status == ProductStatus.DELETED) {
+        } else if (status == StatusFilter.DELETED) {
             conditions.add("deleted_at IS NOT NULL");
         }
 

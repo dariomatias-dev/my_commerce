@@ -1,6 +1,6 @@
 package com.dariomatias.my_commerce.dto.product;
 
-import com.dariomatias.my_commerce.enums.ProductStatus;
+import com.dariomatias.my_commerce.enums.StatusFilter;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,5 +18,5 @@ public class ProductFilterDTO {
 
     private Integer lowStockThreshold;
 
-    private ProductStatus status;
+    private StatusFilter status;
 }

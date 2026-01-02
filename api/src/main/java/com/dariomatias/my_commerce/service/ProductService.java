@@ -2,7 +2,7 @@ package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.product.ProductFilterDTO;
 import com.dariomatias.my_commerce.dto.product.ProductRequestDTO;
-import com.dariomatias.my_commerce.enums.ProductStatus;
+import com.dariomatias.my_commerce.enums.StatusFilter;
 import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.*;
 import com.dariomatias.my_commerce.repository.contract.CategoryContract;
@@ -87,13 +87,13 @@ public class ProductService {
             ProductFilterDTO filter,
             Pageable pageable
     ) {
-        ProductStatus status = (filter != null && filter.getStatus() != null)
+        StatusFilter status = (filter != null && filter.getStatus() != null)
                 ? filter.getStatus()
-                : ProductStatus.ACTIVE;
+                : StatusFilter.ACTIVE;
 
-        if ((status == ProductStatus.DELETED || status == ProductStatus.ALL)
+        if ((status == StatusFilter.DELETED || status == StatusFilter.ALL)
                 && !user.getRole().equals(UserRole.ADMIN)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado para filtragem por status");
         }
 
         if (filter == null) {

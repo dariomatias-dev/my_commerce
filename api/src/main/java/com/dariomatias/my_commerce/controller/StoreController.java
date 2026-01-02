@@ -1,6 +1,7 @@
 package com.dariomatias.my_commerce.controller;
 
 import com.dariomatias.my_commerce.dto.ApiResponse;
+import com.dariomatias.my_commerce.dto.stores.StoreFilterDTO;
 import com.dariomatias.my_commerce.dto.stores.StoreRequestDTO;
 import com.dariomatias.my_commerce.dto.stores.StoreResponseDTO;
 import com.dariomatias.my_commerce.model.Store;
@@ -38,16 +39,41 @@ public class StoreController {
         return ResponseEntity.ok(ApiResponse.success("Loja criada com sucesso", StoreResponseDTO.from(entity)));
     }
 
-    @GetMapping("/user/{userId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<Page<StoreResponseDTO>>> getByUser(
-            @PathVariable UUID userId,
+    @GetMapping("")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Page<StoreResponseDTO>>> getAllByUser(
+            @AuthenticationPrincipal User user,
+            StoreFilterDTO filter,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<StoreResponseDTO> entities = service.getAllByUser(userId, pageable).map(StoreResponseDTO::from);
-        return ResponseEntity.ok(ApiResponse.success("Lojas do usuário obtidas com sucesso", entities));
+        Page<StoreResponseDTO> stores = service
+                .getAllStores(user, filter, pageable)
+                .map(StoreResponseDTO::from);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Lojas do usuário obtidas com sucesso", stores)
+        );
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('SUBSCRIBER')")
+    public ResponseEntity<ApiResponse<Page<StoreResponseDTO>>> getMyStores(
+            @AuthenticationPrincipal User user,
+            StoreFilterDTO filter,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        filter.setUserId(user.getId());
+        Page<StoreResponseDTO> stores = service
+                .getAllStores(user, filter, pageable)
+                .map(StoreResponseDTO::from);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Lojas do usuário obtidas com sucesso", stores)
+        );
     }
 
     @GetMapping("/{id}")

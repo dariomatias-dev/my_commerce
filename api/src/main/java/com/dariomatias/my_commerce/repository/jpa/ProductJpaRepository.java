@@ -1,7 +1,7 @@
 package com.dariomatias.my_commerce.repository.jpa;
 
 import com.dariomatias.my_commerce.dto.product.ProductFilterDTO;
-import com.dariomatias.my_commerce.enums.ProductStatus;
+import com.dariomatias.my_commerce.enums.StatusFilter;
 import com.dariomatias.my_commerce.model.Product;
 import com.dariomatias.my_commerce.repository.ProductRepository;
 import com.dariomatias.my_commerce.repository.contract.ProductContract;
@@ -49,11 +49,11 @@ public class ProductJpaRepository implements ProductContract {
             spec = spec.and(ProductSpecification.lowStock(filter.getLowStockThreshold()));
         }
 
-        ProductStatus status = filter.getStatus() != null ? filter.getStatus() : ProductStatus.ACTIVE;
+        StatusFilter status = filter.getStatus() != null ? filter.getStatus() : StatusFilter.ACTIVE;
 
-        if (status == ProductStatus.ACTIVE) {
+        if (status == StatusFilter.ACTIVE) {
             spec = spec.and(ProductSpecification.active());
-        } else if (status == ProductStatus.DELETED) {
+        } else if (status == StatusFilter.DELETED) {
             spec = spec.and(ProductSpecification.deleted());
         }
 
