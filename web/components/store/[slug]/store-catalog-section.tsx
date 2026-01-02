@@ -1,11 +1,5 @@
-import {
-  AlertCircle,
-  ChevronLeft,
-  ChevronRight,
-  Loader2,
-  Search,
-} from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { AlertCircle, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { CategoryResponse } from "@/@types/category/category-response";
@@ -17,13 +11,9 @@ import { StoreCategoryTabs } from "./store-category-tabs";
 
 interface StoreCatalogSectionProps {
   storeId: string;
-  searchQuery: string;
 }
 
-export const StoreCatalogSection = ({
-  storeId,
-  searchQuery,
-}: StoreCatalogSectionProps) => {
+export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
   const { getAllProducts } = useProduct();
   const { getCategoriesByStoreId } = useCategory();
 
@@ -44,7 +34,7 @@ export const StoreCatalogSection = ({
       const res = await getCategoriesByStoreId(storeId, 0, 100);
       setCategories(res.content);
     } catch (err) {
-      console.error("Erro ao carregar categorias:", err);
+      console.error(err);
     }
   }, [storeId, getCategoriesByStoreId]);
 
@@ -85,15 +75,7 @@ export const StoreCatalogSection = ({
 
   useEffect(() => {
     setCurrentPage(0);
-  }, [activeCategoryId, searchQuery]);
-
-  const filteredProducts = useMemo(() => {
-    if (!searchQuery) return products;
-
-    return products.filter((p) =>
-      p.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [products, searchQuery]);
+  }, [activeCategoryId]);
 
   return (
     <section className="py-24" id="catalog">
@@ -136,10 +118,10 @@ export const StoreCatalogSection = ({
             Processando Requisição...
           </p>
         </div>
-      ) : filteredProducts.length === 0 && !error ? (
+      ) : products.length === 0 && !error ? (
         <div className="py-40 text-center animate-in fade-in zoom-in duration-500">
           <div className="inline-flex h-24 w-24 items-center justify-center rounded-full bg-slate-50 text-slate-200">
-            <Search size={40} />
+            <AlertCircle size={40} />
           </div>
           <h3 className="mt-8 text-2xl font-black uppercase italic text-slate-300">
             Nenhum registro localizado
@@ -149,7 +131,7 @@ export const StoreCatalogSection = ({
         !error && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {filteredProducts.map((p) => (
+              {products.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
             </div>

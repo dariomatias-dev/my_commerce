@@ -23,7 +23,6 @@ const StorePage = () => {
   const [store, setStore] = useState<StoreResponse | null>(null);
   const [spotlightProduct, setSpotlightProduct] =
     useState<ProductResponse | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
   const loadStore = useCallback(async () => {
@@ -60,11 +59,7 @@ const StorePage = () => {
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900">
-      <StoreHeader
-        store={store}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-      />
+      <StoreHeader store={store} />
 
       <main className="mx-auto max-w-400 px-8">
         <StoreHero
@@ -80,7 +75,7 @@ const StorePage = () => {
 
         <StoreStockHighlightsSection storeId={store.id} />
 
-        <StoreCatalogSection storeId={store.id} searchQuery={searchQuery} />
+        <StoreCatalogSection storeId={store.id} />
       </main>
 
       <Footer />
