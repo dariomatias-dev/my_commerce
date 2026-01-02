@@ -25,10 +25,12 @@ export const StoreHeader = ({ store }: StoreHeaderProps) => {
               className="object-cover"
             />
           </div>
+
           <div className="flex flex-col leading-none">
             <span className="text-2xl font-black tracking-tighter uppercase italic text-slate-950">
               {store.name}
             </span>
+            
             <span className="text-[9px] font-black tracking-[0.3em] text-slate-400 uppercase">
               Official Store
             </span>
@@ -44,7 +46,7 @@ export const StoreHeader = ({ store }: StoreHeaderProps) => {
               />
             </button>
 
-            <StoreCart />
+            <StoreCart storeId={store.id} />
           </div>
 
           <HeaderNavAuth />

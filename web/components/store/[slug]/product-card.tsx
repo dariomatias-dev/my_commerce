@@ -29,6 +29,24 @@ const Badge = ({ children, variant = "default" }: BadgeProps) => {
 export const ProductCard = ({ product }: { product: ProductResponse }) => {
   const imgUrl = product.images?.[0]?.url || "";
 
+  const handleAddToCart = () => {
+    const storageKey = `cart-${product.storeId}`;
+    const stored = localStorage.getItem(storageKey);
+    const cart: { id: string; quantity: number }[] = stored
+      ? JSON.parse(stored)
+      : [];
+
+    const existingIndex = cart.findIndex((i) => i.id === product.id);
+    if (existingIndex > -1) {
+      cart[existingIndex].quantity += 1;
+    } else {
+      cart.push({ id: product.id, quantity: 1 });
+    }
+
+    localStorage.setItem(storageKey, JSON.stringify(cart));
+    window.dispatchEvent(new Event("cart-updated"));
+  };
+
   return (
     <div className="group relative flex flex-col rounded-[3rem] border-2 border-slate-100 bg-white p-5 transition-all hover:border-indigo-600 hover:shadow-2xl hover:shadow-indigo-500/10 focus-within:border-indigo-600 outline-none">
       <div className="relative aspect-square overflow-hidden rounded-[2.5rem] bg-slate-50">
@@ -55,7 +73,10 @@ export const ProductCard = ({ product }: { product: ProductResponse }) => {
           )}
         </div>
 
-        <button className="absolute bottom-5 right-5 h-14 w-14 flex items-center justify-center rounded-[1.5rem] bg-white/90 backdrop-blur-md shadow-xl text-slate-950 transition-all hover:bg-indigo-600 hover:text-white translate-y-24 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 border-2 border-transparent focus:border-indigo-600 outline-none cursor-pointer">
+        <button
+          onClick={handleAddToCart}
+          className="absolute bottom-5 right-5 h-14 w-14 flex items-center justify-center rounded-[1.5rem] bg-white/90 backdrop-blur-md shadow-xl text-slate-950 transition-all hover:bg-indigo-600 hover:text-white translate-y-24 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 border-2 border-transparent focus:border-indigo-600 outline-none cursor-pointer z-10"
+        >
           <Plus size={28} />
         </button>
       </div>
