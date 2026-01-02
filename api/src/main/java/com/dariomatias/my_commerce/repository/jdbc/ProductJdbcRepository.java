@@ -129,6 +129,43 @@ public class ProductJdbcRepository implements ProductContract {
     }
 
     @Override
+    public Page<Product> findAllByStoreIdAndIdInAndDeletedAtIsNull(UUID storeId, List<UUID> productIds, Pageable pageable) {
+        if (productIds == null || productIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        String sql = """
+        SELECT *
+        FROM products
+        WHERE store_id = :storeId
+          AND id IN (:ids)
+          AND deleted_at IS NULL
+        ORDER BY created_at DESC
+        OFFSET :offset LIMIT :limit
+    """;
+
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("storeId", storeId);
+        params.addValue("ids", productIds);
+        params.addValue("offset", pageable.getOffset());
+        params.addValue("limit", pageable.getPageSize());
+
+        List<Product> content = jdbc.query(sql, params, mapper);
+
+        String countSql = """
+        SELECT COUNT(*)
+        FROM products
+        WHERE store_id = :storeId
+          AND id IN (:ids)
+          AND deleted_at IS NULL
+    """;
+
+        long total = jdbc.queryForObject(countSql, params, Long.class);
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
     public Optional<Product> findByStoreSlugAndProductSlug(String storeSlug, String productSlug) {
         List<Product> list = jdbc.query("""
             SELECT p.*

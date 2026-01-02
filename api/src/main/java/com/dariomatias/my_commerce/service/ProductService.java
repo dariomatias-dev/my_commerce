@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -102,6 +103,22 @@ public class ProductService {
         filter.setStatus(status);
 
         return productRepository.findAll(filter, pageable);
+    }
+
+    public Page<Product> getActiveProductsByStoreAndIds(
+            UUID storeId,
+            List<UUID> productIds,
+            Pageable pageable
+    ) {
+        Store store = storeRepository.findById(storeId)
+                .filter(s -> s.getDeletedAt() == null)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada ou excluída"));
+
+        if (productIds == null || productIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        return productRepository.findAllByStoreIdAndIdInAndDeletedAtIsNull(store.getId(), productIds, pageable);
     }
 
     public Product getByStoreSlugAndProductSlug(String storeSlug, String productSlug) {

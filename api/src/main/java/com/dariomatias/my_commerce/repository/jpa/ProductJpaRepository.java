@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -58,6 +59,11 @@ public class ProductJpaRepository implements ProductContract {
         }
 
         return repository.findAll(spec, pageable);
+    }
+
+    @Override
+    public Page<Product> findAllByStoreIdAndIdInAndDeletedAtIsNull(UUID storeId, List<UUID> ids, Pageable pageable) {
+        return repository.findAllByStore_IdAndIdInAndDeletedAtIsNull(storeId, ids, pageable);
     }
 
     @Override

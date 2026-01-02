@@ -2,6 +2,7 @@ package com.dariomatias.my_commerce.controller;
 
 import com.dariomatias.my_commerce.dto.ApiResponse;
 import com.dariomatias.my_commerce.dto.product.ProductFilterDTO;
+import com.dariomatias.my_commerce.dto.product.ProductIdsRequestDTO;
 import com.dariomatias.my_commerce.dto.product.ProductRequestDTO;
 import com.dariomatias.my_commerce.dto.product.ProductResponseDTO;
 import com.dariomatias.my_commerce.model.Product;
@@ -16,6 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -60,6 +62,24 @@ public class ProductController {
 
         return ResponseEntity.ok(
                 ApiResponse.success("Produtos da loja obtidos com sucesso", products)
+        );
+    }
+
+    @PostMapping("/store/products-by-ids")
+    public ResponseEntity<ApiResponse<Page<ProductResponseDTO>>> getByIds(
+            @AuthenticationPrincipal User user,
+            @RequestBody ProductIdsRequestDTO request,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<ProductResponseDTO> products = service
+                .getActiveProductsByStoreAndIds(request.getStoreId(), request.getProductIds(), pageable)
+                .map(ProductResponseDTO::from);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Produtos obtidos com sucesso", products)
         );
     }
 
