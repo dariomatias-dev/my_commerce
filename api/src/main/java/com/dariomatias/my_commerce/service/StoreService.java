@@ -151,7 +151,7 @@ public class StoreService {
 
         String folder = store.getSlug() + "/";
 
-        storeRepository.deleteById(id);
+        storeRepository.delete(store);
 
         minioService.deleteFolder(BUCKET_NAME, folder);
     }

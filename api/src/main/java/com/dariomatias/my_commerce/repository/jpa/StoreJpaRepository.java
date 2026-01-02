@@ -70,7 +70,10 @@ public class StoreJpaRepository implements StoreContract {
     }
 
     @Override
-    public void deleteById(UUID id) {
-        repository.deleteById(id);
+    public void delete(Store store) {
+        store.setIsActive(false);
+        store.setDeletedAt(LocalDateTime.now());
+
+        update(store);
     }
 }

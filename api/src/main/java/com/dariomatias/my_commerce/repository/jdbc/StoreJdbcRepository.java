@@ -184,8 +184,20 @@ public class StoreJdbcRepository implements StoreContract {
     }
 
     @Override
-    public void deleteById(UUID id) {
-        String sql = "DELETE FROM stores WHERE id = :id";
-        jdbc.update(sql, new MapSqlParameterSource("id", id));
+    public void delete(Store store) {
+        String sql = """
+        UPDATE stores
+        SET is_active = false,
+            deleted_at = :deleted_at,
+            updated_at = :updated_at
+        WHERE id = :id
+    """;
+
+        LocalDateTime now = LocalDateTime.now();
+
+        jdbc.update(sql, new MapSqlParameterSource()
+                .addValue("id", store.getId())
+                .addValue("deleted_at", now)
+                .addValue("updated_at", now));
     }
 }

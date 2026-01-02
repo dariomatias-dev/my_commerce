@@ -22,5 +22,5 @@ public interface StoreContract {
 
     Store update(Store store);
 
-    void deleteById(UUID id);
+    void delete(Store store);
 }
