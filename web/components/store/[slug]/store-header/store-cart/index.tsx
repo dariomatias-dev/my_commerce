@@ -1,8 +1,10 @@
 "use client";
 
-import { ShoppingBag, Trash2, X } from "lucide-react";
-import Image from "next/image";
+import { ShoppingBag, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
+import { ActionButton } from "@/components/buttons/action-button";
 import {
   Sheet,
   SheetClose,
@@ -10,31 +12,59 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-
-const MOCK_CART_ITEMS = [
-  {
-    id: "1",
-    name: "Camiseta Oversized Minimalist",
-    price: 129.9,
-    quantity: 1,
-    image:
-      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&auto=format&fit=crop&q=60",
-  },
-  {
-    id: "2",
-    name: "Calça Cargo Streetwear",
-    price: 249.9,
-    quantity: 1,
-    image:
-      "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=500&auto=format&fit=crop&q=60",
-  },
-];
+import { Item, StoreCartItem } from "./store-cart-item";
 
 export const StoreCart = () => {
-  const total = MOCK_CART_ITEMS.reduce(
+  const router = useRouter();
+  const [items, setItems] = useState<Item[]>([
+    {
+      id: "1",
+      name: "Camiseta Oversized Minimalist",
+      price: 129.9,
+      quantity: 1,
+      image:
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&auto=format&fit=crop&q=60",
+    },
+    {
+      id: "2",
+      name: "Calça Cargo Streetwear",
+      price: 249.9,
+      quantity: 2,
+      image:
+        "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=500&auto=format&fit=crop&q=60",
+    },
+  ]);
+
+  const handleIncrease = (id: string) => {
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+      )
+    );
+  };
+
+  const handleDecrease = (id: string) => {
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === id && item.quantity > 1
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
+      )
+    );
+  };
+
+  const handleRemove = (id: string) => {
+    setItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const total = items.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
+
+  const handleGoToCheckout = () => {
+    router.push("/checkout");
+  };
 
   return (
     <Sheet>
@@ -45,7 +75,7 @@ export const StoreCart = () => {
             Carrinho
           </span>
           <div className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-indigo-500 text-[10px] font-black shadow-lg ring-4 ring-white transition-all group-hover:ring-indigo-50">
-            {MOCK_CART_ITEMS.length}
+            {items.length}
           </div>
         </button>
       </SheetTrigger>
@@ -57,7 +87,7 @@ export const StoreCart = () => {
               Meu <span className="text-indigo-600">Carrinho</span>
             </SheetTitle>
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-              {MOCK_CART_ITEMS.length} Itens selecionados
+              {items.length} Itens selecionados
             </span>
           </div>
 
@@ -67,39 +97,16 @@ export const StoreCart = () => {
         </div>
 
         <div className="flex-1 overflow-y-auto px-8 py-4">
-          {MOCK_CART_ITEMS.length > 0 ? (
+          {items.length > 0 ? (
             <div className="flex flex-col gap-8">
-              {MOCK_CART_ITEMS.map((item) => (
-                <div key={item.id} className="group flex gap-4">
-                  <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border border-slate-100 bg-slate-50">
-                    <Image
-                      src={item.image}
-                      alt={item.name}
-                      fill
-                      unoptimized
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                  </div>
-                  <div className="flex flex-1 flex-col justify-center gap-1">
-                    <h4 className="text-sm font-black uppercase italic leading-tight text-slate-950">
-                      {item.name}
-                    </h4>
-                    <div className="flex items-center gap-3 mt-1">
-                      <span className="text-sm font-black text-indigo-600">
-                        {item.price.toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        })}
-                      </span>
-                      <span className="text-[10px] font-bold text-slate-400">
-                        x{item.quantity}
-                      </span>
-                    </div>
-                  </div>
-                  <button className="flex h-10 w-10 items-center justify-center self-center rounded-xl text-slate-300 hover:bg-red-50 hover:text-red-500 transition-all">
-                    <Trash2 size={18} />
-                  </button>
-                </div>
+              {items.map((item) => (
+                <StoreCartItem
+                  key={item.id}
+                  item={item}
+                  onIncrease={handleIncrease}
+                  onDecrease={handleDecrease}
+                  onRemove={handleRemove}
+                />
               ))}
             </div>
           ) : (
@@ -126,9 +133,16 @@ export const StoreCart = () => {
               })}
             </span>
           </div>
-          <button className="w-full rounded-2xl bg-indigo-600 py-5 text-[11px] font-black uppercase tracking-[0.2em] text-white shadow-xl shadow-indigo-100 transition-all hover:bg-indigo-700 hover:shadow-indigo-200 active:scale-95">
-            Finalizar Compra
-          </button>
+
+          <ActionButton
+            onClick={handleGoToCheckout}
+            variant="primary"
+            size="lg"
+            showArrow
+            disabled={items.length === 0}
+          >
+            Fechar pedido
+          </ActionButton>
         </div>
       </SheetContent>
     </Sheet>
