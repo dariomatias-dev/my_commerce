@@ -12,9 +12,10 @@ import java.util.UUID;
 public interface ProductRepository
         extends JpaRepository<Product, UUID>,
         JpaSpecificationExecutor<Product> {
-
     Optional<Product> findByStore_SlugAndSlugAndDeletedAtIsNull(
             String storeSlug,
             String productSlug
     );
+
+    Optional<Product> findByIdAndDeletedAtIsNull(UUID id);
 }

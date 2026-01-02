@@ -16,6 +16,8 @@ public interface ProductContract {
 
     Page<Product> findAll(ProductFilterDTO filter, Pageable pageable);
 
+    Optional<Product> findByIdAndDeletedAtIsNull(UUID id);
+
     Optional<Product> findById(UUID id);
 
     Product update(Product product);

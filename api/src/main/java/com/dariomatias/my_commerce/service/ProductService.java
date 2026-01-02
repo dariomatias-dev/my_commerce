@@ -2,25 +2,21 @@ package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.product.ProductFilterDTO;
 import com.dariomatias.my_commerce.dto.product.ProductRequestDTO;
-import com.dariomatias.my_commerce.dto.product_image.ProductImageOrderDTO;
 import com.dariomatias.my_commerce.enums.ProductStatus;
 import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.*;
 import com.dariomatias.my_commerce.repository.contract.CategoryContract;
 import com.dariomatias.my_commerce.repository.contract.ProductContract;
 import com.dariomatias.my_commerce.repository.contract.StoreContract;
-import com.dariomatias.my_commerce.repository.specification.ProductSpecification;
 import com.dariomatias.my_commerce.util.SlugUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -116,9 +112,14 @@ public class ProductService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
     }
 
-    public Product getById(UUID id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
+    public Product getById(User user, UUID id) {
+        if (user.getRole().equals(UserRole.ADMIN)) {
+            return productRepository.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
+        } else {
+            return productRepository.findByIdAndDeletedAtIsNull(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
+        }
     }
 
     public Product update(
@@ -128,7 +129,7 @@ public class ProductService {
             MultipartFile[] newImages
     ) {
 
-        Product product = getById(id);
+        Product product = getActiveProductOrThrow(id);
 
         Store store = storeRepository.findById(product.getStoreId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
@@ -186,7 +187,7 @@ public class ProductService {
 
     @Transactional
     public void delete(User user, UUID id) {
-        Product product = getById(id);
+        Product product = getActiveProductOrThrow(id);
 
         Store store = storeRepository.findById(product.getStoreId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
@@ -204,5 +205,10 @@ public class ProductService {
         );
 
         productRepository.delete(product.getId());
+    }
+
+    private Product getActiveProductOrThrow(UUID id) {
+        return productRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
     }
 }

@@ -146,6 +146,14 @@ public class ProductJdbcRepository implements ProductContract {
     }
 
     @Override
+    public Optional<Product> findByIdAndDeletedAtIsNull(UUID id) {
+        String sql = "SELECT * FROM products WHERE id = :id AND deleted_at IS NULL";
+
+        List<Product> list = jdbc.query(sql, new MapSqlParameterSource("id", id), mapper);
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+    }
+
+    @Override
     public Optional<Product> findById(UUID id) {
         List<Product> list = jdbc.query(
                 "SELECT * FROM products WHERE id = :id",

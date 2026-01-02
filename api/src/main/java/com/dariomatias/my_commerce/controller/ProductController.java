@@ -72,8 +72,11 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<ProductResponseDTO>> getById(@PathVariable UUID id) {
-        Product product = service.getById(id);
+    public ResponseEntity<ApiResponse<ProductResponseDTO>> getById(
+            @AuthenticationPrincipal User user,
+            @PathVariable UUID id
+    ) {
+        Product product = service.getById(user, id);
         return ResponseEntity.ok(ApiResponse.success("Produto obtido com sucesso", ProductResponseDTO.from(product)));
     }
 
