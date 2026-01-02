@@ -27,6 +27,7 @@ public class FavoriteController {
     @PostMapping
     public ResponseEntity<ApiResponse<FavoriteResponseDTO>> create(@RequestBody FavoriteRequestDTO request) {
         Favorite favorite = service.create(request);
+
         return ResponseEntity.ok(ApiResponse.success("Favorito criado com sucesso", FavoriteResponseDTO.from(favorite)));
     }
 
@@ -38,6 +39,7 @@ public class FavoriteController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<FavoriteResponseDTO> favorites = service.getAll(pageable).map(FavoriteResponseDTO::from);
+
         return ResponseEntity.ok(ApiResponse.success("Favoritos obtidos com sucesso", favorites));
     }
 
@@ -49,6 +51,7 @@ public class FavoriteController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<FavoriteResponseDTO> favorites = service.getAllByUser(userId, pageable).map(FavoriteResponseDTO::from);
+
         return ResponseEntity.ok(ApiResponse.success("Favoritos do usuário obtidos com sucesso", favorites));
     }
 
@@ -60,18 +63,21 @@ public class FavoriteController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<FavoriteResponseDTO> favorites = service.getAllByProduct(productId, pageable).map(FavoriteResponseDTO::from);
+
         return ResponseEntity.ok(ApiResponse.success("Favoritos do produto obtidos com sucesso", favorites));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<FavoriteResponseDTO>> getById(@PathVariable UUID id) {
         Favorite favorite = service.getById(id);
+
         return ResponseEntity.ok(ApiResponse.success("Favorito obtido com sucesso", FavoriteResponseDTO.from(favorite)));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         service.delete(id);
+
         return ResponseEntity.ok(ApiResponse.success("Favorito deletado com sucesso", null));
     }
 }

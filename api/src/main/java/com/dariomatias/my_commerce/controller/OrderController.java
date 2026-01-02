@@ -33,6 +33,7 @@ public class OrderController {
             @RequestBody @Valid OrderRequestDTO request
     ) {
         Order order = service.create(user, request);
+
         return ResponseEntity.ok(ApiResponse.success("Pedido criado com sucesso", OrderResponseDTO.from(order)));
     }
 
@@ -44,6 +45,7 @@ public class OrderController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<OrderResponseDTO> orders = service.getAll(pageable).map(OrderResponseDTO::from);
+
         return ResponseEntity.ok(ApiResponse.success("Pedidos obtidos com sucesso", orders));
     }
 
@@ -56,6 +58,7 @@ public class OrderController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<OrderResponseDTO> orders = service.getAllByUser(userId, pageable).map(OrderResponseDTO::from);
+
         return ResponseEntity.ok(ApiResponse.success("Pedidos do usuário obtidos com sucesso", orders));
     }
 
@@ -68,6 +71,7 @@ public class OrderController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<OrderResponseDTO> orders = service.getAllByStore(storeId, pageable).map(OrderResponseDTO::from);
+
         return ResponseEntity.ok(ApiResponse.success("Pedidos da loja obtidos com sucesso", orders));
     }
 
@@ -117,6 +121,7 @@ public class OrderController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         service.delete(id);
+
         return ResponseEntity.ok(ApiResponse.success("Pedido excluído com sucesso", null));
     }
 }

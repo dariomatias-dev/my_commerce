@@ -30,6 +30,7 @@ public class TransactionController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<TransactionResponseDTO>> create(@RequestBody TransactionRequestDTO request) {
         Transaction transaction = service.create(request);
+
         return ResponseEntity.ok(ApiResponse.success("Transação criada com sucesso", TransactionResponseDTO.from(transaction)));
     }
 
@@ -42,6 +43,7 @@ public class TransactionController {
         Pageable pageable = PageRequest.of(page, size);
         Page<TransactionResponseDTO> transactions = service.getAll(pageable)
                 .map(TransactionResponseDTO::from);
+
         return ResponseEntity.ok(ApiResponse.success("Transações obtidas com sucesso", transactions));
     }
 
@@ -55,6 +57,7 @@ public class TransactionController {
         Pageable pageable = PageRequest.of(page, size);
         Page<TransactionResponseDTO> transactions = service.getAllByStoreSlug(storeSlug, pageable)
                 .map(TransactionResponseDTO::from);
+
         return ResponseEntity.ok(ApiResponse.success("Transações da loja obtidas com sucesso", transactions));
     }
 
@@ -68,6 +71,7 @@ public class TransactionController {
         Pageable pageable = PageRequest.of(page, size);
         Page<TransactionResponseDTO> transactions = service.getAllByUser(userId, pageable)
                 .map(TransactionResponseDTO::from);
+
         return ResponseEntity.ok(ApiResponse.success("Transações obtidas com sucesso", transactions));
     }
 
@@ -81,6 +85,7 @@ public class TransactionController {
         Pageable pageable = PageRequest.of(page, size);
         Page<TransactionResponseDTO> transactions = service.getAllByUser(user.getId(), pageable)
                 .map(TransactionResponseDTO::from);
+
         return ResponseEntity.ok(ApiResponse.success("Transações obtidas com sucesso", transactions));
     }
 
@@ -93,20 +98,25 @@ public class TransactionController {
         Pageable pageable = PageRequest.of(page, size);
         Page<TransactionResponseDTO> transactions = service.getAllByOrder(orderId, pageable)
                 .map(TransactionResponseDTO::from);
+
         return ResponseEntity.ok(ApiResponse.success("Transações obtidas com sucesso", transactions));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<TransactionResponseDTO>> getById(@PathVariable UUID id) {
         Transaction transaction = service.getById(id);
+
         return ResponseEntity.ok(ApiResponse.success("Transação obtida com sucesso", TransactionResponseDTO.from(transaction)));
     }
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<TransactionResponseDTO>> update(@PathVariable UUID id,
-                                                                      @RequestBody TransactionRequestDTO request) {
+    public ResponseEntity<ApiResponse<TransactionResponseDTO>> update(
+            @PathVariable UUID id,
+            @RequestBody TransactionRequestDTO request
+    ) {
         Transaction transaction = service.update(id, request);
+
         return ResponseEntity.ok(ApiResponse.success("Transação atualizada com sucesso", TransactionResponseDTO.from(transaction)));
     }
 
@@ -114,6 +124,7 @@ public class TransactionController {
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         service.delete(id);
+
         return ResponseEntity.ok(ApiResponse.success("Transação excluída com sucesso", null));
     }
 }

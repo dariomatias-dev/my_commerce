@@ -32,6 +32,7 @@ public class OrderItemController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<OrderItemResponseDTO> items = service.getAll(pageable).map(OrderItemResponseDTO::from);
+
         return ResponseEntity.ok(ApiResponse.success("Itens obtidos com sucesso", items));
     }
 
@@ -43,6 +44,7 @@ public class OrderItemController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<OrderItemResponseDTO> items = service.getAllByOrder(orderId, pageable).map(OrderItemResponseDTO::from);
+
         return ResponseEntity.ok(ApiResponse.success("Itens do pedido obtidos com sucesso", items));
     }
 
@@ -54,18 +56,21 @@ public class OrderItemController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<OrderItemResponseDTO> items = service.getAllByProduct(productId, pageable).map(OrderItemResponseDTO::from);
+
         return ResponseEntity.ok(ApiResponse.success("Itens do produto obtidos com sucesso", items));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<OrderItemResponseDTO>> getById(@PathVariable UUID id) {
         OrderItem item = service.getById(id);
+
         return ResponseEntity.ok(ApiResponse.success("Item obtido com sucesso", OrderItemResponseDTO.from(item)));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         service.delete(id);
+
         return ResponseEntity.ok(ApiResponse.success("Item deletado com sucesso", null));
     }
 }

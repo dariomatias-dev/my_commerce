@@ -36,6 +36,7 @@ public class ProductController {
             @RequestPart(value = "images") MultipartFile[] images
     ) {
         Product product = service.create(user, request, images);
+
         return ResponseEntity.ok(
                 ApiResponse.success(
                         "Produto criado com sucesso",
@@ -45,7 +46,7 @@ public class ProductController {
     }
 
     @GetMapping("")
-    public ResponseEntity<ApiResponse<Page<ProductResponseDTO>>> getAllByStore(
+    public ResponseEntity<ApiResponse<Page<ProductResponseDTO>>> getAll(
             @AuthenticationPrincipal User user,
             ProductFilterDTO filter,
             @RequestParam(defaultValue = "0") int page,
@@ -68,6 +69,7 @@ public class ProductController {
             @PathVariable String productSlug
     ) {
         Product product = service.getByStoreSlugAndProductSlug(storeSlug, productSlug);
+
         return ResponseEntity.ok(ApiResponse.success("Produto obtido com sucesso", ProductResponseDTO.from(product)));
     }
 
@@ -77,6 +79,7 @@ public class ProductController {
             @PathVariable UUID id
     ) {
         Product product = service.getById(user, id);
+
         return ResponseEntity.ok(ApiResponse.success("Produto obtido com sucesso", ProductResponseDTO.from(product)));
     }
 
@@ -89,6 +92,7 @@ public class ProductController {
             @RequestPart(value = "images", required = false) MultipartFile[] images
     ) {
         Product product = service.update(user, id, request, images);
+
         return ResponseEntity.ok(
                 ApiResponse.success(
                         "Produto atualizado com sucesso",
@@ -102,6 +106,7 @@ public class ProductController {
     public ResponseEntity<ApiResponse<Void>> delete(@AuthenticationPrincipal User user,
                                                     @PathVariable UUID id) {
         service.delete(user, id);
+
         return ResponseEntity.ok(ApiResponse.success("Produto excluído com sucesso", null));
     }
 }

@@ -28,6 +28,7 @@ public class SubscriptionPlanController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<SubscriptionPlanResponseDTO>> create(@RequestBody SubscriptionPlanRequestDTO request) {
         SubscriptionPlan plan = service.create(request);
+
         return ResponseEntity.ok(ApiResponse.success("Plano criado com sucesso", SubscriptionPlanResponseDTO.from(plan)));
     }
 
@@ -39,12 +40,14 @@ public class SubscriptionPlanController {
         Pageable pageable = PageRequest.of(page, size);
         Page<SubscriptionPlanResponseDTO> plans = service.getAll(pageable)
                 .map(SubscriptionPlanResponseDTO::from);
+
         return ResponseEntity.ok(ApiResponse.success("Planos obtidos com sucesso", plans));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<SubscriptionPlanResponseDTO>> getById(@PathVariable UUID id) {
         SubscriptionPlan plan = service.getById(id);
+
         return ResponseEntity.ok(ApiResponse.success("Plano obtido com sucesso", SubscriptionPlanResponseDTO.from(plan)));
     }
 
@@ -55,6 +58,7 @@ public class SubscriptionPlanController {
             @RequestBody SubscriptionPlanRequestDTO request
     ) {
         SubscriptionPlan plan = service.update(id, request);
+
         return ResponseEntity.ok(ApiResponse.success("Plano atualizado com sucesso", SubscriptionPlanResponseDTO.from(plan)));
     }
 
@@ -62,6 +66,7 @@ public class SubscriptionPlanController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         service.delete(id);
+
         return ResponseEntity.ok(ApiResponse.success("Plano excluído com sucesso", null));
     }
 }

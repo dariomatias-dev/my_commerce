@@ -28,6 +28,7 @@ public class AuditLogController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<AuditLog> logs = service.getAll(pageable);
+
         return ResponseEntity.ok(ApiResponse.success("Logs obtidos com sucesso.", logs));
     }
 
@@ -35,6 +36,7 @@ public class AuditLogController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<AuditLog>> getLogById(@PathVariable String id) {
         AuditLog log = service.getById(id);
+
         return ResponseEntity.ok(ApiResponse.success("Log obtido com sucesso.", log));
     }
 
@@ -50,6 +52,7 @@ public class AuditLogController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<AuditLog> logs = service.search(userId, action, startDate, endDate, pageable);
+
         return ResponseEntity.ok(ApiResponse.success("Busca realizada com sucesso.", logs));
     }
 }

@@ -28,6 +28,7 @@ public class CategoryController {
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<CategoryResponseDTO>> create(@RequestBody CategoryRequestDTO request) {
         Category category = service.create(request);
+
         return ResponseEntity.ok(ApiResponse.success("Categoria criada com sucesso", CategoryResponseDTO.from(category)));
     }
 
@@ -40,6 +41,7 @@ public class CategoryController {
         Pageable pageable = PageRequest.of(page, size);
         Page<CategoryResponseDTO> categories = service.getAll(pageable)
                 .map(CategoryResponseDTO::from);
+
         return ResponseEntity.ok(ApiResponse.success("Categorias obtidas com sucesso", categories));
     }
 
@@ -52,12 +54,14 @@ public class CategoryController {
         Pageable pageable = PageRequest.of(page, size);
         Page<CategoryResponseDTO> categories = service.getAllByStore(storeId, pageable)
                 .map(CategoryResponseDTO::from);
+
         return ResponseEntity.ok(ApiResponse.success("Categorias obtidas com sucesso", categories));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<CategoryResponseDTO>> getById(@PathVariable UUID id) {
         Category category = service.getById(id);
+
         return ResponseEntity.ok(ApiResponse.success("Categoria obtida com sucesso", CategoryResponseDTO.from(category)));
     }
 
@@ -66,6 +70,7 @@ public class CategoryController {
     public ResponseEntity<ApiResponse<CategoryResponseDTO>> update(@PathVariable UUID id,
                                                                    @RequestBody CategoryRequestDTO request) {
         Category category = service.update(id, request);
+
         return ResponseEntity.ok(ApiResponse.success("Categoria atualizada com sucesso", CategoryResponseDTO.from(category)));
     }
 
@@ -73,6 +78,7 @@ public class CategoryController {
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         service.delete(id);
+
         return ResponseEntity.ok(ApiResponse.success("Categoria excluída com sucesso", null));
     }
 }

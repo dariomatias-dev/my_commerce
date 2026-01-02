@@ -34,8 +34,10 @@ public class StoreController {
             @AuthenticationPrincipal User user,
             @RequestPart(value = "data") StoreRequestDTO request,
             @RequestPart(value = "logo") MultipartFile logo,
-            @RequestPart(value = "banner") MultipartFile banner) {
+            @RequestPart(value = "banner") MultipartFile banner
+    ) {
         Store entity = service.create(user, request, logo, banner);
+
         return ResponseEntity.ok(ApiResponse.success("Loja criada com sucesso", StoreResponseDTO.from(entity)));
     }
 
@@ -80,24 +82,28 @@ public class StoreController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<StoreResponseDTO>> getById(@AuthenticationPrincipal User user, @PathVariable UUID id) {
         Store entity = service.getById(id, user);
+
         return ResponseEntity.ok(ApiResponse.success("Loja obtida com sucesso", StoreResponseDTO.from(entity)));
     }
 
     @GetMapping("/slug/{slug}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<StoreResponseDTO>> getBySlug(@PathVariable String slug) {
         Store entity = service.getBySlug(slug);
+
         return ResponseEntity.ok(ApiResponse.success("Loja obtida com sucesso", StoreResponseDTO.from(entity)));
     }
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<StoreResponseDTO>> update(@AuthenticationPrincipal User user,
-                                                                @PathVariable UUID id,
-                                                                @RequestPart(value = "data", required = false) StoreRequestDTO request,
-                                                                @RequestPart(value = "logo", required = false) MultipartFile logo,
-                                                                @RequestPart(value = "banner", required = false) MultipartFile banner) {
+    public ResponseEntity<ApiResponse<StoreResponseDTO>> update(
+            @AuthenticationPrincipal User user,
+            @PathVariable UUID id,
+            @RequestPart(value = "data", required = false) StoreRequestDTO request,
+            @RequestPart(value = "logo", required = false) MultipartFile logo,
+            @RequestPart(value = "banner", required = false) MultipartFile banner
+    ) {
         Store entity = service.update(id, request, user, logo, banner);
+
         return ResponseEntity.ok(ApiResponse.success("Loja atualizada com sucesso", StoreResponseDTO.from(entity)));
     }
 
@@ -105,6 +111,7 @@ public class StoreController {
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<Void>> delete(@AuthenticationPrincipal User user, @PathVariable UUID id) {
         service.delete(id, user);
+
         return ResponseEntity.ok(ApiResponse.success("Loja excluída com sucesso", null));
     }
 }

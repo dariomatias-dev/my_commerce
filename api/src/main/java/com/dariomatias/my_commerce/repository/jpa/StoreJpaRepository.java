@@ -3,7 +3,6 @@ package com.dariomatias.my_commerce.repository.jpa;
 import com.dariomatias.my_commerce.dto.stores.StoreFilterDTO;
 import com.dariomatias.my_commerce.enums.StatusFilter;
 import com.dariomatias.my_commerce.model.Store;
-import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.StoreRepository;
 import com.dariomatias.my_commerce.repository.contract.StoreContract;
 import com.dariomatias.my_commerce.repository.specification.StoreSpecification;

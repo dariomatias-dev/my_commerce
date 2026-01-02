@@ -36,6 +36,7 @@ public class UserController {
         Pageable pageable = PageRequest.of(page, size);
         Page<AdminUserResponse> users = userService.getAll(pageable)
                 .map(AdminUserResponse::from);
+
         return ResponseEntity.ok(ApiResponse.success("Usuários obtidos com sucesso.", users));
     }
 
@@ -43,14 +44,18 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<AdminUserResponse>> getUserById(@PathVariable UUID id) {
         User user = userService.getById(id);
+
         return ResponseEntity.ok(ApiResponse.success("Usuário obtido com sucesso.", AdminUserResponse.from(user)));
     }
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<AdminUserResponse>> updateUser(@PathVariable UUID id,
-                                                                     @RequestBody UserRequest updatedUser) {
+    public ResponseEntity<ApiResponse<AdminUserResponse>> updateUser(
+            @PathVariable UUID id,
+            @RequestBody UserRequest updatedUser
+    ) {
         User updated = userService.update(id, updatedUser);
+
         return ResponseEntity.ok(ApiResponse.success("Usuário atualizado com sucesso.", AdminUserResponse.from(updated)));
     }
 
@@ -58,32 +63,41 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable UUID id) {
         userService.delete(id);
+
         return ResponseEntity.ok(ApiResponse.success("Usuário excluído com sucesso", null));
     }
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser(@AuthenticationPrincipal User user) {
         User currentUser = userService.getById(user.getId());
+
         return ResponseEntity.ok(ApiResponse.success("Usuário obtido com sucesso.", UserResponse.from(currentUser)));
     }
 
     @PatchMapping("/me")
-    public ResponseEntity<ApiResponse<UserResponse>> updateCurrentUser(@AuthenticationPrincipal User user,
-                                                                       @RequestBody UserRequest updatedUser) {
+    public ResponseEntity<ApiResponse<UserResponse>> updateCurrentUser(
+            @AuthenticationPrincipal User user,
+            @RequestBody UserRequest updatedUser
+    ) {
         User updated = userService.update(user.getId(), updatedUser);
+
         return ResponseEntity.ok(ApiResponse.success("Usuário atualizado com sucesso.", UserResponse.from(updated)));
     }
 
     @PostMapping("/me/change-password")
-    public ResponseEntity<ApiResponse<Void>> changePassword(@AuthenticationPrincipal User user,
-                                                            @RequestBody PasswordUpdateRequest request) {
+    public ResponseEntity<ApiResponse<Void>> changePassword(
+            @AuthenticationPrincipal User user,
+            @RequestBody PasswordUpdateRequest request
+    ) {
         userService.changePassword(user.getId(), request);
+
         return ResponseEntity.ok(ApiResponse.success("Senha atualizada com sucesso", null));
     }
 
     @DeleteMapping("/me")
     public ResponseEntity<ApiResponse<Void>> deleteCurrentUser(@AuthenticationPrincipal User user) {
         userService.delete(user.getId());
+
         return ResponseEntity.ok(ApiResponse.success("Usuário excluído com sucesso", null));
     }
 }

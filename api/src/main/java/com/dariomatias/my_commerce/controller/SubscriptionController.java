@@ -29,8 +29,10 @@ public class SubscriptionController {
     @PostMapping
     public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> create(
             @AuthenticationPrincipal User user,
-            @RequestBody SubscriptionRequestDTO request) {
+            @RequestBody SubscriptionRequestDTO request
+    ) {
         Subscription subscription = service.create(user, request);
+
         return ResponseEntity.ok(
                 ApiResponse.success("Assinatura criada com sucesso", SubscriptionResponseDTO.from(subscription))
         );
@@ -45,6 +47,7 @@ public class SubscriptionController {
         Pageable pageable = PageRequest.of(page, size);
         Page<SubscriptionResponseDTO> subscriptions = service.getAll(pageable)
                 .map(SubscriptionResponseDTO::from);
+
         return ResponseEntity.ok(
                 ApiResponse.success("Assinaturas obtidas com sucesso", subscriptions)
         );
@@ -60,6 +63,7 @@ public class SubscriptionController {
         Pageable pageable = PageRequest.of(page, size);
         Page<SubscriptionResponseDTO> subscriptions = service.getAllByUser(userId, pageable)
                 .map(SubscriptionResponseDTO::from);
+
         return ResponseEntity.ok(
                 ApiResponse.success("Assinaturas do usuário obtidas com sucesso", subscriptions)
         );
@@ -75,6 +79,7 @@ public class SubscriptionController {
         Pageable pageable = PageRequest.of(page, size);
         Page<SubscriptionResponseDTO> subscriptions = service.getAllByUser(user.getId(), pageable)
                 .map(SubscriptionResponseDTO::from);
+
         return ResponseEntity.ok(
                 ApiResponse.success("Assinaturas do usuário obtidas com sucesso", subscriptions)
         );
@@ -99,6 +104,7 @@ public class SubscriptionController {
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> getById(@PathVariable UUID id) {
         Subscription subscription = service.getById(id);
+
         return ResponseEntity.ok(
                 ApiResponse.success("Assinatura obtida com sucesso", SubscriptionResponseDTO.from(subscription))
         );
@@ -111,6 +117,7 @@ public class SubscriptionController {
             @RequestBody SubscriptionRequestDTO request
     ) {
         Subscription subscription = service.changePlan(user, request);
+
         return ResponseEntity.ok(
                 ApiResponse.success("Plano alterado com sucesso", SubscriptionResponseDTO.from(subscription))
         );
