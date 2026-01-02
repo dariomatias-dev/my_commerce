@@ -137,6 +137,27 @@ public class MinioService {
         }
     }
 
+    public void uploadImage(String bucketName, String objectName, byte[] data) {
+        try {
+            createBucket(bucketName);
+
+            minioClient.putObject(
+                    PutObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(objectName)
+                            .stream(new java.io.ByteArrayInputStream(data), data.length, -1)
+                            .contentType("image/png")
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Erro ao enviar imagem: " + objectName,
+                    e
+            );
+        }
+    }
+
     public void uploadFile(String bucketName, String objectName, MultipartFile file) {
         try {
             createBucket(bucketName);
