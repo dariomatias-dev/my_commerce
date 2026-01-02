@@ -6,6 +6,7 @@ import { PaginatedResponse } from "@/@types/paginated-response";
 import { StoreRequest } from "@/@types/store/store-request";
 import { StoreResponse } from "@/@types/store/store-response";
 import { apiClient } from "@/services/api-client";
+import { ProductFilters } from "@/@types/product/product-filters";
 
 export const useStore = () => {
   const createStore = useCallback(
@@ -26,21 +27,18 @@ export const useStore = () => {
   );
 
   const getAllStores = useCallback(
-    (page = 0, size = 10) =>
+    (filters: ProductFilters, page = 0, size = 10) =>
       apiClient.get<PaginatedResponse<StoreResponse>>("/stores", {
-        params: { page, size },
+        params: { ...filters, page, size },
       }),
     []
   );
 
-  const getStoresByUserId = useCallback(
-    (userId: string, page = 0, size = 10) =>
-      apiClient.get<PaginatedResponse<StoreResponse>>(
-        `/stores/user/${userId}`,
-        {
-          params: { page, size },
-        }
-      ),
+  const getMyStores = useCallback(
+    (page = 0, size = 10) =>
+      apiClient.get<PaginatedResponse<StoreResponse>>("/stores/me", {
+        params: { page, size },
+      }),
     []
   );
 
@@ -81,7 +79,7 @@ export const useStore = () => {
   return {
     createStore,
     getAllStores,
-    getStoresByUserId,
+    getMyStores,
     getStoreById,
     getStoreBySlug,
     updateStore,

@@ -15,7 +15,7 @@ import { useStore } from "@/services/hooks/use-store";
 
 const DashboardPage = () => {
   const { user } = useAuthContext();
-  const { getStoresByUserId, deleteStore } = useStore();
+  const { getMyStores, deleteStore } = useStore();
   const listTopRef = useRef<HTMLDivElement>(null);
 
   const [stores, setStores] = useState<StoreResponse[]>([]);
@@ -33,7 +33,7 @@ const DashboardPage = () => {
       setIsLoading(true);
       setError(null);
 
-      const response = await getStoresByUserId(user.id, currentPage, pageSize);
+      const response = await getMyStores(currentPage, pageSize);
 
       setStores(response.content);
       setTotalPages(response.totalPages);
@@ -46,7 +46,7 @@ const DashboardPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [user?.id, getStoresByUserId, currentPage]);
+  }, [user?.id, getMyStores, currentPage]);
 
   useEffect(() => {
     fetchStores();
