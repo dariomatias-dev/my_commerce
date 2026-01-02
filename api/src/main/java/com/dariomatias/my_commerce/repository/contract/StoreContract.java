@@ -11,7 +11,7 @@ public interface StoreContract {
 
     Store save(Store store);
 
-    boolean existsBySlug(String slug);
+    boolean existsBySlugAndDeletedAtIsNull(String slug);
 
     Page<Store> findAll(Pageable pageable);
 

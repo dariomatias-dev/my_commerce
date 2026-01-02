@@ -34,24 +34,17 @@ public class StoreController {
             @RequestPart(value = "data") StoreRequestDTO request,
             @RequestPart(value = "logo") MultipartFile logo,
             @RequestPart(value = "banner") MultipartFile banner) {
-        Store entity = service.create(user.getId(), request, logo, banner);
+        Store entity = service.create(user, request, logo, banner);
         return ResponseEntity.ok(ApiResponse.success("Loja criada com sucesso", StoreResponseDTO.from(entity)));
-    }
-
-    @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Page<StoreResponseDTO>>> getAll(@RequestParam(defaultValue = "0") int page,
-                                                                      @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<StoreResponseDTO> entities = service.getAll(pageable).map(StoreResponseDTO::from);
-        return ResponseEntity.ok(ApiResponse.success("Lojas obtidas com sucesso", entities));
     }
 
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<Page<StoreResponseDTO>>> getByUser(@PathVariable UUID userId,
-                                                                         @RequestParam(defaultValue = "0") int page,
-                                                                         @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<ApiResponse<Page<StoreResponseDTO>>> getByUser(
+            @PathVariable UUID userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<StoreResponseDTO> entities = service.getAllByUser(userId, pageable).map(StoreResponseDTO::from);
         return ResponseEntity.ok(ApiResponse.success("Lojas do usuário obtidas com sucesso", entities));

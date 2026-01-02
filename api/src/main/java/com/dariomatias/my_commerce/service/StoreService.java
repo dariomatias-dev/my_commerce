@@ -41,15 +41,14 @@ public class StoreService {
         this.minioService = minioService;
     }
 
-    public Store create(UUID userId, StoreRequestDTO request, MultipartFile logo, MultipartFile banner) {
-        if (!subscriptionRepository.existsActiveSubscriptionByUserId(userId)) {
+    public Store create(User user, StoreRequestDTO request, MultipartFile logo, MultipartFile banner) {
+        if (!subscriptionRepository.existsActiveSubscriptionByUserId(user.getId())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O usuário não possue uma assinatura ativa");
         }
 
-        User user = getUserById(userId);
         String slug = SlugUtil.generateSlug(request.getName());
 
-        if (storeRepository.existsBySlug(slug)) {
+        if (storeRepository.existsBySlugAndDeletedAtIsNull(slug)) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Já existe uma loja registrada com esse nome"
@@ -73,13 +72,9 @@ public class StoreService {
         store.setDescription(request.getDescription());
         store.setThemeColor(request.getThemeColor());
         store.setIsActive(true);
-        store.setUser(user);
+        store.setUser(getUserById(user.getId()));
 
         return storeRepository.save(store);
-    }
-
-    public Page<Store> getAll(Pageable pageable) {
-        return storeRepository.findAll(pageable);
     }
 
     public Page<Store> getAllByUser(UUID userId, Pageable pageable) {
@@ -106,7 +101,7 @@ public class StoreService {
             if (request.getName() != null && !request.getName().equals(store.getName())) {
                 String newSlug = SlugUtil.generateSlug(request.getName());
 
-                if (storeRepository.existsBySlug(newSlug)) {
+                if (storeRepository.existsBySlugAndDeletedAtIsNull(newSlug)) {
                     throw new ResponseStatusException(
                             HttpStatus.CONFLICT,
                             "O nome da loja já está em uso."

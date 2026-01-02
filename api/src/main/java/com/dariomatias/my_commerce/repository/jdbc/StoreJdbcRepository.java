@@ -147,11 +147,12 @@ public class StoreJdbcRepository implements StoreContract {
     }
 
     @Override
-    public boolean existsBySlug(String slug) {
+    public boolean existsBySlugAndDeletedAtIsNull(String slug) {
         String sql = """
         SELECT 1
         FROM stores
-        WHERE slug = :slug AND deleted_at IS NULL
+        WHERE slug = :slug
+          AND deleted_at IS NULL
         LIMIT 1
     """;
 
