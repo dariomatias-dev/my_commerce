@@ -126,24 +126,7 @@ public class OrderService {
 
         validateOrderAccess(order, user);
 
-        return new OrderWithItemsResponseDTO(
-                order.getId(),
-                order.getTotalAmount(),
-                order.getStatus(),
-                order.getAudit().getCreatedAt(),
-                order.getAudit().getUpdatedAt(),
-                order.getItems().stream()
-                        .map(item -> new OrderItemResponseDTO(
-                                item.getId(),
-                                item.getOrderId(),
-                                item.getProductId(),
-                                item.getQuantity(),
-                                item.getPrice(),
-                                item.getAudit().getCreatedAt(),
-                                item.getAudit().getUpdatedAt()
-                        ))
-                        .toList()
-        );
+        return OrderWithItemsResponseDTO.from(order);
     }
 
     public void delete(UUID id) {
