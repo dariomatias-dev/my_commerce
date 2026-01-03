@@ -5,6 +5,7 @@ import { useCallback } from "react";
 import { OrderRequest } from "@/@types/order/order-request";
 import { OrderResponse } from "@/@types/order/order-response";
 import { PaginatedResponse } from "@/@types/paginated-response";
+import { StoreResponse } from "@/@types/store/store-response";
 import { apiClient } from "@/services/api-client";
 
 export const useOrder = () => {
@@ -39,11 +40,20 @@ export const useOrder = () => {
     []
   );
 
-  const getMyOrders = useCallback(
+  const getMyOrderStores = useCallback(
     (page = 0, size = 10) =>
-      apiClient.get<PaginatedResponse<OrderResponse>>("/orders/me", {
+      apiClient.get<PaginatedResponse<StoreResponse>>("/orders/me/stores", {
         params: { page, size },
       }),
+    []
+  );
+
+  const getMyOrdersByStore = useCallback(
+    (storeId: string, page = 0, size = 10) =>
+      apiClient.get<PaginatedResponse<OrderResponse>>(
+        `/orders/me/store/${storeId}`,
+        { params: { page, size } }
+      ),
     []
   );
 
@@ -65,7 +75,8 @@ export const useOrder = () => {
     getAllOrders,
     getOrdersByUserId,
     getOrdersByStoreId,
-    getMyOrders,
+    getMyOrderStores,
+    getMyOrdersByStore,
     getOrderById,
     deleteOrder,
   };
