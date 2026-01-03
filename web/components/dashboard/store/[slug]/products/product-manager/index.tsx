@@ -4,11 +4,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { ProductResponse } from "@/@types/product/product-response";
+import { DashboardLoading } from "@/components/dashboard/dashboard-loading";
 import { Pagination } from "@/components/pagination";
 import { useProduct } from "@/services/hooks/use-product";
 import { ProductManagerError } from "./product-manager-error";
 import { ProductManagerFilter } from "./product-manager-filter";
-import { ProductManagerLoading } from "./product-manager-loading";
 import { ProductManagerTable } from "./product-manager-table";
 
 interface ProductManagerProps {
@@ -59,7 +59,11 @@ export const ProductManager = ({ storeId }: ProductManagerProps) => {
     fetchProducts();
   };
 
-  if (isLoading) return <ProductManagerLoading />;
+  if (isLoading) {
+    return (
+      <DashboardLoading message="Obtendo produtos..." className="min-h-100" />
+    );
+  }
 
   if (error) {
     return <ProductManagerError message={error} onRetry={fetchProducts} />;

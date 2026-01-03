@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Download, Eye, Loader2, Plus } from "lucide-react";
+import { ArrowLeft, Download, Eye, Plus } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -9,11 +9,10 @@ import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
 import { TransactionResponse } from "@/@types/transaction/transaction-response";
 import { DashboardErrorCard } from "@/components/dashboard/dashboard-error-card";
+import { DashboardLoading } from "@/components/dashboard/dashboard-loading";
 import { DashboardSidebarActions } from "@/components/dashboard/store/[slug]/dashboard-sidebar-actions";
 import { DashboardStats } from "@/components/dashboard/store/[slug]/dashboard-stats";
 import { DashboardTransactionTable } from "@/components/dashboard/store/[slug]/dashboard-transaction-table";
-import { DashboardHeader } from "@/components/layout/dashboard-header";
-import { Footer } from "@/components/layout/footer";
 import { useStore } from "@/services/hooks/use-store";
 import { useTransaction } from "@/services/hooks/use-transaction";
 
@@ -32,10 +31,16 @@ const StoreDashboardPage = () => {
   const fetchTransactions = useCallback(async () => {
     try {
       setIsTransactionsLoading(true);
+
       const response = await getTransactionsByStoreSlug(slug, 0, 10);
+
       setTransactions(response.content);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setError(error.message);
+      } else {
+        setError("Não foi possível carregar as transações da loja.");
+      }
     } finally {
       setIsTransactionsLoading(false);
     }
@@ -45,12 +50,18 @@ const StoreDashboardPage = () => {
     try {
       setIsLoading(true);
       setError(null);
+
       const data = await getStoreBySlug(slug);
+
       setStore(data);
+
       await fetchTransactions();
     } catch (error) {
-      if (error instanceof ApiError) setError(error.message);
-      else setError("Não foi possível carregar os dados desta instância.");
+      if (error instanceof ApiError) {
+        setError(error.message);
+      } else {
+        setError("Não foi possível carregar os dados da loja.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -61,20 +72,7 @@ const StoreDashboardPage = () => {
   }, [fetchStoreData]);
 
   if (isLoading) {
-    return (
-      <>
-        <DashboardHeader />
-        <main className="min-h-screen bg-[#F4F7FA] flex items-center justify-center">
-          <div className="flex flex-col items-center gap-4">
-            <Loader2 className="h-12 w-12 animate-spin text-indigo-600" />
-            <p className="text-[10px] font-black tracking-[0.5em] text-slate-400 uppercase">
-              Carregando Engine...
-            </p>
-          </div>
-        </main>
-        <Footer />
-      </>
-    );
+    return <DashboardLoading message="Carregando loja..." />;
   }
 
   if (error || !store) {
@@ -114,10 +112,12 @@ const StoreDashboardPage = () => {
               >
                 {store.isActive ? "OPERACIONAL" : "OFFLINE"}
               </div>
+
               <span className="text-[10px] font-black tracking-[0.3em] text-slate-400 uppercase italic">
                 ID: {store.id.slice(0, 8).toUpperCase()}-SECURED
               </span>
             </div>
+
             <h1 className="text-5xl font-black tracking-tighter text-slate-950 uppercase italic leading-none">
               CONSOLE: <span className="text-indigo-600">{store.name}.</span>
             </h1>
@@ -127,12 +127,14 @@ const StoreDashboardPage = () => {
             <button className="flex flex-1 items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-slate-600 uppercase transition-all hover:bg-slate-50 lg:flex-none">
               <Download size={14} /> EXPORTAR
             </button>
+
             <Link
               href={`${slug}/products`}
               className="flex flex-1 items-center justify-center gap-3 rounded-xl border border-slate-950 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-slate-950 uppercase transition-all hover:bg-slate-50 lg:flex-none"
             >
               <Eye size={16} /> VER PRODUTOS
             </Link>
+
             <Link
               href={`${slug}/products/new`}
               className="flex flex-1 items-center justify-center gap-3 rounded-xl bg-slate-950 px-6 py-4 text-[10px] font-black tracking-widest text-white shadow-2xl transition-all hover:bg-indigo-600 active:scale-95 lg:flex-none"

@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "@/@types/api";
 import { ProductRequest } from "@/@types/product/product-request";
 import { ProductResponse } from "@/@types/product/product-response";
+import { DashboardLoading } from "@/components/dashboard/dashboard-loading";
 import { ProductForm } from "@/components/dashboard/store/[slug]/products/product-form";
 import { ProductFormValues } from "@/schemas/product.schema";
 import { useProduct } from "@/services/hooks/use-product";
@@ -81,11 +82,7 @@ const EditProductPage = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="pt-40 text-center font-black animate-pulse">
-        CARREGANDO PRODUTO...
-      </div>
-    );
+    return <DashboardLoading message="Carregando produto..." />;
   }
 
   return (

@@ -78,6 +78,10 @@ const DashboardPage = () => {
     listTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  if (isLoading) {
+    return <DashboardLoading message="Carregando lojas..." />;
+  }
+
   if (error != null) {
     return (
       <DashboardErrorCard
@@ -96,6 +100,10 @@ const DashboardPage = () => {
     );
   }
 
+  if (stores.length === 0 && !error) {
+    return <DashboardEmptyStores />;
+  }
+
   return (
     <main className="min-h-screen bg-[#F4F7FA] font-sans text-slate-900">
       <div className="mx-auto max-w-400 px-6 pt-40 pb-20">
@@ -108,29 +116,21 @@ const DashboardPage = () => {
             totalPages={totalPages}
           />
 
-          {isLoading ? (
-            <DashboardLoading />
-          ) : stores.length === 0 && !error ? (
-            <DashboardEmptyStores />
-          ) : (
-            <>
-              <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {stores.map((store) => (
-                  <StoreCard
-                    key={store.id}
-                    store={store}
-                    onDelete={handleDeleteStore}
-                  />
-                ))}
-              </div>
-
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {stores.map((store) => (
+              <StoreCard
+                key={store.id}
+                store={store}
+                onDelete={handleDeleteStore}
               />
-            </>
-          )}
+            ))}
+          </div>
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
     </main>
