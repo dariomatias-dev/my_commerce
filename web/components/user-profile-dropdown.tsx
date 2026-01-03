@@ -1,6 +1,13 @@
 "use client";
 
-import { ChevronDown, Home, LogOut, Settings, User } from "lucide-react";
+import {
+  ChevronDown,
+  Home,
+  LogOut,
+  Settings,
+  ShoppingBag,
+  User,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -72,6 +79,13 @@ export const UserProfileDropdown = () => {
             className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition-all hover:bg-slate-50 hover:text-indigo-600"
           >
             <User size={16} /> Meu Perfil
+          </Link>
+
+          <Link
+            href="/orders"
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition-all hover:bg-slate-50 hover:text-indigo-600"
+          >
+            <ShoppingBag size={16} /> Pedidos
           </Link>
 
           {user?.role === "SUBSCRIBER" && (
