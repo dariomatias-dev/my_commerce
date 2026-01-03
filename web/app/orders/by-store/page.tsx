@@ -142,7 +142,7 @@ const OrdersPage = () => {
               {stores.map((store) => (
                 <button
                   key={store.id}
-                  onClick={() => router.push(`/orders/${store.id}`)}
+                  onClick={() => router.push(`by-store/${store.id}`)}
                   className="group relative flex flex-col overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white transition-all hover:border-indigo-600 hover:shadow-[0_40px_80px_-20px_rgba(79,70,229,0.15)]"
                 >
                   <div className="absolute top-6 right-6 z-10">

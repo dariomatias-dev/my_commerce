@@ -28,7 +28,6 @@ import { useProduct } from "@/services/hooks/use-product";
 const OrderDetailPage = () => {
   const router = useRouter();
 
-  const { storeId } = useParams() as { storeId: string };
   const { orderId } = useParams() as { orderId: string };
 
   const { getOrderById } = useOrder();
@@ -47,12 +46,16 @@ const OrderDetailPage = () => {
         orderId,
         "items"
       )) as OrderWithItemsResponse;
+
       setOrder(orderResponse);
 
       if (orderResponse.items && orderResponse.items.length > 0) {
         const productIds = orderResponse.items.map((item) => item.productId);
 
-        const productsResponse = await getProductsByIds(storeId, productIds);
+        const productsResponse = await getProductsByIds(
+          orderResponse.storeId,
+          productIds
+        );
         const productsMap = (productsResponse.content || []).reduce(
           (acc, product) => {
             acc[product.id] = product;
@@ -71,7 +74,7 @@ const OrderDetailPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [orderId, storeId, getOrderById, getProductsByIds]);
+  }, [orderId, getOrderById, getProductsByIds]);
 
   useEffect(() => {
     fetchOrderDetail();
