@@ -18,7 +18,7 @@ export const StoreHeader = ({ store }: StoreHeaderProps) => {
         <div className="flex items-center gap-4">
           <div className="relative h-12 w-12 overflow-hidden rounded-2xl bg-slate-950 border-2 border-slate-100">
             <Image
-              src={`${process.env.NEXT_PUBLIC_API_URL}/files/stores/${store.slug}/logo.jpeg`}
+              src={`${process.env.NEXT_PUBLIC_API_URL}/files/stores/${store.slug}/logo.png`}
               alt={store.name}
               fill
               unoptimized
@@ -30,7 +30,7 @@ export const StoreHeader = ({ store }: StoreHeaderProps) => {
             <span className="text-2xl font-black tracking-tighter uppercase italic text-slate-950">
               {store.name}
             </span>
-            
+
             <span className="text-[9px] font-black tracking-[0.3em] text-slate-400 uppercase">
               Official Store
             </span>
