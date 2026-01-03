@@ -1,7 +1,7 @@
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 
-import { Item } from "../store-header/store-cart/store-cart-item";
+import { Item } from "../../store-header/store-cart/store-cart-item";
 
 interface CheckoutItemProps {
   item: Item;

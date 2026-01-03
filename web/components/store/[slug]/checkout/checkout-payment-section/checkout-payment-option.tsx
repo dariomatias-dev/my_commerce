@@ -1,9 +1,4 @@
-export enum PaymentMethod {
-  CREDIT_CARD = "CREDIT_CARD",
-  PIX = "PIX",
-  BOLETO = "BOLETO",
-  CASH = "CASH",
-}
+import { PaymentMethod } from "@/enums/payment-method";
 
 interface PaymentOptionProps {
   method: PaymentMethod;
