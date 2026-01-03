@@ -76,6 +76,23 @@ public class OrderController {
         return ResponseEntity.ok(ApiResponse.success("Pedidos da loja obtidos com sucesso", orders));
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<Page<OrderResponseDTO>>> getMyOrders(
+            @AuthenticationPrincipal User user,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<OrderResponseDTO> orders = service
+                .getAllByUser(user.getId(), pageable)
+                .map(OrderResponseDTO::from);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Pedidos do usuário obtidos com sucesso", orders)
+        );
+    }
+
     @GetMapping("/me/stores")
     public ResponseEntity<ApiResponse<Page<StoreResponseDTO>>> getMyOrderStores(
             @AuthenticationPrincipal User user,
