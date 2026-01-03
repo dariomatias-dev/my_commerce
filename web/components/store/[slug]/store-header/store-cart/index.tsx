@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
+import { CartStorage } from "@/@types/cart-storage";
+import { StoreResponse } from "@/@types/store/store-response";
 import { ActionButton } from "@/components/buttons/action-button";
 import {
   Sheet,
@@ -16,16 +18,11 @@ import {
 import { useProduct } from "@/services/hooks/use-product";
 import { Item, StoreCartItem } from "./store-cart-item";
 
-interface CartStorage {
-  id: string;
-  quantity: number;
-}
-
 interface StoreCartProps {
-  storeId: string;
+  store: StoreResponse;
 }
 
-export const StoreCart = ({ storeId }: StoreCartProps) => {
+export const StoreCart = ({ store }: StoreCartProps) => {
   const router = useRouter();
   const { getProductsByIds } = useProduct();
 
@@ -35,7 +32,7 @@ export const StoreCart = ({ storeId }: StoreCartProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
 
-  const storageKey = `cart-${storeId}`;
+  const storageKey = `cart-${store.id}`;
 
   const getStorageCart = useCallback((): CartStorage[] => {
     if (typeof window === "undefined") return [];
@@ -77,7 +74,7 @@ export const StoreCart = ({ storeId }: StoreCartProps) => {
 
     try {
       const productIds = storageCart.map((i) => i.id);
-      const response = await getProductsByIds(storeId, productIds);
+      const response = await getProductsByIds(store.id, productIds);
 
       const products = response.content || [];
 
@@ -99,7 +96,7 @@ export const StoreCart = ({ storeId }: StoreCartProps) => {
     } finally {
       setIsLoading(false);
     }
-  }, [storeId, getProductsByIds, getStorageCart]);
+  }, [store.id, getProductsByIds, getStorageCart]);
 
   useEffect(() => {
     syncBadgeCount();
@@ -243,7 +240,7 @@ export const StoreCart = ({ storeId }: StoreCartProps) => {
           </div>
 
           <ActionButton
-            onClick={() => router.push("/checkout")}
+            onClick={() => router.push(`/store/${store.slug}/checkout`)}
             variant="primary"
             size="lg"
             showArrow

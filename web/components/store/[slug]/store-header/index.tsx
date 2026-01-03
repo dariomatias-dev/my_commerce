@@ -46,7 +46,7 @@ export const StoreHeader = ({ store }: StoreHeaderProps) => {
               />
             </button>
 
-            <StoreCart storeId={store.id} />
+            <StoreCart store={store} />
           </div>
 
           <HeaderNavAuth />
