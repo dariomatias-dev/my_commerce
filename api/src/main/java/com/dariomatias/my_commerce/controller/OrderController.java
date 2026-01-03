@@ -5,7 +5,6 @@ import com.dariomatias.my_commerce.dto.order.OrderRequestDTO;
 import com.dariomatias.my_commerce.dto.order.OrderResponseDTO;
 import com.dariomatias.my_commerce.dto.stores.StoreResponseDTO;
 import com.dariomatias.my_commerce.model.Order;
-import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.service.OrderService;
 import jakarta.validation.Valid;
@@ -78,19 +77,15 @@ public class OrderController {
     }
 
     @GetMapping("/me/stores")
-    public ResponseEntity<ApiResponse<Page<Store>>> getMyOrderStores(
+    public ResponseEntity<ApiResponse<Page<StoreResponseDTO>>> getMyOrderStores(
             @AuthenticationPrincipal User user,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
+        Page<StoreResponseDTO> stores = service.getMyOrderStores(user.getId(), pageable).map(StoreResponseDTO::from);
 
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        "Lojas com pedidos obtidas com sucesso",
-                        service.getMyOrderStores(user.getId(), pageable)
-                )
-        );
+        return ResponseEntity.ok(ApiResponse.success("Lojas com pedidos obtidas com sucesso", stores));
     }
 
     @GetMapping("/me/store/{storeId}")
@@ -101,17 +96,9 @@ public class OrderController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
+        Page<OrderResponseDTO> orders = service.getMyOrdersByStore(user.getId(), storeId, pageable).map(OrderResponseDTO::from);
 
-        Page<OrderResponseDTO> orders = service
-                .getMyOrdersByStore(user.getId(), storeId, pageable)
-                .map(OrderResponseDTO::from);
-
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        "Pedidos da loja obtidos com sucesso",
-                        orders
-                )
-        );
+        return ResponseEntity.ok(ApiResponse.success("Pedidos da loja obtidos com sucesso", orders));
     }
 
     @GetMapping("/{id}")
@@ -121,22 +108,10 @@ public class OrderController {
             @RequestParam(required = false) String include
     ) {
         if ("items".equals(include)) {
-            return ResponseEntity.ok(
-                    ApiResponse.success(
-                            "Pedido completo obtido com sucesso",
-                            service.getByIdWithItems(id, user)
-                    )
-            );
+            return ResponseEntity.ok(ApiResponse.success("Pedido completo obtido com sucesso", service.getByIdWithItems(id, user)));
         }
 
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        "Pedido obtido com sucesso",
-                        OrderResponseDTO.from(
-                                service.getById(id, user)
-                        )
-                )
-        );
+        return ResponseEntity.ok(ApiResponse.success("Pedido obtido com sucesso", OrderResponseDTO.from(service.getById(id, user))));
     }
 
     @DeleteMapping("/{id}")
