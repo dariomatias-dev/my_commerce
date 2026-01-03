@@ -5,22 +5,27 @@ import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { CartStorage } from "@/@types/cart-storage";
+import { OrderRequest } from "@/@types/order/order-request";
 import { StoreResponse } from "@/@types/store/store-response";
+import { MOCK_ADDRESSES } from "@/components/store/[slug]/checkout/checkout-address-section/checkout-address-card";
 import { Item } from "@/components/store/[slug]/store-header/store-cart/store-cart-item";
+import { PaymentMethod } from "@/enums/payment-method";
+import { useOrder } from "@/services/hooks/use-order";
 import { useProduct } from "@/services/hooks/use-product";
 import { useStore } from "@/services/hooks/use-store";
 
-export function useCheckout() {
+export const useCheckout = () => {
   const router = useRouter();
   const params = useParams();
   const { getProductsByIds } = useProduct();
   const { getStoreBySlug } = useStore();
+  const { createOrder } = useOrder();
 
   const [store, setStore] = useState<StoreResponse | null>(null);
   const [items, setItems] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [issubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(
     PaymentMethod.PIX
   );
@@ -37,6 +42,7 @@ export function useCheckout() {
         id: item.id,
         quantity: item.quantity,
       }));
+
       localStorage.setItem(storageKey, JSON.stringify(storageData));
       window.dispatchEvent(new Event("cart-updated"));
     },
@@ -46,8 +52,10 @@ export function useCheckout() {
   const fetchCheckoutData = useCallback(async () => {
     setIsLoading(true);
     setErrorMessage(null);
+
     try {
       const storeResponse = await getStoreBySlug(slug);
+
       setStore(storeResponse);
 
       const storageKey = `cart-${storeResponse.id}`;
@@ -56,6 +64,7 @@ export function useCheckout() {
 
       if (storageCart.length === 0) {
         router.push(`/store/${slug}`);
+
         return;
       }
 
@@ -89,32 +98,59 @@ export function useCheckout() {
 
   const handleQuantity = (id: string, delta: number) => {
     if (!store) return;
+
     const updated = items.map((item) =>
       item.id === id
         ? { ...item, quantity: Math.max(1, item.quantity + delta) }
         : item
     );
+
     setItems(updated);
     updateCartStorage(store.id, updated);
   };
 
   const handleRemove = (id: string) => {
     if (!store) return;
+
     const updated = items.filter((item) => item.id !== id);
+
     setItems(updated);
     updateCartStorage(store.id, updated);
+
     if (updated.length === 0) router.push(`/store/${slug}`);
   };
 
   const handleFinishOrder = async () => {
-    if (!store) return;
+    if (!store || items.length === 0) return;
+
     setIsSubmitting(true);
+    setErrorMessage(null);
+
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const orderPayload: OrderRequest = {
+        storeId: store.id,
+        items: items.map((item) => ({
+          productId: item.id,
+          quantity: item.quantity,
+        })),
+      };
+
+      const result = await createOrder(orderPayload);
+
       localStorage.removeItem(`cart-${store.id}`);
+
       window.dispatchEvent(new Event("cart-updated"));
-      router.push(`/store/${slug}/success`);
-    } catch {
+
+      router.push(`/store/${slug}/success?orderId=${result.id}`);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage(
+          "Não foi possível processar seu pedido. Tente novamente."
+        );
+      }
+
       setIsSubmitting(false);
     }
   };
@@ -128,7 +164,7 @@ export function useCheckout() {
     items,
     isLoading,
     errorMessage,
-    issubmitting,
+    isSubmitting,
     paymentMethod,
     setPaymentMethod,
     selectedAddressId,
@@ -139,4 +175,4 @@ export function useCheckout() {
     handleFinishOrder,
     router,
   };
-}
+};

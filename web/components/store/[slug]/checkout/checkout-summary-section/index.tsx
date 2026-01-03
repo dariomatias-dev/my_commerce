@@ -7,7 +7,7 @@ import { CheckoutItem } from "./checkout-item";
 interface CheckoutSummarySectionProps {
   items: Item[];
   total: number;
-  issubmitting: boolean;
+  isSubmitting: boolean;
   onIncrease: (id: string) => void;
   onDecrease: (id: string) => void;
   onRemove: (id: string) => void;
@@ -17,7 +17,7 @@ interface CheckoutSummarySectionProps {
 export const CheckoutSummarySection = ({
   items,
   total,
-  issubmitting,
+  isSubmitting,
   onIncrease,
   onDecrease,
   onRemove,
@@ -89,10 +89,10 @@ export const CheckoutSummarySection = ({
         <div className="mt-8">
           <ActionButton
             onClick={onFinish}
-            disabled={issubmitting || items.length === 0}
+            disabled={isSubmitting || items.length === 0}
             showArrow
           >
-            {issubmitting ? (
+            {isSubmitting ? (
               <Loader2 className="animate-spin" size={24} />
             ) : (
               "Finalizar Pedido"

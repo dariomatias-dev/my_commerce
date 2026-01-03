@@ -13,7 +13,7 @@ const CheckoutPage = () => {
     items,
     isLoading,
     errorMessage,
-    issubmitting,
+    isSubmitting,
     paymentMethod,
     setPaymentMethod,
     selectedAddressId,
@@ -90,7 +90,7 @@ const CheckoutPage = () => {
             <CheckoutSummarySection
               items={items}
               total={total}
-              issubmitting={issubmitting}
+              isSubmitting={isSubmitting}
               onIncrease={(id) => handleQuantity(id, 1)}
               onDecrease={(id) => handleQuantity(id, -1)}
               onRemove={handleRemove}
