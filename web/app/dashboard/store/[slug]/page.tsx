@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  AlertCircle,
-  ArrowLeft,
-  Download,
-  Eye,
-  Loader2,
-  Plus,
-} from "lucide-react";
+import { ArrowLeft, Download, Eye, Loader2, Plus } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -15,6 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
 import { TransactionResponse } from "@/@types/transaction/transaction-response";
+import { DashboardErrorCard } from "@/components/dashboard/dashboard-error-card";
 import { DashboardSidebarActions } from "@/components/dashboard/store/[slug]/dashboard-sidebar-actions";
 import { DashboardStats } from "@/components/dashboard/store/[slug]/dashboard-stats";
 import { DashboardTransactionTable } from "@/components/dashboard/store/[slug]/dashboard-transaction-table";
@@ -85,30 +79,18 @@ const StoreDashboardPage = () => {
 
   if (error || !store) {
     return (
-      <>
-        <DashboardHeader />
-        <main className="min-h-screen bg-[#F4F7FA] mx-auto max-w-400 px-6 pt-40 pb-20">
-          <div className="flex flex-col items-center justify-center gap-6 rounded-[3rem] border border-red-100 bg-red-50/30 p-16 text-center">
-            <AlertCircle size={64} className="text-red-500" />
-            <div className="max-w-xl space-y-4">
-              <h2 className="text-4xl font-black tracking-tighter text-slate-950 uppercase italic">
-                Instância Não Localizada.
-              </h2>
-              <p className="text-lg font-medium text-slate-500 italic">
-                {error ||
-                  "A loja solicitada não responde aos protocolos de rede."}
-              </p>
-            </div>
-            <Link
-              href="/dashboard"
-              className="flex items-center gap-3 rounded-2xl bg-slate-950 px-10 py-5 text-xs font-black tracking-widest text-white uppercase transition-all hover:bg-indigo-600"
-            >
-              <ArrowLeft size={18} /> VOLTAR AO PAINEL GLOBAL
-            </Link>
-          </div>
-        </main>
-        <Footer />
-      </>
+      <DashboardErrorCard
+        title="Loja Não Encontrada."
+        message={error ?? "Loja não encontrada"}
+        action={
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-3 rounded-2xl bg-slate-950 px-10 py-5 text-xs font-black tracking-widest text-white uppercase hover:bg-indigo-600"
+          >
+            <ArrowLeft size={18} /> VOLTAR AO PAINEL GLOBAL
+          </Link>
+        }
+      />
     );
   }
 

@@ -1,11 +1,12 @@
 "use client";
 
+import { AlertCircle, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
 import { DashboardEmptyStores } from "@/components/dashboard/dashboard-empty-stores";
-import { DashboardError } from "@/components/dashboard/dashboard-error";
+import { DashboardErrorCard } from "@/components/dashboard/dashboard-error-card";
 import { DashboardLoading } from "@/components/dashboard/dashboard-loading";
 import { DashboardPageHeader } from "@/components/dashboard/dashboard-page-header";
 import { StoreCard } from "@/components/dashboard/dashboard-store-card";
@@ -77,6 +78,24 @@ const DashboardPage = () => {
     listTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  if (error != null) {
+    return (
+      <DashboardErrorCard
+        title="Erro Crítico de Rede."
+        message={error}
+        icon={<AlertCircle size={64} className="text-red-500" />}
+        action={
+          <button
+            onClick={fetchStores}
+            className="flex items-center gap-3 rounded-2xl bg-slate-950 px-10 py-5 text-xs font-black tracking-widest text-white uppercase transition-all hover:bg-indigo-600 shadow-xl"
+          >
+            <RefreshCw size={20} /> RECONECTAR
+          </button>
+        }
+      />
+    );
+  }
+
   return (
     <main className="min-h-screen bg-[#F4F7FA] font-sans text-slate-900">
       <div className="mx-auto max-w-400 px-6 pt-40 pb-20">
@@ -88,12 +107,6 @@ const DashboardPage = () => {
             currentPage={currentPage}
             totalPages={totalPages}
           />
-
-          {error && (
-            <div className="mb-8">
-              <DashboardError message={error} onRetry={fetchStores} />
-            </div>
-          )}
 
           {isLoading ? (
             <DashboardLoading />
