@@ -1,5 +1,5 @@
+import { ProductImage } from "@/components/product-image";
 import { Minus, Plus, Trash2 } from "lucide-react";
-import Image from "next/image";
 
 export interface Item {
   id: string;
@@ -24,12 +24,10 @@ export const StoreCartItem = ({
 }: StoreCartItemProps) => (
   <div className="group flex gap-4">
     <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border border-slate-100 bg-slate-50">
-      <Image
-        src={item.image}
+      <ProductImage
+        imagePath={item.image}
         alt={item.name}
-        fill
-        unoptimized
-        className="object-cover transition-transform duration-500 group-hover:scale-110"
+        className="transition-transform duration-500 group-hover:scale-110"
       />
     </div>
 

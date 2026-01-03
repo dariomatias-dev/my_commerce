@@ -1,9 +1,9 @@
 "use client";
 
 import { Clock, Plus, Sparkles } from "lucide-react";
-import Image from "next/image";
 
 import { ProductResponse } from "@/@types/product/product-response";
+import { ProductImage } from "@/components/product-image";
 
 interface BadgeProps {
   children: React.ReactNode;
@@ -27,8 +27,6 @@ const Badge = ({ children, variant = "default" }: BadgeProps) => {
 };
 
 export const ProductCard = ({ product }: { product: ProductResponse }) => {
-  const imgUrl = product.images?.[0]?.url || "";
-
   const handleAddToCart = () => {
     const storageKey = `cart-${product.storeId}`;
     const stored = localStorage.getItem(storageKey);
@@ -50,16 +48,12 @@ export const ProductCard = ({ product }: { product: ProductResponse }) => {
   return (
     <div className="group relative flex flex-col rounded-[3rem] border-2 border-slate-100 bg-white p-5 transition-all hover:border-indigo-600 hover:shadow-2xl hover:shadow-indigo-500/10 focus-within:border-indigo-600 outline-none">
       <div className="relative aspect-square overflow-hidden rounded-[2.5rem] bg-slate-50">
-        {imgUrl && (
-          <Image
-            src={`${process.env.NEXT_PUBLIC_API_URL}/files/stores/${imgUrl}`}
-            alt={product.name}
-            fill
-            unoptimized
-            className="object-cover transition-transform duration-700 group-hover:scale-110"
-          />
-        )}
-
+        <ProductImage
+          imagePath={product.images?.[0]?.url}
+          alt={product.name}
+          fill
+          className=" transition-transform duration-700 group-hover:scale-110"
+        />
         <div className="absolute top-5 left-5 flex flex-col gap-2">
           {product.stock > 0 && product.stock <= 5 && (
             <Badge variant="warning">
@@ -72,7 +66,6 @@ export const ProductCard = ({ product }: { product: ProductResponse }) => {
             </Badge>
           )}
         </div>
-
         <button
           onClick={handleAddToCart}
           className="absolute bottom-5 right-5 h-14 w-14 flex items-center justify-center rounded-[1.5rem] bg-white/90 backdrop-blur-md shadow-xl text-slate-950 transition-all hover:bg-indigo-600 hover:text-white translate-y-24 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 border-2 border-transparent focus:border-indigo-600 outline-none cursor-pointer z-10"

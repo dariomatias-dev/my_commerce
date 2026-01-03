@@ -13,7 +13,6 @@ import {
   RefreshCcw,
   ShoppingBag,
 } from "lucide-react";
-import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -22,6 +21,7 @@ import { OrderWithItemsResponse } from "@/@types/order/order-with-items-response
 import { ProductResponse } from "@/@types/product/product-response";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
+import { ProductImage } from "@/components/product-image";
 import { useOrder } from "@/services/hooks/use-order";
 import { useProduct } from "@/services/hooks/use-product";
 
@@ -218,21 +218,13 @@ const OrderDetailPage = () => {
                         className="flex items-center justify-between border-b border-slate-50 pb-8 last:border-0 last:pb-0"
                       >
                         <div className="flex items-center gap-6">
-                          <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-slate-50 border-2 border-slate-100">
-                            {product?.images?.[0]?.url ? (
-                              <Image
-                                src={`${process.env.NEXT_PUBLIC_API_URL}/files/stores/${product.images[0].url}`}
-                                alt={product.name}
-                                unoptimized
-                                fill
-                                className="object-cover"
-                              />
-                            ) : (
-                              <div className="flex h-full w-full items-center justify-center text-slate-300">
-                                <Package size={32} />
-                              </div>
-                            )}
-                          </div>
+                          <ProductImage
+                            imagePath={product?.images?.[0]?.url}
+                            alt={product.name}
+                            size={80}
+                            className="shrink-0 border-2 border-slate-100 bg-slate-50"
+                          />
+
                           <div className="flex flex-col">
                             <span className="text-[9px] font-black uppercase tracking-widest text-indigo-600 mb-1">
                               ID: {item.productId.split("-")[0]}

@@ -82,7 +82,7 @@ export const StoreCart = ({ store }: StoreCartProps) => {
         id: product.id,
         name: product.name,
         price: product.price,
-        image: `${process.env.NEXT_PUBLIC_API_URL}/files/stores/${product.images?.[0]?.url}`,
+        image: product.images?.[0]?.url,
         quantity: storageCart.find((i) => i.id === product.id)?.quantity || 1,
       }));
 

@@ -1,7 +1,5 @@
-import { Package } from "lucide-react";
-
 import { ProductResponse } from "@/@types/product/product-response";
-import { ProductImageThumb } from "../../../../../product-image-thumb";
+import { ProductImage } from "@/components/product-image";
 
 interface InventoryItemProps {
   product: ProductResponse;
@@ -14,12 +12,11 @@ export const InventoryItem = ({ product, threshold }: InventoryItemProps) => {
   return (
     <li className="group flex items-center justify-between py-3.5 px-5 rounded-2xl bg-slate-900/50 border border-slate-800/50 hover:border-orange-500/40 transition-all duration-300">
       <div className="flex items-center gap-4">
-        <ProductImageThumb
-          product={product}
+        <ProductImage
+          imagePath={product.images?.[0]?.url}
           alt={product.name}
           size={36}
           className="rounded-lg bg-slate-800 text-slate-500 group-hover:text-orange-400 group-hover:bg-orange-400/10 transition-colors"
-          fallbackIcon={<Package size={16} />}
         />
 
         <div className="flex flex-col">
