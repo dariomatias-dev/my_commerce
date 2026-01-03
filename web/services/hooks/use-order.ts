@@ -7,6 +7,7 @@ import { OrderResponse } from "@/@types/order/order-response";
 import { PaginatedResponse } from "@/@types/paginated-response";
 import { StoreResponse } from "@/@types/store/store-response";
 import { apiClient } from "@/services/api-client";
+import { OrderWithItemsResponse } from "@/@types/order/order-with-items-response";
 
 export const useOrder = () => {
   const createOrder = useCallback(
@@ -59,7 +60,7 @@ export const useOrder = () => {
 
   const getOrderById = useCallback(
     (id: string, include?: "items") =>
-      apiClient.get<OrderResponse | unknown>(`/orders/${id}`, {
+      apiClient.get<OrderResponse | OrderWithItemsResponse>(`/orders/${id}`, {
         params: include ? { include } : undefined,
       }),
     []

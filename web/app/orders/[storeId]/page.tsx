@@ -11,16 +11,17 @@ import {
   ShoppingBag,
   Tag,
 } from "lucide-react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { OrderResponse } from "@/@types/order/order-response";
+import { LoadingIndicator } from "@/components/dashboard/loading-indicator";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { Pagination } from "@/components/pagination";
 import { useOrder } from "@/services/hooks/use-order";
-import { LoadingIndicator } from "@/components/dashboard/loading-indicator";
 
 const StoreOrdersPage = () => {
   const router = useRouter();
@@ -175,7 +176,8 @@ const StoreOrdersPage = () => {
             <>
               <div className="grid grid-cols-1 gap-4">
                 {orders.map((order) => (
-                  <div
+                  <Link
+                    href={`${storeId}/${order.id}`}
                     key={order.id}
                     className="group relative overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white p-8 transition-all hover:border-indigo-100 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]"
                   >
@@ -233,7 +235,7 @@ const StoreOrdersPage = () => {
                         </button>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
 
