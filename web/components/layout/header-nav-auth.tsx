@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useAuthContext } from "@/contexts/auth-context";
 import { UserProfileDropdown } from "../user-profile-dropdown";
 
-interface NavAuthProps {
+interface HeaderNavAuthProps {
   isMobile?: boolean;
   onActionClick?: () => void;
 }
@@ -12,7 +12,7 @@ interface NavAuthProps {
 export const HeaderNavAuth = ({
   isMobile = false,
   onActionClick,
-}: NavAuthProps) => {
+}: HeaderNavAuthProps) => {
   const { isAuthenticated } = useAuthContext();
 
   if (isMobile) {
@@ -35,6 +35,7 @@ export const HeaderNavAuth = ({
             >
               Fazer Login
             </Link>
+
             <Link
               href="/signup"
               onClick={onActionClick}

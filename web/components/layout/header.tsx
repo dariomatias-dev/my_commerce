@@ -17,37 +17,37 @@ export const Header = () => {
   }, []);
 
   return (
-    <header className="relative z-100">
+    <header className="fixed inset-x-0 top-0 z-100">
       <nav
-        className={`fixed inset-x-0 top-0 transition-all duration-300 ${
+        className={`border-b transition-all duration-300 ${
           scrolled
-            ? "bg-white/90 py-3 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md"
-            : "bg-transparent py-6"
+            ? "border-slate-200 bg-white/90 backdrop-blur-md"
+            : "border-transparent bg-transparent"
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6">
-          <Link href="/" className="group flex items-center gap-2.5">
-            <div className="relative">
-              <div className="rounded-xl bg-indigo-600 p-1.5 shadow-lg shadow-indigo-100 transition-transform group-hover:rotate-12">
-                <Store className="h-5 w-5 text-white" />
+        <div className="mx-auto flex h-20 max-w-400 items-center px-6">
+          <div className="flex items-center gap-8">
+            <Link href="/" className="group flex items-center gap-2.5">
+              <div className="relative">
+                <div className="rounded-xl bg-indigo-600 p-1.5 shadow-lg shadow-indigo-100 transition-transform group-hover:rotate-12">
+                  <Store className="h-5 w-5 text-white" />
+                </div>
+                <div className="absolute -top-1 -right-1 h-2 w-2 rounded-full border-2 border-white bg-indigo-400" />
               </div>
 
-              <div className="absolute -top-1 -right-1 h-2 w-2 rounded-full border-2 border-white bg-indigo-400" />
-            </div>
+              <div className="flex flex-col leading-none">
+                <span className="text-lg font-black tracking-tighter text-slate-950 uppercase italic">
+                  My<span className="text-indigo-600">Ecommerce</span>
+                </span>
+                <span className="text-[8px] font-black tracking-[0.3em] text-slate-400 uppercase">
+                  Sistema SaaS de Lojas
+                </span>
+              </div>
+            </Link>
+          </div>
 
-            <div className="flex flex-col leading-none">
-              <span className="text-xl font-black tracking-tighter text-slate-950 uppercase italic">
-                My<span className="text-indigo-600">Ecommerce</span>
-              </span>
-
-              <span className="text-[8px] font-black tracking-[0.3em] text-slate-400 uppercase">
-                Sistema SaaS de Lojas
-              </span>
-            </div>
-          </Link>
-
-          <div className="hidden items-center gap-10 lg:flex">
-            <div className="flex items-center gap-8 border-r border-slate-100 pr-10">
+          <div className="flex flex-1 items-center justify-center">
+            <div className="hidden items-center gap-8 lg:flex">
               {["Funcionalidades", "Planos", "FAQ"].map((item) => (
                 <Link
                   key={item}
@@ -59,33 +59,37 @@ export const Header = () => {
                 </Link>
               ))}
             </div>
-
-            <HeaderNavAuth />
           </div>
 
-          <button
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-950 lg:hidden"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          <div className="ml-auto flex items-center gap-3">
+            <div className="hidden lg:block">
+              <HeaderNavAuth />
+            </div>
+
+            <button
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-950 lg:hidden"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
 
         {isMenuOpen && (
-          <div className="animate-in fade-in slide-in-from-top-4 absolute inset-x-0 top-full h-screen bg-white p-6 shadow-2xl lg:hidden">
-            <div className="flex flex-col gap-6">
+          <div className="absolute inset-x-0 top-full h-screen bg-white p-6 shadow-2xl animate-in fade-in slide-in-from-top-4 lg:hidden">
+            <div className="flex flex-col gap-6 items-center">
               {["Funcionalidades", "Planos", "FAQ"].map((item) => (
                 <Link
                   key={item}
-                  href="#"
-                  className="text-2xl font-black text-slate-950 uppercase italic"
+                  href={`#${item.toLowerCase()}`}
+                  className="text-2xl font-black uppercase italic text-slate-950"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item}
                 </Link>
               ))}
 
-              <hr className="border-slate-100" />
+              <hr className="w-full border-slate-100" />
 
               <HeaderNavAuth
                 isMobile

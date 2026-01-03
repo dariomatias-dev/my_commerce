@@ -15,8 +15,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { Footer } from "@/components/layout/footer";
+import { Header } from "@/components/layout/header";
 
 const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState("loja");
@@ -32,7 +32,7 @@ const SettingsPage = () => {
 
   return (
     <>
-      <DashboardHeader />
+      <Header />
 
       <main className="min-h-screen mx-auto max-w-400 px-6 pt-32 pb-12">
         <div className="mb-12 border-b border-slate-200 pb-8">

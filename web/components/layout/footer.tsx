@@ -10,20 +10,24 @@ export const Footer = () => {
               <div className="rounded-xl bg-slate-950 p-2">
                 <Store className="h-5 w-5 text-white" />
               </div>
+
               <span className="text-2xl font-black tracking-tighter text-slate-950 uppercase italic">
                 MyEcommerce
               </span>
             </div>
+
             <p className="leading-relaxed font-medium text-slate-400 italic">
               Empoderando empreendedores a alcançarem a liberdade financeira
               através do varejo digital.
             </p>
           </div>
+
           <div className="flex flex-wrap gap-20 lg:gap-40">
             <div>
               <h4 className="mb-10 text-xs font-black tracking-[0.4em] text-indigo-600 uppercase">
                 Produto
               </h4>
+
               <ul className="space-y-6 text-[10px] font-black tracking-widest text-slate-400 uppercase">
                 <li>
                   <a
@@ -33,6 +37,7 @@ export const Footer = () => {
                     Sistema
                   </a>
                 </li>
+
                 <li>
                   <a
                     href="#"
@@ -41,6 +46,7 @@ export const Footer = () => {
                     Marketplace
                   </a>
                 </li>
+
                 <li>
                   <a
                     href="#"
@@ -51,10 +57,12 @@ export const Footer = () => {
                 </li>
               </ul>
             </div>
+
             <div>
               <h4 className="mb-10 text-xs font-black tracking-[0.4em] text-indigo-600 uppercase">
                 Empresa
               </h4>
+
               <ul className="space-y-6 text-[10px] font-black tracking-widest text-slate-400 uppercase">
                 <li>
                   <a
@@ -64,6 +72,7 @@ export const Footer = () => {
                     Suporte
                   </a>
                 </li>
+
                 <li>
                   <a
                     href="#"
@@ -72,6 +81,7 @@ export const Footer = () => {
                     Privacidade
                   </a>
                 </li>
+
                 <li>
                   <a
                     href="#"
@@ -84,15 +94,19 @@ export const Footer = () => {
             </div>
           </div>
         </div>
+
         <div className="flex flex-col items-center justify-between border-t border-slate-50 pt-10 text-[10px] font-black tracking-[0.5em] text-slate-300 uppercase md:flex-row">
           <p>© 2025 MY ECOMMERCE INC. ALL RIGHTS RESERVED.</p>
+
           <div className="mt-8 flex gap-10 md:mt-0">
             <a href="#" className="transition-colors hover:text-indigo-600">
               Twitter
             </a>
+
             <a href="#" className="transition-colors hover:text-indigo-600">
               Instagram
             </a>
+
             <a href="#" className="transition-colors hover:text-indigo-600">
               LinkedIn
             </a>

@@ -1,7 +1,7 @@
 "use client";
 
-import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { Footer } from "@/components/layout/footer";
+import { Header } from "@/components/layout/header";
 import { ProfileDangerZone } from "@/components/profile/profile-danger-zone";
 import { ProfileInfoForm } from "@/components/profile/profile-info-form";
 import { ProfileSecurityForm } from "@/components/profile/profile-security-form";
@@ -9,7 +9,7 @@ import { ProfileSecurityForm } from "@/components/profile/profile-security-form"
 const ProfilePage = () => {
   return (
     <div className="min-h-screen bg-[#F4F7FA] font-sans text-slate-900">
-      <DashboardHeader />
+      <Header />
 
       <main className="mx-auto max-w-5xl px-6 pt-32 pb-12">
         <div className="mb-12 border-b border-slate-200 pb-8">
