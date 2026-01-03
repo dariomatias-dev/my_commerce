@@ -1,6 +1,7 @@
 package com.dariomatias.my_commerce.repository.contract;
 
 import com.dariomatias.my_commerce.model.Order;
+import com.dariomatias.my_commerce.model.Store;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -20,6 +21,14 @@ public interface OrderContract {
     Page<Order> findAllByStoreId(UUID storeId, Pageable pageable);
 
     Page<Order> findAllByUserId(UUID userId, Pageable pageable);
+
+    Page<Store> findStoresWithOrdersByUserId(UUID userId, Pageable pageable);
+
+    Page<Order> findAllByUserIdAndStoreId(
+            UUID userId,
+            UUID storeId,
+            Pageable pageable
+    );
 
     Order update(Order order);
 

@@ -21,7 +21,27 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     Page<Order> findAllByStore(Store store, Pageable pageable);
 
     @Query("""
-        SELECT DISTINCT o
+        SELECT DISTINCT s
+        FROM Order o
+        JOIN o.store s
+        WHERE o.user.id = :userId
+    """)
+    Page<Store> findStoresWithOrdersByUserId(@Param("userId") UUID userId, Pageable pageable);
+
+    @Query("""
+        SELECT o
+        FROM Order o
+        WHERE o.user.id = :userId
+          AND o.store.id = :storeId
+    """)
+    Page<Order> findAllByUserIdAndStoreId(
+            @Param("userId") UUID userId,
+            @Param("storeId") UUID storeId,
+            Pageable pageable
+    );
+
+    @Query("""
+        SELECT o
         FROM Order o
         LEFT JOIN FETCH o.items
         WHERE o.id = :id

@@ -41,6 +41,15 @@ public class OrderJdbcRepository implements OrderContract {
         return order;
     };
 
+    private final RowMapper<Store> storeMapper = (rs, rowNum) -> {
+        Store store = new Store();
+        store.setId(UUID.fromString(rs.getString("id")));
+        store.setName(rs.getString("name"));
+        store.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        store.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+        return store;
+    };
+
     @Override
     public Order save(Order order) {
         UUID id = UUID.randomUUID();
@@ -201,6 +210,82 @@ public class OrderJdbcRepository implements OrderContract {
         order.setItems(items);
 
         return Optional.of(order);
+    }
+
+    @Override
+    public Page<Store> findStoresWithOrdersByUserId(UUID userId, Pageable pageable) {
+
+        String sql = """
+        SELECT s.*
+        FROM stores s
+        JOIN orders o ON o.store_id = s.id
+        WHERE o.user_id = :user_id
+        GROUP BY s.id, s.name, s.created_at, s.updated_at
+        ORDER BY MAX(o.created_at) DESC
+        OFFSET :offset LIMIT :limit
+    """;
+
+        String countSql = """
+        SELECT COUNT(DISTINCT s.id)
+        FROM stores s
+        JOIN orders o ON o.store_id = s.id
+        WHERE o.user_id = :user_id
+    """;
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("user_id", userId)
+                .addValue("offset", pageable.getOffset())
+                .addValue("limit", pageable.getPageSize());
+
+        List<Store> content = jdbc.query(sql, params, storeMapper);
+
+        Long total = jdbc.queryForObject(
+                countSql,
+                new MapSqlParameterSource("user_id", userId),
+                Long.class
+        );
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public Page<Order> findAllByUserIdAndStoreId(
+            UUID userId,
+            UUID storeId,
+            Pageable pageable
+    ) {
+
+        String sql = """
+        SELECT *
+        FROM orders
+        WHERE user_id = :user_id
+          AND store_id = :store_id
+        ORDER BY created_at DESC
+        OFFSET :offset LIMIT :limit
+    """;
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("user_id", userId)
+                .addValue("store_id", storeId)
+                .addValue("offset", pageable.getOffset())
+                .addValue("limit", pageable.getPageSize());
+
+        List<Order> content = jdbc.query(sql, params, mapper);
+
+        Long total = jdbc.queryForObject(
+                """
+                SELECT COUNT(*)
+                FROM orders
+                WHERE user_id = :user_id
+                  AND store_id = :store_id
+                """,
+                new MapSqlParameterSource()
+                        .addValue("user_id", userId)
+                        .addValue("store_id", storeId),
+                Long.class
+        );
+
+        return new PageImpl<>(content, pageable, total);
     }
 
     @Override

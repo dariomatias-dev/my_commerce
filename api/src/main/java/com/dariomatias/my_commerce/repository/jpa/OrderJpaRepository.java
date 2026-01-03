@@ -58,6 +58,20 @@ public class OrderJpaRepository implements OrderContract {
     }
 
     @Override
+    public Page<Store> findStoresWithOrdersByUserId(UUID userId, Pageable pageable) {
+        return repository.findStoresWithOrdersByUserId(userId, pageable);
+    }
+
+    @Override
+    public Page<Order> findAllByUserIdAndStoreId(
+            UUID userId,
+            UUID storeId,
+            Pageable pageable
+    ) {
+        return repository.findAllByUserIdAndStoreId(userId, storeId, pageable);
+    }
+
+    @Override
     public Order update(Order order) {
         return repository.save(order);
     }

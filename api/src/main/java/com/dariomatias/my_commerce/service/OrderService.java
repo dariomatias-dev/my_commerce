@@ -4,6 +4,7 @@ import com.dariomatias.my_commerce.dto.order.OrderRequestDTO;
 import com.dariomatias.my_commerce.dto.order.OrderWithItemsResponseDTO;
 import com.dariomatias.my_commerce.dto.order_item.OrderItemRequestDTO;
 import com.dariomatias.my_commerce.dto.order_item.OrderItemResponseDTO;
+import com.dariomatias.my_commerce.dto.stores.StoreResponseDTO;
 import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.Order;
 import com.dariomatias.my_commerce.model.OrderItem;
@@ -89,6 +90,14 @@ public class OrderService {
 
     public Page<Order> getAllByStore(UUID storeId, Pageable pageable) {
         return orderRepository.findAllByStoreId(storeId, pageable);
+    }
+
+    public Page<Store> getMyOrderStores(UUID userId, Pageable pageable) {
+        return orderRepository.findStoresWithOrdersByUserId(userId, pageable);
+    }
+
+    public Page<Order> getMyOrdersByStore(UUID userId, UUID storeId, Pageable pageable) {
+        return orderRepository.findAllByUserIdAndStoreId(userId, storeId, pageable);
     }
 
     public Order getById(UUID orderId, User user) {

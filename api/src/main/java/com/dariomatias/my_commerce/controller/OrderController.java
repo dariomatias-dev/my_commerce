@@ -3,7 +3,9 @@ package com.dariomatias.my_commerce.controller;
 import com.dariomatias.my_commerce.dto.ApiResponse;
 import com.dariomatias.my_commerce.dto.order.OrderRequestDTO;
 import com.dariomatias.my_commerce.dto.order.OrderResponseDTO;
+import com.dariomatias.my_commerce.dto.stores.StoreResponseDTO;
 import com.dariomatias.my_commerce.model.Order;
+import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.service.OrderService;
 import jakarta.validation.Valid;
@@ -75,20 +77,40 @@ public class OrderController {
         return ResponseEntity.ok(ApiResponse.success("Pedidos da loja obtidos com sucesso", orders));
     }
 
-    @GetMapping("/me")
-    public ResponseEntity<ApiResponse<Page<OrderResponseDTO>>> getMyOrders(
+    @GetMapping("/me/stores")
+    public ResponseEntity<ApiResponse<Page<Store>>> getMyOrderStores(
             @AuthenticationPrincipal User user,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
 
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Lojas com pedidos obtidas com sucesso",
+                        service.getMyOrderStores(user.getId(), pageable)
+                )
+        );
+    }
+
+    @GetMapping("/me/store/{storeId}")
+    public ResponseEntity<ApiResponse<Page<OrderResponseDTO>>> getMyOrdersByStore(
+            @AuthenticationPrincipal User user,
+            @PathVariable UUID storeId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+
         Page<OrderResponseDTO> orders = service
-                .getAllByUser(user.getId(), pageable)
+                .getMyOrdersByStore(user.getId(), storeId, pageable)
                 .map(OrderResponseDTO::from);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Pedidos do usuário obtidos com sucesso", orders)
+                ApiResponse.success(
+                        "Pedidos da loja obtidos com sucesso",
+                        orders
+                )
         );
     }
 
