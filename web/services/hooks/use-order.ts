@@ -4,10 +4,10 @@ import { useCallback } from "react";
 
 import { OrderRequest } from "@/@types/order/order-request";
 import { OrderResponse } from "@/@types/order/order-response";
+import { OrderWithItemsResponse } from "@/@types/order/order-with-items-response";
 import { PaginatedResponse } from "@/@types/paginated-response";
 import { StoreResponse } from "@/@types/store/store-response";
 import { apiClient } from "@/services/api-client";
-import { OrderWithItemsResponse } from "@/@types/order/order-with-items-response";
 
 export const useOrder = () => {
   const createOrder = useCallback(
@@ -38,6 +38,14 @@ export const useOrder = () => {
         `/orders/store/${storeId}`,
         { params: { page, size } }
       ),
+    []
+  );
+
+  const getMyOrders = useCallback(
+    (page = 0, size = 10) =>
+      apiClient.get<PaginatedResponse<OrderResponse>>("/orders/me", {
+        params: { page, size },
+      }),
     []
   );
 
@@ -76,6 +84,7 @@ export const useOrder = () => {
     getAllOrders,
     getOrdersByUserId,
     getOrdersByStoreId,
+    getMyOrders,
     getMyOrderStores,
     getMyOrdersByStore,
     getOrderById,
