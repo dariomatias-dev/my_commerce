@@ -17,16 +17,26 @@ public class OrderResponseDTO {
     private UUID userId;
     private BigDecimal totalAmount;
     private String status;
+    private int itemsCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public OrderResponseDTO(UUID id, UUID storeId, UUID userId, BigDecimal totalAmount, String status,
-                            LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public OrderResponseDTO(
+            UUID id,
+            UUID storeId,
+            UUID userId,
+            BigDecimal totalAmount,
+            String status,
+            int itemsCount,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt
+    ) {
         this.id = id;
         this.storeId = storeId;
         this.userId = userId;
         this.totalAmount = totalAmount;
         this.status = status;
+        this.itemsCount = itemsCount;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -38,9 +48,9 @@ public class OrderResponseDTO {
                 order.getUserId(),
                 order.getTotalAmount(),
                 order.getStatus(),
+                order.getItems() != null ? order.getItems().size() : 0,
                 order.getAudit().getCreatedAt(),
                 order.getAudit().getUpdatedAt()
         );
     }
-
 }
