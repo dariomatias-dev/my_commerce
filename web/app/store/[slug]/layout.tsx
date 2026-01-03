@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
+import { LoadingIndicator } from "@/components/dashboard/loading-indicator";
 import { Footer } from "@/components/layout/footer";
 import { StoreHeader } from "@/components/store/[slug]/store-header";
 import { StoreProvider } from "@/contexts/store-context";
@@ -54,12 +55,7 @@ const StoreLayout = ({ children }: StoreLayoutProps) => {
       <>
         <StoreHeader />
 
-        <main className="flex min-h-[60vh] flex-col items-center justify-center bg-white gap-4">
-          <div className="h-12 w-12 animate-[spin_2s_linear_infinite] rounded-2xl border-4 border-slate-100 border-t-indigo-600" />
-          <span className="font-black uppercase italic tracking-[0.3em] text-slate-950 animate-pulse">
-            Carregando loja...
-          </span>
-        </main>
+        <LoadingIndicator message="Carregando loja..." className="min-h-[80vh]"  />
 
         <Footer />
       </>

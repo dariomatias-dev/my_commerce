@@ -9,7 +9,7 @@ import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
 import { TransactionResponse } from "@/@types/transaction/transaction-response";
 import { DashboardErrorCard } from "@/components/dashboard/dashboard-error-card";
-import { DashboardLoading } from "@/components/dashboard/dashboard-loading";
+import { LoadingIndicator } from "@/components/dashboard/loading-indicator";
 import { DashboardSidebarActions } from "@/components/dashboard/store/[slug]/dashboard-sidebar-actions";
 import { DashboardStats } from "@/components/dashboard/store/[slug]/dashboard-stats";
 import { DashboardTransactionTable } from "@/components/dashboard/store/[slug]/dashboard-transaction-table";
@@ -72,7 +72,7 @@ const StoreDashboardPage = () => {
   }, [fetchStoreData]);
 
   if (isLoading) {
-    return <DashboardLoading message="Carregando loja..." />;
+    return <LoadingIndicator message="Carregando loja..." />;
   }
 
   if (error || !store) {

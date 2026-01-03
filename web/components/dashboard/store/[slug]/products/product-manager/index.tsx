@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { ProductResponse } from "@/@types/product/product-response";
-import { DashboardLoading } from "@/components/dashboard/dashboard-loading";
+import { LoadingIndicator } from "@/components/dashboard/loading-indicator";
 import { Pagination } from "@/components/pagination";
 import { useProduct } from "@/services/hooks/use-product";
 import { ProductManagerError } from "./product-manager-error";
@@ -61,7 +61,7 @@ export const ProductManager = ({ storeId }: ProductManagerProps) => {
 
   if (isLoading) {
     return (
-      <DashboardLoading message="Obtendo produtos..." className="min-h-100" />
+      <LoadingIndicator message="Obtendo produtos..." className="min-h-100" />
     );
   }
 
