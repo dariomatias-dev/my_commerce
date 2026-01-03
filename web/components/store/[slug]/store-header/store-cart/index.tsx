@@ -147,6 +147,7 @@ export const StoreCart = ({ store }: StoreCartProps) => {
       <SheetTrigger asChild>
         <button className="group relative flex h-10 items-center gap-4 rounded-xl bg-slate-950 px-8 text-white transition-all hover:bg-indigo-600 active:scale-95 border-2 border-transparent outline-none">
           <ShoppingBag size={20} />
+
           <span className="text-xs font-black tracking-[0.2em] uppercase italic">
             Carrinho
           </span>
@@ -239,15 +240,17 @@ export const StoreCart = ({ store }: StoreCartProps) => {
             </span>
           </div>
 
-          <ActionButton
-            onClick={() => router.push(`/store/${store.slug}/checkout`)}
-            variant="primary"
-            size="lg"
-            showArrow
-            disabled={items.length === 0 || isLoading}
-          >
-            Fechar pedido
-          </ActionButton>
+          <SheetClose className="w-full" asChild>
+            <ActionButton
+              onClick={() => router.push(`/store/${store.slug}/checkout`)}
+              variant="primary"
+              size="lg"
+              showArrow
+              disabled={items.length === 0 || isLoading}
+            >
+              Fechar pedido
+            </ActionButton>
+          </SheetClose>
         </div>
       </SheetContent>
     </Sheet>
