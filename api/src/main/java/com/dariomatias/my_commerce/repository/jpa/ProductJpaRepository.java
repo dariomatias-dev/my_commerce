@@ -77,6 +77,11 @@ public class ProductJpaRepository implements ProductContract {
     }
 
     @Override
+    public long countByStoreIdAndActiveTrue(UUID storeId) {
+        return repository.countByStore_IdAndActiveTrue(storeId);
+    }
+
+    @Override
     public Product update(Product product) {
         return repository.save(product);
     }

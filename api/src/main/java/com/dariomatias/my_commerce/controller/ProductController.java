@@ -67,7 +67,6 @@ public class ProductController {
 
     @PostMapping("/store/products-by-ids")
     public ResponseEntity<ApiResponse<Page<ProductResponseDTO>>> getByIds(
-            @AuthenticationPrincipal User user,
             @RequestBody ProductIdsRequestDTO request,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -101,6 +100,18 @@ public class ProductController {
         Product product = service.getById(user, id);
 
         return ResponseEntity.ok(ApiResponse.success("Produto obtido com sucesso", ProductResponseDTO.from(product)));
+    }
+
+    @GetMapping("/store/{storeId}/stats/active-products")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Long>> getActiveProductsCount(
+            @PathVariable UUID storeId
+    ) {
+        long count = service.getActiveProductsCount(storeId);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Quantidade de produtos ativos", count)
+        );
     }
 
     @PatchMapping("/{id}")

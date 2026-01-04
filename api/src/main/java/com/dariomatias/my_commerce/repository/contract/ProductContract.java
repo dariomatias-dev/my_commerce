@@ -23,6 +23,8 @@ public interface ProductContract {
 
     Optional<Product> findById(UUID id);
 
+    long countByStoreIdAndActiveTrue(UUID storeId);
+
     Product update(Product product);
 
     void delete(UUID id);

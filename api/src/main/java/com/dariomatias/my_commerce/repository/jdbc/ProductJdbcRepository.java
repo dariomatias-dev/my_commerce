@@ -202,6 +202,23 @@ public class ProductJdbcRepository implements ProductContract {
     }
 
     @Override
+    public long countByStoreIdAndActiveTrue(UUID storeId) {
+        String sql = """
+        SELECT COUNT(*)
+        FROM products
+        WHERE store_id = :store_id
+          AND active = TRUE
+          AND deleted_at IS NULL
+    """;
+
+        return jdbc.queryForObject(
+                sql,
+                new MapSqlParameterSource("store_id", storeId),
+                Long.class
+        );
+    }
+
+    @Override
     public Product update(Product product) {
         LocalDateTime now = LocalDateTime.now();
 
