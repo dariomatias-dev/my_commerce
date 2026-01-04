@@ -14,6 +14,7 @@ const AdminStoreDashboardPage = () => {
       backLabel="Voltar para gestão de lojas"
       productsPath={`${slug}/products`}
       createProductPath={`${slug}/products/new`}
+      canCreate={false}
     />
   );
 };

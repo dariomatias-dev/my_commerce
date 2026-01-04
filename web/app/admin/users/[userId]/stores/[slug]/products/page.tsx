@@ -12,6 +12,7 @@ const AdminStoreProductsPage = () => {
       slug={slug}
       backPath={`/admin/users/${userId}/stores/${slug}`}
       createProductPath={`/admin/users/${userId}/stores/${slug}/products/new`}
+      canCreate={false}
     />
   );
 };

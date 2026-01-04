@@ -27,6 +27,7 @@ interface StoreDashboardProps {
   backLabel: string;
   productsPath: string;
   createProductPath: string;
+  canCreate?: boolean;
 }
 
 export const StoreDashboard = ({
@@ -35,6 +36,7 @@ export const StoreDashboard = ({
   backLabel,
   productsPath,
   createProductPath,
+  canCreate = true,
 }: StoreDashboardProps) => {
   const { getStoreBySlug } = useStore();
   const { getTransactionsByStoreSlug } = useTransaction();
@@ -154,12 +156,14 @@ export const StoreDashboard = ({
               <Eye size={16} /> PRODUTOS
             </Link>
 
-            <Link
-              href={createProductPath}
-              className="flex flex-1 items-center justify-center gap-3 rounded-xl bg-slate-950 px-6 py-4 text-[10px] font-black tracking-widest text-white shadow-2xl transition-all hover:bg-indigo-600 active:scale-95 lg:flex-none"
-            >
-              <Plus size={16} /> NOVO ITEM
-            </Link>
+            {canCreate && (
+              <Link
+                href={createProductPath}
+                className="flex flex-1 items-center justify-center gap-3 rounded-xl bg-slate-950 px-6 py-4 text-[10px] font-black tracking-widest text-white shadow-2xl transition-all hover:bg-indigo-600 active:scale-95 lg:flex-none"
+              >
+                <Plus size={16} /> NOVO ITEM
+              </Link>
+            )}
           </div>
         </div>
 
