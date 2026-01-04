@@ -6,12 +6,12 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { StoreResponse } from "@/@types/store/store-response";
-import { CategoryFormDialog } from "@/components/dashboard/store/[slug]/products/category-form-dialog";
+import { CategoryFormDialog } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/category-form-dialog";
 import {
   DashboardCategoryManager,
   DashboardCategoryManagerRef,
-} from "@/components/dashboard/store/[slug]/products/dashboard-category-manager";
-import { ProductManager } from "@/components/dashboard/store/[slug]/products/product-manager";
+} from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/dashboard-category-manager";
+import { ProductManager } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/product-manager";
 import { useStore } from "@/services/hooks/use-store";
 
 interface StoreProductsDashboardProps {
@@ -143,4 +143,3 @@ export const StoreProductsDashboard = ({
     </main>
   );
 };
-  
