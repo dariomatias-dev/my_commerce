@@ -5,6 +5,7 @@ import {
   Home,
   LogOut,
   Settings,
+  Shield,
   ShoppingBag,
   User,
 } from "lucide-react";
@@ -94,6 +95,15 @@ export const UserProfileDropdown = () => {
               className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition-all hover:bg-slate-50 hover:text-indigo-600"
             >
               <Home size={16} /> Dashboard
+            </Link>
+          )}
+
+          {user?.role === "ADMIN" && (
+            <Link
+              href="/admin"
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition-all hover:bg-slate-50 hover:text-indigo-600"
+            >
+              <Shield size={16} /> Admin
             </Link>
           )}
 
