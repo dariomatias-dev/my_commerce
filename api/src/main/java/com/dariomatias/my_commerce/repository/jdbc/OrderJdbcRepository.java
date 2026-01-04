@@ -289,6 +289,22 @@ public class OrderJdbcRepository implements OrderContract {
     }
 
     @Override
+    public long countByStoreIdAndStatus(UUID storeId, String status) {
+        String sql = """
+        SELECT COUNT(*)
+        FROM orders
+        WHERE store_id = :storeId
+          AND status = :status
+    """;
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("storeId", storeId)
+                .addValue("status", status);
+
+        return jdbc.queryForObject(sql, params, Long.class);
+    }
+
+    @Override
     public Order update(Order order) {
         LocalDateTime now = LocalDateTime.now();
         order.getAudit().setUpdatedAt(now);

@@ -114,6 +114,10 @@ public class OrderService {
         return order;
     }
 
+    public long getSuccessfulSalesCount(UUID storeId) {
+        return orderRepository.countByStoreIdAndStatus(storeId, "COMPLETED");
+    }
+
     public OrderWithItemsResponseDTO getByIdWithItems(UUID id, User user) {
 
         Order order = orderRepository.getByIdWithItems(id)

@@ -30,6 +30,8 @@ public interface OrderContract {
             Pageable pageable
     );
 
+    long countByStoreIdAndStatus(UUID storeId, String status);
+
     Order update(Order order);
 
     void deleteById(UUID id);

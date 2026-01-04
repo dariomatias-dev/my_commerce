@@ -131,6 +131,16 @@ public class OrderController {
         return ResponseEntity.ok(ApiResponse.success("Pedido obtido com sucesso", OrderResponseDTO.from(service.getById(id, user))));
     }
 
+    @GetMapping("/store/{storeId}/stats/successful-sales")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Long>> getSuccessfulSalesCount(
+            @PathVariable UUID storeId
+    ) {
+        long count = service.getSuccessfulSalesCount(storeId);
+
+        return ResponseEntity.ok(ApiResponse.success("Total de vendas bem-sucedidas", count));
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {

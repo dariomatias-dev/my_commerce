@@ -40,6 +40,8 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
             Pageable pageable
     );
 
+    long countByStore_IdAndStatus(UUID storeId, String status);
+
     @Query("""
         SELECT o
         FROM Order o
