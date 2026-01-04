@@ -74,6 +74,23 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success("Usuário obtido com sucesso.", UserResponse.from(currentUser)));
     }
 
+    @GetMapping("/stats/active-users")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Long>> getActiveUsersCount() {
+        long activeUsers = userService.getActiveUsersCount();
+
+        return ResponseEntity.ok(ApiResponse.success("Quantidade de usuários ativos", activeUsers));
+    }
+
+    @GetMapping("/stats/new-users-this-month")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Long>> getNewActiveUsersThisMonth() {
+        long newUsers = userService.getNewActiveUsersSinceStartOfMonth();
+
+        return ResponseEntity.ok(ApiResponse.success("Quantidade de novos usuários ativos desde o início do mês", newUsers));
+    }
+
+
     @PatchMapping("/me")
     public ResponseEntity<ApiResponse<UserResponse>> updateCurrentUser(
             @AuthenticationPrincipal User user,

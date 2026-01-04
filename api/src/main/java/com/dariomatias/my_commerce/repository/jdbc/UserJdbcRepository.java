@@ -96,6 +96,18 @@ public class UserJdbcRepository implements UserContract {
     }
 
     @Override
+    public long countByEnabledTrueAndDeletedAtIsNull() {
+        String sql = "SELECT COUNT(*) FROM users WHERE enabled = true AND deleted_at IS NULL";
+        return jdbcTemplate.queryForObject(sql, Long.class);
+    }
+
+    @Override
+    public long countByEnabledTrueAndDeletedAtIsNullAndAuditCreatedAtAfter(LocalDateTime startDate) {
+        String sql = "SELECT COUNT(*) FROM users WHERE enabled = true AND deleted_at IS NULL AND created_at >= ?";
+        return jdbcTemplate.queryForObject(sql, Long.class, startDate);
+    }
+
+    @Override
     public User update(User user) {
         String sql = """
            UPDATE users 

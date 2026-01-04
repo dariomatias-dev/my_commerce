@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -39,6 +40,16 @@ public class UserJpaRepository implements UserContract {
     @Override
     public Optional<User> findByEmail(String email) {
         return repository.findByEmail(email);
+    }
+
+    @Override
+    public long countByEnabledTrueAndDeletedAtIsNull() {
+        return  repository.countByEnabledTrueAndDeletedAtIsNull();
+    }
+
+    @Override
+    public long countByEnabledTrueAndDeletedAtIsNullAndAuditCreatedAtAfter(LocalDateTime startDate) {
+        return repository.countByEnabledTrueAndDeletedAtIsNullAndAuditCreatedAtAfter(startDate);
     }
 
     @Override
