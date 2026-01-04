@@ -19,6 +19,7 @@ import { useUser } from "@/services/hooks/use-user";
 
 const UserManagementPage = () => {
   const router = useRouter();
+
   const { getAllUsers } = useUser();
 
   const [users, setUsers] = useState<AdminUserResponse[]>([]);

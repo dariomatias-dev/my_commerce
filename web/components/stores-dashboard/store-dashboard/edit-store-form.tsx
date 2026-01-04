@@ -2,7 +2,7 @@
 
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
@@ -14,8 +14,17 @@ import {
 } from "@/components/dashboard/store/store-form";
 import { useStore } from "@/services/hooks/use-store";
 
-const EditStorePage = () => {
-  const { slug } = useParams() as { slug: string };
+interface EditStoreFormProps {
+  storeSlug: string;
+  backPath: string;
+  successPath: string;
+}
+
+export const EditStoreForm = ({
+  storeSlug,
+  backPath,
+  successPath,
+}: EditStoreFormProps) => {
   const router = useRouter();
   const { getStoreBySlug, updateStore } = useStore();
 
@@ -27,16 +36,20 @@ const EditStorePage = () => {
   const loadStore = useCallback(async () => {
     try {
       setIsLoading(true);
-      const data = await getStoreBySlug(slug);
+
+      const data = await getStoreBySlug(storeSlug);
+
       setStore(data);
     } catch (error) {
-      setApiError(
-        error instanceof ApiError ? error.message : "Erro ao carregar loja."
-      );
+      if (error instanceof ApiError) {
+        setApiError(error.message);
+      } else {
+        setApiError("Erro ao carregar loja.");
+      }
     } finally {
       setIsLoading(false);
     }
-  }, [slug, getStoreBySlug]);
+  }, [storeSlug, getStoreBySlug]);
 
   useEffect(() => {
     loadStore();
@@ -56,7 +69,8 @@ const EditStorePage = () => {
       };
 
       await updateStore(store.id, data, values.logo?.[0], values.banner?.[0]);
-      router.push("/dashboard");
+
+      router.push(successPath);
     } catch (error) {
       setApiError(
         error instanceof ApiError ? error.message : "Erro ao atualizar loja."
@@ -68,7 +82,7 @@ const EditStorePage = () => {
 
   if (isLoading) {
     return (
-      <div className="pt-40 text-center font-black animate-pulse uppercase">
+      <div className="pt-40 text-center font-black animate-pulse uppercase tracking-[0.2em] text-slate-400">
         Sincronizando Instância...
       </div>
     );
@@ -78,7 +92,7 @@ const EditStorePage = () => {
     <main className="min-h-screen bg-[#F4F7FA] mx-auto max-w-400 px-6 pt-32 pb-20">
       <div className="mb-10 border-b border-slate-200 pb-8">
         <Link
-          href="/dashboard"
+          href={backPath}
           className="mb-6 flex items-center gap-2 text-[10px] font-black tracking-widest text-slate-400 uppercase hover:text-indigo-600 transition-colors"
         >
           <ArrowLeft size={14} /> Cancelar Edição
@@ -104,5 +118,3 @@ const EditStorePage = () => {
     </main>
   );
 };
-
-export default EditStorePage;

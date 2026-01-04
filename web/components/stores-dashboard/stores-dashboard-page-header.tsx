@@ -39,7 +39,7 @@ export const StoresDashboardPageHeader = ({
 
     {showCreateButton && (
       <Link
-        href="/dashboard/store/new"
+        href="stores/new"
         className="group flex items-center gap-4 rounded-2xl bg-slate-950 px-10 py-5 text-xs font-black tracking-widest text-white shadow-2xl transition-all hover:bg-indigo-600 active:scale-95"
       >
         <Plus size={20} />

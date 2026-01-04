@@ -24,7 +24,9 @@ export const StoreFileUploadField = ({
     const handlePreviewUpdate = () => {
       if (file && file.length > 0) {
         const url = URL.createObjectURL(file[0]);
+        
         setPreview(url);
+
         return () => URL.revokeObjectURL(url);
       }
       setPreview(existingUrl);

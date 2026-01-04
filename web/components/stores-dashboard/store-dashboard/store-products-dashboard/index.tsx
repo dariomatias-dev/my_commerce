@@ -15,16 +15,14 @@ import { ProductManager } from "@/components/stores-dashboard/store-dashboard/st
 import { useStore } from "@/services/hooks/use-store";
 
 interface StoreProductsDashboardProps {
-  slug: string;
+  storeSlug: string;
   backPath: string;
-  createProductPath: string;
   canCreate?: boolean;
 }
 
 export const StoreProductsDashboard = ({
-  slug,
+  storeSlug,
   backPath,
-  createProductPath,
   canCreate = true,
 }: StoreProductsDashboardProps) => {
   const router = useRouter();
@@ -40,7 +38,7 @@ export const StoreProductsDashboard = ({
   useEffect(() => {
     const fetchStore = async () => {
       try {
-        const data = await getStoreBySlug(slug);
+        const data = await getStoreBySlug(storeSlug);
         setStore(data);
       } catch (error) {
         console.error(error);
@@ -48,7 +46,7 @@ export const StoreProductsDashboard = ({
     };
 
     fetchStore();
-  }, [getStoreBySlug, slug]);
+  }, [storeSlug, getStoreBySlug]);
 
   const handleRefresh = () => {
     categoryManagerRef.current?.refresh();
@@ -56,7 +54,7 @@ export const StoreProductsDashboard = ({
 
   const handleCreateClick = () => {
     if (view === "products") {
-      router.push(createProductPath);
+      router.push("products/new");
     } else {
       setIsCategoryFormDialogOpen(true);
     }
@@ -73,14 +71,17 @@ export const StoreProductsDashboard = ({
             >
               <ArrowLeft size={14} /> Voltar ao Console
             </Link>
+
             <div className="mb-2 flex items-center gap-2">
               <div className="flex h-5 items-center rounded bg-indigo-600 px-2 text-[9px] font-black tracking-widest text-white uppercase">
                 Gestão de Ativos
               </div>
+
               <span className="text-[10px] font-black tracking-[0.3em] text-slate-400 uppercase italic">
-                {store?.name || slug}
+                {store?.name || storeSlug}
               </span>
             </div>
+
             <h1 className="text-5xl font-black tracking-tighter text-slate-950 uppercase italic md:text-6xl">
               INVENTÁRIO <span className="text-indigo-600">CENTRAL.</span>
             </h1>
@@ -98,6 +99,7 @@ export const StoreProductsDashboard = ({
               >
                 <Package size={14} /> Produtos
               </button>
+
               <button
                 onClick={() => setView("categories")}
                 className={`flex h-full items-center gap-2 px-6 text-[10px] font-black tracking-widest uppercase transition-all rounded-lg ${

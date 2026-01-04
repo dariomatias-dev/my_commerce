@@ -49,6 +49,7 @@ const AdminDashboard = () => {
   const fetchDashboardData = useCallback(async () => {
     setIsLoading(true);
     setErrorMessage(null);
+
     try {
       const [ordersRes, usersRes] = await Promise.all([
         getAllOrders(0, 5),

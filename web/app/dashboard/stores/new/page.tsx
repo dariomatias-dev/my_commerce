@@ -15,7 +15,9 @@ import { useStore } from "@/services/hooks/use-store";
 
 const NewStorePage = () => {
   const router = useRouter();
+
   const { createStore } = useStore();
+
   const [isLoading, setIsLoading] = useState(false);
   const [globalError, setGlobalError] = useState<string | null>(null);
 

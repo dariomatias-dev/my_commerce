@@ -5,15 +5,17 @@ import { useParams } from "next/navigation";
 import { StoreDashboard } from "@/components/stores-dashboard/store-dashboard";
 
 const AdminStoreDashboardPage = () => {
-  const { slug } = useParams() as { slug: string };
+  const { storeSlug, userId } = useParams() as {
+    storeSlug: string;
+    userId: string;
+  };
 
   return (
     <StoreDashboard
-      slug={slug}
-      backPath="/admin/stores"
+      storeSlug={storeSlug}
+      backPath={`/admin/users/${userId}/stores`}
       backLabel="Voltar para gestão de lojas"
-      productsPath={`${slug}/products`}
-      createProductPath={`${slug}/products/new`}
+      createProductPath={`${storeSlug}/products/new`}
       canCreate={false}
     />
   );

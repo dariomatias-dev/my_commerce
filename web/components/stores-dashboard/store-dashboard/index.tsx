@@ -22,20 +22,16 @@ import { useStore } from "@/services/hooks/use-store";
 import { useTransaction } from "@/services/hooks/use-transaction";
 
 interface StoreDashboardProps {
-  slug: string;
+  storeSlug: string;
   backPath: string;
   backLabel: string;
-  productsPath: string;
-  createProductPath: string;
   canCreate?: boolean;
 }
 
 export const StoreDashboard = ({
-  slug,
+  storeSlug,
   backPath,
   backLabel,
-  productsPath,
-  createProductPath,
   canCreate = true,
 }: StoreDashboardProps) => {
   const { getStoreBySlug } = useStore();
@@ -50,39 +46,43 @@ export const StoreDashboard = ({
   const fetchTransactions = useCallback(async () => {
     try {
       setIsTransactionsLoading(true);
-      const response = await getTransactionsByStoreSlug(slug, 0, 10);
+      const response = await getTransactionsByStoreSlug(storeSlug, 0, 10);
       setTransactions(response.content);
     } catch (err) {
       console.error(err);
     } finally {
       setIsTransactionsLoading(false);
     }
-  }, [slug, getTransactionsByStoreSlug]);
+  }, [storeSlug, getTransactionsByStoreSlug]);
 
   const fetchStoreData = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
-      const data = await getStoreBySlug(slug);
+
+      const data = await getStoreBySlug(storeSlug);
+
       setStore(data);
+
       await fetchTransactions();
-    } catch (err) {
-      setError(
-        err instanceof ApiError
-          ? err.message
-          : "Erro ao carregar dados do console."
-      );
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setError(error.message);
+      } else {
+        setError("Erro ao carregar dados do console.");
+      }
     } finally {
       setIsLoading(false);
     }
-  }, [slug, getStoreBySlug, fetchTransactions]);
+  }, [storeSlug, getStoreBySlug, fetchTransactions]);
 
   useEffect(() => {
     fetchStoreData();
   }, [fetchStoreData]);
 
-  if (isLoading)
+  if (isLoading) {
     return <LoadingIndicator message="Sincronizando console operacional..." />;
+  }
 
   if (error || !store) {
     return (
@@ -90,12 +90,15 @@ export const StoreDashboard = ({
         <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-[2.5rem] bg-red-50 text-red-500 shadow-xl shadow-red-100">
           <AlertCircle size={48} />
         </div>
+
         <h2 className="text-4xl font-black uppercase italic tracking-tighter text-slate-950">
           Console <span className="text-red-500">Indisponível.</span>
         </h2>
+
         <p className="mt-4 max-w-xs text-[10px] font-bold uppercase tracking-widest text-slate-400">
           {error || "Estabelecimento não localizado."}
         </p>
+
         <div className="mt-10 flex flex-col gap-4">
           <button
             onClick={fetchStoreData}
@@ -103,6 +106,7 @@ export const StoreDashboard = ({
           >
             <RefreshCcw size={16} /> REESTABELECER CONEXÃO
           </button>
+
           <Link
             href={backPath}
             className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-950"
@@ -134,6 +138,7 @@ export const StoreDashboard = ({
               >
                 {store.isActive ? "OPERACIONAL" : "OFFLINE"}
               </div>
+
               <span className="text-[10px] font-black tracking-[0.3em] text-slate-400 uppercase italic">
                 ID: {store.id.slice(0, 8).toUpperCase()}-SECURED
               </span>
@@ -150,7 +155,7 @@ export const StoreDashboard = ({
             </button>
 
             <Link
-              href={productsPath}
+              href={`${storeSlug}/products`}
               className="flex flex-1 items-center justify-center gap-3 rounded-xl border border-slate-950 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-slate-950 uppercase transition-all hover:bg-slate-50 lg:flex-none"
             >
               <Eye size={16} /> PRODUTOS
@@ -158,7 +163,7 @@ export const StoreDashboard = ({
 
             {canCreate && (
               <Link
-                href={createProductPath}
+                href={`${storeSlug}/products/new`}
                 className="flex flex-1 items-center justify-center gap-3 rounded-xl bg-slate-950 px-6 py-4 text-[10px] font-black tracking-widest text-white shadow-2xl transition-all hover:bg-indigo-600 active:scale-95 lg:flex-none"
               >
                 <Plus size={16} /> NOVO ITEM

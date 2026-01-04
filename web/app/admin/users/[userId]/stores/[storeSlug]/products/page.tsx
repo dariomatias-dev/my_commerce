@@ -5,13 +5,15 @@ import { useParams } from "next/navigation";
 import { StoreProductsDashboard } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard";
 
 const AdminStoreProductsPage = () => {
-  const { userId, slug } = useParams() as { userId: string; slug: string };
+  const { storeSlug, userId } = useParams() as {
+    storeSlug: string;
+    userId: string;
+  };
 
   return (
     <StoreProductsDashboard
-      slug={slug}
-      backPath={`/admin/users/${userId}/stores/${slug}`}
-      createProductPath={`/admin/users/${userId}/stores/${slug}/products/new`}
+      storeSlug={storeSlug}
+      backPath={`/admin/users/${userId}/stores/${storeSlug}`}
       canCreate={false}
     />
   );

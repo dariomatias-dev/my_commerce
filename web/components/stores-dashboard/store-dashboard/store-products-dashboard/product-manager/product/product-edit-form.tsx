@@ -113,7 +113,7 @@ export const ProductEditForm = ({
         initialData={product}
         onSubmit={onSubmit}
         isSubmitting={isSubmitting}
-        slug={storeSlug}
+        storeSlug={storeSlug}
       />
     </main>
   );

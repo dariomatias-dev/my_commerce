@@ -7,8 +7,9 @@ import { StoresDashboard } from "@/components/stores-dashboard";
 import { useStore } from "@/services/hooks/use-store";
 
 const AdminUserStoresPage = () => {
-  const params = useParams();
-  const userId = params.userId as string;
+  const { userId } = useParams() as {
+    userId: string;
+  };
 
   const { getAllByUser, deleteStore } = useStore();
 

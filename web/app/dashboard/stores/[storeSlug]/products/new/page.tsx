@@ -11,8 +11,10 @@ import { ProductFormValues } from "@/schemas/product.schema";
 import { useProduct } from "@/services/hooks/use-product";
 
 const NewProductPage = () => {
-  const { slug } = useParams() as { slug: string };
+  const { storeSlug } = useParams() as { storeSlug: string };
+
   const router = useRouter();
+
   const { createProduct } = useProduct();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,9 +26,10 @@ const NewProductPage = () => {
       setApiError(null);
 
       const payload = { ...data, storeId };
+
       await createProduct(payload, data.images || []);
 
-      router.push(`/dashboard/store/${slug}/products`);
+      router.push(`/dashboard/stores/${storeSlug}/products`);
     } catch (error) {
       if (error instanceof ApiError) {
         setApiError(error.message);
@@ -42,11 +45,12 @@ const NewProductPage = () => {
     <main className="min-h-screen bg-[#F4F7FA] mx-auto max-w-4xl px-6 pt-32 pb-20">
       <div className="mb-10">
         <Link
-          href={`/dashboard/store/${slug}/products`}
+          href={`/dashboard/store/${storeSlug}/products`}
           className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase hover:text-indigo-600"
         >
           <ArrowLeft size={14} /> Voltar ao Inventário
         </Link>
+
         <h1 className="text-5xl font-black text-slate-950 uppercase italic mt-4">
           NOVO <span className="text-indigo-600">PRODUTO.</span>
         </h1>
@@ -59,7 +63,7 @@ const NewProductPage = () => {
       )}
 
       <ProductForm
-        slug={slug}
+        storeSlug={storeSlug}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
       />

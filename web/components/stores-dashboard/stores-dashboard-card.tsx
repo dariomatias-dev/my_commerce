@@ -3,7 +3,6 @@
 import { ArrowRight, Pencil, StoreIcon, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { StoreResponse } from "@/@types/store/store-response";
@@ -53,8 +52,6 @@ export const StoresDashboardCard = ({
   store,
   onDelete,
 }: StoresDashboardCardProps) => {
-  const pathname = usePathname();
-
   const [isFirstConfirmOpen, setIsFirstConfirmOpen] = useState(false);
   const [isSecondConfirmOpen, setIsSecondConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -62,6 +59,7 @@ export const StoresDashboardCard = ({
   const handleStartDelete = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
     setIsFirstConfirmOpen(true);
   };
 
@@ -73,6 +71,7 @@ export const StoresDashboardCard = ({
   const handleConfirmDelete = async () => {
     try {
       setIsDeleting(true);
+
       await onDelete(store.id);
     } finally {
       setIsDeleting(false);
@@ -88,11 +87,12 @@ export const StoresDashboardCard = ({
 
           <div className="flex items-center gap-3">
             <Link
-              href={`/dashboard/store/edit/${store.slug}`}
+              href={`stores/${store.slug}/edit`}
               className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-100 bg-white text-slate-400 transition-all hover:border-indigo-600 hover:text-indigo-600"
             >
               <Pencil size={18} />
             </Link>
+
             <button
               onClick={handleStartDelete}
               className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-100 bg-white text-slate-400 transition-all hover:border-red-600 hover:text-red-600"
@@ -129,11 +129,7 @@ export const StoresDashboardCard = ({
         </p>
 
         <Link
-          href={
-            pathname.startsWith("/admin")
-              ? `stores/${store.slug}`
-              : `/dashboard/store/${store.slug}`
-          }
+          href={`stores/${store.slug}`}
           className="mt-12 flex w-full items-center justify-between border-t border-slate-50 pt-6"
         >
           <div>

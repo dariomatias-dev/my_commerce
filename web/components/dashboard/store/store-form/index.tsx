@@ -80,8 +80,8 @@ export const StoreForm = ({
         });
 
         const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/files/stores/${initialData.slug}`;
-        setExistingLogo(`${baseUrl}/logo.jpeg`);
-        setExistingBanner(`${baseUrl}/banner.jpeg`);
+        setExistingLogo(`${baseUrl}/logo.png`);
+        setExistingBanner(`${baseUrl}/banner.png`);
       }
     };
 
@@ -100,6 +100,7 @@ export const StoreForm = ({
               <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase">
                 Nome da Loja
               </label>
+
               <input
                 {...register("name")}
                 className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 font-bold transition-all focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-600/5 focus:outline-none"
@@ -115,11 +116,13 @@ export const StoreForm = ({
               <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase">
                 Descrição Operacional
               </label>
+
               <textarea
                 {...register("description")}
                 rows={4}
                 className="w-full resize-none rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 font-bold transition-all focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-600/5 focus:outline-none"
               />
+
               {errors.description && (
                 <p className="ml-1 text-[10px] font-bold text-red-500">
                   {errors.description.message}

@@ -25,14 +25,14 @@ interface ProductFormProps {
     removedImages?: string[]
   ) => Promise<void>;
   isSubmitting: boolean;
-  slug: string;
+  storeSlug: string;
 }
 
 export const ProductForm = ({
   initialData,
   onSubmit,
   isSubmitting,
-  slug,
+  storeSlug,
 }: ProductFormProps) => {
   const { getStoreBySlug } = useStore();
   const { getCategoriesByStoreId } = useCategory();
@@ -66,22 +66,27 @@ export const ProductForm = ({
 
   useEffect(() => {
     setValue("existingCount", existingImages.length);
+
     if (!isLoadingData) trigger("images");
   }, [existingImages, setValue, trigger, isLoadingData]);
 
   const fetchDependencies = useCallback(async () => {
     try {
       setIsLoadingData(true);
-      const storeData = await getStoreBySlug(slug);
+
+      const storeData = await getStoreBySlug(storeSlug);
+
       setStoreId(storeData.id);
+
       const catData = await getCategoriesByStoreId(storeData.id, 0, 100);
+
       setCategories(catData.content);
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoadingData(false);
     }
-  }, [slug, getStoreBySlug, getCategoriesByStoreId]);
+  }, [storeSlug, getStoreBySlug, getCategoriesByStoreId]);
 
   useEffect(() => {
     if (initialData) {
@@ -187,6 +192,7 @@ export const ProductForm = ({
               className="w-full rounded-2xl border-2 bg-slate-50 py-4 px-6 font-bold text-slate-950 border-slate-100 outline-none focus:border-indigo-600"
             />
           </ProductFormField>
+
           <ProductFormField label="Estoque" icon={Box}>
             <input
               {...register("stock", { valueAsNumber: true })}

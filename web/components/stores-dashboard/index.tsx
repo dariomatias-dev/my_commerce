@@ -50,12 +50,12 @@ export const StoresDashboard = ({
 
       setStores(response.content);
       setTotalPages(response.totalPages);
-    } catch (err) {
-      setError(
-        err instanceof ApiError
-          ? err.message
-          : "Não foi possível carregar as informações das lojas."
-      );
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setError(error.message);
+      } else {
+        setError("Não foi possível carregar as informações das lojas.");
+      }
     } finally {
       setIsLoading(false);
     }

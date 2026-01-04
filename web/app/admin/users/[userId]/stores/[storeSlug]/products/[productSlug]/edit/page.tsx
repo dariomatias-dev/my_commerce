@@ -5,18 +5,18 @@ import { useParams } from "next/navigation";
 import { ProductEditForm } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/product-manager/product/product-edit-form";
 
 const AdminEditProductPage = () => {
-  const { userId, slug, productSlug } = useParams() as {
+  const { storeSlug, userId, productSlug } = useParams() as {
+    storeSlug: string;
     userId: string;
-    slug: string;
     productSlug: string;
   };
 
   return (
     <ProductEditForm
-      storeSlug={slug}
+      storeSlug={storeSlug}
       productSlug={productSlug}
-      backPath={`/admin/users/${userId}/stores/${slug}/products`}
-      successPath={`/admin/users/${userId}/stores/${slug}/products`}
+      backPath={`/admin/users/${userId}/stores/${storeSlug}/products`}
+      successPath={`/admin/users/${userId}/stores/${storeSlug}/products`}
     />
   );
 };
