@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { dashboardGuard } from "./middleware/guards/dashboard-guard";
+import { dashboardGuard } from "./proxy/guards/dashboard-guard";
 
-export function middleware(request: NextRequest) {
+export const proxy = (request: NextRequest) => {
   const { pathname } = request.nextUrl;
 
   if (pathname.startsWith("/dashboard")) {
@@ -11,7 +11,7 @@ export function middleware(request: NextRequest) {
   }
 
   return NextResponse.next();
-}
+};
 
 export const config = {
   matcher: ["/dashboard/:path*"],
