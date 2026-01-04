@@ -9,13 +9,13 @@ import {
   History,
   RefreshCcw,
   ShieldCheck,
-  Store,
   TrendingUp,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { OrderResponse } from "@/@types/order/order-response";
+import { AdminStoreStatsCard } from "@/components/admin/admin-store-stats-card";
 import { AdminUserStatsCard } from "@/components/admin/admin-user-stats-card";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { useOrder } from "@/services/hooks/use-order";
@@ -149,12 +149,8 @@ const AdminDashboard = () => {
 
           <AdminUserStatsCard />
 
-          <StatCard
-            icon={<Store size={24} />}
-            label="Lojas Ativas"
-            value="842"
-            trend="+8.4%"
-          />
+          <AdminStoreStatsCard />
+
           <StatCard
             icon={<TrendingUp size={24} />}
             label="Pedidos/Dia"

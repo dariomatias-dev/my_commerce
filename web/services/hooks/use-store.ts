@@ -3,10 +3,10 @@
 import { useCallback } from "react";
 
 import { PaginatedResponse } from "@/@types/paginated-response";
+import { StoreFilter } from "@/@types/store/store-filter";
 import { StoreRequest } from "@/@types/store/store-request";
 import { StoreResponse } from "@/@types/store/store-response";
 import { apiClient } from "@/services/api-client";
-import { StoreFilter } from "@/@types/store/store-filter";
 
 export const useStore = () => {
   const createStore = useCallback(
@@ -52,6 +52,16 @@ export const useStore = () => {
     []
   );
 
+  const getTotalActiveStores = useCallback(
+    () => apiClient.get<number>("/stores/active/count"),
+    []
+  );
+
+  const getNewActiveStoresThisMonth = useCallback(
+    () => apiClient.get<number>("/stores/active/new-this-month"),
+    []
+  );
+
   const updateStore = useCallback(
     (id: string, data?: Partial<StoreRequest>, logo?: File, banner?: File) => {
       const formData = new FormData();
@@ -82,6 +92,8 @@ export const useStore = () => {
     getMyStores,
     getStoreById,
     getStoreBySlug,
+    getTotalActiveStores,
+    getNewActiveStoresThisMonth,
     updateStore,
     deleteStore,
   };
