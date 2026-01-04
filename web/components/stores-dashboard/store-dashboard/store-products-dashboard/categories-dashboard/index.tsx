@@ -16,22 +16,22 @@ import { DeleteConfirmationDialog } from "@/components/dialogs/delete-confirmati
 import { Pagination } from "@/components/pagination";
 import { useCategory } from "@/services/hooks/use-category";
 import { CategoryFormDialog } from "../category-form-dialog";
-import { DashboardCategoryCard } from "./dashboard-category-card";
-import { DashboardCategoryManagerError } from "./dashboard-category-manager-error";
-import { DashboardCategoryManagerLoading } from "./dashboard-category-manager-loading";
-import { DashboardCategorySearchBar } from "./dashboard-category-search-bar";
+import { CategoriesDashboardCard } from "./categories-dashboard-card";
+import { CategoriesDashboardError } from "./categories-dashboard-error";
+import { CategoriesDashboardLoading } from "./categories-dashboard-loading";
+import { CategoriesDashboardSearchBar } from "./categories-dashboard-search-bar";
 
-export interface DashboardCategoryManagerRef {
+export interface CategoriesDashboardRef {
   refresh: () => void;
 }
 
-interface DashboardCategoryManagerProps {
+interface CategoriesDashboardProps {
   storeId: string;
 }
 
-export const DashboardCategoryManager = forwardRef<
-  DashboardCategoryManagerRef,
-  DashboardCategoryManagerProps
+export const CategoriesDashboard = forwardRef<
+  CategoriesDashboardRef,
+  CategoriesDashboardProps
 >(({ storeId }, ref) => {
   const { getCategoriesByStoreId, deleteCategory } = useCategory();
   const listTopRef = useRef<HTMLDivElement>(null);
@@ -61,11 +61,11 @@ export const DashboardCategoryManager = forwardRef<
       setCategories(data.content);
       setTotalPages(data.totalPages);
     } catch (error) {
-      setError(
-        error instanceof ApiError
-          ? error.message
-          : "Erro ao carregar as taxonomias da loja."
-      );
+      if (error instanceof ApiError) {
+        setError(error.message);
+      } else {
+        setError("Erro ao carregar as taxonomias da loja.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -81,6 +81,7 @@ export const DashboardCategoryManager = forwardRef<
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+
     listTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
@@ -101,6 +102,7 @@ export const DashboardCategoryManager = forwardRef<
 
   const handleCloseDialogs = () => {
     if (isDeleting) return;
+
     setIsFirstConfirmOpen(false);
     setIsSecondConfirmOpen(false);
     setSelectedCategory(null);
@@ -108,6 +110,7 @@ export const DashboardCategoryManager = forwardRef<
 
   const handleConfirmDelete = async () => {
     if (!selectedCategory) return;
+
     try {
       setIsDeleting(true);
 
@@ -125,12 +128,10 @@ export const DashboardCategoryManager = forwardRef<
     }
   };
 
-  if (isLoading) return <DashboardCategoryManagerLoading />;
+  if (isLoading) return <CategoriesDashboardLoading />;
 
   if (error) {
-    return (
-      <DashboardCategoryManagerError error={error} onRetry={fetchCategories} />
-    );
+    return <CategoriesDashboardError error={error} onRetry={fetchCategories} />;
   }
 
   return (
@@ -138,11 +139,11 @@ export const DashboardCategoryManager = forwardRef<
       ref={listTopRef}
       className="animate-in fade-in duration-500 scroll-mt-32"
     >
-      <DashboardCategorySearchBar />
+      <CategoriesDashboardSearchBar />
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {categories.map((category) => (
-          <DashboardCategoryCard
+          <CategoriesDashboardCard
             key={category.id}
             category={category}
             onEdit={handleEdit}
@@ -201,4 +202,4 @@ export const DashboardCategoryManager = forwardRef<
   );
 });
 
-DashboardCategoryManager.displayName = "DashboardCategoryManager";
+CategoriesDashboard.displayName = "CategoriesDashboard";

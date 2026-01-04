@@ -2,7 +2,7 @@
 
 import { Search } from "lucide-react";
 
-export const DashboardCategorySearchBar = () => (
+export const CategoriesDashboardSearchBar = () => (
   <section className="mb-8 bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
     <div className="relative">
       <Search

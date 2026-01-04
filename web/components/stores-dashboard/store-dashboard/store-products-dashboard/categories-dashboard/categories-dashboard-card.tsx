@@ -4,22 +4,23 @@ import { Edit3, Tag, Trash2 } from "lucide-react";
 
 import { CategoryResponse } from "@/@types/category/category-response";
 
-interface DashboardCategoryCardProps {
+interface CategoriesDashboardCardProps {
   category: CategoryResponse;
   onEdit: (category: CategoryResponse) => void;
   onDelete: (category: CategoryResponse) => void;
 }
 
-export const DashboardCategoryCard = ({
+export const CategoriesDashboardCard = ({
   category,
   onEdit,
   onDelete,
-}: DashboardCategoryCardProps) => (
+}: CategoriesDashboardCardProps) => (
   <div className="group relative rounded-[2.5rem] border-2 border-slate-200 bg-white p-8 transition-all hover:border-indigo-600 hover:shadow-xl hover:shadow-indigo-500/5">
     <div className="mb-6 flex items-center justify-between">
       <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all">
         <Tag size={24} />
       </div>
+
       <span className="text-[9px] font-black uppercase tracking-widest text-slate-300">
         Taxonomia
       </span>

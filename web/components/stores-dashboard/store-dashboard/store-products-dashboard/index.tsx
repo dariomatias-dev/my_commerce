@@ -6,11 +6,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { StoreResponse } from "@/@types/store/store-response";
-import { CategoryFormDialog } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/category-form-dialog";
 import {
-  DashboardCategoryManager,
-  DashboardCategoryManagerRef,
-} from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/dashboard-category-manager";
+  CategoriesDashboard,
+  CategoriesDashboardRef,
+} from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/categories-dashboard";
+import { CategoryFormDialog } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/category-form-dialog";
 import { ProductsDashboard } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/products-dashboard";
 import { useStore } from "@/services/hooks/use-store";
 
@@ -33,12 +33,13 @@ export const StoreProductsDashboard = ({
   const [isCategoryFormDialogOpen, setIsCategoryFormDialogOpen] =
     useState(false);
 
-  const categoryManagerRef = useRef<DashboardCategoryManagerRef>(null);
+  const categoryManagerRef = useRef<CategoriesDashboardRef>(null);
 
   useEffect(() => {
     const fetchStore = async () => {
       try {
         const data = await getStoreBySlug(storeSlug);
+
         setStore(data);
       } catch (error) {
         console.error(error);
@@ -129,10 +130,7 @@ export const StoreProductsDashboard = ({
         )}
 
         {view === "categories" && store && (
-          <DashboardCategoryManager
-            storeId={store.id}
-            ref={categoryManagerRef}
-          />
+          <CategoriesDashboard storeId={store.id} ref={categoryManagerRef} />
         )}
       </div>
 
