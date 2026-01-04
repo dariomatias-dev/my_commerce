@@ -20,8 +20,11 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export const LoginForm = () => {
   const router = useRouter();
+
   const { login } = useAuth();
+
   const { user, refreshUser } = useAuthContext();
+
   const [isLoading, setIsLoading] = useState(false);
   const [globalError, setGlobalError] = useState<string | null>(null);
 
@@ -78,8 +81,10 @@ export const LoginForm = () => {
 
     switch (user.role) {
       case "SUBSCRIBER":
-      case "ADMIN":
         router.push("/dashboard");
+        break;
+      case "ADMIN":
+        router.push("/admin");
         break;
       default:
         router.push("/profile");
@@ -100,10 +105,12 @@ export const LoginForm = () => {
         <label className="ml-1 text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase">
           E-mail
         </label>
+
         <div className="group relative">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-300 transition-colors group-focus-within:text-indigo-600">
             <Mail size={18} />
           </div>
+
           <input
             {...register("email")}
             type="email"
@@ -116,6 +123,7 @@ export const LoginForm = () => {
             }`}
           />
         </div>
+
         {errors.email && (
           <p className="ml-1 text-[10px] font-bold tracking-wider text-red-500 uppercase">
             {errors.email.message}
@@ -128,6 +136,7 @@ export const LoginForm = () => {
           <label className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase">
             Senha
           </label>
+
           <Link
             href="/recover-password"
             title="Esqueceu a senha?"
@@ -136,6 +145,7 @@ export const LoginForm = () => {
             Esqueceu a senha?
           </Link>
         </div>
+
         <PasswordField
           {...register("password")}
           disabled={isLoading}
