@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export const dashboardGuard = (request: NextRequest) => {
+export const adminGuard = (request: NextRequest) => {
   const token = request.cookies.get("token")?.value;
 
   if (!token) {
@@ -11,11 +11,7 @@ export const dashboardGuard = (request: NextRequest) => {
     Buffer.from(token.split(".")[1], "base64").toString()
   );
 
-  if (payload.role === "USER") {
-    return NextResponse.redirect(new URL("/profile", request.url));
-  }
-
-  if (payload.role !== "SUBSCRIBER") {
+  if (payload.role !== "ADMIN") {
     return NextResponse.redirect(new URL("/", request.url));
   }
 

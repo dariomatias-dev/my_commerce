@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { adminGuard } from "./proxy/guards/admin-guard";
 import { dashboardGuard } from "./proxy/guards/dashboard-guard";
 
 export const proxy = (request: NextRequest) => {
@@ -10,9 +11,14 @@ export const proxy = (request: NextRequest) => {
     if (response) return response;
   }
 
+  if (pathname.startsWith("/admin")) {
+    const response = adminGuard(request);
+    if (response) return response;
+  }
+
   return NextResponse.next();
 };
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ["/dashboard/:path*", "/admin/:path*"],
 };
