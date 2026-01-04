@@ -23,6 +23,16 @@ export const useUser = () => {
     []
   );
 
+  const getActiveUsersCount = useCallback(
+    () => apiClient.get<number>("/users/stats/active-users"),
+    []
+  );
+
+  const getNewActiveUsersThisMonth = useCallback(
+    () => apiClient.get<number>("/users/stats/new-users-this-month"),
+    []
+  );
+
   const updateUser = useCallback(
     (id: string, data: Partial<AdminUserResponse>) =>
       apiClient.patch<UserRequest>(`/users/${id}`, data),
@@ -53,6 +63,8 @@ export const useUser = () => {
   return {
     getAllUsers,
     getUserById,
+    getActiveUsersCount,
+    getNewActiveUsersThisMonth,
     updateUser,
     deleteUser,
     getMe,

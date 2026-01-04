@@ -11,15 +11,14 @@ import {
   ShieldCheck,
   Store,
   TrendingUp,
-  Users,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { OrderResponse } from "@/@types/order/order-response";
+import { AdminUserStatsCard } from "@/components/admin/admin-user-stats-card";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { useOrder } from "@/services/hooks/use-order";
-import { useUser } from "@/services/hooks/use-user";
 
 interface StatCardProps {
   icon: React.ReactNode;
@@ -38,10 +37,8 @@ interface AuditLog {
 
 const AdminDashboard = () => {
   const { getAllOrders } = useOrder();
-  const { getAllUsers } = useUser();
 
   const [recentOrders, setRecentOrders] = useState<OrderResponse[]>([]);
-  const [totalUsers, setTotalUsers] = useState(0);
   const [totalOrders, setTotalOrders] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -51,14 +48,10 @@ const AdminDashboard = () => {
     setErrorMessage(null);
 
     try {
-      const [ordersRes, usersRes] = await Promise.all([
-        getAllOrders(0, 5),
-        getAllUsers(0, 1),
-      ]);
+      const ordersRes = await getAllOrders(0, 5);
 
       setRecentOrders(ordersRes.content || []);
       setTotalOrders(ordersRes.totalElements || 0);
-      setTotalUsers(usersRes.totalElements || 0);
     } catch (error) {
       if (error instanceof ApiError) {
         setErrorMessage(error.message);
@@ -68,7 +61,7 @@ const AdminDashboard = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [getAllOrders, getAllUsers]);
+  }, [getAllOrders]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -153,12 +146,9 @@ const AdminDashboard = () => {
             value="R$ 142.580"
             trend="+12.5%"
           />
-          <StatCard
-            icon={<Users size={24} />}
-            label="Usuários"
-            value={totalUsers.toString()}
-            trend="+3.2%"
-          />
+
+          <AdminUserStatsCard />
+
           <StatCard
             icon={<Store size={24} />}
             label="Lojas Ativas"
