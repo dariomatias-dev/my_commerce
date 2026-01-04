@@ -14,10 +14,10 @@ import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { OrderResponse } from "@/@types/order/order-response";
+import { AdminStatCard } from "@/components/admin/admin-stat-card";
 import { AdminStoreStatsCard } from "@/components/admin/admin-store-stats-card";
 import { AdminUserStatsCard } from "@/components/admin/admin-user-stats-card";
 import { LoadingIndicator } from "@/components/loading-indicator";
-import { StatCard } from "@/components/stat-card";
 import { useOrder } from "@/services/hooks/use-order";
 
 interface AuditLog {
@@ -133,7 +133,7 @@ const AdminDashboard = () => {
         </header>
 
         <div className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <StatCard
+          <AdminStatCard
             icon={<DollarSign size={24} />}
             label="Volume Total"
             value="R$ 142.580"
@@ -144,7 +144,7 @@ const AdminDashboard = () => {
 
           <AdminStoreStatsCard />
 
-          <StatCard
+          <AdminStatCard
             icon={<TrendingUp size={24} />}
             label="Pedidos/Dia"
             value={totalOrders.toString()}

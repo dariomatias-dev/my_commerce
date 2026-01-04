@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { useUser } from "@/services/hooks/use-user";
-import { StatCard } from "../stat-card";
+import { AdminStatCard } from "./admin-stat-card";
 
 export const AdminUserStatsCard = () => {
   const { getActiveUsersCount, getNewActiveUsersThisMonth } = useUser();
@@ -49,7 +49,7 @@ export const AdminUserStatsCard = () => {
   }, [fetchData]);
 
   return (
-    <StatCard
+    <AdminStatCard
       icon={<Users size={24} />}
       label="Usuários Ativos"
       value={data.total.toLocaleString()}

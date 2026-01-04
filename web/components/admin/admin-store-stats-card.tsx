@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { useStore } from "@/services/hooks/use-store";
-import { StatCard } from "../stat-card";
+import { AdminStatCard } from "./admin-stat-card";
 
 export const AdminStoreStatsCard = () => {
   const { getTotalActiveStores, getNewActiveStoresThisMonth } = useStore();
@@ -49,7 +49,7 @@ export const AdminStoreStatsCard = () => {
   }, [fetchData]);
 
   return (
-    <StatCard
+    <AdminStatCard
       icon={<Store size={24} />}
       label="Lojas Ativas"
       value={data.total.toLocaleString()}

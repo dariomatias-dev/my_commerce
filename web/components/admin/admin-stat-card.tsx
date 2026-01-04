@@ -2,7 +2,7 @@
 
 import { AlertCircle, ArrowUpRight, Loader2 } from "lucide-react";
 
-interface StatCardProps {
+interface AdminStatCardProps {
   icon: React.ReactNode;
   label: string;
   value: string;
@@ -12,7 +12,7 @@ interface StatCardProps {
   onRetry?: () => void;
 }
 
-export const StatCard = ({
+export const AdminStatCard = ({
   icon,
   label,
   value,
@@ -20,7 +20,7 @@ export const StatCard = ({
   isLoading,
   errorMessage,
   onRetry,
-}: StatCardProps) => {
+}: AdminStatCardProps) => {
   if (isLoading) {
     return (
       <div className="flex min-h-47 flex-col items-center justify-center rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm">
