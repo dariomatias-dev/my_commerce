@@ -126,7 +126,7 @@ export const ProductManagerTable = ({
                   <td className="py-6 pr-10 text-right">
                     <div className="flex justify-end gap-2">
                       <Link
-                        href={`products/edit/${product.slug}`}
+                        href={`products/${product.slug}/edit`}
                         className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-slate-100 bg-white text-slate-400 hover:text-indigo-600"
                       >
                         <Edit3 size={18} />
