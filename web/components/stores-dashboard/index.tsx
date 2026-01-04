@@ -6,14 +6,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiError } from "@/@types/api";
 import { PaginatedResponse } from "@/@types/paginated-response";
 import { StoreResponse } from "@/@types/store/store-response";
-import { DashboardEmptyStores } from "@/components/store-management/dashboard-empty-stores";
-import { DashboardErrorCard } from "@/components/store-management/dashboard-error-card";
-import { DashboardPageHeader } from "@/components/store-management/dashboard-page-header";
-import { StoreCard } from "@/components/store-management/dashboard-store-card";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { Pagination } from "@/components/pagination";
+import { StoresDashboardCard } from "./stores-dashboard-card";
+import { StoresDashboardEmptyStores } from "./stores-dashboard-empty-stores";
+import { StoresDashboardErrorCard } from "./stores-dashboard-error-card";
+import { StoresDashboardPageHeader } from "./stores-dashboard-page-header";
 
-interface StoreManagementProps {
+interface StoresDashboardProps {
   fetchFunction: (
     page: number,
     size: number
@@ -24,13 +24,13 @@ interface StoreManagementProps {
   canCreate?: boolean;
 }
 
-export const StoreManagement = ({
+export const StoresDashboard = ({
   fetchFunction,
   deleteFunction,
   headerTitle,
   headerSubtitle,
   canCreate = true,
-}: StoreManagementProps) => {
+}: StoresDashboardProps) => {
   const listTopRef = useRef<HTMLDivElement>(null);
 
   const [stores, setStores] = useState<StoreResponse[]>([]);
@@ -96,7 +96,7 @@ export const StoreManagement = ({
 
   if (error != null) {
     return (
-      <DashboardErrorCard
+      <StoresDashboardErrorCard
         title="Erro de Sincronização."
         message={error}
         icon={<AlertCircle size={64} className="text-red-500" />}
@@ -113,7 +113,7 @@ export const StoreManagement = ({
   }
 
   if (stores.length === 0 && !error) {
-    return <DashboardEmptyStores />;
+    return <StoresDashboardEmptyStores />;
   }
 
   return (
@@ -123,7 +123,7 @@ export const StoreManagement = ({
           ref={listTopRef}
           className="animate-in fade-in slide-in-from-bottom-4 duration-700 scroll-mt-40"
         >
-          <DashboardPageHeader
+          <StoresDashboardPageHeader
             currentPage={currentPage}
             totalPages={totalPages}
             title={headerTitle}
@@ -133,7 +133,7 @@ export const StoreManagement = ({
 
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
             {stores.map((store) => (
-              <StoreCard
+              <StoresDashboardCard
                 key={store.id}
                 store={store}
                 onDelete={handleDeleteStore}

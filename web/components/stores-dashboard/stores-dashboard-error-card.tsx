@@ -4,19 +4,19 @@ import { ReactNode } from "react";
 import { DashboardHeader } from "../layout/dashboard-header";
 import { Footer } from "../layout/footer";
 
-interface DashboardErrorCardProps {
+interface StoresDashboardErrorCardProps {
   title: string;
   message: string;
   icon?: ReactNode;
   action?: ReactNode;
 }
 
-export const DashboardErrorCard = ({
+export const StoresDashboardErrorCard = ({
   title,
   message,
   icon,
   action,
-}: DashboardErrorCardProps) => (
+}: StoresDashboardErrorCardProps) => (
   <>
     <DashboardHeader />
 

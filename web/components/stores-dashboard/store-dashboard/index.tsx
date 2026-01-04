@@ -21,7 +21,7 @@ import { LoadingIndicator } from "@/components/loading-indicator";
 import { useStore } from "@/services/hooks/use-store";
 import { useTransaction } from "@/services/hooks/use-transaction";
 
-interface StoreManagementProps {
+interface StoreDashboardProps {
   slug: string;
   backPath: string;
   backLabel: string;
@@ -29,13 +29,13 @@ interface StoreManagementProps {
   createProductPath: string;
 }
 
-export const StoreManagement = ({
+export const StoreDashboard = ({
   slug,
   backPath,
   backLabel,
   productsPath,
   createProductPath,
-}: StoreManagementProps) => {
+}: StoreDashboardProps) => {
   const { getStoreBySlug } = useStore();
   const { getTransactionsByStoreSlug } = useTransaction();
 

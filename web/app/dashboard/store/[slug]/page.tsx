@@ -2,13 +2,13 @@
 
 import { useParams } from "next/navigation";
 
-import { StoreManagement } from "@/components/store-management/store-management";
+import { StoreDashboard } from "@/components/stores-dashboard/store-dashboard";
 
 const StoreDashboardPage = () => {
   const { slug } = useParams() as { slug: string };
 
   return (
-    <StoreManagement
+    <StoreDashboard
       slug={slug}
       backPath="/dashboard"
       backLabel="Voltar para dashboard"

@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { useCallback } from "react";
 
-import { StoreManagement } from "@/components/store-management";
+import { StoresDashboard } from "@/components/stores-dashboard";
 import { useStore } from "@/services/hooks/use-store";
 
 const AdminUserStoresPage = () => {
@@ -18,7 +18,7 @@ const AdminUserStoresPage = () => {
   );
 
   return (
-    <StoreManagement
+    <StoresDashboard
       fetchFunction={fetchUserStores}
       deleteFunction={deleteStore}
       headerTitle="LOJAS DO USUÁRIO"

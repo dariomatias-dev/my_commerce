@@ -3,24 +3,27 @@
 import { ArrowRight, Pencil, StoreIcon, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { StoreResponse } from "@/@types/store/store-response";
-import { usePathname } from "next/navigation";
 import { ConfirmDialog } from "../dialogs/confirm-dialog";
 import { DeleteConfirmationDialog } from "../dialogs/delete-confirmation-dialog";
 
-interface StoreCardProps {
+interface StoresDashboardCardProps {
   store: StoreResponse;
   onDelete: (id: string) => Promise<void>;
 }
 
-interface StoreLogoProps {
+interface StoresDashboardLogoProps {
   storeSlug: string;
   storeName: string;
 }
 
-const StoreLogo = ({ storeSlug, storeName }: StoreLogoProps) => {
+const StoresDashboardLogo = ({
+  storeSlug,
+  storeName,
+}: StoresDashboardLogoProps) => {
   const [error, setError] = useState(false);
   const logoUrl = `${process.env.NEXT_PUBLIC_API_URL}/files/stores/${storeSlug}/logo.png`;
 
@@ -46,7 +49,10 @@ const StoreLogo = ({ storeSlug, storeName }: StoreLogoProps) => {
   );
 };
 
-export const StoreCard = ({ store, onDelete }: StoreCardProps) => {
+export const StoresDashboardCard = ({
+  store,
+  onDelete,
+}: StoresDashboardCardProps) => {
   const pathname = usePathname();
 
   const [isFirstConfirmOpen, setIsFirstConfirmOpen] = useState(false);
@@ -78,7 +84,7 @@ export const StoreCard = ({ store, onDelete }: StoreCardProps) => {
     <>
       <div className="group relative flex flex-col items-start overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white p-9 text-left transition-all hover:border-indigo-600 hover:shadow-2xl hover:shadow-indigo-50/10">
         <div className="mb-8 flex w-full items-center justify-between">
-          <StoreLogo storeSlug={store.slug} storeName={store.name} />
+          <StoresDashboardLogo storeSlug={store.slug} storeName={store.name} />
 
           <div className="flex items-center gap-3">
             <Link

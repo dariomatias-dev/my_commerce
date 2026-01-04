@@ -1,13 +1,13 @@
 "use client";
 
-import { StoreManagement } from "@/components/store-management";
+import { StoresDashboard } from "@/components/stores-dashboard";
 import { useStore } from "@/services/hooks/use-store";
 
 const DashboardPage = () => {
   const { getMyStores, deleteStore } = useStore();
 
   return (
-    <StoreManagement
+    <StoresDashboard
       fetchFunction={getMyStores}
       deleteFunction={deleteStore}
       headerTitle="MINHAS LOJAS"
