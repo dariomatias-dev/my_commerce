@@ -21,7 +21,7 @@ interface StoreLogoProps {
 
 const StoreLogo = ({ storeSlug, storeName }: StoreLogoProps) => {
   const [error, setError] = useState(false);
-  const logoUrl = `${process.env.NEXT_PUBLIC_API_URL}/files/stores/${storeSlug}/logo.jpeg`;
+  const logoUrl = `${process.env.NEXT_PUBLIC_API_URL}/files/stores/${storeSlug}/logo.png`;
 
   if (error) {
     return (

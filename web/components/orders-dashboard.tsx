@@ -18,7 +18,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "@/@types/api";
 import { OrderResponse } from "@/@types/order/order-response";
 import { PaginatedResponse } from "@/@types/paginated-response";
-import { LoadingIndicator } from "@/components/dashboard/loading-indicator";
+import { LoadingIndicator } from "@/components/loading-indicator";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { Pagination } from "@/components/pagination";

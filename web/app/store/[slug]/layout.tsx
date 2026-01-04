@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
-import { LoadingIndicator } from "@/components/dashboard/loading-indicator";
+import { LoadingIndicator } from "@/components/loading-indicator";
 import { Footer } from "@/components/layout/footer";
 import { StoreHeader } from "@/components/store/[slug]/store-header";
 import { StoreProvider } from "@/contexts/store-context";
@@ -55,7 +55,10 @@ const StoreLayout = ({ children }: StoreLayoutProps) => {
       <>
         <StoreHeader />
 
-        <LoadingIndicator message="Carregando loja..." className="min-h-[80vh]"  />
+        <LoadingIndicator
+          message="Carregando loja..."
+          className="min-h-[80vh]"
+        />
 
         <Footer />
       </>

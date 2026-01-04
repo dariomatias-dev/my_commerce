@@ -1,6 +1,6 @@
 import { StatusFilter } from "@/enums/status-filter";
 
-export interface StoreFilterDTO {
+export interface StoreFilter {
   userId: string;
   status?: StatusFilter;
 }

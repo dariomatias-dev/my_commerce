@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { ProductResponse } from "@/@types/product/product-response";
-import { LoadingIndicator } from "@/components/dashboard/loading-indicator";
+import { LoadingIndicator } from "@/components/loading-indicator";
 import { Pagination } from "@/components/pagination";
 import { useProduct } from "@/services/hooks/use-product";
 import { ProductManagerError } from "./product-manager-error";
