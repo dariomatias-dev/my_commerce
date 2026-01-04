@@ -3,7 +3,6 @@
 import {
   Activity,
   AlertCircle,
-  ArrowUpRight,
   CreditCard,
   DollarSign,
   History,
@@ -18,14 +17,8 @@ import { OrderResponse } from "@/@types/order/order-response";
 import { AdminStoreStatsCard } from "@/components/admin/admin-store-stats-card";
 import { AdminUserStatsCard } from "@/components/admin/admin-user-stats-card";
 import { LoadingIndicator } from "@/components/loading-indicator";
+import { StatCard } from "@/components/stat-card";
 import { useOrder } from "@/services/hooks/use-order";
-
-interface StatCardProps {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  trend: string;
-}
 
 interface AuditLog {
   id: number;
@@ -261,24 +254,5 @@ const AdminDashboard = () => {
     </main>
   );
 };
-
-const StatCard = ({ icon, label, value, trend }: StatCardProps) => (
-  <div className="group relative overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm transition-all hover:border-indigo-600 hover:shadow-2xl hover:shadow-indigo-100">
-    <div className="mb-6 flex items-center justify-between">
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-slate-950 transition-colors group-hover:bg-indigo-600 group-hover:text-white">
-        {icon}
-      </div>
-      <div className="flex items-center gap-1 rounded-lg bg-emerald-50 px-2 py-1 text-[9px] font-black text-emerald-600">
-        <ArrowUpRight size={10} /> {trend}
-      </div>
-    </div>
-    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-      {label}
-    </p>
-    <p className="mt-1 text-4xl font-black tracking-tighter text-slate-950">
-      {value}
-    </p>
-  </div>
-);
 
 export default AdminDashboard;
