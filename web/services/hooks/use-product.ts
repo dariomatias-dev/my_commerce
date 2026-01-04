@@ -67,6 +67,12 @@ export const useProduct = () => {
     []
   );
 
+  const getActiveProductsCount = useCallback(
+    (storeId: string) =>
+      apiClient.get<number>(`/products/store/${storeId}/stats/active-products`),
+    []
+  );
+
   const updateProduct = useCallback(
     (id: string, data?: Partial<ProductRequest>, newImages?: File[]) => {
       const formData = new FormData();
@@ -100,8 +106,9 @@ export const useProduct = () => {
     getAllProducts,
     getProductById,
     getProductBySlug,
+    getProductsByIds,
+    getActiveProductsCount,
     updateProduct,
     deleteProduct,
-    getProductsByIds,
   };
 };

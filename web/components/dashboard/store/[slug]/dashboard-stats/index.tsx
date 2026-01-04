@@ -1,5 +1,6 @@
-import { BarChart3, Cpu, ShieldCheck } from "lucide-react";
+import { BarChart3, Cpu } from "lucide-react";
 
+import { ActiveProductsStatCard } from "./active-products-stat-card";
 import { DashboardStatCard } from "./dashboard-stat-card";
 import { SuccessfulSalesStatCard } from "./successful-sales-stat-card";
 
@@ -13,13 +14,7 @@ export const DashboardStats = ({ storeId, isActive }: DashboardStatsProps) => {
     <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <SuccessfulSalesStatCard storeId={storeId} isActive={isActive} />
 
-      <DashboardStatCard
-        label="Disponibilidade"
-        value="99.99%"
-        sub="SLA de serviço estável"
-        icon={ShieldCheck}
-        isActive={isActive}
-      />
+      <ActiveProductsStatCard storeId={storeId} isActive={isActive} />
 
       <DashboardStatCard
         label="Taxa de Requisições"
