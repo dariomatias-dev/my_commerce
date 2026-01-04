@@ -30,6 +30,7 @@ public class StoreService {
     private final SubscriptionContract subscriptionRepository;
     private final UserContract userRepository;
     private final MinioService minioService;
+    private final VisitorTrackingService visitorTrackingService;
 
     private static final String BUCKET_NAME = "stores";
 
@@ -37,12 +38,14 @@ public class StoreService {
             StoreContract storeRepository,
             SubscriptionContract subscriptionRepository,
             UserContract userRepository,
-            MinioService minioService
+            MinioService minioService,
+            VisitorTrackingService visitorTrackingService
     ) {
         this.storeRepository = storeRepository;
         this.subscriptionRepository = subscriptionRepository;
         this.userRepository = userRepository;
         this.minioService = minioService;
+        this.visitorTrackingService = visitorTrackingService;
     }
 
     public Store create(User user, StoreRequestDTO request, MultipartFile logo, MultipartFile banner) {
@@ -102,8 +105,17 @@ public class StoreService {
     }
 
     public Store getBySlug(String slug) {
-        return storeRepository.findBySlug(slug)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
+        Store store = storeRepository.findBySlug(slug)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Loja não encontrada"
+                        )
+                );
+
+        visitorTrackingService.registerVisit(store.getId());
+
+        return store;
     }
 
     public long getActiveStoresCount() {
