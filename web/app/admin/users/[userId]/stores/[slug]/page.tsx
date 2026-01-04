@@ -12,8 +12,8 @@ const AdminStoreDashboardPage = () => {
       slug={slug}
       backPath="/admin/stores"
       backLabel="Voltar para gestão de lojas"
-      productsPath={`/admin/stores/${slug}/products`}
-      createProductPath={`/admin/stores/${slug}/products/new`}
+      productsPath={`${slug}/products`}
+      createProductPath={`${slug}/products/new`}
     />
   );
 };
