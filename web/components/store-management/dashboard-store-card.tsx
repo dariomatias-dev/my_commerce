@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { StoreResponse } from "@/@types/store/store-response";
+import { usePathname } from "next/navigation";
 import { ConfirmDialog } from "../dialogs/confirm-dialog";
 import { DeleteConfirmationDialog } from "../dialogs/delete-confirmation-dialog";
 
@@ -46,6 +47,8 @@ const StoreLogo = ({ storeSlug, storeName }: StoreLogoProps) => {
 };
 
 export const StoreCard = ({ store, onDelete }: StoreCardProps) => {
+  const pathname = usePathname();
+
   const [isFirstConfirmOpen, setIsFirstConfirmOpen] = useState(false);
   const [isSecondConfirmOpen, setIsSecondConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -120,7 +123,11 @@ export const StoreCard = ({ store, onDelete }: StoreCardProps) => {
         </p>
 
         <Link
-          href={`/dashboard/store/${store.slug}`}
+          href={
+            pathname.startsWith("/admin")
+              ? `stores/${store.slug}`
+              : `/dashboard/store/${store.slug}`
+          }
           className="mt-12 flex w-full items-center justify-between border-t border-slate-50 pt-6"
         >
           <div>

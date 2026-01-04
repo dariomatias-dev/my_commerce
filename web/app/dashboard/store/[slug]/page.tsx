@@ -1,162 +1,20 @@
 "use client";
 
-import { ArrowLeft, Download, Eye, Plus } from "lucide-react";
-import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
 
-import { ApiError } from "@/@types/api";
-import { StoreResponse } from "@/@types/store/store-response";
-import { TransactionResponse } from "@/@types/transaction/transaction-response";
-import { DashboardErrorCard } from "@/components/store-management/dashboard-error-card";
-import { LoadingIndicator } from "@/components/loading-indicator";
-import { DashboardSidebarActions } from "@/components/dashboard/store/[slug]/dashboard-sidebar-actions";
-import { DashboardStats } from "@/components/dashboard/store/[slug]/dashboard-stats";
-import { DashboardTransactionTable } from "@/components/dashboard/store/[slug]/dashboard-transaction-table";
-import { useStore } from "@/services/hooks/use-store";
-import { useTransaction } from "@/services/hooks/use-transaction";
+import { StoreManagement } from "@/components/store-management/store-management";
 
 const StoreDashboardPage = () => {
-  const params = useParams();
-  const slug = params.slug as string;
-  const { getStoreBySlug } = useStore();
-  const { getTransactionsByStoreSlug } = useTransaction();
-
-  const [store, setStore] = useState<StoreResponse | null>(null);
-  const [transactions, setTransactions] = useState<TransactionResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isTransactionsLoading, setIsTransactionsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchTransactions = useCallback(async () => {
-    try {
-      setIsTransactionsLoading(true);
-
-      const response = await getTransactionsByStoreSlug(slug, 0, 10);
-
-      setTransactions(response.content);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setError(error.message);
-      } else {
-        setError("Não foi possível carregar as transações da loja.");
-      }
-    } finally {
-      setIsTransactionsLoading(false);
-    }
-  }, [slug, getTransactionsByStoreSlug]);
-
-  const fetchStoreData = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      const data = await getStoreBySlug(slug);
-
-      setStore(data);
-
-      await fetchTransactions();
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setError(error.message);
-      } else {
-        setError("Não foi possível carregar os dados da loja.");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [slug, getStoreBySlug, fetchTransactions]);
-
-  useEffect(() => {
-    fetchStoreData();
-  }, [fetchStoreData]);
-
-  if (isLoading) {
-    return <LoadingIndicator message="Carregando loja..." />;
-  }
-
-  if (error || !store) {
-    return (
-      <DashboardErrorCard
-        title="Loja Não Encontrada."
-        message={error ?? "Loja não encontrada"}
-        action={
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-3 rounded-2xl bg-slate-950 px-10 py-5 text-xs font-black tracking-widest text-white uppercase hover:bg-indigo-600"
-          >
-            <ArrowLeft size={18} /> VOLTAR AO PAINEL GLOBAL
-          </Link>
-        }
-      />
-    );
-  }
+  const { slug } = useParams() as { slug: string };
 
   return (
-    <main className="min-h-screen bg-[#F4F7FA] font-sans text-slate-900 mx-auto max-w-400 px-6 pt-32 pb-12">
-      <div className="animate-in fade-in zoom-in-95 duration-500">
-        <div className="mb-10 flex flex-col items-start justify-between gap-6 border-b border-slate-200 pb-8 lg:flex-row lg:items-end">
-          <div>
-            <Link
-              href="/dashboard"
-              className="mb-6 flex items-center gap-2 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors hover:text-indigo-600"
-            >
-              <ArrowLeft size={14} /> Voltar para dashboard
-            </Link>
-
-            <div className="mb-2 flex items-center gap-2">
-              <div
-                className={`flex h-5 items-center rounded px-2 text-[9px] font-black tracking-widest text-white uppercase ${
-                  store.isActive ? "bg-indigo-600" : "bg-slate-400"
-                }`}
-              >
-                {store.isActive ? "OPERACIONAL" : "OFFLINE"}
-              </div>
-
-              <span className="text-[10px] font-black tracking-[0.3em] text-slate-400 uppercase italic">
-                ID: {store.id.slice(0, 8).toUpperCase()}-SECURED
-              </span>
-            </div>
-
-            <h1 className="text-5xl font-black tracking-tighter text-slate-950 uppercase italic leading-none">
-              CONSOLE: <span className="text-indigo-600">{store.name}.</span>
-            </h1>
-          </div>
-
-          <div className="flex w-full flex-wrap gap-3 lg:w-auto">
-            <button className="flex flex-1 items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-slate-600 uppercase transition-all hover:bg-slate-50 lg:flex-none">
-              <Download size={14} /> EXPORTAR
-            </button>
-
-            <Link
-              href={`${slug}/products`}
-              className="flex flex-1 items-center justify-center gap-3 rounded-xl border border-slate-950 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-slate-950 uppercase transition-all hover:bg-slate-50 lg:flex-none"
-            >
-              <Eye size={16} /> VER PRODUTOS
-            </Link>
-
-            <Link
-              href={`${slug}/products/new`}
-              className="flex flex-1 items-center justify-center gap-3 rounded-xl bg-slate-950 px-6 py-4 text-[10px] font-black tracking-widest text-white shadow-2xl transition-all hover:bg-indigo-600 active:scale-95 lg:flex-none"
-            >
-              <Plus size={16} /> CRIAR PRODUTO
-            </Link>
-          </div>
-        </div>
-
-        <DashboardStats isActive={store.isActive} />
-
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-          <DashboardTransactionTable
-            transactions={transactions}
-            isLoading={isTransactionsLoading}
-            onRefresh={fetchTransactions}
-          />
-
-          <DashboardSidebarActions storeId={store.id} />
-        </div>
-      </div>
-    </main>
+    <StoreManagement
+      slug={slug}
+      backPath="/dashboard"
+      backLabel="Voltar para dashboard"
+      productsPath={`/dashboard/store/${slug}/products`}
+      createProductPath={`/dashboard/store/${slug}/products/new`}
+    />
   );
 };
 
