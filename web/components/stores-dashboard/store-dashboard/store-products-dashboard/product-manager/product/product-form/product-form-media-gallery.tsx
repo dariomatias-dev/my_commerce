@@ -7,7 +7,7 @@ import { UseFormSetValue, UseFormWatch } from "react-hook-form";
 
 import { ProductFormValues } from "@/schemas/product.schema";
 
-interface ProductMediaGalleryProps {
+interface ProductFormMediaGalleryProps {
   watch: UseFormWatch<ProductFormValues>;
   setValue: UseFormSetValue<ProductFormValues>;
   error?: string;
@@ -17,13 +17,13 @@ interface ProductMediaGalleryProps {
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/jpg"];
 
-export const ProductMediaGallery = ({
+export const ProductFormMediaGallery = ({
   watch,
   setValue,
   error,
   existingImages = [],
   onRemoveExisting,
-}: ProductMediaGalleryProps) => {
+}: ProductFormMediaGalleryProps) => {
   const selectedImages = watch("images");
 
   const previews = useMemo(

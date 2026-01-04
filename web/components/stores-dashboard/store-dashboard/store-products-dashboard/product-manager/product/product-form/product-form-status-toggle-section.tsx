@@ -1,9 +1,9 @@
-interface ProductStatusToggleSectionProps {
+interface ProductFormStatusToggleSectionProps {
   isActive: boolean;
   onToggle: (value: boolean) => void;
 }
 
-export const ProductStatusToggleSection = ({ isActive, onToggle }: ProductStatusToggleSectionProps) => (
+export const ProductFormStatusToggleSection = ({ isActive, onToggle }: ProductFormStatusToggleSectionProps) => (
   <section className="rounded-[2.5rem] border-2 border-slate-200 bg-white p-8 md:p-12 shadow-sm">
     <div className="flex items-center justify-between">
       <p className="text-[10px] font-black tracking-widest text-slate-950 uppercase">

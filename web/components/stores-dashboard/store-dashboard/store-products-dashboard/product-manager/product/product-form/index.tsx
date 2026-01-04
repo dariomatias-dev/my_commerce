@@ -8,14 +8,14 @@ import { useForm } from "react-hook-form";
 import { CategoryResponse } from "@/@types/category/category-response";
 import { ProductResponse } from "@/@types/product/product-response";
 import { ActionButton } from "@/components/buttons/action-button";
-import { ProductMediaGallery } from "@/components/dashboard/store/[slug]/products/product-form/product-media-gallery";
+import { ProductFormMediaGallery } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/product-manager/product/product-form/product-form-media-gallery";
 import { ProductFormValues, productSchema } from "@/schemas/product.schema";
 import { useCategory } from "@/services/hooks/use-category";
 import { useStore } from "@/services/hooks/use-store";
 import { ProductFormCategorySelect } from "./product-form-category";
 import { ProductFormField } from "./product-form-field";
 import { ProductFormSection } from "./product-form-section";
-import { ProductStatusToggleSection } from "./product-status-toggle-section";
+import { ProductFormStatusToggleSection } from "./product-form-status-toggle-section";
 
 interface ProductFormProps {
   initialData?: ProductResponse;
@@ -169,7 +169,7 @@ export const ProductForm = ({
         </div>
       </ProductFormSection>
 
-      <ProductMediaGallery
+      <ProductFormMediaGallery
         watch={watch}
         setValue={setValue}
         error={errors.images?.message as string}
@@ -197,7 +197,7 @@ export const ProductForm = ({
         </div>
       </ProductFormSection>
 
-      <ProductStatusToggleSection
+      <ProductFormStatusToggleSection
         isActive={isActive}
         onToggle={(value) => setValue("active", value)}
       />

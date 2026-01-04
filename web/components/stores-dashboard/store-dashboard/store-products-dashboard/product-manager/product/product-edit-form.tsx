@@ -8,7 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "@/@types/api";
 import { ProductRequest } from "@/@types/product/product-request";
 import { ProductResponse } from "@/@types/product/product-response";
-import { ProductForm } from "@/components/dashboard/store/[slug]/products/product-form";
+import { ProductForm } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/product-manager/product/product-form";
 import { ProductFormValues } from "@/schemas/product.schema";
 import { useProduct } from "@/services/hooks/use-product";
 
