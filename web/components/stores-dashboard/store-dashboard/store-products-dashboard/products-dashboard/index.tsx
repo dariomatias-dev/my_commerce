@@ -7,15 +7,15 @@ import { ProductResponse } from "@/@types/product/product-response";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { Pagination } from "@/components/pagination";
 import { useProduct } from "@/services/hooks/use-product";
-import { ProductManagerError } from "./product-manager-error";
-import { ProductManagerFilter } from "./product-manager-filter";
-import { ProductManagerTable } from "./product-manager-table";
+import { ProductsDashboardError } from "./products-dashboard-error";
+import { ProductsDashboardFilter } from "./products-dashboard-filter";
+import { ProductsDashboardTable } from "./products-dashboard-table";
 
-interface ProductManagerProps {
+interface ProductsDashboardProps {
   storeId: string;
 }
 
-export const ProductManager = ({ storeId }: ProductManagerProps) => {
+export const ProductsDashboard = ({ storeId }: ProductsDashboardProps) => {
   const { getAllProducts, deleteProduct } = useProduct();
   const listTopRef = useRef<HTMLDivElement>(null);
 
@@ -35,9 +35,12 @@ export const ProductManager = ({ storeId }: ProductManagerProps) => {
 
       setProducts(data.content);
       setTotalPages(data.totalPages);
-    } catch (err) {
-      if (err instanceof ApiError) setError(err.message);
-      else setError("Erro ao carregar produtos.");
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setError(error.message);
+      } else {
+        setError("Erro ao carregar produtos.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -66,7 +69,7 @@ export const ProductManager = ({ storeId }: ProductManagerProps) => {
   }
 
   if (error) {
-    return <ProductManagerError message={error} onRetry={fetchProducts} />;
+    return <ProductsDashboardError message={error} onRetry={fetchProducts} />;
   }
 
   return (
@@ -74,9 +77,9 @@ export const ProductManager = ({ storeId }: ProductManagerProps) => {
       ref={listTopRef}
       className="animate-in fade-in duration-500 scroll-mt-32"
     >
-      <ProductManagerFilter />
+      <ProductsDashboardFilter />
 
-      <ProductManagerTable products={products} onDelete={onDelete} />
+      <ProductsDashboardTable products={products} onDelete={onDelete} />
 
       <Pagination
         currentPage={currentPage}

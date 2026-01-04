@@ -9,15 +9,15 @@ import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { DeleteConfirmationDialog } from "@/components/dialogs/delete-confirmation-dialog";
 import { ProductImage } from "@/components/product-image";
 
-interface ProductManagerTableProps {
+interface ProductsDashboardTableProps {
   products: ProductResponse[];
   onDelete: (productId: string) => Promise<void>;
 }
 
-export const ProductManagerTable = ({
+export const ProductsDashboardTable = ({
   products,
   onDelete,
-}: ProductManagerTableProps) => {
+}: ProductsDashboardTableProps) => {
   const [isFirstConfirmOpen, setIsFirstConfirmOpen] = useState(false);
   const [isSecondConfirmOpen, setIsSecondConfirmOpen] = useState(false);
   const [productToDelete, setProductToDelete] =
@@ -50,8 +50,11 @@ export const ProductManagerTable = ({
 
     try {
       setIsDeleting(true);
+
       await onDelete(productToDelete.id);
+
       setIsSecondConfirmOpen(false);
+      
       setProductToDelete(null);
     } finally {
       setIsDeleting(false);

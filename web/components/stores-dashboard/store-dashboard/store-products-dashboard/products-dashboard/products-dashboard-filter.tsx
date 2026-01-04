@@ -1,12 +1,13 @@
 import { Filter, Search } from "lucide-react";
 
-export const ProductManagerFilter = () => (
+export const ProductsDashboardFilter = () => (
   <section className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
     <div className="relative flex-1">
       <Search
         className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
         size={18}
       />
+
       <input
         type="text"
         placeholder="Filtrar por nome ou SKU..."

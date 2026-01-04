@@ -47,6 +47,7 @@ export const ProductFormMediaGallery = ({
 
   const removeNewImage = (index: number) => {
     const newImages = selectedImages.filter((_, i) => i !== index);
+
     setValue("images", newImages, { shouldValidate: true });
   };
 
@@ -74,6 +75,7 @@ export const ProductFormMediaGallery = ({
               priority
               className="object-cover"
             />
+
             <button
               type="button"
               onClick={() => onRemoveExisting?.(img)}
@@ -81,6 +83,7 @@ export const ProductFormMediaGallery = ({
             >
               <X size={16} />
             </button>
+
             <div className="absolute bottom-2 left-2 rounded bg-indigo-600 px-1.5 py-0.5 text-[8px] font-bold text-white uppercase">
               Salva
             </div>
@@ -100,6 +103,7 @@ export const ProductFormMediaGallery = ({
               unoptimized
               priority
             />
+
             <button
               type="button"
               onClick={() => removeNewImage(index)}
@@ -107,6 +111,7 @@ export const ProductFormMediaGallery = ({
             >
               <X size={16} />
             </button>
+
             <div className="absolute bottom-2 left-2 rounded bg-emerald-500 px-1.5 py-0.5 text-[8px] font-bold text-white uppercase">
               Nova
             </div>
@@ -121,7 +126,9 @@ export const ProductFormMediaGallery = ({
             onChange={handleImagesChange}
             className="sr-only"
           />
+
           <ImagePlus size={24} className="text-slate-400" />
+
           <span className="mt-2 text-[10px] font-black text-slate-400 uppercase">
             Adicionar Imagem
           </span>

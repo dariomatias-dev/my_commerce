@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 
-import { ProductEditForm } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/product-manager/product/product-edit-form";
+import { ProductEditForm } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/products-dashboard/product/product-edit-form";
 
 const AdminEditProductPage = () => {
   const { storeSlug, userId, productSlug } = useParams() as {

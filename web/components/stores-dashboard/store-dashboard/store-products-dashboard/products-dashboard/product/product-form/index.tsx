@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { CategoryResponse } from "@/@types/category/category-response";
 import { ProductResponse } from "@/@types/product/product-response";
 import { ActionButton } from "@/components/buttons/action-button";
-import { ProductFormMediaGallery } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/product-manager/product/product-form/product-form-media-gallery";
+import { ProductFormMediaGallery } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/products-dashboard/product/product-form/product-form-media-gallery";
 import { ProductFormValues, productSchema } from "@/schemas/product.schema";
 import { useCategory } from "@/services/hooks/use-category";
 import { useStore } from "@/services/hooks/use-store";
@@ -104,6 +104,7 @@ export const ProductForm = ({
       const images = initialData.images.map((image) => {
         return image.url;
       });
+      
       setExistingImages(images);
     }
   }, [initialData, reset]);

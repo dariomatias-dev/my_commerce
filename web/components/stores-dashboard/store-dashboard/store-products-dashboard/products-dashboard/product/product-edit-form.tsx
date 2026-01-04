@@ -8,7 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "@/@types/api";
 import { ProductRequest } from "@/@types/product/product-request";
 import { ProductResponse } from "@/@types/product/product-response";
-import { ProductForm } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/product-manager/product/product-form";
+import { ProductForm } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/products-dashboard/product/product-form";
 import { ProductFormValues } from "@/schemas/product.schema";
 import { useProduct } from "@/services/hooks/use-product";
 
@@ -38,12 +38,16 @@ export const ProductEditForm = ({
   const loadProduct = useCallback(async () => {
     try {
       setIsLoading(true);
+
       const data = await getProductBySlug(storeSlug, productSlug);
+
       setProduct(data);
     } catch (error) {
-      setApiError(
-        error instanceof ApiError ? error.message : "Erro ao carregar produto."
-      );
+      if (error instanceof ApiError) {
+        setApiError(error.message);
+      } else {
+        setApiError("Erro ao carregar produto.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -55,6 +59,7 @@ export const ProductEditForm = ({
 
   const onSubmit = async (values: ProductFormValues) => {
     if (!product) return;
+
     try {
       setIsSubmitting(true);
       setApiError(null);
@@ -69,11 +74,14 @@ export const ProductEditForm = ({
       };
 
       await updateProduct(product.id, data, values.images);
+
       router.push(successPath);
     } catch (error) {
-      setApiError(
-        error instanceof ApiError ? error.message : "Erro ao atualizar produto."
-      );
+      if (error instanceof ApiError) {
+        setApiError(error.message);
+      } else {
+        setApiError("Erro ao atualizar produto.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -82,7 +90,7 @@ export const ProductEditForm = ({
   if (isLoading) {
     return (
       <div className="pt-40 text-center font-black animate-pulse uppercase tracking-widest text-slate-400">
-        Sincronizando Ativo...
+        Carregando informações...
       </div>
     );
   }

@@ -44,7 +44,9 @@ export const ProductFormCategorySelect = <T extends FieldValues>({
         setIsOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
@@ -54,6 +56,7 @@ export const ProductFormCategorySelect = <T extends FieldValues>({
       shouldDirty: true,
       shouldTouch: true,
     });
+
     setIsOpen(false);
   };
 
@@ -93,6 +96,7 @@ export const ProductFormCategorySelect = <T extends FieldValues>({
               ? selectedCategory.name
               : "— Selecionar Categoria —"}
           </span>
+
           <ChevronDown
             size={18}
             className={`transition-transform duration-300 ${

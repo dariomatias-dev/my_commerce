@@ -11,7 +11,7 @@ import {
   DashboardCategoryManager,
   DashboardCategoryManagerRef,
 } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/dashboard-category-manager";
-import { ProductManager } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/product-manager";
+import { ProductsDashboard } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/products-dashboard";
 import { useStore } from "@/services/hooks/use-store";
 
 interface StoreProductsDashboardProps {
@@ -124,7 +124,9 @@ export const StoreProductsDashboard = ({
           </div>
         </div>
 
-        {view === "products" && store && <ProductManager storeId={store.id} />}
+        {view === "products" && store && (
+          <ProductsDashboard storeId={store.id} />
+        )}
 
         {view === "categories" && store && (
           <DashboardCategoryManager
