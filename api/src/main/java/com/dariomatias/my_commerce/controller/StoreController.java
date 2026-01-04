@@ -93,6 +93,22 @@ public class StoreController {
         return ResponseEntity.ok(ApiResponse.success("Loja obtida com sucesso", StoreResponseDTO.from(entity)));
     }
 
+    @GetMapping("/active/count")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Long>> getActiveStoresCount() {
+        long count = service.getActiveStoresCount();
+
+        return ResponseEntity.ok(ApiResponse.success("Quantidade de lojas ativas", count));
+    }
+
+    @GetMapping("/active/new-this-month")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Long>> getNewActiveStoresThisMonth() {
+        long count = service.getNewActiveStoresThisMonth();
+
+        return ResponseEntity.ok(ApiResponse.success("Quantidade de novas lojas ativas desde o início do mês", count));
+    }
+
     @PatchMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<StoreResponseDTO>> update(

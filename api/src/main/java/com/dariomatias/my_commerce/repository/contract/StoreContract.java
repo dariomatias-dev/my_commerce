@@ -5,6 +5,7 @@ import com.dariomatias.my_commerce.model.Store;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,6 +20,10 @@ public interface StoreContract {
     Optional<Store> findById(UUID id);
 
     Optional<Store> findBySlug(String slug);
+
+    long countByIsActiveTrueAndDeletedAtIsNull();
+
+    long countByIsActiveTrueAndDeletedAtIsNullAndAuditCreatedAtAfter(LocalDateTime startDate);
 
     Store update(Store store);
 

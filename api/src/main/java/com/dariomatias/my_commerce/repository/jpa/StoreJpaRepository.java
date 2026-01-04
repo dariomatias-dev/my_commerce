@@ -64,6 +64,16 @@ public class StoreJpaRepository implements StoreContract {
     }
 
     @Override
+    public long countByIsActiveTrueAndDeletedAtIsNull() {
+        return repository.countByIsActiveTrueAndDeletedAtIsNull();
+    }
+
+    @Override
+    public long countByIsActiveTrueAndDeletedAtIsNullAndAuditCreatedAtAfter(LocalDateTime startDate) {
+        return repository.countByIsActiveTrueAndDeletedAtIsNullAndAuditCreatedAtAfter(startDate);
+    }
+
+    @Override
     public Store update(Store store) {
         return repository.save(store);
     }
