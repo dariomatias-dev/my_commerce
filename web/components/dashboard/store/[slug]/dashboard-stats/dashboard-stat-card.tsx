@@ -20,19 +20,23 @@ export const DashboardStatCard = ({
       <div className="rounded-lg bg-slate-50 p-2 text-indigo-600">
         <Icon size={18} />
       </div>
+
       <div
         className={`h-1.5 w-1.5 rounded-full bg-emerald-500 ${
           isActive ? "animate-pulse" : "opacity-20"
         }`}
       />
     </div>
-    <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+
+    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
       {label}
     </p>
-    <h3 className="mt-1 text-2xl font-black tracking-tighter text-slate-950 italic">
+
+    <h3 className="mt-1 text-2xl font-black italic tracking-tighter text-slate-950">
       {value}
     </h3>
-    <p className="mt-2 text-[9px] font-bold text-slate-400 uppercase tracking-tight">
+
+    <p className="mt-2 text-[9px] font-bold uppercase tracking-tight text-slate-400">
       {sub}
     </p>
   </div>

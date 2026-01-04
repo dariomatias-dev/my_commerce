@@ -172,7 +172,7 @@ export const StoreDashboard = ({
           </div>
         </div>
 
-        <DashboardStats isActive={store.isActive} />
+        <DashboardStats storeId={store.id} isActive={store.isActive} />
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
           <DashboardTransactionTable

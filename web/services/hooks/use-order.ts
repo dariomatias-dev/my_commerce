@@ -74,6 +74,14 @@ export const useOrder = () => {
     []
   );
 
+  const getSuccessfulSalesCountByStoreId = useCallback(
+    (storeId: string) =>
+      apiClient.get<number>(`/orders/store/${storeId}/stats/successful-sales`, {
+        params: { storeId },
+      }),
+    []
+  );
+
   const deleteOrder = useCallback(
     (id: string) => apiClient.delete<void>(`/orders/${id}`),
     []
@@ -88,6 +96,7 @@ export const useOrder = () => {
     getMyOrderStores,
     getMyOrdersByStore,
     getOrderById,
+    getSuccessfulSalesCountByStoreId,
     deleteOrder,
   };
 };

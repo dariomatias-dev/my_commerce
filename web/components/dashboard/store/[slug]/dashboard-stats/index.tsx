@@ -1,21 +1,17 @@
-import { Activity, BarChart3, Cpu, ShieldCheck } from "lucide-react";
+import { BarChart3, Cpu, ShieldCheck } from "lucide-react";
 
 import { DashboardStatCard } from "./dashboard-stat-card";
+import { SuccessfulSalesStatCard } from "./successful-sales-stat-card";
 
 interface DashboardStatsProps {
+  storeId: string;
   isActive: boolean;
 }
 
-export const DashboardStats = ({ isActive }: DashboardStatsProps) => {
+export const DashboardStats = ({ storeId, isActive }: DashboardStatsProps) => {
   return (
     <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <DashboardStatCard
-        label="Fluxo de Vendas"
-        value="R$ 0,00"
-        sub="Volume acumulado 24h"
-        icon={Activity}
-        isActive={isActive}
-      />
+      <SuccessfulSalesStatCard storeId={storeId} isActive={isActive} />
 
       <DashboardStatCard
         label="Disponibilidade"
