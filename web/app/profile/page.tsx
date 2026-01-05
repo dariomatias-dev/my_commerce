@@ -7,7 +7,8 @@ import {
   Trash2, 
   ChevronRight, 
   ShieldCheck, 
-  Database 
+  Database, 
+  MapPin
 } from "lucide-react";
 
 import { Footer } from "@/components/layout/footer";
@@ -15,12 +16,14 @@ import { Header } from "@/components/layout/header";
 import { ProfileInfoForm } from "@/components/profile/profile-info-form";
 import { ProfileSecurityForm } from "@/components/profile/profile-security-form";
 import { ProfileDangerZone } from "@/components/profile/profile-danger-zone";
+import { ProfileAddressForm } from "@/components/profile/profile-address-form";
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("perfil");
 
   const tabs = [
     { id: "perfil", label: "Informações Pessoais", icon: User },
+    { id: "enderecos", label: "Meus Endereços", icon: MapPin },
     { id: "seguranca", label: "Segurança & Senha", icon: Lock },
     { id: "perigo", label: "Zona de Perigo", icon: Trash2 },
   ];
@@ -90,6 +93,7 @@ const ProfilePage = () => {
           <div className="lg:col-span-8">
             <div className="rounded-3xl border border-slate-200 bg-white p-6 md:p-8 shadow-sm transition-all animate-in fade-in slide-in-from-right-2">
               {activeTab === "perfil" && <ProfileInfoForm />}
+              {activeTab === "enderecos" && <ProfileAddressForm />}
               {activeTab === "seguranca" && <ProfileSecurityForm />}
               {activeTab === "perigo" && <ProfileDangerZone />}
 
