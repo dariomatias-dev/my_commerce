@@ -6,6 +6,7 @@ import { ActionButton } from "@/components/buttons/action-button";
 import { CheckoutAddressSection } from "@/components/store/[slug]/checkout/checkout-address-section";
 import { CheckoutPaymentSection } from "@/components/store/[slug]/checkout/checkout-payment-section";
 import { CheckoutSummarySection } from "@/components/store/[slug]/checkout/checkout-summary-section";
+import { CheckoutFreightSection } from "@/components/store/[slug]/checkout/checkout-summary-section/checkout-freight-section";
 import { useCheckout } from "@/hooks/use-checkout";
 
 const CheckoutPage = () => {
@@ -19,6 +20,12 @@ const CheckoutPage = () => {
     setPaymentMethod,
     selectedAddressId,
     setSelectedAddressId,
+    freightOptions,
+    selectedFreight,
+    setSelectedFreight,
+    isFreightLoading,
+    subtotal,
+    freightValue,
     total,
     handleQuantity,
     handleRemove,
@@ -65,7 +72,7 @@ const CheckoutPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F4F7FA] pb-20 pt-4">
+    <div className="min-h-screen bg-[#F4F7FA] pb-20 pt-12">
       <div className="mx-auto max-w-400 px-6">
         <button
           onClick={() => router.back()}
@@ -103,6 +110,13 @@ const CheckoutPage = () => {
               onAddAddress={handleCreateAddress}
             />
 
+            <CheckoutFreightSection
+              options={freightOptions}
+              selectedOption={selectedFreight}
+              onSelect={setSelectedFreight}
+              isLoading={isFreightLoading}
+            />
+
             <CheckoutPaymentSection
               paymentMethod={paymentMethod}
               onSelect={setPaymentMethod}
@@ -113,6 +127,8 @@ const CheckoutPage = () => {
             <div className="sticky top-32">
               <CheckoutSummarySection
                 items={items}
+                subtotal={subtotal}
+                freightValue={freightValue}
                 total={total}
                 isSubmitting={isSubmitting}
                 onIncrease={(id) => handleQuantity(id, 1)}

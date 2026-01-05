@@ -1,3 +1,5 @@
+"use client";
+
 import { CheckCircle2, Loader2, Truck } from "lucide-react";
 
 import { ActionButton } from "@/components/buttons/action-button";
@@ -6,6 +8,8 @@ import { CheckoutItem } from "./checkout-item";
 
 interface CheckoutSummarySectionProps {
   items: Item[];
+  subtotal: number;
+  freightValue: number;
   total: number;
   isSubmitting: boolean;
   onIncrease: (id: string) => void;
@@ -16,6 +20,8 @@ interface CheckoutSummarySectionProps {
 
 export const CheckoutSummarySection = ({
   items,
+  subtotal,
+  freightValue,
   total,
   isSubmitting,
   onIncrease,
@@ -55,7 +61,7 @@ export const CheckoutSummarySection = ({
             </span>
 
             <span className="text-xs font-black text-slate-950">
-              {total.toLocaleString("pt-BR", {
+              {subtotal.toLocaleString("pt-BR", {
                 style: "currency",
                 currency: "BRL",
               })}
@@ -67,8 +73,17 @@ export const CheckoutSummarySection = ({
               <Truck size={12} /> Frete
             </span>
 
-            <span className="text-xs font-black text-emerald-500 uppercase italic">
-              Grátis
+            <span
+              className={`text-xs font-black uppercase italic ${
+                freightValue === 0 ? "text-emerald-500" : "text-slate-950"
+              }`}
+            >
+              {freightValue === 0
+                ? "Grátis"
+                : freightValue.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
             </span>
           </div>
 
@@ -102,7 +117,6 @@ export const CheckoutSummarySection = ({
 
         <div className="mt-6 flex items-center justify-center gap-2 opacity-30">
           <CheckCircle2 size={14} className="text-emerald-500" />
-
           <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
             Compra 100% Criptografada
           </span>
