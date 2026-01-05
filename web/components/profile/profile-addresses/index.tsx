@@ -1,31 +1,81 @@
 "use client";
 
-import { MapPin, Navigation, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
+import { UserAddressResponse } from "@/@types/address/user-address-response";
+import { ApiError } from "@/@types/api";
 import { ProfileAddressFormValues } from "@/schemas/profile-address.schema";
+import { useUserAddress } from "@/services/hooks/use-user-address";
 import { ProfileAddressAddForm } from "./profile-address-add-form";
+import { ProfileAddressesList } from "./profile-addresses-list";
 
 export const ProfileAddresses = () => {
-  const [addresses, setAddresses] = useState<ProfileAddressFormValues[]>([
-    {
-      neighborhood: "",
-      complement: "",
-      street: "Av. Paulista",
-      number: "1000",
-      city: "São Paulo",
-      state: "SP",
-      cep: "01310-100",
-      latitude: "-23.5614",
-      longitude: "-46.6558",
-    },
-  ]);
+  const { getAllAddresses, deleteAddress, createAddress } = useUserAddress();
 
-  const handleAddAddress = (newAddress: ProfileAddressFormValues) => {
-    setAddresses((prev) => [
-      ...prev,
-      { ...newAddress, id: Math.random().toString() },
-    ]);
+  const [addresses, setAddresses] = useState<UserAddressResponse[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchAddresses = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await getAllAddresses();
+
+      setAddresses(response);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setError(error.message);
+      } else {
+        setError("Não foi possível carregar seus endereços.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [getAllAddresses]);
+
+  useEffect(() => {
+    fetchAddresses();
+  }, [fetchAddresses]);
+
+  const handleAddAddress = async (formData: ProfileAddressFormValues) => {
+    try {
+      const requestData = {
+        label: "Principal",
+        street: formData.street,
+        number: formData.number,
+        complement: formData.complement,
+        neighborhood: formData.neighborhood,
+        city: formData.city,
+        state: formData.state,
+        zip: formData.cep,
+        latitude: formData.latitude ? Number(formData.latitude) : 0,
+        longitude: formData.longitude ? Number(formData.longitude) : 0,
+      };
+
+      await createAddress(requestData);
+      await fetchAddresses();
+    } catch (error) {
+      if (error instanceof ApiError) {
+        alert(error.message);
+      } else {
+        alert("Erro ao cadastrar endereço.");
+      }
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteAddress(id);
+      setAddresses((prev) => prev.filter((addr) => addr.id !== id));
+    } catch (error) {
+      if (error instanceof ApiError) {
+        alert(error.message);
+      } else {
+        alert("Erro ao remover endereço.");
+      }
+    }
   };
 
   return (
@@ -39,45 +89,13 @@ export const ProfileAddresses = () => {
         </p>
       </div>
 
-      <div className="grid gap-3">
-        {addresses.map((addr) => (
-          <div
-            key={addr.latitude}
-            className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/50 p-4 transition-all hover:bg-slate-50"
-          >
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-indigo-600 shadow-sm">
-                <MapPin size={16} />
-              </div>
-
-              <div>
-                <h4 className="text-[11px] font-black text-slate-950 uppercase">
-                  {addr.street}, {addr.number}
-                </h4>
-
-                <div className="flex items-center gap-2">
-                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">
-                    {addr.city} - {addr.state}
-                  </p>
-
-                  {addr.latitude && (
-                    <span className="flex items-center gap-1 text-[8px] font-black text-emerald-500 uppercase">
-                      <Navigation size={8} /> GPS_LINKED
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <button
-              onClick={() => {}}
-              className="rounded-lg p-2 text-slate-300 hover:bg-red-50 hover:text-red-500 transition-all"
-            >
-              <Trash2 size={14} />
-            </button>
-          </div>
-        ))}
-      </div>
+      <ProfileAddressesList
+        addresses={addresses}
+        isLoading={isLoading}
+        error={error}
+        onDelete={handleDelete}
+        onRetry={fetchAddresses}
+      />
 
       <ProfileAddressAddForm onAdd={handleAddAddress} />
     </div>
