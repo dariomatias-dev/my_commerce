@@ -8,7 +8,7 @@ import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { Footer } from "@/components/layout/footer";
-import { StoreHeader } from "@/components/store/[slug]/store-header";
+import { StoreHeader } from "@/components/layout/store-header";
 import { StoreProvider } from "@/contexts/store-context";
 import { useStore } from "@/services/hooks/use-store";
 

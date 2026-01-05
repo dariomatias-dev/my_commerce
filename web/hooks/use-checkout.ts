@@ -12,7 +12,7 @@ import {
 } from "@/@types/freight/freight-response";
 import { OrderRequest } from "@/@types/order/order-request";
 import { StoreResponse } from "@/@types/store/store-response";
-import { Item } from "@/components/store/[slug]/store-header/store-cart/store-cart-item";
+import { Item } from "@/components/layout/store-header/store-cart/store-cart-item";
 import { PaymentMethod } from "@/enums/payment-method";
 import { ProfileAddressFormValues } from "@/schemas/profile-address.schema";
 import { useFreight } from "@/services/hooks/use-freight";

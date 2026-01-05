@@ -3,7 +3,7 @@
 import { CheckCircle2, Loader2, Truck } from "lucide-react";
 
 import { ActionButton } from "@/components/buttons/action-button";
-import { Item } from "@/components/store/[slug]/store-header/store-cart/store-cart-item";
+import { Item } from "@/components/layout/store-header/store-cart/store-cart-item";
 import { CheckoutItem } from "./checkout-item";
 
 interface CheckoutSummarySectionProps {
