@@ -3,7 +3,7 @@
 import { AlertCircle, Globe, RefreshCw } from "lucide-react";
 
 import { UserAddressResponse } from "@/@types/address/user-address-response";
-import { ProfileAddressItem } from "./profile-address-item";
+import { ProfileAddressCard } from "./profile-address-card";
 
 interface ProfileAddressesListProps {
   addresses: UserAddressResponse[];
@@ -81,7 +81,7 @@ export const ProfileAddressesList = ({
   return (
     <div className="grid gap-4">
       {addresses.map((addr) => (
-        <ProfileAddressItem key={addr.id} addr={addr} onDelete={onDelete} />
+        <ProfileAddressCard key={addr.id} addr={addr} onDelete={onDelete} />
       ))}
     </div>
   );

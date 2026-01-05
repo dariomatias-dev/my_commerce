@@ -4,15 +4,15 @@ import { MapPin, Trash2 } from "lucide-react";
 
 import { UserAddressResponse } from "@/@types/address/user-address-response";
 
-interface ProfileAddressItemProps {
+interface ProfileAddressCardProps {
   addr: UserAddressResponse;
   onDelete: (id: string) => void;
 }
 
-export const ProfileAddressItem = ({
+export const ProfileAddressCard = ({
   addr,
   onDelete,
-}: ProfileAddressItemProps) => {
+}: ProfileAddressCardProps) => {
   return (
     <div className="group relative flex items-center justify-between overflow-hidden rounded-[1.5rem] border border-slate-100 bg-white p-5 transition-all hover:border-indigo-600/20 hover:shadow-xl hover:shadow-indigo-500/5">
       <div className="flex items-start gap-5">
