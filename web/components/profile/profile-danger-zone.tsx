@@ -12,10 +12,12 @@ export const ProfileDangerZone = () => {
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-100 text-red-600">
             <Trash2 size={24} />
           </div>
+
           <div>
             <h2 className="text-xl font-black tracking-tighter text-red-600 uppercase italic">
               Excluir Conta
             </h2>
+
             <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest">
               Esta ação é irreversível e apagará todas as suas lojas
             </p>

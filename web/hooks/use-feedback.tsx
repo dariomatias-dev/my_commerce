@@ -2,14 +2,14 @@ import { useState } from "react";
 
 export type FeedbackType = "success" | "error";
 
-export const useProfileFeedback = () => {
+export const useFeedback = () => {
   const [feedback, setFeedback] = useState<{
-    message: string;
     type: FeedbackType;
+    message: string;
   } | null>(null);
 
-  const showFeedback = (message: string, type: FeedbackType) => {
-    setFeedback({ message, type });
+  const showFeedback = (type: FeedbackType, message: string) => {
+    setFeedback({ type, message });
 
     setTimeout(() => setFeedback(null), 3000);
   };

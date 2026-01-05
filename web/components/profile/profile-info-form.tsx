@@ -2,14 +2,14 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, RefreshCw, User } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
+import { Feedback } from "@/components/feedback";
 import { useAuthContext } from "@/contexts/auth-context";
-import { useProfileFeedback } from "@/hooks/use-profile-feedback";
+import { useFeedback } from "@/hooks/use-feedback";
 import { useUser } from "@/services/hooks/use-user";
-import { useState } from "react";
-import { ProfileFeedback } from "./profile-feedback";
 
 const profileSchema = z.object({
   name: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
@@ -19,9 +19,10 @@ const profileSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export const ProfileInfoForm = () => {
+  const { feedback, showFeedback } = useFeedback();
+
   const { user, refreshUser } = useAuthContext();
   const { updateMe } = useUser();
-  const { feedback, showFeedback } = useProfileFeedback();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -36,23 +37,30 @@ export const ProfileInfoForm = () => {
   const onSubmit = async (data: ProfileFormValues) => {
     try {
       setIsLoading(true);
+
       await updateMe(data);
       await refreshUser();
-      showFeedback("Perfil atualizado com sucesso.", "success");
+
+      showFeedback("success", "Perfil atualizado com sucesso.");
     } catch (error) {
-      showFeedback(
-        error instanceof Error ? error.message : "Erro ao atualizar perfil.",
-        "error"
-      );
+      if (error instanceof Error) {
+        showFeedback("error", error.message);
+      } else {
+        showFeedback("success", "Erro ao atualizar perfil.");
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <>
+    <div className="space-y-6">
       {feedback && (
-        <ProfileFeedback message={feedback.message} type={feedback.type} />
+        <Feedback
+          message={feedback.message}
+          type={feedback.type}
+          onClose={() => showFeedback("success", "")}
+        />
       )}
 
       <section className="rounded-[2.5rem] border border-slate-200 bg-white p-8 md:p-12 shadow-sm">
@@ -60,10 +68,12 @@ export const ProfileInfoForm = () => {
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-indigo-600">
             <User size={24} />
           </div>
+
           <div>
             <h2 className="text-xl font-black tracking-tighter text-slate-950 uppercase italic">
               Informações Pessoais
             </h2>
+
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
               Dados básicos da sua conta
             </p>
@@ -99,6 +109,7 @@ export const ProfileInfoForm = () => {
                   className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"
                   size={16}
                 />
+
                 <input
                   {...form.register("email")}
                   disabled
@@ -122,6 +133,6 @@ export const ProfileInfoForm = () => {
           </div>
         </form>
       </section>
-    </>
+    </div>
   );
-}
+};

@@ -6,11 +6,12 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
+import { ApiError } from "@/@types/api";
+import { Feedback } from "@/components/feedback";
 import { PasswordField } from "@/components/password-field";
-import { useProfileFeedback } from "@/hooks/use-profile-feedback";
+import { useFeedback } from "@/hooks/use-feedback";
 import { passwordSchema } from "@/schemas/password.schema";
 import { useUser } from "@/services/hooks/use-user";
-import { ProfileFeedback } from "./profile-feedback";
 
 const changePasswordSchema = z
   .object({
@@ -26,8 +27,9 @@ const changePasswordSchema = z
 type PasswordFormValues = z.infer<typeof changePasswordSchema>;
 
 export const ProfileSecurityForm = () => {
+  const { feedback, showFeedback } = useFeedback();
+
   const { changePassword } = useUser();
-  const { feedback, showFeedback } = useProfileFeedback();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,26 +45,34 @@ export const ProfileSecurityForm = () => {
   const onSubmit = async (data: PasswordFormValues) => {
     try {
       setIsLoading(true);
+
       await changePassword({
         currentPassword: data.currentPassword,
         newPassword: data.newPassword,
       });
+
       form.reset();
-      showFeedback("Senha alterada com sucesso.", "success");
+
+      showFeedback("success", "Senha alterada com sucesso.");
     } catch (error) {
-      showFeedback(
-        error instanceof Error ? error.message : "Erro ao alterar senha.",
-        "error"
-      );
+      if (error instanceof ApiError) {
+        showFeedback("error", error.message);
+      } else {
+        showFeedback("error", "Erro ao alterar senha.");
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <>
+    <div className="space-y-6">
       {feedback && (
-        <ProfileFeedback message={feedback.message} type={feedback.type} />
+        <Feedback
+          type={feedback.type}
+          message={feedback.message}
+          onClose={() => showFeedback("success", "")}
+        />
       )}
 
       <section className="rounded-[2.5rem] border border-slate-200 bg-white p-8 md:p-12 shadow-sm">
@@ -70,10 +80,12 @@ export const ProfileSecurityForm = () => {
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-indigo-600">
             <KeyRound size={24} />
           </div>
+
           <div>
             <h2 className="text-xl font-black tracking-tighter text-slate-950 uppercase italic">
               Segurança
             </h2>
+
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
               Atualizar senha de acesso
             </p>
@@ -86,6 +98,7 @@ export const ProfileSecurityForm = () => {
               <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase">
                 Senha Atual
               </label>
+
               <PasswordField
                 {...form.register("currentPassword")}
                 error={form.formState.errors.currentPassword?.message}
@@ -96,6 +109,7 @@ export const ProfileSecurityForm = () => {
               <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase">
                 Nova Senha
               </label>
+
               <PasswordField
                 {...form.register("newPassword")}
                 error={form.formState.errors.newPassword?.message}
@@ -106,6 +120,7 @@ export const ProfileSecurityForm = () => {
               <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase">
                 Confirmar Senha
               </label>
+
               <PasswordField
                 {...form.register("confirmPassword")}
                 error={form.formState.errors.confirmPassword?.message}
@@ -127,6 +142,6 @@ export const ProfileSecurityForm = () => {
           </div>
         </form>
       </section>
-    </>
+    </div>
   );
 };
