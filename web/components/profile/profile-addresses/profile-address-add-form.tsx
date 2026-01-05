@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, LocateFixed, Plus, RefreshCw } from "lucide-react";
+import { LocateFixed, Plus, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -21,7 +21,6 @@ export const ProfileAddressAddForm = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
 
   const form = useForm<ProfileAddressFormValues>({
     resolver: zodResolver(profileAddressSchema),
@@ -41,24 +40,16 @@ export const ProfileAddressAddForm = ({
   const getCoordinatesFromAddress = async () => {
     const values = form.getValues();
     if (!values.street || !values.city) return;
-
     const fullAddress = `${values.street}, ${values.number}, ${values.neighborhood}, ${values.city}, ${values.state}, Brasil`;
-
     try {
       setIsGeocoding(true);
-
       const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
         fullAddress
       )}&format=json&limit=1`;
-
       const response = await fetch(url, {
-        headers: {
-          "User-Agent": "MeuApp/1.0 (matiastests0@gmail.com)",
-        },
+        headers: { "User-Agent": "MeuApp/1.0" },
       });
-
       const data = await response.json();
-
       if (data.length > 0) {
         form.setValue("latitude", data[0].lat);
         form.setValue("longitude", data[0].lon);
@@ -72,14 +63,11 @@ export const ProfileAddressAddForm = ({
 
   const handleGetCurrentLocation = () => {
     if (!navigator.geolocation) return;
-
     setIsLocating(true);
-
     navigator.geolocation.getCurrentPosition(
       (position) => {
         form.setValue("latitude", position.coords.latitude.toString());
         form.setValue("longitude", position.coords.longitude.toString());
-
         setIsLocating(false);
       },
       () => setIsLocating(false)
@@ -89,15 +77,8 @@ export const ProfileAddressAddForm = ({
   const onSubmit = async (data: ProfileAddressFormValues) => {
     try {
       setIsLoading(true);
-      setFormError(null);
-
       await onAdd(data);
-
       form.reset();
-    } catch (error) {
-      setFormError(
-        error instanceof Error ? error.message : "Erro ao processar requisição."
-      );
     } finally {
       setIsLoading(false);
     }
@@ -110,7 +91,6 @@ export const ProfileAddressAddForm = ({
           <div className="flex h-6 w-6 items-center justify-center rounded bg-indigo-600 text-white shadow-sm">
             <Plus size={12} />
           </div>
-
           <h3 className="text-[10px] font-black text-slate-950 uppercase tracking-widest">
             Nova Instância de Entrega
           </h3>
@@ -130,21 +110,11 @@ export const ProfileAddressAddForm = ({
             )}
             Usar GPS do Dispositivo
           </button>
-
           <div className="pointer-events-none absolute -bottom-10 right-0 w-48 rounded bg-slate-950 p-2 text-[8px] font-bold text-white opacity-0 transition-all group-hover:opacity-100 z-10">
             Captura sua latitude e longitude exatas via satélite agora.
           </div>
         </div>
       </div>
-
-      {formError && (
-        <div className="mb-6 flex items-center gap-2 text-red-500">
-          <AlertCircle size={14} />
-          <p className="text-[9px] font-black uppercase tracking-widest">
-            {formError}
-          </p>
-        </div>
-      )}
 
       <ProfileAddressForm
         register={form.register}
