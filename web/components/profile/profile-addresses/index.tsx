@@ -1,5 +1,6 @@
 "use client";
 
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { UserAddressResponse } from "@/@types/address/user-address-response";
@@ -15,6 +16,10 @@ export const ProfileAddresses = () => {
   const [addresses, setAddresses] = useState<UserAddressResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   const fetchAddresses = useCallback(async () => {
     try {
@@ -24,9 +29,9 @@ export const ProfileAddresses = () => {
       const response = await getAllAddresses();
 
       setAddresses(response);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setError(error.message);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message);
       } else {
         setError("Não foi possível carregar seus endereços.");
       }
@@ -40,12 +45,13 @@ export const ProfileAddresses = () => {
   }, [fetchAddresses]);
 
   const handleAddAddress = async (formData: ProfileAddressFormValues) => {
+    setFeedback(null);
     try {
       const requestData = {
         label: "Principal",
         street: formData.street,
         number: formData.number,
-        complement: formData.complement,
+        complement: formData.complement || "",
         neighborhood: formData.neighborhood,
         city: formData.city,
         state: formData.state,
@@ -55,26 +61,38 @@ export const ProfileAddresses = () => {
       };
 
       await createAddress(requestData);
+
+      setFeedback({
+        message: "Endereço cadastrado com sucesso.",
+        type: "success",
+      });
+
       await fetchAddresses();
-    } catch (error) {
-      if (error instanceof ApiError) {
-        alert(error.message);
-      } else {
-        alert("Erro ao cadastrar endereço.");
-      }
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Erro ao cadastrar endereço.";
+      setFeedback({ message, type: "error" });
+      throw new Error(message);
     }
   };
 
   const handleDelete = async (id: string) => {
+    setFeedback(null);
     try {
       await deleteAddress(id);
+
       setAddresses((prev) => prev.filter((addr) => addr.id !== id));
-    } catch (error) {
-      if (error instanceof ApiError) {
-        alert(error.message);
-      } else {
-        alert("Erro ao remover endereço.");
-      }
+
+      setFeedback({
+        message: "Endereço removido com sucesso.",
+        type: "success",
+      });
+    } catch (err) {
+      setFeedback({
+        message:
+          err instanceof ApiError ? err.message : "Erro ao remover endereço.",
+        type: "error",
+      });
     }
   };
 
@@ -84,6 +102,7 @@ export const ProfileAddresses = () => {
         <h2 className="text-xl font-black tracking-tighter text-slate-950 uppercase italic">
           Meus Endereços
         </h2>
+
         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
           Gestão de Logística e Localização
         </p>
@@ -96,6 +115,31 @@ export const ProfileAddresses = () => {
         onDelete={handleDelete}
         onRetry={fetchAddresses}
       />
+
+      {feedback && (
+        <div
+          className={`flex items-center gap-3 rounded-2xl border p-4 transition-all animate-in fade-in slide-in-from-top-2 ${
+            feedback.type === "success"
+              ? "border-emerald-100 bg-emerald-50 text-emerald-600"
+              : "border-red-100 bg-red-50 text-red-600"
+          }`}
+        >
+          {feedback.type === "success" ? (
+            <CheckCircle2 size={18} />
+          ) : (
+            <AlertCircle size={18} />
+          )}
+          <p className="text-[10px] font-black uppercase tracking-widest">
+            {feedback.message}
+          </p>
+          <button
+            onClick={() => setFeedback(null)}
+            className="ml-auto text-[10px] font-black uppercase opacity-50 hover:opacity-100"
+          >
+            Fechar
+          </button>
+        </div>
+      )}
 
       <ProfileAddressAddForm onAdd={handleAddAddress} />
     </div>

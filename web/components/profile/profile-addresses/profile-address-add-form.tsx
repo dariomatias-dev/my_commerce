@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LocateFixed, Plus, RefreshCw } from "lucide-react";
+import { AlertCircle, LocateFixed, Plus, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -12,7 +12,7 @@ import {
 import { ProfileAddressForm } from "./profile-address-form";
 
 interface ProfileAddressAddFormProps {
-  onAdd: (data: ProfileAddressFormValues) => void;
+  onAdd: (data: ProfileAddressFormValues) => Promise<void>;
 }
 
 export const ProfileAddressAddForm = ({
@@ -21,6 +21,7 @@ export const ProfileAddressAddForm = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const form = useForm<ProfileAddressFormValues>({
     resolver: zodResolver(profileAddressSchema),
@@ -86,15 +87,20 @@ export const ProfileAddressAddForm = ({
   };
 
   const onSubmit = async (data: ProfileAddressFormValues) => {
-    setIsLoading(true);
+    try {
+      setIsLoading(true);
+      setFormError(null);
 
-    await new Promise((resolve) => setTimeout(resolve, 800));
+      await onAdd(data);
 
-    onAdd(data);
-
-    form.reset();
-
-    setIsLoading(false);
+      form.reset();
+    } catch (error) {
+      setFormError(
+        error instanceof Error ? error.message : "Erro ao processar requisição."
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -130,6 +136,15 @@ export const ProfileAddressAddForm = ({
           </div>
         </div>
       </div>
+
+      {formError && (
+        <div className="mb-6 flex items-center gap-2 text-red-500">
+          <AlertCircle size={14} />
+          <p className="text-[9px] font-black uppercase tracking-widest">
+            {formError}
+          </p>
+        </div>
+      )}
 
       <ProfileAddressForm
         register={form.register}
