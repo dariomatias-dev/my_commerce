@@ -1,35 +1,11 @@
+"use client";
+
 import { Check } from "lucide-react";
 
-interface Address {
-  id: string;
-  label: string;
-  street: string;
-  neighborhood: string;
-  city: string;
-  zip: string;
-}
-
-export const MOCK_ADDRESSES: Address[] = [
-  {
-    id: "1",
-    label: "Casa",
-    street: "Rua das Flores, 123",
-    neighborhood: "Jardim Paulista",
-    city: "São Paulo - SP",
-    zip: "01234-567",
-  },
-  {
-    id: "2",
-    label: "Trabalho",
-    street: "Av. Paulista, 1000 - Sala 42",
-    neighborhood: "Bela Vista",
-    city: "São Paulo - SP",
-    zip: "01310-100",
-  },
-];
+import { UserAddressResponse } from "@/@types/address/user-address-response";
 
 interface AddressCardProps {
-  address: Address;
+  address: UserAddressResponse;
   isSelected: boolean;
   onSelect: (id: string) => void;
 }
@@ -59,10 +35,15 @@ export const CheckoutAddressCard = ({
       {isSelected && <Check size={16} className="text-indigo-600" />}
     </div>
 
-    <p className="mt-1 text-sm font-black text-slate-950">{address.street}</p>
+    <p className="mt-1 text-sm font-black text-slate-950 uppercase italic tracking-tighter">
+      {address.street}, {address.number}
+      {address.complement && (
+        <span className="ml-1 text-slate-400">({address.complement})</span>
+      )}
+    </p>
 
-    <p className="text-xs font-bold text-slate-400 uppercase tracking-tight">
-      {address.neighborhood}, {address.city} - {address.zip}
+    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+      {address.neighborhood}, {address.city} - {address.state} | {address.zip}
     </p>
   </button>
 );

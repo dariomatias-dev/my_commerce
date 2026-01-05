@@ -3,16 +3,18 @@
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+import { UserAddressResponse } from "@/@types/address/user-address-response";
 import { ApiError } from "@/@types/api";
 import { CartStorage } from "@/@types/cart-storage";
 import { OrderRequest } from "@/@types/order/order-request";
 import { StoreResponse } from "@/@types/store/store-response";
-import { MOCK_ADDRESSES } from "@/components/store/[slug]/checkout/checkout-address-section/checkout-address-card";
 import { Item } from "@/components/store/[slug]/store-header/store-cart/store-cart-item";
 import { PaymentMethod } from "@/enums/payment-method";
+import { ProfileAddressFormValues } from "@/schemas/profile-address.schema";
 import { useOrder } from "@/services/hooks/use-order";
 import { useProduct } from "@/services/hooks/use-product";
 import { useStore } from "@/services/hooks/use-store";
+import { useUserAddress } from "@/services/hooks/use-user-address";
 
 export const useCheckout = () => {
   const router = useRouter();
@@ -20,17 +22,19 @@ export const useCheckout = () => {
   const { getProductsByIds } = useProduct();
   const { getStoreBySlug } = useStore();
   const { createOrder } = useOrder();
+  const { getAllAddresses, createAddress } = useUserAddress();
 
   const [store, setStore] = useState<StoreResponse | null>(null);
   const [items, setItems] = useState<Item[]>([]);
+  const [addresses, setAddresses] = useState<UserAddressResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(
     PaymentMethod.PIX
   );
-  const [selectedAddressId, setSelectedAddressId] = useState<string>(
-    MOCK_ADDRESSES[0].id
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
+    null
   );
 
   const slug = params.slug as string;
@@ -54,9 +58,17 @@ export const useCheckout = () => {
     setErrorMessage(null);
 
     try {
-      const storeResponse = await getStoreBySlug(slug);
+      const [storeResponse, addressesResponse] = await Promise.all([
+        getStoreBySlug(slug),
+        getAllAddresses(),
+      ]);
 
       setStore(storeResponse);
+      setAddresses(addressesResponse);
+
+      if (addressesResponse.length > 0 && !selectedAddressId) {
+        setSelectedAddressId(addressesResponse[0].id);
+      }
 
       const storageKey = `cart-${storeResponse.id}`;
       const stored = localStorage.getItem(storageKey);
@@ -84,13 +96,22 @@ export const useCheckout = () => {
 
       setItems(mergedItems);
     } catch (error) {
-      setErrorMessage(
-        error instanceof ApiError ? error.message : "Erro ao carregar dados."
-      );
+      if (error instanceof ApiError) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("Erro ao carregar dados do checkout.");
+      }
     } finally {
       setIsLoading(false);
     }
-  }, [slug, getStoreBySlug, getProductsByIds, router]);
+  }, [
+    slug,
+    getStoreBySlug,
+    getProductsByIds,
+    getAllAddresses,
+    router,
+    selectedAddressId,
+  ]);
 
   useEffect(() => {
     fetchCheckoutData();
@@ -120,8 +141,38 @@ export const useCheckout = () => {
     if (updated.length === 0) router.push(`/store/${slug}`);
   };
 
+  const handleCreateAddress = async (formData: ProfileAddressFormValues) => {
+    try {
+      const requestData = {
+        label: "Endereço de Entrega",
+        street: formData.street,
+        number: formData.number,
+        complement: formData.complement || "",
+        neighborhood: formData.neighborhood,
+        city: formData.city,
+        state: formData.state,
+        zip: formData.cep,
+        latitude: formData.latitude ? Number(formData.latitude) : 0,
+        longitude: formData.longitude ? Number(formData.longitude) : 0,
+      };
+
+      const newAddress = await createAddress(requestData);
+
+      setAddresses((prev) => [newAddress, ...prev]);
+      setSelectedAddressId(newAddress.id);
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const handleFinishOrder = async () => {
     if (!store || items.length === 0) return;
+
+    if (!selectedAddressId) {
+      setErrorMessage("Por favor, selecione um endereço para entrega.");
+
+      return;
+    }
 
     setIsSubmitting(true);
     setErrorMessage(null);
@@ -129,6 +180,8 @@ export const useCheckout = () => {
     try {
       const orderPayload: OrderRequest = {
         storeId: store.id,
+        addressId: selectedAddressId,
+        paymentMethod,
         items: items.map((item) => ({
           productId: item.id,
           quantity: item.quantity,
@@ -138,7 +191,6 @@ export const useCheckout = () => {
       const result = await createOrder(orderPayload);
 
       localStorage.removeItem(`cart-${store.id}`);
-
       window.dispatchEvent(new Event("cart-updated"));
 
       router.push(`/store/${slug}/success?orderId=${result.id}`);
@@ -162,6 +214,7 @@ export const useCheckout = () => {
 
   return {
     items,
+    addresses,
     isLoading,
     errorMessage,
     isSubmitting,
@@ -172,6 +225,7 @@ export const useCheckout = () => {
     total,
     handleQuantity,
     handleRemove,
+    handleCreateAddress,
     handleFinishOrder,
     router,
   };
