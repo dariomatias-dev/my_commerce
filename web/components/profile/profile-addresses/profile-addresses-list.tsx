@@ -1,14 +1,9 @@
 "use client";
 
-import {
-  AlertCircle,
-  MapPin,
-  Navigation,
-  RefreshCw,
-  Trash2,
-} from "lucide-react";
+import { AlertCircle, Globe, RefreshCw } from "lucide-react";
 
 import { UserAddressResponse } from "@/@types/address/user-address-response";
+import { ProfileAddressItem } from "./profile-address-item";
 
 interface ProfileAddressesListProps {
   addresses: UserAddressResponse[];
@@ -27,11 +22,17 @@ export const ProfileAddressesList = ({
 }: ProfileAddressesListProps) => {
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 space-y-4">
-        <RefreshCw className="h-8 w-8 animate-spin text-indigo-600" />
+      <div className="flex flex-col items-center justify-center py-16 space-y-4">
+        <div className="relative flex h-12 w-12 items-center justify-center">
+          <RefreshCw
+            className="absolute h-12 w-12 animate-spin text-indigo-100"
+            strokeWidth={1}
+          />
+          <RefreshCw className="h-6 w-6 animate-spin text-indigo-600" />
+        </div>
 
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-          Sincronizando com o servidor...
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] italic">
+          Sincronizando clusters de dados...
         </p>
       </div>
     );
@@ -39,18 +40,25 @@ export const ProfileAddressesList = ({
 
   if (error) {
     return (
-      <div className="flex items-center gap-3 rounded-2xl border border-red-100 bg-red-50 p-4">
-        <AlertCircle className="text-red-500" size={18} />
+      <div className="flex flex-col items-center gap-4 rounded-3xl border-2 border-red-50 bg-red-50/20 p-8 text-center">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-100 text-red-600">
+          <AlertCircle size={24} />
+        </div>
 
-        <p className="text-[10px] font-black text-red-600 uppercase tracking-widest">
-          {error}
-        </p>
+        <div>
+          <h4 className="text-sm font-black uppercase italic tracking-tighter text-red-600">
+            Falha na Comunicação
+          </h4>
+          <p className="text-[10px] font-bold uppercase text-red-400 tracking-widest mt-1">
+            {error}
+          </p>
+        </div>
 
         <button
           onClick={onRetry}
-          className="ml-auto text-[10px] font-black text-red-600 underline uppercase"
+          className="rounded-xl bg-red-600 px-6 py-2.5 text-[10px] font-black uppercase tracking-widest text-white transition-all hover:bg-red-700 active:scale-95"
         >
-          Tentar novamente
+          Tentar Reconexão
         </button>
       </div>
     );
@@ -58,53 +66,22 @@ export const ProfileAddressesList = ({
 
   if (addresses.length === 0) {
     return (
-      <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-8 text-center">
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">
-          Nenhum endereço cadastrado na sua conta.
+      <div className="flex flex-col items-center justify-center rounded-[2rem] border-2 border-dashed border-slate-100 bg-slate-50/30 p-12 text-center">
+        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-slate-200 shadow-sm">
+          <Globe size={28} />
+        </div>
+
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] italic max-w-50 leading-relaxed">
+          Nenhuma instância de localização mapeada nesta conta.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="grid gap-3">
+    <div className="grid gap-4">
       {addresses.map((addr) => (
-        <div
-          key={addr.id}
-          className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/50 p-4 transition-all hover:bg-slate-50"
-        >
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-indigo-600 shadow-sm">
-              <MapPin size={16} />
-            </div>
-
-            <div>
-              <h4 className="text-[11px] font-black text-slate-950 uppercase">
-                {addr.street}, {addr.number}{" "}
-                {addr.complement && `(${addr.complement})`}
-              </h4>
-
-              <div className="flex items-center gap-2">
-                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">
-                  {addr.city} - {addr.state} | {addr.zip}
-                </p>
-
-                {(addr.latitude !== 0 || addr.longitude !== 0) && (
-                  <span className="flex items-center gap-1 text-[8px] font-black text-emerald-500 uppercase">
-                    <Navigation size={8} /> GPS_LINKED
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={() => onDelete(addr.id)}
-            className="rounded-lg p-2 text-slate-300 hover:bg-red-50 hover:text-red-500 transition-all"
-          >
-            <Trash2 size={14} />
-          </button>
-        </div>
+        <ProfileAddressItem key={addr.id} addr={addr} onDelete={onDelete} />
       ))}
     </div>
   );
