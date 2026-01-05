@@ -18,6 +18,8 @@ public interface UserAddressContract {
 
     List<UserAddress> findAllByUserId(UUID userId);
 
+    Double calculateDistanceFromPoint(UUID id, double lat, double lon);
+
     UserAddress update(UserAddress address);
 
     void deleteById(UUID id);

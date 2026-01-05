@@ -43,6 +43,11 @@ public class UserAddressJpaRepository implements UserAddressContract {
     }
 
     @Override
+    public Double calculateDistanceFromPoint(UUID id, double lat, double lon) {
+        return repository.findDistanceFromPoint(id, lat, lon);
+    }
+
+    @Override
     public UserAddress update(UserAddress address) {
         return repository.save(address);
     }

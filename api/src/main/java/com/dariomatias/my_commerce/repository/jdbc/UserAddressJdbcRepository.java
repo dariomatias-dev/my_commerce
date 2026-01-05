@@ -101,6 +101,19 @@ public class UserAddressJdbcRepository implements UserAddressContract {
     }
 
     @Override
+    public Double calculateDistanceFromPoint(UUID id, double lat, double lon) {
+        String sql = """
+        SELECT ST_DistanceSphere(
+            ST_MakePoint(longitude, latitude),
+            ST_MakePoint(?, ?)
+        ) 
+        FROM user_addresses 
+        WHERE id = ?
+    """;
+        return jdbcTemplate.queryForObject(sql, Double.class, lon, lat, id);
+    }
+
+    @Override
     public UserAddress update(UserAddress address) {
         String sql = """
             UPDATE user_addresses SET 
