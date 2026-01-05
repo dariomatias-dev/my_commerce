@@ -1,6 +1,6 @@
 "use client";
 
-import { Info, Plus, RefreshCw, Search } from "lucide-react";
+import { Info, Plus, RefreshCw, Search, Tag } from "lucide-react";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 
 import { ProfileAddressFormValues } from "@/schemas/profile-address.schema";
@@ -37,6 +37,15 @@ export const ProfileAddressForm = ({
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
+      <div className="grid gap-4 md:grid-cols-1">
+        <ProfileAddressInput
+          label="Identificação do Endereço"
+          register={register("label")}
+          error={errors.label?.message}
+          placeholder="Ex: Casa, Escritório, Apartamento no Centro..."
+        />
+      </div>
+
       <div className="grid gap-4 md:grid-cols-4">
         <ProfileAddressInput
           label="CEP"
@@ -97,44 +106,77 @@ export const ProfileAddressForm = ({
         />
       </div>
 
-      <div className="flex flex-col gap-4 rounded-xl bg-slate-950 p-4 shadow-inner md:flex-row md:items-end">
-        <div className="flex-1 space-y-1.5">
-          <label className="ml-1 flex items-center gap-1 text-[8px] font-black tracking-widest text-slate-500 uppercase">
-            Latitude <Info size={10} />
-          </label>
-          <input
-            {...register("latitude")}
-            readOnly
-            className="w-full bg-transparent font-mono text-xs font-bold text-indigo-400 outline-none"
-            placeholder="0.000000"
-          />
+      <div className="relative overflow-hidden rounded-2xl border-2 border-slate-950 bg-slate-950 p-5 shadow-lg">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600">
+              <Tag size={14} className="text-white" />
+            </div>
+            <h4 className="text-[10px] font-black uppercase tracking-widest text-white">
+              Posicionamento Geográfico
+            </h4>
+          </div>
+
+          <div className="flex items-center gap-1.5 rounded-full bg-slate-900 px-2.5 py-1">
+            <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-indigo-500" />
+            <span className="text-[8px] font-bold uppercase tracking-tighter text-indigo-400">
+              Sistema GPS Ativo
+            </span>
+          </div>
         </div>
 
-        <div className="flex-1 space-y-1.5">
-          <label className="ml-1 flex items-center gap-1 text-[8px] font-black tracking-widest text-slate-500 uppercase">
-            Longitude <Info size={10} />
-          </label>
-          <input
-            {...register("longitude")}
-            readOnly
-            className="w-full bg-transparent font-mono text-xs font-bold text-indigo-400 outline-none"
-            placeholder="0.000000"
-          />
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="relative rounded-xl bg-slate-900/50 p-3 border border-slate-800">
+            <label className="mb-1 block text-[8px] font-black uppercase tracking-widest text-slate-500">
+              Coordenada Latitude
+            </label>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold text-indigo-600">LAT</span>
+              <input
+                {...register("latitude")}
+                readOnly
+                className="w-full bg-transparent font-mono text-sm font-black text-white outline-none"
+                placeholder="0.000000"
+              />
+            </div>
+          </div>
+
+          <div className="relative rounded-xl bg-slate-900/50 p-3 border border-slate-800">
+            <label className="mb-1 block text-[8px] font-black uppercase tracking-widest text-slate-500">
+              Coordenada Longitude
+            </label>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold text-indigo-600">LON</span>
+              <input
+                {...register("longitude")}
+                readOnly
+                className="w-full bg-transparent font-mono text-sm font-black text-white outline-none"
+                placeholder="0.000000"
+              />
+            </div>
+          </div>
         </div>
 
-        <button
-          type="button"
-          onClick={onGetCoordinates}
-          disabled={isGeocoding}
-          className="flex h-10 items-center gap-2 rounded-lg border border-indigo-600/30 bg-transparent px-4 text-[9px] font-black text-indigo-400 transition-all hover:bg-indigo-600 hover:text-white disabled:opacity-50 uppercase"
-        >
-          {isGeocoding ? (
-            <RefreshCw size={12} className="animate-spin" />
-          ) : (
-            <Search size={12} />
-          )}
-          Vincular Coordenadas
-        </button>
+        <div className="mt-4 flex items-center justify-between border-t border-slate-800 pt-4">
+          <p className="flex items-center gap-1.5 text-[8px] font-bold uppercase text-slate-500">
+            <Info size={10} className="text-indigo-600" />
+            Vincule as coordenadas para otimizar a logística de entrega.
+          </p>
+
+          <button
+            type="button"
+            onClick={onGetCoordinates}
+            disabled={isGeocoding}
+            className="flex h-9 items-center gap-2 rounded-lg bg-white px-4 text-[9px] font-black text-slate-950 transition-all hover:bg-indigo-600 hover:text-white disabled:opacity-50 uppercase"
+          >
+            {isGeocoding ? (
+              <RefreshCw size={12} className="animate-spin" />
+            ) : (
+              <Search size={12} />
+            )}
+            Sincronizar Mapa
+          </button>
+        </div>
       </div>
 
       <div className="flex justify-end pt-2">
@@ -148,7 +190,7 @@ export const ProfileAddressForm = ({
           ) : (
             <Plus size={16} />
           )}
-          Salvar Endereço
+          Finalizar Cadastro
         </button>
       </div>
     </form>

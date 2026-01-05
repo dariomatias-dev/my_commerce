@@ -1,6 +1,7 @@
 import * as z from "zod";
 
 export const profileAddressSchema = z.object({
+  label: z.string().min(2, "A identificação deve ter pelo menos 2 caracteres"),
   cep: z.string().min(8, "CEP inválido"),
   street: z.string().min(3, "Rua é obrigatória"),
   number: z.string().min(1, "Nº é obrigatório"),

@@ -46,7 +46,7 @@ export const ProfileAddresses = () => {
   const handleAddAddress = async (formData: ProfileAddressFormValues) => {
     try {
       const requestData = {
-        label: "Principal",
+        label: formData.label,
         street: formData.street,
         number: formData.number,
         complement: formData.complement || "",

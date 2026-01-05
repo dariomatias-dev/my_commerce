@@ -104,7 +104,7 @@ export const ProfileAddressAddForm = ({
           </div>
 
           <h3 className="text-[10px] font-black text-slate-950 uppercase tracking-widest">
-            Nova Instância de Entrega
+            Novo Endereço de Entrega
           </h3>
         </div>
 
