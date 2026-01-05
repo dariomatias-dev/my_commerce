@@ -72,7 +72,7 @@ const CheckoutPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F4F7FA] pb-20 pt-12">
+    <div className="min-h-screen bg-[#F4F7FA] pb-20 pt-32">
       <div className="mx-auto max-w-400 px-6">
         <button
           onClick={() => router.back()}
