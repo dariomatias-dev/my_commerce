@@ -1,22 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import { 
-  User, 
-  Lock, 
-  Trash2, 
-  ChevronRight, 
-  ShieldCheck, 
-  Database, 
-  MapPin
+import {
+  ChevronRight,
+  Database,
+  Lock,
+  MapPin,
+  ShieldCheck,
+  Trash2,
+  User,
 } from "lucide-react";
+import { useState } from "react";
 
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
+import { ProfileAddresses } from "@/components/profile/profile-addresses";
+import { ProfileDangerZone } from "@/components/profile/profile-danger-zone";
 import { ProfileInfoForm } from "@/components/profile/profile-info-form";
 import { ProfileSecurityForm } from "@/components/profile/profile-security-form";
-import { ProfileDangerZone } from "@/components/profile/profile-danger-zone";
-import { ProfileAddressForm } from "@/components/profile/profile-address-form";
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("perfil");
@@ -71,7 +71,9 @@ const ProfilePage = () => {
                   </div>
                   <ChevronRight
                     size={14}
-                    className={activeTab === tab.id ? "opacity-100" : "opacity-0"}
+                    className={
+                      activeTab === tab.id ? "opacity-100" : "opacity-0"
+                    }
                   />
                 </button>
               ))}
@@ -93,7 +95,7 @@ const ProfilePage = () => {
           <div className="lg:col-span-8">
             <div className="rounded-3xl border border-slate-200 bg-white p-6 md:p-8 shadow-sm transition-all animate-in fade-in slide-in-from-right-2">
               {activeTab === "perfil" && <ProfileInfoForm />}
-              {activeTab === "enderecos" && <ProfileAddressForm />}
+              {activeTab === "enderecos" && <ProfileAddresses />}
               {activeTab === "seguranca" && <ProfileSecurityForm />}
               {activeTab === "perigo" && <ProfileDangerZone />}
 

@@ -3,10 +3,11 @@
 import { MapPin, Navigation, Trash2 } from "lucide-react";
 import { useState } from "react";
 
-import { AddressAddForm, AddressFormValues } from "./profile-address-add-form";
+import { ProfileAddressFormValues } from "@/schemas/profile-address.schema";
+import { ProfileAddressAddForm } from "./profile-address-add-form";
 
-export const ProfileAddressForm = () => {
-  const [addresses, setAddresses] = useState<AddressFormValues[]>([
+export const ProfileAddresses = () => {
+  const [addresses, setAddresses] = useState<ProfileAddressFormValues[]>([
     {
       neighborhood: "",
       complement: "",
@@ -20,7 +21,7 @@ export const ProfileAddressForm = () => {
     },
   ]);
 
-  const handleAddAddress = (newAddress: AddressFormValues) => {
+  const handleAddAddress = (newAddress: ProfileAddressFormValues) => {
     setAddresses((prev) => [
       ...prev,
       { ...newAddress, id: Math.random().toString() },
@@ -48,14 +49,17 @@ export const ProfileAddressForm = () => {
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-indigo-600 shadow-sm">
                 <MapPin size={16} />
               </div>
+
               <div>
                 <h4 className="text-[11px] font-black text-slate-950 uppercase">
                   {addr.street}, {addr.number}
                 </h4>
+
                 <div className="flex items-center gap-2">
                   <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">
                     {addr.city} - {addr.state}
                   </p>
+
                   {addr.latitude && (
                     <span className="flex items-center gap-1 text-[8px] font-black text-emerald-500 uppercase">
                       <Navigation size={8} /> GPS_LINKED
@@ -64,6 +68,7 @@ export const ProfileAddressForm = () => {
                 </div>
               </div>
             </div>
+
             <button
               onClick={() => {}}
               className="rounded-lg p-2 text-slate-300 hover:bg-red-50 hover:text-red-500 transition-all"
@@ -74,7 +79,7 @@ export const ProfileAddressForm = () => {
         ))}
       </div>
 
-      <AddressAddForm onAdd={handleAddAddress} />
+      <ProfileAddressAddForm onAdd={handleAddAddress} />
     </div>
   );
 };
