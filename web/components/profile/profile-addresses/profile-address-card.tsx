@@ -3,6 +3,7 @@
 import { MapPin, Trash2 } from "lucide-react";
 
 import { UserAddressResponse } from "@/@types/address/user-address-response";
+import { AddressContentCard } from "@/components/address-content-card";
 
 interface ProfileAddressCardProps {
   addr: UserAddressResponse;
@@ -21,42 +22,15 @@ export const ProfileAddressCard = ({
           <div className="absolute -right-1 -top-1 h-3 w-3 rounded-full border-2 border-white bg-emerald-500" />
         </div>
 
-        <div className="flex flex-col space-y-1">
-          <div className="flex items-center gap-3">
-            <span className="rounded-lg bg-slate-950 px-2.5 py-1 text-[8px] font-black uppercase tracking-widest text-white">
-              {addr.label || "IDENTIFICADOR_NULO"}
-            </span>
-          </div>
-
-          <h4 className="text-sm font-black uppercase italic tracking-tighter text-slate-950">
-            {addr.street}, {addr.number}
-            {addr.complement && (
-              <span className="ml-2 text-indigo-600 not-italic">
-                [{addr.complement}]
-              </span>
-            )}
-          </h4>
-
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-            <span className="flex items-center gap-1">{addr.neighborhood}</span>
-            <span className="h-1 w-1 rounded-full bg-slate-200" />
-            <span>
-              {addr.city}, {addr.state}
-            </span>
-            <span className="h-1 w-1 rounded-full bg-slate-200" />
-            <span className="font-mono text-indigo-400">{addr.zip}</span>
-          </div>
-        </div>
+        <AddressContentCard address={addr} />
       </div>
 
-      <div className="flex items-center pl-4">
-        <button
-          onClick={() => onDelete(addr.id)}
-          className="flex h-10 w-10 items-center justify-center rounded-xl border border-transparent text-slate-300 transition-all hover:border-red-100 hover:bg-red-50 hover:text-red-500 active:scale-90"
-        >
-          <Trash2 size={18} />
-        </button>
-      </div>
+      <button
+        onClick={() => onDelete(addr.id)}
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-300 transition-all hover:bg-red-50 hover:text-red-500 active:scale-90"
+      >
+        <Trash2 size={18} />
+      </button>
 
       <div className="absolute bottom-0 left-0 h-1 w-0 bg-indigo-600 transition-all duration-500 group-hover:w-full opacity-20" />
     </div>
