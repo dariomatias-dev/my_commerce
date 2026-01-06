@@ -17,7 +17,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
-import { OrderWithItemsResponse } from "@/@types/order/order-with-items-response";
+import { OrderDetailsResponse } from "@/@types/order/order-details-response";
 import { ProductResponse } from "@/@types/product/product-response";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
@@ -33,7 +33,7 @@ const OrderDetailPage = () => {
   const { getOrderById } = useOrder();
   const { getProductsByIds } = useProduct();
 
-  const [order, setOrder] = useState<OrderWithItemsResponse | null>(null);
+  const [order, setOrder] = useState<OrderDetailsResponse | null>(null);
   const [products, setProducts] = useState<Record<string, ProductResponse>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -44,8 +44,8 @@ const OrderDetailPage = () => {
     try {
       const orderResponse = (await getOrderById(
         orderId,
-        "items"
-      )) as OrderWithItemsResponse;
+      )) as OrderDetailsResponse;
+      console.log(orderResponse);
 
       setOrder(orderResponse);
 
