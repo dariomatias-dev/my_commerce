@@ -1,6 +1,7 @@
 package com.dariomatias.my_commerce.controller;
 
 import com.dariomatias.my_commerce.dto.ApiResponse;
+import com.dariomatias.my_commerce.dto.order.OrderDetailsResponseDTO;
 import com.dariomatias.my_commerce.dto.order.OrderRequestDTO;
 import com.dariomatias.my_commerce.dto.order.OrderResponseDTO;
 import com.dariomatias.my_commerce.dto.stores.StoreResponseDTO;
@@ -119,16 +120,16 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<?>> getById(
+    public ResponseEntity<ApiResponse<OrderDetailsResponseDTO>> getById(
             @AuthenticationPrincipal User user,
-            @PathVariable UUID id,
-            @RequestParam(required = false) String include
+            @PathVariable UUID id
     ) {
-        if ("items".equals(include)) {
-            return ResponseEntity.ok(ApiResponse.success("Pedido completo obtido com sucesso", service.getByIdWithItems(id, user)));
-        }
-
-        return ResponseEntity.ok(ApiResponse.success("Pedido obtido com sucesso", OrderResponseDTO.from(service.getById(id, user))));
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Pedido obtido com sucesso",
+                        service.getById(id, user)
+                )
+        );
     }
 
     @GetMapping("/store/{storeId}/stats/successful-sales")

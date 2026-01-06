@@ -1,5 +1,8 @@
 package com.dariomatias.my_commerce.model;
 
+import com.dariomatias.my_commerce.enums.FreightType;
+import com.dariomatias.my_commerce.enums.PaymentMethod;
+import com.dariomatias.my_commerce.enums.Status;
 import com.dariomatias.my_commerce.model.shared.AuditMetadata;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -11,35 +14,43 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "orders")
+@Getter
+@Setter
 public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Getter
-    @Setter
     private UUID id;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "store_id")
-    @Getter
-    @Setter
     private Store store;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")
-    @Getter
-    @Setter
     private User user;
 
+    @OneToOne(optional = false, cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id")
+    private OrderAddress address;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private PaymentMethod paymentMethod;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private FreightType freightType;
+
     @Column(nullable = false)
-    @Getter
-    @Setter
+    private BigDecimal freightAmount;
+
+    @Column(nullable = false)
     private BigDecimal totalAmount;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    @Getter
-    @Setter
-    private String status = "PENDING";
+    private Status status = Status.PENDING;
 
     @OneToMany(
             mappedBy = "order",
@@ -47,24 +58,16 @@ public class Order {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @Getter
-    @Setter
     private List<OrderItem> items;
 
     @Embedded
-    @Getter
-    @Setter
     private AuditMetadata audit = new AuditMetadata();
 
     @Transient
-    @Setter
     private UUID storeId;
 
     @Transient
-    @Setter
     private UUID userId;
-
-    public Order() {}
 
     public UUID getStoreId() {
         return store != null ? store.getId() : storeId;

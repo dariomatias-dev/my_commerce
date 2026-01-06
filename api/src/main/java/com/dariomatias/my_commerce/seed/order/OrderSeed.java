@@ -1,5 +1,6 @@
 package com.dariomatias.my_commerce.seed.order;
 
+import com.dariomatias.my_commerce.enums.Status;
 import com.dariomatias.my_commerce.model.Order;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.User;
@@ -43,7 +44,7 @@ public class OrderSeed {
             order.setUser(user);
             order.setStore(store);
             order.setTotalAmount(BigDecimal.valueOf(random.nextDouble() * 500 + 50));
-            order.setStatus("PENDING");
+            order.setStatus(Status.PENDING);
 
             orderRepository.save(order);
         }

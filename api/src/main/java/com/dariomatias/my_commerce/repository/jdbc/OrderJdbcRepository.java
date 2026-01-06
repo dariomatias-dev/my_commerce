@@ -1,5 +1,8 @@
 package com.dariomatias.my_commerce.repository.jdbc;
 
+import com.dariomatias.my_commerce.enums.FreightType;
+import com.dariomatias.my_commerce.enums.PaymentMethod;
+import com.dariomatias.my_commerce.enums.Status;
 import com.dariomatias.my_commerce.model.*;
 import com.dariomatias.my_commerce.repository.contract.OrderContract;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -26,7 +29,10 @@ public class OrderJdbcRepository implements OrderContract {
         Order order = new Order();
         order.setId(UUID.fromString(rs.getString("id")));
         order.setTotalAmount(rs.getBigDecimal("total_amount"));
-        order.setStatus(rs.getString("status"));
+        order.setStatus(Status.valueOf(rs.getString("status")));
+        order.setPaymentMethod(PaymentMethod.valueOf(rs.getString("payment_method")));
+        order.setFreightType(FreightType.valueOf(rs.getString("freight_type")));
+
         order.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         order.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
 
@@ -37,6 +43,10 @@ public class OrderJdbcRepository implements OrderContract {
         User user = new User();
         user.setId(UUID.fromString(rs.getString("user_id")));
         order.setUser(user);
+
+        OrderAddress address = new OrderAddress();
+        address.setId(UUID.fromString(rs.getString("address_id")));
+        order.setAddress(address);
 
         return order;
     };
@@ -60,16 +70,41 @@ public class OrderJdbcRepository implements OrderContract {
         order.getAudit().setUpdatedAt(now);
 
         String sql = """
-            INSERT INTO orders (id, store_id, user_id, total_amount, status, created_at, updated_at)
-            VALUES (:id, :store_id, :user_id, :total_amount, :status, :created_at, :updated_at)
+            INSERT INTO orders (
+                id,
+                store_id,
+                user_id,
+                address_id,
+                payment_method,
+                freight_type,
+                total_amount,
+                status,
+                created_at,
+                updated_at
+            )
+            VALUES (
+                :id,
+                :store_id,
+                :user_id,
+                :address_id,
+                :payment_method,
+                :freight_type,
+                :total_amount,
+                :status,
+                :created_at,
+                :updated_at
+            )
         """;
 
         jdbc.update(sql, new MapSqlParameterSource()
                 .addValue("id", id)
                 .addValue("store_id", order.getStore().getId())
                 .addValue("user_id", order.getUser().getId())
+                .addValue("address_id", order.getAddress().getId())
+                .addValue("payment_method", order.getPaymentMethod().name())
+                .addValue("freight_type", order.getFreightType().name())
                 .addValue("total_amount", order.getTotalAmount())
-                .addValue("status", order.getStatus())
+                .addValue("status", order.getStatus().name())
                 .addValue("created_at", now)
                 .addValue("updated_at", now));
 
@@ -139,28 +174,23 @@ public class OrderJdbcRepository implements OrderContract {
 
     @Override
     public Optional<Order> findById(UUID id) {
-        List<Order> list = jdbc.query(
-                "SELECT * FROM orders WHERE id = :id",
-                new MapSqlParameterSource("id", id),
-                mapper
-        );
-
-        return list.stream().findFirst();
-    }
-
-    @Override
-    public Optional<Order> getByIdWithItems(UUID id) {
 
         String orderSql = """
-        SELECT
-            id,
-            total_amount,
-            status,
-            created_at,
-            updated_at
-        FROM orders
-        WHERE id = :id
-    """;
+            SELECT
+                id,
+                store_id,
+                user_id,
+                address_id,
+                payment_method,
+                freight_type,
+                freight_amount,
+                total_amount,
+                status,
+                created_at,
+                updated_at
+            FROM orders
+            WHERE id = :id
+        """;
 
         List<Order> orders = jdbc.query(
                 orderSql,
@@ -169,9 +199,26 @@ public class OrderJdbcRepository implements OrderContract {
                     Order o = new Order();
                     o.setId(UUID.fromString(rs.getString("id")));
                     o.setTotalAmount(rs.getBigDecimal("total_amount"));
-                    o.setStatus(rs.getString("status"));
+                    o.setFreightAmount(rs.getBigDecimal("freight_amount"));
+                    o.setStatus(Status.valueOf(rs.getString("status")));
+                    o.setPaymentMethod(PaymentMethod.valueOf(rs.getString("payment_method")));
+                    o.setFreightType(FreightType.valueOf(rs.getString("freight_type")));
+
                     o.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
                     o.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+
+                    Store store = new Store();
+                    store.setId(UUID.fromString(rs.getString("store_id")));
+                    o.setStore(store);
+
+                    User user = new User();
+                    user.setId(UUID.fromString(rs.getString("user_id")));
+                    o.setUser(user);
+
+                    OrderAddress address = new OrderAddress();
+                    address.setId(UUID.fromString(rs.getString("address_id")));
+                    o.setAddress(address);
+
                     o.setItems(new ArrayList<>());
                     return o;
                 }
@@ -184,14 +231,14 @@ public class OrderJdbcRepository implements OrderContract {
         Order order = orders.get(0);
 
         String itemsSql = """
-        SELECT
-            id,
-            product_id,
-            quantity,
-            price
-        FROM order_items
-        WHERE order_id = :order_id
-    """;
+            SELECT
+                id,
+                product_id,
+                quantity,
+                price
+            FROM order_items
+            WHERE order_id = :order_id
+        """;
 
         List<OrderItem> items = jdbc.query(
                 itemsSql,
@@ -216,21 +263,21 @@ public class OrderJdbcRepository implements OrderContract {
     public Page<Store> findStoresWithOrdersByUserId(UUID userId, Pageable pageable) {
 
         String sql = """
-        SELECT s.*
-        FROM stores s
-        JOIN orders o ON o.store_id = s.id
-        WHERE o.user_id = :user_id
-        GROUP BY s.id, s.name, s.created_at, s.updated_at
-        ORDER BY MAX(o.created_at) DESC
-        OFFSET :offset LIMIT :limit
-    """;
+            SELECT s.*
+            FROM stores s
+            JOIN orders o ON o.store_id = s.id
+            WHERE o.user_id = :user_id
+            GROUP BY s.id, s.name, s.created_at, s.updated_at
+            ORDER BY MAX(o.created_at) DESC
+            OFFSET :offset LIMIT :limit
+        """;
 
         String countSql = """
-        SELECT COUNT(DISTINCT s.id)
-        FROM stores s
-        JOIN orders o ON o.store_id = s.id
-        WHERE o.user_id = :user_id
-    """;
+            SELECT COUNT(DISTINCT s.id)
+            FROM stores s
+            JOIN orders o ON o.store_id = s.id
+            WHERE o.user_id = :user_id
+        """;
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("user_id", userId)
@@ -256,13 +303,13 @@ public class OrderJdbcRepository implements OrderContract {
     ) {
 
         String sql = """
-        SELECT *
-        FROM orders
-        WHERE user_id = :user_id
-          AND store_id = :store_id
-        ORDER BY created_at DESC
-        OFFSET :offset LIMIT :limit
-    """;
+            SELECT *
+            FROM orders
+            WHERE user_id = :user_id
+              AND store_id = :store_id
+            ORDER BY created_at DESC
+            OFFSET :offset LIMIT :limit
+        """;
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("user_id", userId)
@@ -274,10 +321,10 @@ public class OrderJdbcRepository implements OrderContract {
 
         Long total = jdbc.queryForObject(
                 """
-                SELECT COUNT(*)
-                FROM orders
-                WHERE user_id = :user_id
-                  AND store_id = :store_id
+                    SELECT COUNT(*)
+                    FROM orders
+                    WHERE user_id = :user_id
+                      AND store_id = :store_id
                 """,
                 new MapSqlParameterSource()
                         .addValue("user_id", userId)
@@ -291,17 +338,19 @@ public class OrderJdbcRepository implements OrderContract {
     @Override
     public long countByStoreIdAndStatus(UUID storeId, String status) {
         String sql = """
-        SELECT COUNT(*)
-        FROM orders
-        WHERE store_id = :storeId
-          AND status = :status
-    """;
+            SELECT COUNT(*)
+            FROM orders
+            WHERE store_id = :storeId
+              AND status = :status
+        """;
 
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("storeId", storeId)
-                .addValue("status", status);
-
-        return jdbc.queryForObject(sql, params, Long.class);
+        return jdbc.queryForObject(
+                sql,
+                new MapSqlParameterSource()
+                        .addValue("storeId", storeId)
+                        .addValue("status", status),
+                Long.class
+        );
     }
 
     @Override
@@ -311,16 +360,20 @@ public class OrderJdbcRepository implements OrderContract {
 
         String sql = """
             UPDATE orders
-               SET total_amount = :total_amount,
-                   status       = :status,
-                   updated_at   = :updated_at
+               SET total_amount   = :total_amount,
+                   status         = :status,
+                   payment_method = :payment_method,
+                   freight_type   = :freight_type,
+                   updated_at     = :updated_at
              WHERE id = :id
         """;
 
         jdbc.update(sql, new MapSqlParameterSource()
                 .addValue("id", order.getId())
                 .addValue("total_amount", order.getTotalAmount())
-                .addValue("status", order.getStatus())
+                .addValue("status", order.getStatus().name())
+                .addValue("payment_method", order.getPaymentMethod().name())
+                .addValue("freight_type", order.getFreightType().name())
                 .addValue("updated_at", now));
 
         return order;

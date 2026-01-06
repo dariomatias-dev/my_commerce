@@ -34,11 +34,6 @@ public class OrderJpaRepository implements OrderContract {
     }
 
     @Override
-    public Optional<Order> getByIdWithItems(UUID id) {
-        return repository.getByIdWithItems(id);
-    }
-
-    @Override
     public Page<Order> findAll(Pageable pageable) {
         return repository.findAll(pageable);
     }
