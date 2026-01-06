@@ -57,8 +57,7 @@ export const useCheckout = () => {
     (storeId: string, updatedItems: Item[]) => {
       const storageKey = `cart-${storeId}`;
       const storageData = updatedItems.map((item) => ({
-        id: item.id,
-        quantity: item.quantity,
+        id: item.id,quantity: item.quantity,
       }));
       localStorage.setItem(storageKey, JSON.stringify(storageData));
       window.dispatchEvent(new Event("cart-updated"));
@@ -152,20 +151,25 @@ export const useCheckout = () => {
 
   const handleQuantity = (id: string, delta: number) => {
     if (!store) return;
+
     const updated = items.map((item) =>
       item.id === id
         ? { ...item, quantity: Math.max(1, item.quantity + delta) }
         : item
     );
+
     setItems(updated);
     updateCartStorage(store.id, updated);
   };
 
   const handleRemove = (id: string) => {
     if (!store) return;
+
     const updated = items.filter((item) => item.id !== id);
+
     setItems(updated);
     updateCartStorage(store.id, updated);
+
     if (updated.length === 0) router.push(`/store/${slug}`);
   };
 
@@ -184,6 +188,7 @@ export const useCheckout = () => {
         longitude: formData.longitude ? Number(formData.longitude) : 0,
       };
       const newAddress = await createAddress(requestData);
+
       setAddresses((prev) => [newAddress, ...prev]);
       setSelectedAddressId(newAddress.id);
     } catch (error) {
@@ -193,12 +198,16 @@ export const useCheckout = () => {
 
   const handleFinishOrder = async () => {
     if (!store || items.length === 0) return;
+
     if (!selectedAddressId || !selectedFreight) {
       setErrorMessage("Selecione o endereço e o método de envio.");
+
       return;
     }
+
     setIsSubmitting(true);
     setErrorMessage(null);
+
     try {
       const orderPayload: OrderRequest = {
         storeId: store.id,
@@ -211,13 +220,19 @@ export const useCheckout = () => {
         })),
       };
       const result = await createOrder(orderPayload);
+
       localStorage.removeItem(`cart-${store.id}`);
+
       window.dispatchEvent(new Event("cart-updated"));
+
       router.push(`/store/${slug}/success?orderId=${result.id}`);
     } catch (error) {
-      setErrorMessage(
-        error instanceof ApiError ? error.message : "Erro ao processar pedido."
-      );
+      if (error instanceof ApiError) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("Erro ao processar pedido.");
+      }
+
       setIsSubmitting(false);
     }
   };
