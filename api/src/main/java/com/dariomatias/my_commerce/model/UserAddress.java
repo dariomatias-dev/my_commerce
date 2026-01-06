@@ -1,5 +1,6 @@
 package com.dariomatias.my_commerce.model;
 
+import com.dariomatias.my_commerce.model.shared.Address;
 import com.dariomatias.my_commerce.model.shared.AuditMetadata;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -13,35 +14,11 @@ import java.util.UUID;
 @Table(name = "user_addresses")
 @Getter
 @Setter
-public class UserAddress {
+public class UserAddress extends Address {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
-    @Column(nullable = false, length = 50)
-    private String label;
-
-    @Column(nullable = false)
-    private String street;
-
-    @Column(nullable = false)
-    private String number;
-
-    @Column
-    private String complement;
-
-    @Column(nullable = false)
-    private String neighborhood;
-
-    @Column(nullable = false)
-    private String city;
-
-    @Column(nullable = false, length = 2)
-    private String state;
-
-    @Column(nullable = false, length = 10)
-    private String zip;
 
     @Column(columnDefinition = "geometry(Point, 4326)", nullable = false)
     private Point location;
