@@ -12,7 +12,7 @@ import {
   RefreshCcw,
   ShieldCheck,
   ShoppingBag,
-  Truck
+  Truck,
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -44,12 +44,17 @@ const OrderDetailPage = () => {
     setIsLoading(true);
     setErrorMessage(null);
     try {
-      const orderResponse = (await getOrderById(orderId)) as OrderDetailsResponse;
+      const orderResponse = (await getOrderById(
+        orderId
+      )) as OrderDetailsResponse;
       setOrder(orderResponse);
 
       if (orderResponse.items && orderResponse.items.length > 0) {
         const productIds = orderResponse.items.map((item) => item.productId);
-        const productsResponse = await getProductsByIds(orderResponse.storeId, productIds);
+        const productsResponse = await getProductsByIds(
+          orderResponse.storeId,
+          productIds
+        );
         const productsMap = (productsResponse.content || []).reduce(
           (acc, product) => {
             acc[product.id] = product;
@@ -75,14 +80,39 @@ const OrderDetailPage = () => {
   }, [fetchOrderDetail]);
 
   const getStatusConfig = (status: Status) => {
-    const configs: Record<string, { label: string; color: string; bg: string }> = {
-      PENDING: { label: "Aguardando Pagamento", color: "text-amber-600", bg: "bg-amber-50" },
-      PAID: { label: "Pagamento Confirmado", color: "text-emerald-600", bg: "bg-emerald-50" },
-      SHIPPED: { label: "Em Trânsito", color: "text-blue-600", bg: "bg-blue-50" },
-      DELIVERED: { label: "Entregue com Sucesso", color: "text-indigo-600", bg: "bg-indigo-50" },
+    const configs: Record<
+      string,
+      { label: string; color: string; bg: string }
+    > = {
+      PENDING: {
+        label: "Aguardando Pagamento",
+        color: "text-amber-600",
+        bg: "bg-amber-50",
+      },
+      PAID: {
+        label: "Pagamento Confirmado",
+        color: "text-emerald-600",
+        bg: "bg-emerald-50",
+      },
+      SHIPPED: {
+        label: "Em Trânsito",
+        color: "text-blue-600",
+        bg: "bg-blue-50",
+      },
+      DELIVERED: {
+        label: "Entregue com Sucesso",
+        color: "text-indigo-600",
+        bg: "bg-indigo-50",
+      },
       CANCELED: { label: "Cancelado", color: "text-red-600", bg: "bg-red-50" },
     };
-    return configs[status] || { label: status, color: "text-slate-600", bg: "bg-slate-50" };
+    return (
+      configs[status] || {
+        label: status,
+        color: "text-slate-600",
+        bg: "bg-slate-50",
+      }
+    );
   };
 
   const getPaymentLabel = (method: PaymentMethod) => {
@@ -165,7 +195,12 @@ const OrderDetailPage = () => {
             <div className="flex items-center gap-3 rounded-full border border-slate-200 bg-white px-5 py-2">
               <Clock size={14} className="text-slate-400" />
               <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                Atualizado em {new Date(order.updatedAt).toLocaleDateString("pt-BR")} às {new Date(order.updatedAt).toLocaleTimeString("pt-BR", { hour: '2-digit', minute: '2-digit' })}
+                Atualizado em{" "}
+                {new Date(order.updatedAt).toLocaleDateString("pt-BR")} às{" "}
+                {new Date(order.updatedAt).toLocaleTimeString("pt-BR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </span>
             </div>
           </div>
@@ -174,8 +209,15 @@ const OrderDetailPage = () => {
             <div className="flex flex-col lg:flex-row">
               <div className="flex flex-1 flex-col justify-center border-b border-slate-50 p-10 lg:border-b-0 lg:border-r">
                 <div className="mb-6 flex items-center gap-4">
-                  <div className={`rounded-2xl ${statusInfo.bg} px-4 py-2 text-[10px] font-black uppercase tracking-widest ${statusInfo.color} flex items-center gap-2`}>
-                    <div className={`h-2 w-2 rounded-full ${statusInfo.color.replace('text', 'bg')}`} />
+                  <div
+                    className={`rounded-2xl ${statusInfo.bg} px-4 py-2 text-[10px] font-black uppercase tracking-widest ${statusInfo.color} flex items-center gap-2`}
+                  >
+                    <div
+                      className={`h-2 w-2 rounded-full ${statusInfo.color.replace(
+                        "text",
+                        "bg"
+                      )}`}
+                    />
                     {statusInfo.label}
                   </div>
                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">
@@ -184,19 +226,33 @@ const OrderDetailPage = () => {
                 </div>
 
                 <h1 className="text-5xl font-black uppercase italic tracking-tighter text-slate-950 lg:text-6xl">
-                  Pedido <span className="text-indigo-600">#{order.id.split("-")[0]}</span>
+                  Pedido{" "}
+                  <span className="text-indigo-600">
+                    #{order.id.split("-")[0]}
+                  </span>
                 </h1>
-                
+
                 <div className="mt-8 flex flex-wrap gap-8">
                   <div className="flex flex-col gap-1">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Data da Compra</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                      Data da Compra
+                    </span>
                     <span className="text-sm font-bold text-slate-900">
-                      {new Date(order.createdAt).toLocaleDateString("pt-BR", { day: '2-digit', month: 'long', year: 'numeric' })}
+                      {new Date(order.createdAt).toLocaleDateString("pt-BR", {
+                        day: "2-digit",
+                        month: "long",
+                        year: "numeric",
+                      })}
                     </span>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Quantidade</span>
-                    <span className="text-sm font-bold text-slate-900">{order.itemsCount} {order.itemsCount === 1 ? 'Volume' : 'Volumes'}</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                      Quantidade
+                    </span>
+                    <span className="text-sm font-bold text-slate-900">
+                      {order.items.length}{" "}
+                      {order.items.length === 1 ? "Volume" : "Volumes"}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -205,15 +261,22 @@ const OrderDetailPage = () => {
                 <div className="flex h-full flex-col justify-between">
                   <div>
                     <Receipt className="mb-4 text-indigo-400" size={32} />
-                    <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Total Consolidado</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/40">
+                      Total Consolidado
+                    </p>
                   </div>
                   <div>
                     <p className="text-4xl font-black tracking-tighter">
-                      {order.totalAmount.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                      {order.totalAmount.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}
                     </p>
                     <div className="mt-4 flex items-center gap-2 text-indigo-400">
                       <ShieldCheck size={16} />
-                      <span className="text-[9px] font-black uppercase tracking-widest">Compra Protegida</span>
+                      <span className="text-[9px] font-black uppercase tracking-widest">
+                        Compra Protegida
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -223,7 +286,6 @@ const OrderDetailPage = () => {
 
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
             <div className="lg:col-span-8 flex flex-col gap-10">
-              
               <div className="rounded-[2.5rem] bg-white border border-slate-100 p-10 shadow-sm">
                 <div className="mb-10 flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -240,7 +302,10 @@ const OrderDetailPage = () => {
                   {order.items.map((item) => {
                     const product = products[item.productId];
                     return (
-                      <div key={item.id} className="group relative flex flex-col sm:flex-row sm:items-center justify-between gap-6 rounded-3xl border border-transparent p-4 transition-all hover:border-slate-100 hover:bg-slate-50/50">
+                      <div
+                        key={item.id}
+                        className="group relative flex flex-col sm:flex-row sm:items-center justify-between gap-6 rounded-3xl border border-transparent p-4 transition-all hover:border-slate-100 hover:bg-slate-50/50"
+                      >
                         <div className="flex items-center gap-6">
                           <ProductImage
                             imagePath={product?.images?.[0]?.url}
@@ -249,7 +314,9 @@ const OrderDetailPage = () => {
                             className="shrink-0 rounded-2xl border-2 border-slate-50 bg-white object-cover shadow-sm"
                           />
                           <div>
-                            <span className="mb-1 block text-[9px] font-black uppercase tracking-widest text-indigo-600">SKU: {item.productId.split("-")[0]}</span>
+                            <span className="mb-1 block text-[9px] font-black uppercase tracking-widest text-indigo-600">
+                              SKU: {item.productId.split("-")[0]}
+                            </span>
                             <h3 className="text-lg font-black uppercase italic tracking-tighter text-slate-950">
                               {product?.name || "Carregando detalhes..."}
                             </h3>
@@ -258,14 +325,25 @@ const OrderDetailPage = () => {
                                 <Package size={14} /> Qtd: {item.quantity}
                               </span>
                               <span className="h-1 w-1 rounded-full bg-slate-200" />
-                              <span>{item.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} /un</span>
+                              <span>
+                                {item.price.toLocaleString("pt-BR", {
+                                  style: "currency",
+                                  currency: "BRL",
+                                })}{" "}
+                                /un
+                              </span>
                             </div>
                           </div>
                         </div>
                         <div className="text-left sm:text-right">
-                          <p className="text-[9px] font-black uppercase tracking-widest text-slate-300">Subtotal Item</p>
+                          <p className="text-[9px] font-black uppercase tracking-widest text-slate-300">
+                            Subtotal Item
+                          </p>
                           <p className="text-2xl font-black text-slate-950">
-                            {(item.quantity * item.price).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                            {(item.quantity * item.price).toLocaleString(
+                              "pt-BR",
+                              { style: "currency", currency: "BRL" }
+                            )}
                           </p>
                         </div>
                       </div>
@@ -279,18 +357,28 @@ const OrderDetailPage = () => {
                   <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
                     <Truck size={28} />
                   </div>
-                  <h3 className="mb-2 text-sm font-black uppercase tracking-widest text-slate-950">Envio e Entrega</h3>
+                  <h3 className="mb-2 text-sm font-black uppercase tracking-widest text-slate-950">
+                    Envio e Entrega
+                  </h3>
                   <div className="space-y-4">
                     <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Método de Envio</p>
-                      <p className="text-sm font-bold text-slate-900">{getFreightLabel(order.freightType)}</p>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                        Método de Envio
+                      </p>
+                      <p className="text-sm font-bold text-slate-900">
+                        {getFreightLabel(order.freightType)}
+                      </p>
                     </div>
-                    {order.addressId && (
+                    {order.orderAddress.id && (
                       <div>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Código do Endereço</p>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                          Código do Endereço
+                        </p>
                         <div className="mt-1 flex items-center gap-2 text-xs font-medium text-slate-500">
                           <MapPin size={14} />
-                          <span className="truncate">{order.addressId}</span>
+                          <span className="truncate">
+                            {order.orderAddress.id}
+                          </span>
                         </div>
                       </div>
                     )}
@@ -301,15 +389,23 @@ const OrderDetailPage = () => {
                   <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
                     <CreditCard size={28} />
                   </div>
-                  <h3 className="mb-2 text-sm font-black uppercase tracking-widest text-slate-950">Pagamento</h3>
+                  <h3 className="mb-2 text-sm font-black uppercase tracking-widest text-slate-950">
+                    Pagamento
+                  </h3>
                   <div className="space-y-4">
                     <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Meio Escolhido</p>
-                      <p className="text-sm font-bold text-slate-900">{getPaymentLabel(order.paymentMethod)}</p>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                        Meio Escolhido
+                      </p>
+                      <p className="text-sm font-bold text-slate-900">
+                        {getPaymentLabel(order.paymentMethod)}
+                      </p>
                     </div>
                     <div className="flex items-center gap-2 rounded-xl bg-slate-50 p-3">
                       <ShieldCheck className="text-emerald-500" size={16} />
-                      <span className="text-[10px] font-bold uppercase tracking-tighter text-slate-600">Transação Criptografada</span>
+                      <span className="text-[10px] font-bold uppercase tracking-tighter text-slate-600">
+                        Transação Criptografada
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -319,28 +415,47 @@ const OrderDetailPage = () => {
             <aside className="lg:col-span-4">
               <div className="sticky top-40 space-y-6">
                 <div className="rounded-[2.5rem] bg-white border border-slate-100 p-8 shadow-sm">
-                  <h2 className="mb-8 text-xl font-black uppercase italic tracking-tighter text-slate-950">Resumo Financeiro</h2>
-                  
+                  <h2 className="mb-8 text-xl font-black uppercase italic tracking-tighter text-slate-950">
+                    Resumo Financeiro
+                  </h2>
+
                   <div className="space-y-4">
                     <div className="flex justify-between">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Valor Bruto</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                        Valor Bruto
+                      </span>
                       <span className="text-sm font-bold text-slate-950">
-                        {subtotal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                        {subtotal.toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Frete ({getFreightLabel(order.freightType)})</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                        Frete ({getFreightLabel(order.freightType)})
+                      </span>
                       <span className="text-sm font-bold text-emerald-500">
-                        {order.freightAmount === 0 ? "GRÁTIS" : order.freightAmount.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                        {order.freightAmount === 0
+                          ? "GRÁTIS"
+                          : order.freightAmount.toLocaleString("pt-BR", {
+                              style: "currency",
+                              currency: "BRL",
+                            })}
                       </span>
                     </div>
-                    
+
                     <div className="my-6 border-t border-dashed border-slate-200" />
-                    
+
                     <div className="flex flex-col gap-1">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Valor Total</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                        Valor Total
+                      </span>
                       <span className="text-5xl font-black tracking-tighter text-indigo-600">
-                        {order.totalAmount.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                        {order.totalAmount.toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })}
                       </span>
                     </div>
                   </div>
