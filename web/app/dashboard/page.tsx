@@ -6,21 +6,21 @@ import {
   Package,
   Plus,
   Store,
-  TrendingUp,
   Users,
 } from "lucide-react";
 import Link from "next/link";
 
+import { DashboardStatCard } from "@/components/dashboard-stat-card";
+
 const DashboardPage = () => {
   const stats = [
-    { label: "Total em Lojas", value: "04", icon: Store, trend: "+1 este mês" },
-    { label: "Produtos Ativos", value: "128", icon: Package, trend: "+12%" },
-    { label: "Clientes Totais", value: "1.2k", icon: Users, trend: "+5.4%" },
+    { label: "Total em Lojas", value: "04", icon: Store },
+    { label: "Produtos Ativos", value: "128", icon: Package },
+    { label: "Clientes Totais", value: "1.2k", icon: Users },
     {
       label: "Taxa de Conversão",
       value: "3.2%",
       icon: Activity,
-      trend: "+0.8%",
     },
   ];
 
@@ -70,26 +70,14 @@ const DashboardPage = () => {
           </header>
 
           <section className="mb-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {stats.map((stat, idx) => (
-              <div
-                key={idx}
-                className="rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm"
-              >
-                <div className="mb-6 flex items-center justify-between">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-slate-950">
-                    <stat.icon size={24} />
-                  </div>
-                  <span className="flex items-center gap-1 text-[10px] font-black text-emerald-500 bg-emerald-50 px-3 py-1 rounded-full">
-                    <TrendingUp size={12} /> {stat.trend}
-                  </span>
-                </div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                  {stat.label}
-                </p>
-                <p className="mt-1 text-3xl font-black tracking-tighter text-slate-950">
-                  {stat.value}
-                </p>
-              </div>
+            {stats.map((stat, index) => (
+              <DashboardStatCard
+                key={index}
+                label={stat.label}
+                value={stat.value}
+                icon={stat.icon}
+                isActive={true}
+              />
             ))}
           </section>
 
