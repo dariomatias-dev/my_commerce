@@ -138,7 +138,7 @@ public class OrderService {
     }
 
     public long getSuccessfulSalesCount(UUID storeId) {
-        return orderRepository.countByStoreIdAndStatus(storeId, "COMPLETED");
+        return orderRepository.countByStoreIdAndStatus(storeId, Status.COMPLETED);
     }
 
     public void delete(UUID id) {

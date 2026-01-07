@@ -1,5 +1,6 @@
 package com.dariomatias.my_commerce.repository.contract;
 
+import com.dariomatias.my_commerce.enums.Status;
 import com.dariomatias.my_commerce.model.Order;
 import com.dariomatias.my_commerce.model.Store;
 import org.springframework.data.domain.Page;
@@ -28,7 +29,7 @@ public interface OrderContract {
             Pageable pageable
     );
 
-    long countByStoreIdAndStatus(UUID storeId, String status);
+    long countByStoreIdAndStatus(UUID storeId, Status status);
 
     Order update(Order order);
 

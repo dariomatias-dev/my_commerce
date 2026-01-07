@@ -1,5 +1,6 @@
 package com.dariomatias.my_commerce.repository.jpa;
 
+import com.dariomatias.my_commerce.enums.Status;
 import com.dariomatias.my_commerce.model.Order;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.User;
@@ -67,7 +68,7 @@ public class OrderJpaRepository implements OrderContract {
     }
 
     @Override
-    public long countByStoreIdAndStatus(UUID storeId, String status) {
+    public long countByStoreIdAndStatus(UUID storeId, Status status) {
         return repository.countByStore_IdAndStatus(storeId, status);
     }
 

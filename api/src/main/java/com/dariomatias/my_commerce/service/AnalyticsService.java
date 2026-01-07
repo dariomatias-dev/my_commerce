@@ -2,6 +2,7 @@ package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.analytics.ConversionRateResponseDTO;
 import com.dariomatias.my_commerce.dto.analytics.VisitorsPerHourResponseDTO;
+import com.dariomatias.my_commerce.enums.Status;
 import com.dariomatias.my_commerce.repository.contract.OrderContract;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -52,7 +53,7 @@ public class AnalyticsService {
     public ConversionRateResponseDTO getConversionRate(UUID storeId) {
         long visitors = getTotalVisitorsLast24h(storeId);
         long conversions = orderRepository
-                .countByStoreIdAndStatus(storeId, "COMPLETED");
+                .countByStoreIdAndStatus(storeId, Status.COMPLETED);
 
         double conversionRate = visitors > 0
                 ? (double) conversions / visitors * 100

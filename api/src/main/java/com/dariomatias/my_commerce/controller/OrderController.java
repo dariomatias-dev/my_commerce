@@ -133,7 +133,7 @@ public class OrderController {
     }
 
     @GetMapping("/store/{storeId}/stats/successful-sales")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<Long>> getSuccessfulSalesCount(
             @PathVariable UUID storeId
     ) {

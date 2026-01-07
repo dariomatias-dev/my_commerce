@@ -22,7 +22,7 @@ public class AnalyticsController {
     }
 
     @GetMapping("/store/{storeId}/stats/activity-log")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<List<VisitorsPerHourResponseDTO>>> getVisitorsPerHour(
             @PathVariable UUID storeId
     ) {
@@ -35,7 +35,7 @@ public class AnalyticsController {
     }
 
     @GetMapping("/store/{storeId}/stats/conversion-rate")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<ConversionRateResponseDTO>> getConversionRate(
             @PathVariable UUID storeId
     ) {

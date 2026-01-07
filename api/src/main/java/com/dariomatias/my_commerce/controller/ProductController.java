@@ -103,7 +103,7 @@ public class ProductController {
     }
 
     @GetMapping("/store/{storeId}/stats/active-products")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<Long>> getActiveProductsCount(
             @PathVariable UUID storeId
     ) {

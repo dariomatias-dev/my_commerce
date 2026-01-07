@@ -1,5 +1,6 @@
 package com.dariomatias.my_commerce.repository;
 
+import com.dariomatias.my_commerce.enums.Status;
 import com.dariomatias.my_commerce.model.Order;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.User;
@@ -40,7 +41,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
             Pageable pageable
     );
 
-    long countByStore_IdAndStatus(UUID storeId, String status);
+    long countByStore_IdAndStatus(UUID storeId, Status status);
 
     @Query("""
         SELECT o

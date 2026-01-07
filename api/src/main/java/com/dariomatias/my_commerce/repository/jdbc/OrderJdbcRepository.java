@@ -336,7 +336,7 @@ public class OrderJdbcRepository implements OrderContract {
     }
 
     @Override
-    public long countByStoreIdAndStatus(UUID storeId, String status) {
+    public long countByStoreIdAndStatus(UUID storeId, Status status) {
         String sql = """
             SELECT COUNT(*)
             FROM orders
