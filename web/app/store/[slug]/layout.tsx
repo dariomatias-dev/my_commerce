@@ -69,6 +69,7 @@ const StoreLayout = ({ children }: StoreLayoutProps) => {
     return (
       <>
         <StoreHeader />
+
         <main className="flex min-h-[60vh] flex-col items-center justify-center bg-slate-50 p-6 text-center">
           <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-[2.5rem] bg-white text-indigo-600 shadow-2xl shadow-indigo-100">
             <Store size={48} />
@@ -94,6 +95,7 @@ const StoreLayout = ({ children }: StoreLayoutProps) => {
             Voltar ao Início
           </button>
         </main>
+
         <Footer />
       </>
     );

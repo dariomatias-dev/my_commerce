@@ -15,7 +15,7 @@ export default function OrderSuccessPage() {
   const slug = params.slug as string;
 
   return (
-    <div className="min-h-screen bg-slate-50/50 flex items-center justify-center p-4">
+    <main className="min-h-screen bg-slate-50/50 flex items-center justify-center p-4">
       <div className="max-w-2xl w-full">
         <div className="rounded-[3rem] border-2 border-slate-100 bg-white p-8 md:p-16 text-center shadow-2xl shadow-slate-200/50 relative overflow-hidden">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-2 bg-linear-to-r from-transparent via-emerald-500 to-transparent" />
@@ -95,6 +95,6 @@ export default function OrderSuccessPage() {
           ID do Pedido: #{orderId}
         </p>
       </div>
-    </div>
+    </main>
   );
 }

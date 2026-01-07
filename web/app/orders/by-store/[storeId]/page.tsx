@@ -20,7 +20,7 @@ const StoreOrdersPage = () => {
     <OrdersDashboard
       fetchFn={fetchOrders}
       backHref="/orders"
-      emptyDescription="Você ainda não tem pedidos vinculados a esta loja especificamente."
+      emptyDescription="Você ainda não tem pedidos vinculados a esta loja."
     />
   );
 };
