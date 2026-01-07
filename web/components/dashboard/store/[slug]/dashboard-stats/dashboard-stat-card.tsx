@@ -1,11 +1,11 @@
 "use client";
 
-import { AlertCircle, Loader2, LucideIcon } from "lucide-react";
+import { AlertCircle, Loader2, LucideIcon, TrendingUp } from "lucide-react";
 
 interface DashboardStatCardProps {
   label: string;
   value?: string;
-  sub: string;
+  sub?: string;
   icon: LucideIcon;
   isActive?: boolean;
   isLoading?: boolean;
@@ -25,24 +25,22 @@ export const DashboardStatCard = ({
 }: DashboardStatCardProps) => {
   if (isLoading) {
     return (
-      <div className="flex min-h-37 flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-6">
-        <Loader2 className="animate-spin text-indigo-600" size={18} />
+      <div className="flex min-h-45 flex-col items-center justify-center rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm">
+        <Loader2 className="animate-spin text-indigo-600" size={24} />
       </div>
     );
   }
 
   if (errorMessage) {
     return (
-      <div className="flex min-h-37 flex-col items-center justify-center rounded-2xl border border-red-100 bg-red-50 p-6 text-center">
-        <AlertCircle className="mb-1 text-red-500" size={18} />
-
-        <p className="text-[8px] font-black uppercase tracking-widest text-red-600">
+      <div className="flex min-h-45 flex-col items-center justify-center rounded-[2.5rem] border border-red-50 bg-red-50/30 p-8 text-center shadow-sm">
+        <AlertCircle className="mb-2 text-red-500" size={24} />
+        <p className="text-[10px] font-black uppercase tracking-widest text-red-600">
           {errorMessage}
         </p>
-
         <button
           onClick={onRetry}
-          className="mt-2 text-[8px] font-bold uppercase underline text-red-700"
+          className="mt-3 text-[10px] font-black uppercase tracking-widest text-red-700 underline underline-offset-4 transition-colors hover:text-red-900"
         >
           Tentar novamente
         </button>
@@ -51,30 +49,36 @@ export const DashboardStatCard = ({
   }
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:shadow-lg">
-      <div className="mb-4 flex items-center justify-between">
-        <div className="rounded-lg bg-slate-50 p-2 text-indigo-600">
-          <Icon size={18} />
+    <div className="group rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm transition-all hover:shadow-xl hover:shadow-slate-200/50">
+      <div className="mb-6 flex items-center justify-between">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-slate-950 transition-colors group-hover:bg-indigo-600 group-hover:text-white">
+          <Icon size={24} />
         </div>
-
-        <div
-          className={`h-1.5 w-1.5 rounded-full bg-emerald-500 ${
-            isActive ? "animate-pulse" : "opacity-20"
-          }`}
-        />
+        
+        {sub ? (
+          <span className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-tighter ${
+            isActive 
+              ? "bg-emerald-50 text-emerald-600 animate-in fade-in" 
+              : "bg-slate-50 text-slate-400"
+          }`}>
+            {isActive && <TrendingUp size={12} className="animate-pulse" />}
+            {sub}
+          </span>
+        ) : (
+          <div className="relative flex h-2 w-2">
+            <span className={`absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 ${isActive ? "animate-ping" : "hidden"}`} />
+            <span className={`relative inline-flex h-2 w-2 rounded-full ${isActive ? "bg-emerald-500" : "bg-slate-200"}`} />
+          </div>
+        )}
       </div>
 
       <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
         {label}
       </p>
 
-      <h3 className="mt-1 text-2xl font-black italic tracking-tighter text-slate-950">
-        {value}
+      <h3 className="mt-1 text-3xl font-black tracking-tighter text-slate-950">
+        {value || "---"}
       </h3>
-
-      <p className="mt-2 text-[9px] font-bold uppercase tracking-tight text-slate-400">
-        {sub}
-      </p>
     </div>
   );
 };
