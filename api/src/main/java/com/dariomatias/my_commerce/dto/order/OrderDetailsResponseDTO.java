@@ -20,45 +20,42 @@ public class OrderDetailsResponseDTO {
     private UUID id;
     private UUID storeId;
     private UUID userId;
-    private UUID addressId;
     private PaymentMethod paymentMethod;
     private FreightType freightType;
     private BigDecimal freightAmount;
     private BigDecimal totalAmount;
     private Status status;
-    private int itemsCount;
+    private OrderAddressResponseDTO orderAddress;
+    private List<OrderItemResponseDTO> items;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<OrderItemResponseDTO> items;
 
     public OrderDetailsResponseDTO(
             UUID id,
             UUID storeId,
             UUID userId,
-            UUID addressId,
             PaymentMethod paymentMethod,
             FreightType freightType,
             BigDecimal freightAmount,
             BigDecimal totalAmount,
             Status status,
-            int itemsCount,
+            OrderAddressResponseDTO orderAddress,
+            List<OrderItemResponseDTO> items,
             LocalDateTime createdAt,
-            LocalDateTime updatedAt,
-            List<OrderItemResponseDTO> items
+            LocalDateTime updatedAt
     ) {
         this.id = id;
         this.storeId = storeId;
         this.userId = userId;
-        this.addressId = addressId;
         this.paymentMethod = paymentMethod;
         this.freightType = freightType;
         this.freightAmount = freightAmount;
         this.totalAmount = totalAmount;
         this.status = status;
-        this.itemsCount = itemsCount;
+        this.orderAddress = orderAddress;
+        this.items = items;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.items = items;
     }
 
     public static OrderDetailsResponseDTO from(Order order) {
@@ -72,16 +69,15 @@ public class OrderDetailsResponseDTO {
                 order.getId(),
                 order.getStoreId(),
                 order.getUserId(),
-                order.getAddress() != null ? order.getAddress().getId() : null,
                 order.getPaymentMethod(),
                 order.getFreightType(),
                 order.getFreightAmount(),
                 order.getTotalAmount(),
                 order.getStatus(),
-                items.size(),
+                OrderAddressResponseDTO.from(order.getAddress()),
+                items,
                 order.getAudit().getCreatedAt(),
-                order.getAudit().getUpdatedAt(),
-                items
+                order.getAudit().getUpdatedAt()
         );
     }
 }

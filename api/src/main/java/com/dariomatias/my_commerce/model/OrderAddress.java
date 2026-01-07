@@ -21,4 +21,3 @@ public class OrderAddress extends Address {
     @Column(columnDefinition = "geometry(Point, 4326)", nullable = false)
     private Point location;
 }
-
