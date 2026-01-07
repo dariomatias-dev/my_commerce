@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { useAnalytics } from "@/services/hooks/use-analytics";
-import { DashboardStatCard } from "./dashboard-stat-card";
+import { DashboardStatCard } from "../../../../dashboard-stat-card";
 
 interface DashboardVisitorsStatCardProps {
   storeId: string;
