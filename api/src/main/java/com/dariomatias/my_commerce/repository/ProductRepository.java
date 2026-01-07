@@ -24,5 +24,7 @@ public interface ProductRepository
 
     Optional<Product> findByIdAndDeletedAtIsNull(UUID id);
 
+    List<Product> findAllByStore_IdAndDeletedAtIsNull(UUID storeId);
+
     long countByStore_IdAndActiveTrue(UUID storeId);
 }
