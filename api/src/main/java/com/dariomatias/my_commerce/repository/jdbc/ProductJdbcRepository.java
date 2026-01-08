@@ -202,6 +202,24 @@ public class ProductJdbcRepository implements ProductContract {
     }
 
     @Override
+    public long countByStoreUserIdAndActiveTrueAndDeletedAtIsNull(UUID userId) {
+        String sql = """
+            SELECT COUNT(*)
+            FROM products p
+            INNER JOIN stores s ON p.store_id = s.id
+            WHERE s.user_id = :userId
+              AND p.active = TRUE
+              AND p.deleted_at IS NULL
+        """;
+
+        return jdbc.queryForObject(
+                sql,
+                new MapSqlParameterSource("userId", userId),
+                Long.class
+        );
+    }
+
+    @Override
     public long countByStoreIdAndActiveTrue(UUID storeId) {
         String sql = """
         SELECT COUNT(*)

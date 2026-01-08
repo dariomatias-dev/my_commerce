@@ -102,6 +102,18 @@ public class ProductController {
         return ResponseEntity.ok(ApiResponse.success("Produto obtido com sucesso", ProductResponseDTO.from(product)));
     }
 
+    @GetMapping("/stores/stats/active-products")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
+    public ResponseEntity<ApiResponse<Long>> getUserActiveProductsCount(
+            @AuthenticationPrincipal User user
+    ) {
+        long count = service.getUserActiveProductsCount(user);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Quantidade total de produtos ativos", count)
+        );
+    }
+
     @GetMapping("/store/{storeId}/stats/active-products")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<Long>> getActiveProductsCount(

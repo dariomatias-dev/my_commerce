@@ -144,6 +144,10 @@ public class ProductService {
         }
     }
 
+    public long getUserActiveProductsCount(User user) {
+        return productRepository.countByStoreUserIdAndActiveTrueAndDeletedAtIsNull(user.getId());
+    }
+
     public long getActiveProductsCount(UUID storeId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
