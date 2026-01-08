@@ -14,11 +14,18 @@ const DashboardPage = () => {
   const { getMyStores } = useStore();
 
   const [stores, setStores] = useState<StoreResponse[]>([]);
+
+  const [totalStores, setTotalStores] = useState(0);
+
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const stats = [
-    { label: "Total em Lojas", value: "04", icon: Store },
+    {
+      label: "Total em Lojas",
+      value: totalStores.toString().padStart(2, "0"),
+      icon: Store,
+    },
     { label: "Produtos Ativos", value: "128", icon: Package },
     { label: "Clientes Totais", value: "1.2k", icon: Users },
     { label: "Taxa de Conversão", value: "3.2%", icon: Activity },
@@ -32,6 +39,7 @@ const DashboardPage = () => {
       const response = await getMyStores(0, 3);
 
       setStores(response.content);
+      setTotalStores(response.totalElements);
     } catch (error) {
       if (error instanceof ApiError) {
         setErrorMessage(error.message);
@@ -71,7 +79,7 @@ const DashboardPage = () => {
               className="flex items-center gap-3 rounded-2xl bg-slate-950 px-8 py-5 text-[11px] font-black uppercase tracking-widest text-white transition-all hover:bg-indigo-600 hover:shadow-xl hover:shadow-indigo-100 active:scale-95"
             >
               <Plus size={18} />
-              Nova Loja
+              Criar loja
             </Link>
           </header>
 
