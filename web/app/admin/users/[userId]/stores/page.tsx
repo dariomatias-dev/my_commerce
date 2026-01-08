@@ -11,7 +11,7 @@ const AdminUserStoresPage = () => {
     userId: string;
   };
 
-  const { getAllByUser, deleteStore } = useStore();
+  const { getAllByUser } = useStore();
 
   const fetchUserStores = useCallback(
     (page: number, size: number) => getAllByUser({ userId }, page, size),
@@ -21,7 +21,6 @@ const AdminUserStoresPage = () => {
   return (
     <StoresDashboard
       fetchFunction={fetchUserStores}
-      deleteFunction={deleteStore}
       headerTitle="LOJAS DO USUÁRIO"
       headerSubtitle="Supervisão de Infraestrutura Vinculada"
       canCreate={false}

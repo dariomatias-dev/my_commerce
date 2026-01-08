@@ -5,15 +5,12 @@ import Link from "next/link";
 
 import { StoreResponse } from "@/@types/store/store-response";
 
-interface DashboardStoreCardProps {
+interface StoreCardProps {
   store: StoreResponse;
   onDelete?: (id: string) => void;
 }
 
-export const DashboardStoreCard = ({
-  store,
-  onDelete,
-}: DashboardStoreCardProps) => {
+export const StoreCard = ({ store, onDelete }: StoreCardProps) => {
   return (
     <div className="group relative flex flex-col justify-between overflow-hidden rounded-[3rem] border border-slate-100 bg-white p-10 shadow-sm transition-all hover:shadow-2xl hover:shadow-slate-200/50">
       <div>

@@ -4,12 +4,11 @@ import { StoresDashboard } from "@/components/stores-dashboard";
 import { useStore } from "@/services/hooks/use-store";
 
 const DashboardPage = () => {
-  const { getMyStores, deleteStore } = useStore();
+  const { getMyStores } = useStore();
 
   return (
     <StoresDashboard
       fetchFunction={getMyStores}
-      deleteFunction={deleteStore}
       headerTitle="MINHAS LOJAS"
       headerSubtitle="Console Administrativo Global"
       canCreate={true}

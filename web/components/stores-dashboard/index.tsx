@@ -1,16 +1,13 @@
 "use client";
 
-import { AlertCircle, RefreshCcw } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { PaginatedResponse } from "@/@types/paginated-response";
 import { StoreResponse } from "@/@types/store/store-response";
-import { DashboardStoreCard } from "@/components/dashboard/dashboard-store-card";
-import { LoadingIndicator } from "@/components/loading-indicator";
 import { Pagination } from "@/components/pagination";
+import { StoresList } from "../stores-list";
 import { StoresDashboardEmptyStores } from "./stores-dashboard-empty-stores";
-import { StoresDashboardErrorCard } from "./stores-dashboard-error-card";
 import { StoresDashboardPageHeader } from "./stores-dashboard-page-header";
 
 interface StoresDashboardProps {
@@ -18,7 +15,6 @@ interface StoresDashboardProps {
     page: number,
     size: number
   ) => Promise<PaginatedResponse<StoreResponse>>;
-  deleteFunction: (id: string) => Promise<void>;
   headerTitle: string;
   headerSubtitle: string;
   canCreate?: boolean;
@@ -26,7 +22,6 @@ interface StoresDashboardProps {
 
 export const StoresDashboard = ({
   fetchFunction,
-  deleteFunction,
   headerTitle,
   headerSubtitle,
   canCreate = true,
@@ -65,54 +60,13 @@ export const StoresDashboard = ({
     fetchStores();
   }, [fetchStores]);
 
-  const handleDeleteStore = async (id: string) => {
-    try {
-      setError(null);
-      await deleteFunction(id);
-      setStores((prev) => prev.filter((store) => store.id !== id));
-
-      if (stores.length === 1 && currentPage > 0) {
-        setCurrentPage((prev) => prev - 1);
-      } else {
-        fetchStores();
-      }
-    } catch (err) {
-      setError(
-        err instanceof ApiError
-          ? err.message
-          : "Não foi possível excluir a loja."
-      );
-    }
-  };
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+
     listTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  if (isLoading) {
-    return <LoadingIndicator message="Obtendo lojas..." />;
-  }
-
-  if (error != null) {
-    return (
-      <StoresDashboardErrorCard
-        title="Erro de Sincronização."
-        message={error}
-        icon={<AlertCircle size={64} className="text-red-500" />}
-        action={
-          <button
-            onClick={fetchStores}
-            className="flex items-center gap-3 rounded-2xl bg-slate-950 px-10 py-5 text-xs font-black tracking-widest text-white uppercase transition-all hover:bg-indigo-600 shadow-xl"
-          >
-            <RefreshCcw size={20} /> RECONECTAR
-          </button>
-        }
-      />
-    );
-  }
-
-  if (stores.length === 0 && !error) {
+  if (stores.length === 0 && !error && !isLoading) {
     return <StoresDashboardEmptyStores />;
   }
 
@@ -131,21 +85,20 @@ export const StoresDashboard = ({
             showCreateButton={canCreate}
           />
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
-            {stores.map((store) => (
-              <DashboardStoreCard
-                key={store.id}
-                store={store}
-                onDelete={handleDeleteStore}
-              />
-            ))}
-          </div>
-
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
+          <StoresList
+            stores={stores}
+            isLoading={isLoading}
+            errorMessage={error}
+            onRetry={fetchStores}
           />
+
+          <div className="mt-12">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
         </div>
       </div>
     </main>
