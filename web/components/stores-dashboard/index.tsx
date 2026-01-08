@@ -80,7 +80,7 @@ export const StoresDashboard = ({
       setError(
         err instanceof ApiError
           ? err.message
-          : "Não foi possível excluir a instância da loja."
+          : "Não foi possível excluir a loja."
       );
     }
   };
@@ -91,7 +91,7 @@ export const StoresDashboard = ({
   };
 
   if (isLoading) {
-    return <LoadingIndicator message="Sincronizando instâncias..." />;
+    return <LoadingIndicator message="Obtendo lojas..." />;
   }
 
   if (error != null) {
