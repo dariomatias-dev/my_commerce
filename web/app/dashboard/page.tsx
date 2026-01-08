@@ -171,14 +171,7 @@ const DashboardPage = () => {
                 {stores.map((store) => (
                   <DashboardStoreCard
                     key={store.id}
-                    store={{
-                      id: store.id,
-                      name: store.name,
-                      slug: store.slug,
-                      status: store.isActive ? "ACTIVE" : "INACTIVE",
-                      products: 0,
-                      revenue: "R$ 0,00",
-                    }}
+                    store={store}
                     onDelete={handleDeleteStore}
                   />
                 ))}

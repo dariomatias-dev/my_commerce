@@ -6,9 +6,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiError } from "@/@types/api";
 import { PaginatedResponse } from "@/@types/paginated-response";
 import { StoreResponse } from "@/@types/store/store-response";
+import { DashboardStoreCard } from "@/components/dashboard/dashboard-store-card";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { Pagination } from "@/components/pagination";
-import { StoresDashboardCard } from "./stores-dashboard-card";
 import { StoresDashboardEmptyStores } from "./stores-dashboard-empty-stores";
 import { StoresDashboardErrorCard } from "./stores-dashboard-error-card";
 import { StoresDashboardPageHeader } from "./stores-dashboard-page-header";
@@ -39,7 +39,7 @@ export const StoresDashboard = ({
 
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const pageSize = 10;
+  const pageSize = 9;
 
   const fetchStores = useCallback(async () => {
     try {
@@ -59,7 +59,7 @@ export const StoresDashboard = ({
     } finally {
       setIsLoading(false);
     }
-  }, [fetchFunction, currentPage]);
+  }, [fetchFunction, currentPage, pageSize]);
 
   useEffect(() => {
     fetchStores();
@@ -68,13 +68,13 @@ export const StoresDashboard = ({
   const handleDeleteStore = async (id: string) => {
     try {
       setError(null);
-
       await deleteFunction(id);
-
       setStores((prev) => prev.filter((store) => store.id !== id));
 
       if (stores.length === 1 && currentPage > 0) {
         setCurrentPage((prev) => prev - 1);
+      } else {
+        fetchStores();
       }
     } catch (err) {
       setError(
@@ -131,9 +131,9 @@ export const StoresDashboard = ({
             showCreateButton={canCreate}
           />
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
             {stores.map((store) => (
-              <StoresDashboardCard
+              <DashboardStoreCard
                 key={store.id}
                 store={store}
                 onDelete={handleDeleteStore}

@@ -3,15 +3,10 @@
 import { ArrowUpRight, Package, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 
+import { StoreResponse } from "@/@types/store/store-response";
+
 interface DashboardStoreCardProps {
-  store: {
-    id: string;
-    name: string;
-    slug: string;
-    status: string;
-    products: number;
-    revenue: string;
-  };
+  store: StoreResponse;
   onDelete?: (id: string) => void;
 }
 
@@ -27,18 +22,16 @@ export const DashboardStoreCard = ({
             <div className="mb-4 flex items-center gap-2">
               <span
                 className={`flex h-2 w-2 rounded-full ${
-                  store.status === "ACTIVE" ? "bg-emerald-500" : "bg-slate-300"
+                  store.isActive ? "bg-emerald-500" : "bg-slate-300"
                 }`}
               />
 
               <span
                 className={`text-[10px] font-black uppercase tracking-widest ${
-                  store.status === "ACTIVE"
-                    ? "text-emerald-500"
-                    : "text-slate-400"
+                  store.isActive ? "text-emerald-500" : "text-slate-400"
                 }`}
               >
-                {store.status === "ACTIVE" ? "Loja Online" : "Loja Offline"}
+                {store.isActive ? "Loja Online" : "Loja Offline"}
               </span>
             </div>
 
