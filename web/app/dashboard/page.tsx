@@ -8,15 +8,16 @@ import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
 import { DashboardStatCard } from "@/components/dashboard-stat-card";
 import { StoresList } from "@/components/stores-list";
+import { useProduct } from "@/services/hooks/use-product";
 import { useStore } from "@/services/hooks/use-store";
 
 const DashboardPage = () => {
   const { getMyStores } = useStore();
+  const { getUserActiveProductsCount } = useProduct();
 
   const [stores, setStores] = useState<StoreResponse[]>([]);
-
   const [totalStores, setTotalStores] = useState(0);
-
+  const [totalActiveProducts, setTotalActiveProducts] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -26,40 +27,48 @@ const DashboardPage = () => {
       value: totalStores.toString().padStart(2, "0"),
       icon: Store,
     },
-    { label: "Produtos Ativos", value: "128", icon: Package },
+    {
+      label: "Produtos Ativos",
+      value: totalActiveProducts.toString().padStart(2, "0"),
+      icon: Package,
+    },
     { label: "Clientes Totais", value: "1.2k", icon: Users },
     { label: "Taxa de Conversão", value: "3.2%", icon: Activity },
   ];
 
-  const fetchStores = useCallback(async () => {
+  const fetchDashboardData = useCallback(async () => {
     setIsLoading(true);
     setErrorMessage(null);
 
     try {
-      const response = await getMyStores(0, 3);
+      const [storesResponse, activeProductsCount] = await Promise.all([
+        getMyStores(0, 3),
+        getUserActiveProductsCount(),
+      ]);
 
-      setStores(response.content);
-      setTotalStores(response.totalElements);
+      setStores(storesResponse.content);
+      setTotalStores(storesResponse.totalElements);
+      setTotalActiveProducts(activeProductsCount);
     } catch (error) {
       if (error instanceof ApiError) {
         setErrorMessage(error.message);
       } else {
-        setErrorMessage("Falha na sincronização.");
+        setErrorMessage("Falha na sincronização dos dados do painel.");
       }
     } finally {
       setIsLoading(false);
     }
-  }, [getMyStores]);
+  }, [getMyStores, getUserActiveProductsCount]);
 
   useEffect(() => {
-    fetchStores();
-  }, [fetchStores]);
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   return (
     <main className="min-h-screen bg-[#F4F7FA] font-sans text-slate-900">
       <div className="mx-auto max-w-400 px-6 pt-40 pb-20">
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <header className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+          <section className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div>
               <span className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-600">
                 Painel de Controle
@@ -81,7 +90,7 @@ const DashboardPage = () => {
               <Plus size={18} />
               Criar loja
             </Link>
-          </header>
+          </section>
 
           <section className="mb-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {stats.map((stat, index) => (
@@ -117,7 +126,7 @@ const DashboardPage = () => {
               stores={stores}
               isLoading={isLoading}
               errorMessage={errorMessage}
-              onRetry={fetchStores}
+              onRetry={fetchDashboardData}
             />
           </section>
         </div>
