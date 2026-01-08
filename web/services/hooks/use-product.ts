@@ -67,6 +67,11 @@ export const useProduct = () => {
     []
   );
 
+  const getUserActiveProductsCount = useCallback(
+    () => apiClient.get<number>(`/products/stores/stats/active-products`),
+    []
+  );
+
   const getActiveProductsCount = useCallback(
     (storeId: string) =>
       apiClient.get<number>(`/products/store/${storeId}/stats/active-products`),
@@ -107,6 +112,7 @@ export const useProduct = () => {
     getProductById,
     getProductBySlug,
     getProductsByIds,
+    getUserActiveProductsCount,
     getActiveProductsCount,
     updateProduct,
     deleteProduct,
