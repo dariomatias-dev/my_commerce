@@ -31,6 +31,14 @@ const DashboardPage = () => {
       products: 18,
       revenue: "R$ 5.200",
     },
+    {
+      id: "3",
+      name: "Urban Style",
+      slug: "urban-style",
+      status: "ACTIVE",
+      products: 64,
+      revenue: "R$ 18.900",
+    },
   ];
 
   const handleDeleteStore = (id: string) => {
@@ -95,7 +103,7 @@ const DashboardPage = () => {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
               {stores.map((store) => (
                 <DashboardStoreCard
                   key={store.id}
@@ -106,7 +114,7 @@ const DashboardPage = () => {
 
               <Link
                 href="/dashboard/stores/new"
-                className="flex min-h-75 flex-col items-center justify-center rounded-[3rem] border-2 border-dashed border-slate-200 bg-slate-50/50 transition-all hover:border-indigo-300 hover:bg-indigo-50/30"
+                className="flex min-h-85 flex-col items-center justify-center rounded-[3rem] border-2 border-dashed border-slate-200 bg-slate-50/50 transition-all hover:border-indigo-300 hover:bg-indigo-50/30"
               >
                 <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-slate-400 shadow-sm transition-transform hover:scale-110">
                   <Plus size={32} />
