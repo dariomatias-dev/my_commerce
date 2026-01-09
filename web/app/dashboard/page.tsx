@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Package, Plus, Store, Users } from "lucide-react";
+import { DollarSign, Package, Plus, Store, Users } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
@@ -16,18 +16,19 @@ import { useStore } from "@/services/hooks/use-store";
 const DashboardPage = () => {
   const { getMyStores } = useStore();
   const { getUserActiveProductsCount } = useProduct();
-  const { getUniqueCustomers } = useAnalytics();
+  const { getUniqueCustomers, getTotalRevenue } = useAnalytics();
 
   const [stores, setStores] = useState<StoreResponse[]>([]);
   const [totalStores, setTotalStores] = useState(0);
   const [totalActiveProducts, setTotalActiveProducts] = useState(0);
   const [totalCustomers, setTotalCustomers] = useState(0);
+  const [totalRevenue, setTotalRevenue] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const stats = [
     {
-      label: "Total em Lojas",
+      label: "Quantidade de Lojas",
       value: totalStores.toString().padStart(2, "0"),
       icon: Store,
     },
@@ -44,7 +45,14 @@ const DashboardPage = () => {
           : totalCustomers.toString().padStart(2, "0"),
       icon: Users,
     },
-    { label: "Taxa de Conversão", value: "3.2%", icon: Activity },
+    {
+      label: "Receita Total",
+      value: new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      }).format(totalRevenue),
+      icon: DollarSign,
+    },
   ];
 
   const fetchDashboardData = useCallback(async () => {
@@ -52,17 +60,23 @@ const DashboardPage = () => {
     setErrorMessage(null);
 
     try {
-      const [storesResponse, activeProductsCount, customersResponse] =
-        await Promise.all([
-          getMyStores(0, 3),
-          getUserActiveProductsCount(),
-          getUniqueCustomers(),
-        ]);
+      const [
+        storesResponse,
+        activeProductsCount,
+        customersResponse,
+        revenueResponse,
+      ] = await Promise.all([
+        getMyStores(0, 3),
+        getUserActiveProductsCount(),
+        getUniqueCustomers(),
+        getTotalRevenue(),
+      ]);
 
       setStores(storesResponse.content);
       setTotalStores(storesResponse.totalElements);
       setTotalActiveProducts(activeProductsCount);
       setTotalCustomers(customersResponse.total);
+      setTotalRevenue(revenueResponse.total);
     } catch (error) {
       if (error instanceof ApiError) {
         setErrorMessage(error.message);
@@ -72,7 +86,12 @@ const DashboardPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [getMyStores, getUserActiveProductsCount, getUniqueCustomers]);
+  }, [
+    getMyStores,
+    getUserActiveProductsCount,
+    getUniqueCustomers,
+    getTotalRevenue,
+  ]);
 
   useEffect(() => {
     fetchDashboardData();
