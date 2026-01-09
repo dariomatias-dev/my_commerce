@@ -88,6 +88,28 @@ public class AnalyticsService {
         );
     }
 
+    public UniqueCustomersResponseDTO getUniqueCustomersByStore(UUID storeId) {
+        long total = orderRepository
+                .countDistinctCustomersByStoreIdAndStatus(
+                        storeId,
+                        Status.COMPLETED
+                );
+
+        return new UniqueCustomersResponseDTO(total);
+    }
+
+    public TotalRevenueResponseDTO getTotalRevenueByStore(UUID storeId) {
+        BigDecimal total = orderRepository
+                .sumTotalRevenueByStoreIdAndStatus(
+                        storeId,
+                        Status.COMPLETED
+                );
+
+        return new TotalRevenueResponseDTO(
+                total != null ? total : BigDecimal.ZERO
+        );
+    }
+
     private long getTotalVisitorsLast24h(UUID storeId) {
         long total = 0;
         LocalDateTime now = LocalDateTime.now();

@@ -76,4 +76,30 @@ public class AnalyticsController {
                 )
         );
     }
+
+    @GetMapping("/store/{storeId}/stats/unique-customers")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
+    public ResponseEntity<ApiResponse<UniqueCustomersResponseDTO>> getUniqueCustomersByStore(
+            @PathVariable UUID storeId
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Clientes únicos da loja",
+                        service.getUniqueCustomersByStore(storeId)
+                )
+        );
+    }
+
+    @GetMapping("/store/{storeId}/stats/total-revenue")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
+    public ResponseEntity<ApiResponse<TotalRevenueResponseDTO>> getTotalRevenueByStore(
+            @PathVariable UUID storeId
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Receita total da loja",
+                        service.getTotalRevenueByStore(storeId)
+                )
+        );
+    }
 }

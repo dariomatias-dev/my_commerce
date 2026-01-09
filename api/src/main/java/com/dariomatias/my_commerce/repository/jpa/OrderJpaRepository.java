@@ -90,6 +90,22 @@ public class OrderJpaRepository implements OrderContract {
     }
 
     @Override
+    public long countDistinctCustomersByStoreIdAndStatus(
+            UUID storeId,
+            Status status
+    ) {
+        return repository.countDistinctCustomersByStoreIdAndStatus(storeId, status);
+    }
+
+    @Override
+    public BigDecimal sumTotalRevenueByStoreIdAndStatus(
+            UUID storeId,
+            Status status
+    ) {
+        return repository.sumTotalRevenueByStoreIdAndStatus(storeId, status);
+    }
+
+    @Override
     public Order update(Order order) {
         return repository.save(order);
     }

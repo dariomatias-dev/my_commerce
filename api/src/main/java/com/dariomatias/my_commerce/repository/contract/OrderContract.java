@@ -42,6 +42,16 @@ public interface OrderContract {
             Status status
     );
 
+    long countDistinctCustomersByStoreIdAndStatus(
+            UUID storeId,
+            Status status
+    );
+
+    BigDecimal sumTotalRevenueByStoreIdAndStatus(
+            UUID storeId,
+            Status status
+    );
+
     Order update(Order order);
 
     void deleteById(UUID id);

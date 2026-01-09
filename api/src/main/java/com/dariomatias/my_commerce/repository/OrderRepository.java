@@ -69,6 +69,28 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     );
 
     @Query("""
+        SELECT COUNT(DISTINCT o.user.id)
+        FROM Order o
+        WHERE o.store.id = :storeId
+          AND o.status = :status
+    """)
+    long countDistinctCustomersByStoreIdAndStatus(
+            @Param("storeId") UUID storeId,
+            @Param("status") Status status
+    );
+
+    @Query("""
+        SELECT COALESCE(SUM(o.totalAmount), 0)
+        FROM Order o
+        WHERE o.store.id = :storeId
+          AND o.status = :status
+    """)
+    BigDecimal sumTotalRevenueByStoreIdAndStatus(
+            @Param("storeId") UUID storeId,
+            @Param("status") Status status
+    );
+
+    @Query("""
         SELECT o
         FROM Order o
         LEFT JOIN FETCH o.items
