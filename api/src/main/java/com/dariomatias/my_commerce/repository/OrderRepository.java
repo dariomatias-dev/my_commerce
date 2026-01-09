@@ -59,9 +59,9 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     @Query("""
         SELECT COALESCE(SUM(o.totalAmount), 0)
         FROM Order o
-        JOIN o.store s
-        WHERE s.user.id = :userId
+        WHERE o.store.user.id = :userId
           AND o.status = :status
+          AND o.store.deletedAt IS NULL
     """)
     BigDecimal sumTotalRevenueByUserIdAndStatus(
             @Param("userId") UUID userId,
@@ -84,6 +84,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
         FROM Order o
         WHERE o.store.id = :storeId
           AND o.status = :status
+          AND o.store.deletedAt IS NULL
     """)
     BigDecimal sumTotalRevenueByStoreIdAndStatus(
             @Param("storeId") UUID storeId,

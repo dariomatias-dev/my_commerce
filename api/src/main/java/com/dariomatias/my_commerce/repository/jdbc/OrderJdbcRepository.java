@@ -381,6 +381,7 @@ public class OrderJdbcRepository implements OrderContract {
             INNER JOIN stores s ON o.store_id = s.id
             WHERE s.user_id = :user_id
               AND o.status = :status
+              AND s.deleted_at IS NULL
         """;
 
         return jdbc.queryForObject(
@@ -415,8 +416,10 @@ public class OrderJdbcRepository implements OrderContract {
         String sql = """
             SELECT COALESCE(SUM(o.total_amount), 0)
             FROM orders o
+            JOIN stores s ON o.store_id = s.id
             WHERE o.store_id = :store_id
               AND o.status = :status
+              AND s.deleted_at IS NULL
         """;
 
         return jdbc.queryForObject(
