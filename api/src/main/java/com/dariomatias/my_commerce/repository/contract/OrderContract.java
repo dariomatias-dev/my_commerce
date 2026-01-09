@@ -6,6 +6,7 @@ import com.dariomatias.my_commerce.model.Store;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,6 +33,11 @@ public interface OrderContract {
     long countByStoreIdAndStatus(UUID storeId, Status status);
 
     long countDistinctCustomersByUserIdAndStatus(
+            UUID userId,
+            Status status
+    );
+
+    BigDecimal sumTotalRevenueByUserIdAndStatus(
             UUID userId,
             Status status
     );

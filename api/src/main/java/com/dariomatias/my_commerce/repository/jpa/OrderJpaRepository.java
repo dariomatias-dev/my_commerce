@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -78,6 +79,14 @@ public class OrderJpaRepository implements OrderContract {
             Status status
     ) {
         return repository.countDistinctCustomersByUserIdAndStatus(userId, status);
+    }
+
+    @Override
+    public BigDecimal sumTotalRevenueByUserIdAndStatus(
+            UUID userId,
+            Status status
+    ) {
+        return repository.sumTotalRevenueByUserIdAndStatus(userId, status);
     }
 
     @Override

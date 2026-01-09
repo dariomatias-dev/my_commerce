@@ -2,6 +2,7 @@ package com.dariomatias.my_commerce.controller;
 
 import com.dariomatias.my_commerce.dto.ApiResponse;
 import com.dariomatias.my_commerce.dto.analytics.ConversionRateResponseDTO;
+import com.dariomatias.my_commerce.dto.analytics.TotalRevenueResponseDTO;
 import com.dariomatias.my_commerce.dto.analytics.UniqueCustomersResponseDTO;
 import com.dariomatias.my_commerce.dto.analytics.VisitorsPerHourResponseDTO;
 import com.dariomatias.my_commerce.model.User;
@@ -59,6 +60,19 @@ public class AnalyticsController {
                 ApiResponse.success(
                         "Clientes únicos",
                         service.getUniqueCustomers(user.getId())
+                )
+        );
+    }
+
+    @GetMapping("/me/stats/total-revenue")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
+    public ResponseEntity<ApiResponse<TotalRevenueResponseDTO>> getTotalRevenue(
+            @AuthenticationPrincipal User user
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Receita total",
+                        service.getTotalRevenue(user.getId())
                 )
         );
     }

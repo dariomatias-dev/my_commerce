@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -369,6 +370,25 @@ public class OrderJdbcRepository implements OrderContract {
                         .addValue("user_id", userId)
                         .addValue("status", status.name()),
                 Long.class
+        );
+    }
+
+    @Override
+    public BigDecimal sumTotalRevenueByUserIdAndStatus(UUID userId, Status status) {
+        String sql = """
+            SELECT COALESCE(SUM(o.total_amount), 0)
+            FROM orders o
+            INNER JOIN stores s ON o.store_id = s.id
+            WHERE s.user_id = :user_id
+              AND o.status = :status
+        """;
+
+        return jdbc.queryForObject(
+                sql,
+                new MapSqlParameterSource()
+                        .addValue("user_id", userId)
+                        .addValue("status", status.name()),
+                BigDecimal.class
         );
     }
 

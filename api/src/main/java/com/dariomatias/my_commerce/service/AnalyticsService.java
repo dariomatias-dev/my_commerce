@@ -1,15 +1,15 @@
 package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.analytics.ConversionRateResponseDTO;
+import com.dariomatias.my_commerce.dto.analytics.TotalRevenueResponseDTO;
 import com.dariomatias.my_commerce.dto.analytics.UniqueCustomersResponseDTO;
 import com.dariomatias.my_commerce.dto.analytics.VisitorsPerHourResponseDTO;
 import com.dariomatias.my_commerce.enums.Status;
-import com.dariomatias.my_commerce.model.Order;
 import com.dariomatias.my_commerce.repository.contract.OrderContract;
-import com.dariomatias.my_commerce.repository.contract.TransactionContract;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -77,6 +77,15 @@ public class AnalyticsService {
                 );
 
         return new UniqueCustomersResponseDTO(total);
+    }
+
+    public TotalRevenueResponseDTO getTotalRevenue(UUID userId) {
+        BigDecimal total = orderRepository
+                .sumTotalRevenueByUserIdAndStatus(userId, Status.COMPLETED);
+
+        return new TotalRevenueResponseDTO(
+                total != null ? total : BigDecimal.ZERO
+        );
     }
 
     private long getTotalVisitorsLast24h(UUID storeId) {

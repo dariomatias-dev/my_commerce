@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -51,6 +52,18 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
           AND o.status = :status
     """)
     long countDistinctCustomersByUserIdAndStatus(
+            @Param("userId") UUID userId,
+            @Param("status") Status status
+    );
+
+    @Query("""
+        SELECT COALESCE(SUM(o.totalAmount), 0)
+        FROM Order o
+        JOIN o.store s
+        WHERE s.user.id = :userId
+          AND o.status = :status
+    """)
+    BigDecimal sumTotalRevenueByUserIdAndStatus(
             @Param("userId") UUID userId,
             @Param("status") Status status
     );
