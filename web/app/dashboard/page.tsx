@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
 import { DashboardStatCard } from "@/components/dashboard-stat-card";
+import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { StoresList } from "@/components/stores-list";
 import { useAnalytics } from "@/services/hooks/use-analytics";
 import { useProduct } from "@/services/hooks/use-product";
@@ -81,29 +82,20 @@ const DashboardPage = () => {
     <main className="min-h-screen bg-[#F4F7FA] font-sans text-slate-900">
       <div className="mx-auto max-w-400 px-6 pt-40 pb-20">
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <section className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
-            <div>
-              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-600">
-                Painel de Controle
-              </span>
-
-              <h1 className="mt-2 text-5xl font-black uppercase italic tracking-tighter text-slate-950 lg:text-6xl">
-                Olá, <span className="text-indigo-600">Subscriber</span>
-              </h1>
-
-              <p className="mt-2 text-sm font-medium text-slate-500 uppercase tracking-tight">
-                Gerencie suas lojas e monitore o desempenho global.
-              </p>
-            </div>
-
-            <Link
-              href="/dashboard/stores/new"
-              className="flex items-center gap-3 rounded-2xl bg-slate-950 px-8 py-5 text-[11px] font-black uppercase tracking-widest text-white transition-all hover:bg-indigo-600 hover:shadow-xl hover:shadow-indigo-100 active:scale-95"
-            >
-              <Plus size={18} />
-              Criar loja
-            </Link>
-          </section>
+          <DashboardPageHeader
+            label="Painel de Controle"
+            title="Olá, Subscriber"
+            subtitle="Gerencie suas lojas e monitore o desempenho global."
+            actions={
+              <Link
+                href="/dashboard/stores/new"
+                className="flex items-center gap-3 rounded-2xl bg-slate-950 px-8 py-5 text-[11px] font-black uppercase tracking-widest text-white transition-all hover:bg-indigo-600 hover:shadow-xl hover:shadow-indigo-100 active:scale-95"
+              >
+                <Plus size={18} />
+                Criar loja
+              </Link>
+            }
+          />
 
           <section className="mb-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {stats.map((stat, index) => (

@@ -2,7 +2,6 @@
 
 import {
   AlertCircle,
-  ArrowLeft,
   Eye,
   Plus,
   RefreshCcw,
@@ -27,6 +26,7 @@ import {
 } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/categories-dashboard";
 import { CategoryFormDialog } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/category-form-dialog";
 import { useStore } from "@/services/hooks/use-store";
+import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 
 interface StoreDashboardProps {
   storeSlug: string;
@@ -150,57 +150,39 @@ export const StoreDashboard = ({
   return (
     <main className="min-h-screen bg-[#F4F7FA] pb-12 pt-32 lg:px-6">
       <div className="mx-auto max-w-400 animate-in fade-in zoom-in-95 duration-500 px-6">
-        <div className="mb-10 flex flex-col items-start justify-between gap-6 border-b border-slate-200 pb-8 lg:flex-row lg:items-end">
-          <div>
-            <Link
-              href={backPath}
-              className="mb-6 flex items-center gap-2 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors hover:text-indigo-600"
-            >
-              <ArrowLeft size={14} /> {backLabel}
-            </Link>
-
-            <div className="mb-2 flex items-center gap-2">
-              <div
-                className={`flex h-5 items-center rounded px-2 text-[9px] font-black tracking-widest text-white uppercase ${
-                  store.isActive ? "bg-indigo-600" : "bg-slate-400"
-                }`}
+        <DashboardPageHeader
+          backPath={backPath}
+          backLabel={backLabel}
+          label={`${store.isActive ? "OPERACIONAL" : "OFFLINE"} — ID: ${store.id
+            .slice(0, 8)
+            .toUpperCase()}-SECURED`}
+          title={`CONSOLE ${store.name}`}
+          subtitle={`Gerenciamento centralizado da unidade comercial ${store.name}.`}
+          actions={
+            <>
+              <Link
+                href={`${storeSlug}/products`}
+                className="flex items-center justify-center gap-3 rounded-xl border border-slate-950 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-slate-950 uppercase transition-all hover:bg-slate-50"
               >
-                {store.isActive ? "OPERACIONAL" : "OFFLINE"}
-              </div>
+                <Eye size={16} /> VER PRODUTOS
+              </Link>
 
-              <span className="text-[10px] font-black tracking-[0.3em] text-slate-400 uppercase italic">
-                ID: {store.id.slice(0, 8).toUpperCase()}-SECURED
-              </span>
-            </div>
+              <Link
+                href={`${storeSlug}/edit`}
+                className="flex items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-slate-600 uppercase transition-all hover:bg-slate-50 hover:text-indigo-600"
+              >
+                <Settings size={16} /> EDITAR LOJA
+              </Link>
 
-            <h1 className="text-5xl font-black tracking-tighter text-slate-950 uppercase italic leading-none md:text-6xl">
-              CONSOLE: <span className="text-indigo-600">{store.name}.</span>
-            </h1>
-          </div>
-
-          <div className="flex w-full flex-wrap gap-3 lg:w-auto">
-            <Link
-              href={`${storeSlug}/products`}
-              className="flex items-center justify-center gap-3 rounded-xl border border-slate-950 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-slate-950 uppercase transition-all hover:bg-slate-50"
-            >
-              <Eye size={16} /> VER PRODUTOS
-            </Link>
-
-            <Link
-              href={`${storeSlug}/edit`}
-              className="flex items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-slate-600 uppercase transition-all hover:bg-slate-50 hover:text-indigo-600"
-            >
-              <Settings size={16} /> EDITAR LOJA
-            </Link>
-
-            <button
-              onClick={handleOpenDelete}
-              className="flex items-center justify-center gap-3 rounded-xl border border-red-100 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-red-500 uppercase transition-all hover:bg-red-50"
-            >
-              <Trash2 size={16} /> EXCLUIR
-            </button>
-          </div>
-        </div>
+              <button
+                onClick={handleOpenDelete}
+                className="flex items-center justify-center gap-3 rounded-xl border border-red-100 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-red-500 uppercase transition-all hover:bg-red-50"
+              >
+                <Trash2 size={16} /> EXCLUIR
+              </button>
+            </>
+          }
+        />
 
         <DashboardStats storeId={store.id} isActive={store.isActive} />
 

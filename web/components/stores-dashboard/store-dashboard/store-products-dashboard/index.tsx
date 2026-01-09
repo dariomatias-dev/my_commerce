@@ -1,11 +1,11 @@
 "use client";
 
-import { ArrowLeft, Package, Plus, Tag } from "lucide-react";
-import Link from "next/link";
+import { Package, Plus, Tag } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { StoreResponse } from "@/@types/store/store-response";
+import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import {
   CategoriesDashboard,
   CategoriesDashboardRef,
@@ -26,6 +26,7 @@ export const StoreProductsDashboard = ({
   canCreate = true,
 }: StoreProductsDashboardProps) => {
   const router = useRouter();
+
   const { getStoreBySlug } = useStore();
 
   const [view, setView] = useState<"products" | "categories">("products");
@@ -64,66 +65,50 @@ export const StoreProductsDashboard = ({
   return (
     <main className="mx-auto max-w-400 px-6 pt-32 pb-12 font-sans text-slate-900 min-h-screen bg-[#F4F7FA]">
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="mb-10 flex flex-col items-start justify-between gap-6 border-b border-slate-200 pb-8 lg:flex-row lg:items-end">
-          <div>
-            <Link
-              href={backPath}
-              className="mb-6 flex items-center gap-2 text-[10px] font-black tracking-widest text-slate-400 uppercase hover:text-indigo-600 transition-colors"
-            >
-              <ArrowLeft size={14} /> Voltar ao Console
-            </Link>
+        <DashboardPageHeader
+          backPath={backPath}
+          backLabel="Voltar ao Console"
+          label={`Gestão de Ativos — ${store?.name || storeSlug}`}
+          title="INVENTÁRIO CENTRAL"
+          subtitle="Administração técnica de itens, volumes e departamentos comerciais."
+          actions={
+            <div className="flex w-full flex-wrap items-center gap-3 lg:w-auto h-14">
+              <div className="flex h-full rounded-xl bg-slate-200/50 p-1">
+                <button
+                  onClick={() => setView("products")}
+                  className={`flex h-full items-center gap-2 px-6 text-[10px] font-black tracking-widest uppercase transition-all rounded-lg ${
+                    view === "products"
+                      ? "bg-white text-indigo-600 shadow-sm"
+                      : "text-slate-500"
+                  }`}
+                >
+                  <Package size={14} /> Produtos
+                </button>
 
-            <div className="mb-2 flex items-center gap-2">
-              <div className="flex h-5 items-center rounded bg-indigo-600 px-2 text-[9px] font-black tracking-widest text-white uppercase">
-                Gestão de Ativos
+                <button
+                  onClick={() => setView("categories")}
+                  className={`flex h-full items-center gap-2 px-6 text-[10px] font-black tracking-widest uppercase transition-all rounded-lg ${
+                    view === "categories"
+                      ? "bg-white text-indigo-600 shadow-sm"
+                      : "text-slate-500"
+                  }`}
+                >
+                  <Tag size={14} /> Categorias
+                </button>
               </div>
 
-              <span className="text-[10px] font-black tracking-[0.3em] text-slate-400 uppercase italic">
-                {store?.name || storeSlug}
-              </span>
+              {canCreate && (
+                <button
+                  onClick={handleCreateClick}
+                  className="flex h-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-8 text-[10px] font-black tracking-widest text-white shadow-2xl hover:bg-indigo-600 transition-all border-2 border-transparent focus:border-indigo-400 outline-none"
+                >
+                  <Plus size={16} />{" "}
+                  {view === "products" ? "NOVO PRODUTO" : "NOVA CATEGORIA"}
+                </button>
+              )}
             </div>
-
-            <h1 className="text-5xl font-black tracking-tighter text-slate-950 uppercase italic md:text-6xl">
-              INVENTÁRIO <span className="text-indigo-600">CENTRAL.</span>
-            </h1>
-          </div>
-
-          <div className="flex w-full flex-wrap items-center gap-3 lg:w-auto h-14">
-            <div className="flex h-full rounded-xl bg-slate-200/50 p-1">
-              <button
-                onClick={() => setView("products")}
-                className={`flex h-full items-center gap-2 px-6 text-[10px] font-black tracking-widest uppercase transition-all rounded-lg ${
-                  view === "products"
-                    ? "bg-white text-indigo-600 shadow-sm"
-                    : "text-slate-500"
-                }`}
-              >
-                <Package size={14} /> Produtos
-              </button>
-
-              <button
-                onClick={() => setView("categories")}
-                className={`flex h-full items-center gap-2 px-6 text-[10px] font-black tracking-widest uppercase transition-all rounded-lg ${
-                  view === "categories"
-                    ? "bg-white text-indigo-600 shadow-sm"
-                    : "text-slate-500"
-                }`}
-              >
-                <Tag size={14} /> Categorias
-              </button>
-            </div>
-
-            {canCreate && (
-              <button
-                onClick={handleCreateClick}
-                className="flex h-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-8 text-[10px] font-black tracking-widest text-white shadow-2xl hover:bg-indigo-600 transition-all border-2 border-transparent focus:border-indigo-400 outline-none"
-              >
-                <Plus size={16} />{" "}
-                {view === "products" ? "NOVO PRODUTO" : "NOVA CATEGORIA"}
-              </button>
-            )}
-          </div>
-        </div>
+          }
+        />
 
         {view === "products" && store && (
           <ProductsDashboard storeId={store.id} />
