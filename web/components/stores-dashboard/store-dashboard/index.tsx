@@ -3,57 +3,57 @@
 import {
   AlertCircle,
   ArrowLeft,
-  Download,
   Eye,
   Plus,
   RefreshCcw,
+  Settings,
+  Tag,
+  Trash2,
 } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
-import { TransactionResponse } from "@/@types/transaction/transaction-response";
 import { DashboardSidebarActions } from "@/components/dashboard/store/[slug]/dashboard-sidebar-actions";
 import { DashboardStats } from "@/components/dashboard/store/[slug]/dashboard-stats";
-import { DashboardTransactionTable } from "@/components/dashboard/store/[slug]/dashboard-transaction-table";
+import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
+import { DeleteConfirmationDialog } from "@/components/dialogs/delete-confirmation-dialog";
 import { LoadingIndicator } from "@/components/loading-indicator";
+import {
+  CategoriesDashboard,
+  CategoriesDashboardRef,
+} from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/categories-dashboard";
+import { CategoryFormDialog } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/category-form-dialog";
 import { useStore } from "@/services/hooks/use-store";
-import { useTransaction } from "@/services/hooks/use-transaction";
 
 interface StoreDashboardProps {
   storeSlug: string;
   backPath: string;
   backLabel: string;
-  canCreate?: boolean;
 }
 
 export const StoreDashboard = ({
   storeSlug,
   backPath,
   backLabel,
-  canCreate = true,
 }: StoreDashboardProps) => {
-  const { getStoreBySlug } = useStore();
-  const { getTransactionsByStoreSlug } = useTransaction();
+  const router = useRouter();
+
+  const { deleteStore, getStoreBySlug } = useStore();
 
   const [store, setStore] = useState<StoreResponse | null>(null);
-  const [transactions, setTransactions] = useState<TransactionResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isTransactionsLoading, setIsTransactionsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTransactions = useCallback(async () => {
-    try {
-      setIsTransactionsLoading(true);
-      const response = await getTransactionsByStoreSlug(storeSlug, 0, 10);
-      setTransactions(response.content);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsTransactionsLoading(false);
-    }
-  }, [storeSlug, getTransactionsByStoreSlug]);
+  const [isCategoryFormDialogOpen, setIsCategoryFormDialogOpen] =
+    useState(false);
+  const [isFirstConfirmOpen, setIsFirstConfirmOpen] = useState(false);
+  const [isSecondConfirmOpen, setIsSecondConfirmOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const categoryManagerRef = useRef<CategoriesDashboardRef>(null);
 
   const fetchStoreData = useCallback(async () => {
     try {
@@ -63,8 +63,6 @@ export const StoreDashboard = ({
       const data = await getStoreBySlug(storeSlug);
 
       setStore(data);
-
-      await fetchTransactions();
     } catch (error) {
       if (error instanceof ApiError) {
         setError(error.message);
@@ -74,11 +72,46 @@ export const StoreDashboard = ({
     } finally {
       setIsLoading(false);
     }
-  }, [storeSlug, getStoreBySlug, fetchTransactions]);
+  }, [storeSlug, getStoreBySlug]);
 
   useEffect(() => {
     fetchStoreData();
   }, [fetchStoreData]);
+
+  const handleRefreshCategories = () => {
+    categoryManagerRef.current?.refresh();
+  };
+
+  const handleOpenDelete = () => setIsFirstConfirmOpen(true);
+
+  const handleCloseFirstConfirm = () => setIsFirstConfirmOpen(false);
+
+  const handleProceedToFinalDelete = () => {
+    setIsFirstConfirmOpen(false);
+    setIsSecondConfirmOpen(true);
+  };
+
+  const handleCloseSecondConfirm = () => {
+    if (isDeleting) return;
+
+    setIsSecondConfirmOpen(false);
+  };
+
+  const handleConfirmDeleteStore = async () => {
+    if (!store) return;
+
+    try {
+      setIsDeleting(true);
+
+      await deleteStore(store.id);
+
+      router.push(backPath);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   if (isLoading) {
     return <LoadingIndicator message="Sincronizando console operacional..." />;
@@ -95,10 +128,6 @@ export const StoreDashboard = ({
           Console <span className="text-red-500">Indisponível.</span>
         </h2>
 
-        <p className="mt-4 max-w-xs text-[10px] font-bold uppercase tracking-widest text-slate-400">
-          {error || "Estabelecimento não localizado."}
-        </p>
-
         <div className="mt-10 flex flex-col gap-4">
           <button
             onClick={fetchStoreData}
@@ -109,7 +138,7 @@ export const StoreDashboard = ({
 
           <Link
             href={backPath}
-            className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-950"
+            className="text-[10px] font-black uppercase tracking-widest text-slate-400"
           >
             {backLabel}
           </Link>
@@ -150,39 +179,91 @@ export const StoreDashboard = ({
           </div>
 
           <div className="flex w-full flex-wrap gap-3 lg:w-auto">
-            <button className="flex flex-1 items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-slate-600 uppercase transition-all hover:bg-slate-50 lg:flex-none">
-              <Download size={14} /> EXPORTAR
-            </button>
-
             <Link
               href={`${storeSlug}/products`}
-              className="flex flex-1 items-center justify-center gap-3 rounded-xl border border-slate-950 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-slate-950 uppercase transition-all hover:bg-slate-50 lg:flex-none"
+              className="flex items-center justify-center gap-3 rounded-xl border border-slate-950 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-slate-950 uppercase transition-all hover:bg-slate-50"
             >
-              <Eye size={16} /> PRODUTOS
+              <Eye size={16} /> VER PRODUTOS
             </Link>
 
-            {canCreate && (
-              <Link
-                href={`${storeSlug}/products/new`}
-                className="flex flex-1 items-center justify-center gap-3 rounded-xl bg-slate-950 px-6 py-4 text-[10px] font-black tracking-widest text-white shadow-2xl transition-all hover:bg-indigo-600 active:scale-95 lg:flex-none"
-              >
-                <Plus size={16} /> NOVO ITEM
-              </Link>
-            )}
+            <Link
+              href={`${storeSlug}/edit`}
+              className="flex items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-slate-600 uppercase transition-all hover:bg-slate-50 hover:text-indigo-600"
+            >
+              <Settings size={16} /> EDITAR LOJA
+            </Link>
+
+            <button
+              onClick={handleOpenDelete}
+              className="flex items-center justify-center gap-3 rounded-xl border border-red-100 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-red-500 uppercase transition-all hover:bg-red-50"
+            >
+              <Trash2 size={16} /> EXCLUIR
+            </button>
           </div>
         </div>
 
         <DashboardStats storeId={store.id} isActive={store.isActive} />
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-          <DashboardTransactionTable
-            transactions={transactions}
-            isLoading={isTransactionsLoading}
-            onRefresh={fetchTransactions}
-          />
+          <div className="lg:col-span-8 space-y-10">
+            <div className="rounded-[2.5rem] border border-slate-100 bg-white p-10 shadow-sm">
+              <div className="mb-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 text-white">
+                    <Tag size={24} />
+                  </div>
+
+                  <h2 className="text-2xl font-black uppercase italic tracking-tighter text-slate-950">
+                    Departamentos{" "}
+                    <span className="text-indigo-600">& Categorias.</span>
+                  </h2>
+                </div>
+
+                <button
+                  onClick={() => setIsCategoryFormDialogOpen(true)}
+                  className="flex items-center justify-center gap-3 rounded-xl bg-slate-950 px-6 py-4 text-[10px] font-black tracking-widest text-white shadow-2xl transition-all hover:bg-indigo-600"
+                >
+                  <Plus size={16} /> NOVA CATEGORIA
+                </button>
+              </div>
+
+              <CategoriesDashboard
+                storeId={store.id}
+                ref={categoryManagerRef}
+              />
+            </div>
+          </div>
+
           <DashboardSidebarActions storeId={store.id} />
         </div>
       </div>
+
+      <CategoryFormDialog
+        isOpen={isCategoryFormDialogOpen}
+        onClose={() => setIsCategoryFormDialogOpen(false)}
+        storeId={store.id}
+        onSuccess={handleRefreshCategories}
+      />
+
+      <ConfirmDialog
+        isOpen={isFirstConfirmOpen}
+        onClose={handleCloseFirstConfirm}
+        onConfirm={handleProceedToFinalDelete}
+        variant="danger"
+        title="Encerrar Loja?"
+        description={`Você está prestes a desativar permanentemente a loja "${store.name}". Esta ação não pode ser desfeita.`}
+        confirmText="Sim, prosseguir"
+      />
+
+      <DeleteConfirmationDialog
+        isOpen={isSecondConfirmOpen}
+        onClose={handleCloseSecondConfirm}
+        onConfirm={handleConfirmDeleteStore}
+        isLoading={isDeleting}
+        title="Confirmar Exclusão Definitiva"
+        description="Ao confirmar, todos os produtos, categorias, mídias e logs de transação desta loja serão removidos permanentemente."
+        confirmationName={store.name}
+      />
     </main>
   );
 };
