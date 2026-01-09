@@ -39,10 +39,28 @@ export const useAnalytics = () => {
     []
   );
 
+  const getUniqueCustomersByStoreId = useCallback(
+    (storeId: string) =>
+      apiClient.get<UniqueCustomersResponse>(
+        `/analytics/store/${storeId}/stats/unique-customers`
+      ),
+    []
+  );
+
+  const getTotalRevenueByStoreId = useCallback(
+    (storeId: string) =>
+      apiClient.get<TotalRevenueResponse>(
+        `/analytics/store/${storeId}/stats/total-revenue`
+      ),
+    []
+  );
+
   return {
     getVisitorsPerHourByStoreId,
     getConversionRateByStoreId,
     getUniqueCustomers,
     getTotalRevenue,
+    getUniqueCustomersByStoreId,
+    getTotalRevenueByStoreId,
   };
 };
