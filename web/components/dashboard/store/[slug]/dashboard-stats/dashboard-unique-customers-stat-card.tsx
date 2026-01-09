@@ -7,18 +7,18 @@ import { ApiError } from "@/@types/api";
 import { useAnalytics } from "@/services/hooks/use-analytics";
 import { DashboardStatCard } from "../../../../dashboard-stat-card";
 
-interface DashboardVisitorsStatCardProps {
+interface DashboardUniqueCustomersStatCardProps {
   storeId: string;
   isActive: boolean;
 }
 
-export const DashboardVisitorsStatCard = ({
+export const DashboardUniqueCustomersStatCard = ({
   storeId,
   isActive,
-}: DashboardVisitorsStatCardProps) => {
-  const { getVisitorsPerHourByStoreId } = useAnalytics();
+}: DashboardUniqueCustomersStatCardProps) => {
+  const { getUniqueCustomersByStoreId } = useAnalytics();
 
-  const [totalVisitors, setTotalVisitors] = useState<number>(0);
+  const [totalCustomers, setTotalCustomers] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -27,21 +27,19 @@ export const DashboardVisitorsStatCard = ({
     setErrorMessage(null);
 
     try {
-      const response = await getVisitorsPerHourByStoreId(storeId);
+      const response = await getUniqueCustomersByStoreId(storeId);
 
-      const total = response.reduce((acc, curr) => acc + curr.count, 0);
-
-      setTotalVisitors(total);
+      setTotalCustomers(response.total);
     } catch (error) {
       if (error instanceof ApiError) {
         setErrorMessage(error.message);
       } else {
-        setErrorMessage("Erro de tráfego");
+        setErrorMessage("Erro ao carregar clientes");
       }
     } finally {
       setIsLoading(false);
     }
-  }, [getVisitorsPerHourByStoreId, storeId]);
+  }, [getUniqueCustomersByStoreId, storeId]);
 
   useEffect(() => {
     fetchData();
@@ -49,9 +47,9 @@ export const DashboardVisitorsStatCard = ({
 
   return (
     <DashboardStatCard
-      label="Tráfego"
-      value={totalVisitors.toLocaleString()}
-      sub="Visitantes nas últimas 24h"
+      label="Clientes Totais"
+      value={totalCustomers.toLocaleString()}
+      sub="Clientes únicos da loja"
       icon={Users}
       isActive={isActive}
       isLoading={isLoading}

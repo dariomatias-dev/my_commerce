@@ -1,7 +1,7 @@
 import { DashboardActiveProductsStatCard } from "./dashboard-active-products-stat-card";
-import { DashboardConversionStatCard } from "./dashboard-conversion-stat-card";
+import { DashboardTotalRevenueStatCard } from "./dashboard-total-revenue-stat-card";
 import { DashboardSuccessfulSalesStatCard } from "./dashboard-successful-sales-stat-card";
-import { DashboardVisitorsStatCard } from "./dashboard-visitors-stat-card";
+import { DashboardUniqueCustomersStatCard } from "./dashboard-unique-customers-stat-card";
 
 interface DashboardStatsProps {
   storeId: string;
@@ -15,9 +15,9 @@ export const DashboardStats = ({ storeId, isActive }: DashboardStatsProps) => {
 
       <DashboardActiveProductsStatCard storeId={storeId} isActive={isActive} />
 
-      <DashboardVisitorsStatCard storeId={storeId} isActive={isActive} />
+      <DashboardUniqueCustomersStatCard storeId={storeId} isActive={isActive} />
 
-      <DashboardConversionStatCard storeId={storeId} isActive={isActive} />
+      <DashboardTotalRevenueStatCard storeId={storeId} isActive={isActive} />
     </div>
   );
 };

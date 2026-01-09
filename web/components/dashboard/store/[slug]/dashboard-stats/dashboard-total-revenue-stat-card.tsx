@@ -1,24 +1,24 @@
 "use client";
 
-import { BarChart3 } from "lucide-react";
+import { Banknote } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { useAnalytics } from "@/services/hooks/use-analytics";
 import { DashboardStatCard } from "../../../../dashboard-stat-card";
 
-interface DashboardConversionStatCardProps {
+interface DashboardTotalRevenueStatCardProps {
   storeId: string;
   isActive: boolean;
 }
 
-export const DashboardConversionStatCard = ({
+export const DashboardTotalRevenueStatCard = ({
   storeId,
   isActive,
-}: DashboardConversionStatCardProps) => {
-  const { getConversionRateByStoreId } = useAnalytics();
+}: DashboardTotalRevenueStatCardProps) => {
+  const { getTotalRevenueByStoreId } = useAnalytics();
 
-  const [rate, setRate] = useState<number>(0);
+  const [revenue, setRevenue] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -27,19 +27,19 @@ export const DashboardConversionStatCard = ({
     setErrorMessage(null);
 
     try {
-      const response = await getConversionRateByStoreId(storeId);
+      const response = await getTotalRevenueByStoreId(storeId);
 
-      setRate(response.conversionRate);
+      setRevenue(response.total);
     } catch (error) {
       if (error instanceof ApiError) {
         setErrorMessage(error.message);
       } else {
-        setErrorMessage("Erro de métricas");
+        setErrorMessage("Erro ao carregar receita");
       }
     } finally {
       setIsLoading(false);
     }
-  }, [getConversionRateByStoreId, storeId]);
+  }, [getTotalRevenueByStoreId, storeId]);
 
   useEffect(() => {
     fetchData();
@@ -47,10 +47,13 @@ export const DashboardConversionStatCard = ({
 
   return (
     <DashboardStatCard
-      label="Taxa de Conversão"
-      value={`${rate.toFixed(2)}%`}
-      sub="Visitantes que viraram clientes"
-      icon={BarChart3}
+      label="Receita Total"
+      value={revenue.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      })}
+      sub="Receita total da loja"
+      icon={Banknote}
       isActive={isActive}
       isLoading={isLoading}
       errorMessage={errorMessage}
