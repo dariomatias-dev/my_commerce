@@ -18,6 +18,7 @@ interface StoresDashboardProps {
   headerTitle: string;
   headerSubtitle: string;
   canCreate?: boolean;
+  backPath: string;
 }
 
 export const StoresDashboard = ({
@@ -25,6 +26,7 @@ export const StoresDashboard = ({
   headerTitle,
   headerSubtitle,
   canCreate = true,
+  backPath,
 }: StoresDashboardProps) => {
   const listTopRef = useRef<HTMLDivElement>(null);
 
@@ -83,6 +85,7 @@ export const StoresDashboard = ({
             title={headerTitle}
             subtitle={headerSubtitle}
             showCreateButton={canCreate}
+            backPath={backPath}
           />
 
           <StoresList

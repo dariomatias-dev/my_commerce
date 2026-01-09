@@ -12,6 +12,7 @@ const DashboardPage = () => {
       headerTitle="MINHAS LOJAS"
       headerSubtitle="Console Administrativo Global"
       canCreate={true}
+      backPath="/dashboard"
     />
   );
 };

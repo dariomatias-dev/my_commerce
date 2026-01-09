@@ -24,6 +24,7 @@ const AdminUserStoresPage = () => {
       headerTitle="LOJAS DO USUÁRIO"
       headerSubtitle="Supervisão de Infraestrutura Vinculada"
       canCreate={false}
+      backPath={`/admin/users`}
     />
   );
 };

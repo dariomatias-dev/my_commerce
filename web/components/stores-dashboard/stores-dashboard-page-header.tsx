@@ -11,6 +11,7 @@ interface StoresDashboardPageHeaderProps {
   title: string;
   subtitle: string;
   showCreateButton?: boolean;
+  backPath: string;
 }
 
 export const StoresDashboardPageHeader = ({
@@ -19,6 +20,7 @@ export const StoresDashboardPageHeader = ({
   title,
   subtitle,
   showCreateButton = true,
+  backPath,
 }: StoresDashboardPageHeaderProps) => {
   const paginationText = `Página ${currentPage + 1} de ${
     totalPages || 1
@@ -29,6 +31,8 @@ export const StoresDashboardPageHeader = ({
       label="Infraestrutura de Lojas"
       title={title}
       subtitle={paginationText}
+      backLabel="Voltar"
+      backPath={backPath}
       actions={
         showCreateButton && (
           <Link
