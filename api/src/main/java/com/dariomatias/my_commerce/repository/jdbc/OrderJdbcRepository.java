@@ -354,6 +354,25 @@ public class OrderJdbcRepository implements OrderContract {
     }
 
     @Override
+    public long countDistinctCustomersByUserIdAndStatus(UUID userId, Status status) {
+        String sql = """
+            SELECT COUNT(DISTINCT o.user_id)
+            FROM orders o
+            INNER JOIN stores s ON o.store_id = s.id
+            WHERE s.user_id = :user_id
+              AND o.status = :status
+        """;
+
+        return jdbc.queryForObject(
+                sql,
+                new MapSqlParameterSource()
+                        .addValue("user_id", userId)
+                        .addValue("status", status.name()),
+                Long.class
+        );
+    }
+
+    @Override
     public Order update(Order order) {
         LocalDateTime now = LocalDateTime.now();
         order.getAudit().setUpdatedAt(now);

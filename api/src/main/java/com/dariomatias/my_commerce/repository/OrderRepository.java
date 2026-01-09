@@ -44,6 +44,18 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     long countByStore_IdAndStatus(UUID storeId, Status status);
 
     @Query("""
+        SELECT COUNT(DISTINCT o.user.id)
+        FROM Order o
+        JOIN o.store s
+        WHERE s.user.id = :userId
+          AND o.status = :status
+    """)
+    long countDistinctCustomersByUserIdAndStatus(
+            @Param("userId") UUID userId,
+            @Param("status") Status status
+    );
+
+    @Query("""
         SELECT o
         FROM Order o
         LEFT JOIN FETCH o.items

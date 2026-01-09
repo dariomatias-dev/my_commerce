@@ -31,6 +31,11 @@ public interface OrderContract {
 
     long countByStoreIdAndStatus(UUID storeId, Status status);
 
+    long countDistinctCustomersByUserIdAndStatus(
+            UUID userId,
+            Status status
+    );
+
     Order update(Order order);
 
     void deleteById(UUID id);
