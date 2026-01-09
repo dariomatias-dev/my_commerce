@@ -16,8 +16,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
-import { DashboardSidebarActions } from "@/components/dashboard/store/[slug]/dashboard-sidebar-actions";
 import { DashboardStats } from "@/components/dashboard/store/[slug]/dashboard-stats";
+import { InventoryAlert } from "@/components/dashboard/store/[slug]/inventory-alert";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { DeleteConfirmationDialog } from "@/components/dialogs/delete-confirmation-dialog";
 import { LoadingIndicator } from "@/components/loading-indicator";
@@ -234,7 +234,7 @@ export const StoreDashboard = ({
             </div>
           </div>
 
-          <DashboardSidebarActions storeId={store.id} />
+          <InventoryAlert storeId={store.id} />
         </div>
       </div>
 
