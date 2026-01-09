@@ -8,16 +8,19 @@ import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
 import { DashboardStatCard } from "@/components/dashboard-stat-card";
 import { StoresList } from "@/components/stores-list";
+import { useAnalytics } from "@/services/hooks/use-analytics";
 import { useProduct } from "@/services/hooks/use-product";
 import { useStore } from "@/services/hooks/use-store";
 
 const DashboardPage = () => {
   const { getMyStores } = useStore();
   const { getUserActiveProductsCount } = useProduct();
+  const { getUniqueCustomers } = useAnalytics();
 
   const [stores, setStores] = useState<StoreResponse[]>([]);
   const [totalStores, setTotalStores] = useState(0);
   const [totalActiveProducts, setTotalActiveProducts] = useState(0);
+  const [totalCustomers, setTotalCustomers] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -32,7 +35,14 @@ const DashboardPage = () => {
       value: totalActiveProducts.toString().padStart(2, "0"),
       icon: Package,
     },
-    { label: "Clientes Totais", value: "1.2k", icon: Users },
+    {
+      label: "Clientes Totais",
+      value:
+        totalCustomers >= 1000
+          ? `${(totalCustomers / 1000).toFixed(1)}k`
+          : totalCustomers.toString().padStart(2, "0"),
+      icon: Users,
+    },
     { label: "Taxa de Conversão", value: "3.2%", icon: Activity },
   ];
 
@@ -41,14 +51,17 @@ const DashboardPage = () => {
     setErrorMessage(null);
 
     try {
-      const [storesResponse, activeProductsCount] = await Promise.all([
-        getMyStores(0, 3),
-        getUserActiveProductsCount(),
-      ]);
+      const [storesResponse, activeProductsCount, customersResponse] =
+        await Promise.all([
+          getMyStores(0, 3),
+          getUserActiveProductsCount(),
+          getUniqueCustomers(),
+        ]);
 
       setStores(storesResponse.content);
       setTotalStores(storesResponse.totalElements);
       setTotalActiveProducts(activeProductsCount);
+      setTotalCustomers(customersResponse.total);
     } catch (error) {
       if (error instanceof ApiError) {
         setErrorMessage(error.message);
@@ -58,7 +71,7 @@ const DashboardPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [getMyStores, getUserActiveProductsCount]);
+  }, [getMyStores, getUserActiveProductsCount, getUniqueCustomers]);
 
   useEffect(() => {
     fetchDashboardData();
