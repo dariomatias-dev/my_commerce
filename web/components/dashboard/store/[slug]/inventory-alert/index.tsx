@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, ArrowRight, Loader2, Package } from "lucide-react";
+import { AlertTriangle, Loader2, Package } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
@@ -130,10 +130,6 @@ export const InventoryAlert = ({
             </div>
           )}
         </div>
-
-        <button className="mt-9 flex w-full items-center justify-center gap-3 rounded-2xl bg-white py-4.5 text-[10px] font-black tracking-widest text-slate-950 uppercase transition-all hover:bg-indigo-600 hover:text-white active:scale-95 shadow-xl h-14">
-          REABASTECER AGORA <ArrowRight size={16} />
-        </button>
       </div>
     </aside>
   );

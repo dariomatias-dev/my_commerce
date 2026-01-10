@@ -43,7 +43,6 @@ export const DashboardSuccessfulSalesStatCard = ({
     <DashboardStatCard
       label="Vendas Bem-sucedidas"
       value={count.toLocaleString()}
-      sub="Volume total de pedidos"
       icon={Activity}
       isLoading={isLoading}
       errorMessage={errorMessage}
