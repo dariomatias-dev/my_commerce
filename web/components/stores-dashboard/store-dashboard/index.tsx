@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  AlertCircle,
-  Eye,
-  Plus,
-  RefreshCcw,
-  Settings,
-  Tag,
-  Trash2,
-} from "lucide-react";
+import { Eye, Plus, Settings, Tag, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -19,6 +11,7 @@ import { DashboardStoreStats } from "@/components/dashboard/store/[slug]/dashboa
 import { InventoryAlert } from "@/components/dashboard/store/[slug]/inventory-alert";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { DeleteConfirmationDialog } from "@/components/dialogs/delete-confirmation-dialog";
+import { ErrorFeedback } from "@/components/error-feedback";
 import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import {
@@ -114,36 +107,19 @@ export const StoreDashboard = ({
   };
 
   if (isLoading) {
-    return <LoadingIndicator message="Sincronizando console operacional..." />;
+    return <LoadingIndicator message="Carregando dados..." />;
   }
 
   if (error || !store) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center bg-white p-6 text-center">
-        <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-[2.5rem] bg-red-50 text-red-500 shadow-xl shadow-red-100">
-          <AlertCircle size={48} />
-        </div>
-
-        <h2 className="text-4xl font-black uppercase italic tracking-tighter text-slate-950">
-          Console <span className="text-red-500">Indisponível.</span>
-        </h2>
-
-        <div className="mt-10 flex flex-col gap-4">
-          <button
-            onClick={fetchStoreData}
-            className="flex items-center justify-center gap-3 rounded-2xl bg-slate-950 px-10 py-5 text-[10px] font-black uppercase tracking-widest text-white hover:bg-indigo-600"
-          >
-            <RefreshCcw size={16} /> REESTABELECER CONEXÃO
-          </button>
-
-          <Link
-            href={backPath}
-            className="text-[10px] font-black uppercase tracking-widest text-slate-400"
-          >
-            {backLabel}
-          </Link>
-        </div>
-      </main>
+      <ErrorFeedback
+        title="Console"
+        highlightedTitle="Indisponível"
+        errorMessage={error}
+        onRetry={fetchStoreData}
+        backPath={backPath}
+        backLabel={backLabel}
+      />
     );
   }
 
