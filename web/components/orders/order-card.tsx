@@ -4,32 +4,14 @@ import { Calendar, ChevronRight, Hash, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 
 import { OrderResponse } from "@/@types/order/order-response";
-import { Status } from "@/enums/status";
+import { getOrderStatusConfig } from "@/utils/get-order-status-config";
 
 interface OrderCardProps {
   order: OrderResponse;
 }
 
 export const OrderCard = ({ order }: OrderCardProps) => {
-  const getStatusStyles = (status: Status) => {
-    switch (status) {
-      case Status.COMPLETED:
-        return { label: "Concluído", class: "bg-emerald-50 text-emerald-600" };
-      case Status.CANCELED:
-        return { label: "Cancelado", class: "bg-red-50 text-red-500" };
-      case Status.CONFIRMED:
-        return { label: "Confirmado", class: "bg-blue-50 text-blue-600" };
-      case Status.PROCESSING:
-        return { label: "Processando", class: "bg-indigo-50 text-indigo-600" };
-      case Status.FAILED:
-        return { label: "Falhou", class: "bg-rose-50 text-rose-600" };
-      case Status.PENDING:
-      default:
-        return { label: "Pendente", class: "bg-amber-50 text-amber-600" };
-    }
-  };
-
-  const statusInfo = getStatusStyles(order.status);
+  const statusConfig = getOrderStatusConfig(order.status);
 
   return (
     <Link
@@ -74,10 +56,10 @@ export const OrderCard = ({ order }: OrderCardProps) => {
           </div>
 
           <div
-            className={`rounded-full px-5 py-2 transition-colors ${statusInfo.class}`}
+            className={`rounded-full px-5 py-2 transition-colors ${statusConfig.bg} ${statusConfig.color}`}
           >
             <span className="text-[10px] font-black uppercase tracking-[0.2em]">
-              {statusInfo.label}
+              {statusConfig.label}
             </span>
           </div>
 
