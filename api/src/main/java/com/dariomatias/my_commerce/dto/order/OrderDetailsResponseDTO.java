@@ -1,6 +1,7 @@
 package com.dariomatias.my_commerce.dto.order;
 
 import com.dariomatias.my_commerce.dto.order_item.OrderItemResponseDTO;
+import com.dariomatias.my_commerce.dto.stores.StoreResponseDTO;
 import com.dariomatias.my_commerce.enums.FreightType;
 import com.dariomatias.my_commerce.enums.PaymentMethod;
 import com.dariomatias.my_commerce.enums.Status;
@@ -18,7 +19,7 @@ import java.util.UUID;
 public class OrderDetailsResponseDTO {
 
     private UUID id;
-    private UUID storeId;
+    private StoreResponseDTO store;
     private UUID userId;
     private PaymentMethod paymentMethod;
     private FreightType freightType;
@@ -32,7 +33,7 @@ public class OrderDetailsResponseDTO {
 
     public OrderDetailsResponseDTO(
             UUID id,
-            UUID storeId,
+            StoreResponseDTO store,
             UUID userId,
             PaymentMethod paymentMethod,
             FreightType freightType,
@@ -45,7 +46,7 @@ public class OrderDetailsResponseDTO {
             LocalDateTime updatedAt
     ) {
         this.id = id;
-        this.storeId = storeId;
+        this.store = store;
         this.userId = userId;
         this.paymentMethod = paymentMethod;
         this.freightType = freightType;
@@ -67,7 +68,7 @@ public class OrderDetailsResponseDTO {
 
         return new OrderDetailsResponseDTO(
                 order.getId(),
-                order.getStoreId(),
+                StoreResponseDTO.from(order.getStore()),
                 order.getUserId(),
                 order.getPaymentMethod(),
                 order.getFreightType(),

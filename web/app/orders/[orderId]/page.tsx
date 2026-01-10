@@ -1,24 +1,26 @@
 "use client";
 
-import { AlertCircle, Loader2, RefreshCcw } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { OrderDetailsResponse } from "@/@types/order/order-details-response";
 import { ProductResponse } from "@/@types/product/product-response";
+
+import { ErrorFeedback } from "@/components/error-feedback";
+import { LoadingIndicator } from "@/components/loading-indicator";
 import { OrderDetailsFinancialSummary } from "@/components/orders/[orderId]/order-details-financial-summary";
 import { OrderDetailsLogisticsInfo } from "@/components/orders/[orderId]/order-details-logistics-info";
 import { OrderDetailsPageHeader } from "@/components/orders/[orderId]/order-details-page-header";
 import { OrderDetailsPaymentInfo } from "@/components/orders/[orderId]/order-details-payment-info";
 import { OrderDetailsProducts } from "@/components/orders/[orderId]/order-details-products";
+import { OrderDetailsStoreInfo } from "@/components/orders/[orderId]/order-details-store-info";
 import { FreightType } from "@/enums/freight-type";
 import { useOrder } from "@/services/hooks/use-order";
 import { useProduct } from "@/services/hooks/use-product";
 
 const OrderDetailsPage = () => {
   const router = useRouter();
-
   const { orderId } = useParams() as { orderId: string };
 
   const { getOrderById } = useOrder();
@@ -35,13 +37,12 @@ const OrderDetailsPage = () => {
 
     try {
       const orderResponse = await getOrderById(orderId);
-
       setOrder(orderResponse);
 
       if (orderResponse.items && orderResponse.items.length > 0) {
         const productIds = orderResponse.items.map((item) => item.productId);
         const productsResponse = await getProductsByIds(
-          orderResponse.storeId,
+          orderResponse.store.id,
           productIds
         );
         const productsMap = (productsResponse.content || []).reduce(
@@ -70,33 +71,19 @@ const OrderDetailsPage = () => {
   }, [fetchOrderDetail]);
 
   if (isLoading) {
-    return (
-      <main className="flex min-h-[70vh] flex-col items-center justify-center bg-white">
-        <Loader2 className="h-12 w-12 animate-spin text-indigo-600" />
-
-        <p className="mt-6 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">
-          Sincronizando Dados
-        </p>
-      </main>
-    );
+    return <LoadingIndicator message="Sincronizando detalhes do pedido..." />;
   }
 
   if (errorMessage || !order) {
     return (
-      <main className="flex min-h-[70vh] flex-col items-center justify-center bg-white px-6 text-center">
-        <AlertCircle size={40} className="text-red-500 mb-6" />
-
-        <h2 className="text-3xl font-black uppercase italic tracking-tighter text-slate-950">
-          Erro ao Carregar Pedido
-        </h2>
-
-        <button
-          onClick={fetchOrderDetail}
-          className="mt-8 flex items-center gap-3 rounded-2xl bg-slate-950 px-10 py-5 text-[10px] font-black uppercase tracking-widest text-white hover:bg-indigo-600 transition-all"
-        >
-          <RefreshCcw size={16} /> Tentar Novamente
-        </button>
-      </main>
+      <ErrorFeedback
+        title="Pedido"
+        highlightedTitle="Indisponível"
+        errorMessage={errorMessage}
+        onRetry={fetchOrderDetail}
+        backPath="/dashboard/orders"
+        backLabel="VOLTAR PARA PEDIDOS"
+      />
     );
   }
 
@@ -123,8 +110,10 @@ const OrderDetailsPage = () => {
             </div>
           </div>
 
-          <aside className="lg:col-span-4">
-            <div className="sticky top-40 space-y-6">
+          <aside className="lg:col-span-4 space-y-8">
+            <div className="sticky top-40 space-y-8">
+              <OrderDetailsStoreInfo store={order.store} />
+
               <OrderDetailsFinancialSummary
                 subtotal={subtotal}
                 freight={order.freightAmount}
@@ -134,7 +123,8 @@ const OrderDetailsPage = () => {
 
               <div className="rounded-[2rem] bg-indigo-50/50 p-6 text-center">
                 <p className="text-[10px] font-bold uppercase leading-relaxed text-indigo-600/70">
-                  Acompanhe seu e-mail para <br /> atualizações de rastreio.
+                  Acompanhe o status do pedido para <br /> atualizações de
+                  logística.
                 </p>
               </div>
             </div>

@@ -1,12 +1,13 @@
 import { FreightType } from "@/enums/freight-type";
 import { PaymentMethod } from "@/enums/payment-method";
 import { Status } from "@/enums/status";
+import { StoreResponse } from "../store/store-response";
 import { OrderAddressResponse } from "./order-address-response";
 import { OrderItemResponse } from "./order-item/order-item-response";
 
 export interface OrderDetailsResponse {
   id: string;
-  storeId: string;
+  store: StoreResponse;
   userId: string;
   paymentMethod: PaymentMethod;
   freightType: FreightType;
