@@ -1,13 +1,13 @@
 "use client";
 
-import { ArrowLeft, Package, Tag } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Package, Tag } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { OrderResponse } from "@/@types/order/order-response";
 import { PaginatedResponse } from "@/@types/paginated-response";
 import { ErrorFeedback } from "@/components/error-feedback";
+import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { LoadingIndicator } from "@/components/loading-indicator";
@@ -28,7 +28,6 @@ export const OrdersDashboard = ({
   backHref,
   emptyDescription,
 }: OrdersDashboardProps) => {
-  const router = useRouter();
   const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -69,7 +68,9 @@ export const OrdersDashboard = ({
     return (
       <>
         <Header />
+
         <LoadingIndicator message="Carregando pedidos..." />
+
         <Footer />
       </>
     );
@@ -99,48 +100,28 @@ export const OrdersDashboard = ({
       <Header />
 
       <main className="min-h-screen mx-auto max-w-400 px-6 pt-32 pb-12">
-        <button
-          onClick={() => router.push(backHref ?? "")}
-          className="group mb-8 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 transition-colors hover:text-indigo-600"
-        >
-          <ArrowLeft
-            size={16}
-            className="transition-transform group-hover:-translate-x-1"
-          />
-          Voltar
-        </button>
-
-        <div className="mb-12 flex flex-col items-start justify-between gap-6 border-b border-slate-200 pb-8 md:flex-row md:items-end">
-          <div>
-            <div className="mb-3 flex items-center gap-2">
-              <div className="rounded bg-indigo-600 px-2 py-0.5 text-[9px] font-black tracking-widest text-white uppercase">
-                ORDER_HISTORY
+        <DashboardPageHeader
+          title="MEUS PEDIDOS"
+          subtitle="Rastreio e gestão centralizada de transações"
+          backPath={backHref}
+          label="ORDER_HISTORY"
+          actions={
+            <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-400">
+                <Tag size={20} />
               </div>
-              <span className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase italic">
-                Rastreio e gestão de transações
-              </span>
-            </div>
 
-            <h1 className="text-4xl font-black uppercase italic tracking-tighter text-slate-950">
-              MEUS <span className="text-indigo-600">PEDIDOS.</span>
-            </h1>
-          </div>
-
-          <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-400">
-              <Tag size={20} />
+              <div className="pr-4">
+                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                  Total Localizado
+                </p>
+                <p className="text-lg font-black text-slate-950">
+                  {String(totalElements).padStart(2, "0")} Ordens
+                </p>
+              </div>
             </div>
-
-            <div className="pr-4">
-              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                Total Localizado
-              </p>
-              <p className="text-lg font-black text-slate-950">
-                {String(totalElements).padStart(2, "0")} Ordens
-              </p>
-            </div>
-          </div>
-        </div>
+          }
+        />
 
         {orders.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-[3rem] border-2 border-dashed border-slate-100 bg-white py-32 text-center">
