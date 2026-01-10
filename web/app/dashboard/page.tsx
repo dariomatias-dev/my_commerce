@@ -12,12 +12,14 @@ import { DashboardTotalRevenueStatCard } from "@/components/dashboard-stats/dash
 import { DashboardUniqueCustomersStatCard } from "@/components/dashboard-stats/dashboard-unique-customers-stat-card";
 
 import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
+import { LoadingIndicator } from "@/components/loading-indicator";
 import { StoresList } from "@/components/stores-list";
 
+import { DashboardStatCard } from "@/components/dashboard-stat-card";
+import { ErrorFeedback } from "@/components/error-feedback";
 import { useAnalytics } from "@/services/hooks/use-analytics";
 import { useProduct } from "@/services/hooks/use-product";
 import { useStore } from "@/services/hooks/use-store";
-import { DashboardStatCard } from "@/components/dashboard-stat-card";
 
 const DashboardPage = () => {
   const { getMyStores } = useStore();
@@ -52,6 +54,23 @@ const DashboardPage = () => {
   useEffect(() => {
     fetchDashboardData();
   }, [fetchDashboardData]);
+
+  if (isLoading) {
+    return <LoadingIndicator message="Carregando dados..." />;
+  }
+
+  if (errorMessage) {
+    return (
+      <ErrorFeedback
+        title="Painel"
+        highlightedTitle="Indisponível"
+        errorMessage={errorMessage}
+        onRetry={fetchDashboardData}
+        backPath="/dashboard"
+        backLabel="VOLTAR AO INÍCIO"
+      />
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[#F4F7FA] font-sans text-slate-900">
