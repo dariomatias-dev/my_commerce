@@ -29,20 +29,17 @@ public class ProductService {
     private final StoreContract storeRepository;
     private final CategoryContract categoryRepository;
     private final ProductImageService productImageService;
-    private final VisitorTrackingService visitorTrackingService;
 
     public ProductService(
             ProductContract productRepository,
             StoreContract storeRepository,
             CategoryContract categoryRepository,
-            ProductImageService productImageService,
-            VisitorTrackingService visitorTrackingService
+            ProductImageService productImageService
     ) {
         this.productRepository = productRepository;
         this.storeRepository = storeRepository;
         this.categoryRepository = categoryRepository;
         this.productImageService = productImageService;
-        this.visitorTrackingService = visitorTrackingService;
     }
 
     public Product create(User user, ProductRequestDTO request, MultipartFile[] images) {
@@ -127,8 +124,6 @@ public class ProductService {
     public Product getByStoreSlugAndProductSlug(String storeSlug, String productSlug) {
         Store store = storeRepository.findBySlug(storeSlug)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
-
-        visitorTrackingService.registerVisit(store.getId());
 
         return productRepository.findByStoreSlugAndProductSlug(store.getSlug(), productSlug)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));

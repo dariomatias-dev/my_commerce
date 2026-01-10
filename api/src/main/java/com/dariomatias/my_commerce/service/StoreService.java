@@ -30,7 +30,6 @@ public class StoreService {
     private final SubscriptionContract subscriptionRepository;
     private final UserContract userRepository;
     private final MinioService minioService;
-    private final VisitorTrackingService visitorTrackingService;
 
     private static final String BUCKET_NAME = "stores";
 
@@ -38,14 +37,12 @@ public class StoreService {
             StoreContract storeRepository,
             SubscriptionContract subscriptionRepository,
             UserContract userRepository,
-            MinioService minioService,
-            VisitorTrackingService visitorTrackingService
+            MinioService minioService
     ) {
         this.storeRepository = storeRepository;
         this.subscriptionRepository = subscriptionRepository;
         this.userRepository = userRepository;
         this.minioService = minioService;
-        this.visitorTrackingService = visitorTrackingService;
     }
 
     public Store create(User user, StoreRequestDTO request, MultipartFile logo, MultipartFile banner) {
@@ -112,8 +109,6 @@ public class StoreService {
                                 "Loja não encontrada"
                         )
                 );
-
-        visitorTrackingService.registerVisit(store.getId());
 
         return store;
     }
