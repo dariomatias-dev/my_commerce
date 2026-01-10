@@ -1,17 +1,23 @@
 "use client";
 
-import { DollarSign, Package, Plus, Store, Users } from "lucide-react";
+import { Plus, Store } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
-import { DashboardStatCard } from "@/components/dashboard-stat-card";
+
+import { DashboardActiveProductsStatCard } from "@/components/dashboard-stats/dashboard-active-products-stat-card";
+import { DashboardTotalRevenueStatCard } from "@/components/dashboard-stats/dashboard-total-revenue-stat-card";
+import { DashboardUniqueCustomersStatCard } from "@/components/dashboard-stats/dashboard-unique-customers-stat-card";
+
 import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { StoresList } from "@/components/stores-list";
+
 import { useAnalytics } from "@/services/hooks/use-analytics";
 import { useProduct } from "@/services/hooks/use-product";
 import { useStore } from "@/services/hooks/use-store";
+import { DashboardStatCard } from "@/components/dashboard-stat-card";
 
 const DashboardPage = () => {
   const { getMyStores } = useStore();
@@ -20,63 +26,18 @@ const DashboardPage = () => {
 
   const [stores, setStores] = useState<StoreResponse[]>([]);
   const [totalStores, setTotalStores] = useState(0);
-  const [totalActiveProducts, setTotalActiveProducts] = useState(0);
-  const [totalCustomers, setTotalCustomers] = useState(0);
-  const [totalRevenue, setTotalRevenue] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const stats = [
-    {
-      label: "Quantidade de Lojas",
-      value: totalStores.toString().padStart(2, "0"),
-      icon: Store,
-    },
-    {
-      label: "Produtos Ativos",
-      value: totalActiveProducts.toString().padStart(2, "0"),
-      icon: Package,
-    },
-    {
-      label: "Clientes Totais",
-      value:
-        totalCustomers >= 1000
-          ? `${(totalCustomers / 1000).toFixed(1)}k`
-          : totalCustomers.toString().padStart(2, "0"),
-      icon: Users,
-    },
-    {
-      label: "Receita Total",
-      value: new Intl.NumberFormat("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      }).format(totalRevenue),
-      icon: DollarSign,
-    },
-  ];
 
   const fetchDashboardData = useCallback(async () => {
     setIsLoading(true);
     setErrorMessage(null);
 
     try {
-      const [
-        storesResponse,
-        activeProductsCount,
-        customersResponse,
-        revenueResponse,
-      ] = await Promise.all([
-        getMyStores(0, 3),
-        getUserActiveProductsCount(),
-        getUniqueCustomers(),
-        getTotalRevenue(),
-      ]);
+      const response = await getMyStores(0, 3);
 
-      setStores(storesResponse.content);
-      setTotalStores(storesResponse.totalElements);
-      setTotalActiveProducts(activeProductsCount);
-      setTotalCustomers(customersResponse.total);
-      setTotalRevenue(revenueResponse.total);
+      setStores(response.content);
+      setTotalStores(response.totalElements);
     } catch (error) {
       if (error instanceof ApiError) {
         setErrorMessage(error.message);
@@ -86,12 +47,7 @@ const DashboardPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [
-    getMyStores,
-    getUserActiveProductsCount,
-    getUniqueCustomers,
-    getTotalRevenue,
-  ]);
+  }, [getMyStores]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -117,22 +73,28 @@ const DashboardPage = () => {
           />
 
           <section className="mb-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {stats.map((stat, index) => (
-              <DashboardStatCard
-                key={index}
-                label={stat.label}
-                value={stat.value}
-                icon={stat.icon}
-                isActive={true}
-              />
-            ))}
+            <DashboardStatCard
+              label="Quantidade de Lojas"
+              value={totalStores.toString().padStart(2, "0")}
+              icon={Store}
+              isLoading={isLoading}
+              errorMessage={errorMessage}
+              onRetry={fetchDashboardData}
+            />
+
+            <DashboardActiveProductsStatCard
+              request={getUserActiveProductsCount}
+            />
+
+            <DashboardUniqueCustomersStatCard request={getUniqueCustomers} />
+
+            <DashboardTotalRevenueStatCard request={getTotalRevenue} />
           </section>
 
           <section>
             <div className="mb-8 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="h-1 w-8 rounded-full bg-indigo-600" />
-
                 <h2 className="text-2xl font-black uppercase italic tracking-tighter text-slate-950">
                   Minhas <span className="text-indigo-600">Lojas</span>
                 </h2>
