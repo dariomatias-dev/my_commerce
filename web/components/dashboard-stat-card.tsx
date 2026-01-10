@@ -18,7 +18,7 @@ export const DashboardStatCard = ({
   value,
   sub,
   icon: Icon,
-  isActive,
+  isActive = true,
   isLoading,
   errorMessage,
   onRetry,

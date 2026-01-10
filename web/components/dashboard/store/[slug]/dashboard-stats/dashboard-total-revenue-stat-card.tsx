@@ -4,21 +4,16 @@ import { Banknote } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
-import { useAnalytics } from "@/services/hooks/use-analytics";
 import { DashboardStatCard } from "../../../../dashboard-stat-card";
 
 interface DashboardTotalRevenueStatCardProps {
-  storeId: string;
-  isActive: boolean;
+  request: () => Promise<{ total: number }>;
 }
 
 export const DashboardTotalRevenueStatCard = ({
-  storeId,
-  isActive,
+  request,
 }: DashboardTotalRevenueStatCardProps) => {
-  const { getTotalRevenueByStoreId } = useAnalytics();
-
-  const [revenue, setRevenue] = useState<number>(0);
+  const [revenue, setRevenue] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -27,8 +22,7 @@ export const DashboardTotalRevenueStatCard = ({
     setErrorMessage(null);
 
     try {
-      const response = await getTotalRevenueByStoreId(storeId);
-
+      const response = await request();
       setRevenue(response.total);
     } catch (error) {
       if (error instanceof ApiError) {
@@ -39,7 +33,7 @@ export const DashboardTotalRevenueStatCard = ({
     } finally {
       setIsLoading(false);
     }
-  }, [getTotalRevenueByStoreId, storeId]);
+  }, [request]);
 
   useEffect(() => {
     fetchData();
@@ -52,9 +46,7 @@ export const DashboardTotalRevenueStatCard = ({
         style: "currency",
         currency: "BRL",
       })}
-      sub="Receita total da loja"
       icon={Banknote}
-      isActive={isActive}
       isLoading={isLoading}
       errorMessage={errorMessage}
       onRetry={fetchData}

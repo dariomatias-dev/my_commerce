@@ -4,20 +4,16 @@ import { PackageSearch } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
-import { useProduct } from "@/services/hooks/use-product";
 import { DashboardStatCard } from "../../../../dashboard-stat-card";
 
 interface DashboardActiveProductsStatCardProps {
-  storeId: string;
-  isActive: boolean;
+  request: () => Promise<number>;
 }
 
 export const DashboardActiveProductsStatCard = ({
-  storeId,
-  isActive,
+  request,
 }: DashboardActiveProductsStatCardProps) => {
-  const { getActiveProductsCount } = useProduct();
-  const [count, setCount] = useState<number>(0);
+  const [count, setCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -26,7 +22,7 @@ export const DashboardActiveProductsStatCard = ({
     setErrorMessage(null);
 
     try {
-      const response = await getActiveProductsCount(storeId);
+      const response = await request();
 
       setCount(response);
     } catch (error) {
@@ -38,7 +34,7 @@ export const DashboardActiveProductsStatCard = ({
     } finally {
       setIsLoading(false);
     }
-  }, [getActiveProductsCount, storeId]);
+  }, [request]);
 
   useEffect(() => {
     fetchData();
@@ -48,9 +44,7 @@ export const DashboardActiveProductsStatCard = ({
     <DashboardStatCard
       label="Produtos Ativos"
       value={count.toLocaleString()}
-      sub="Itens disponíveis na loja"
       icon={PackageSearch}
-      isActive={isActive}
       isLoading={isLoading}
       errorMessage={errorMessage}
       onRetry={fetchData}

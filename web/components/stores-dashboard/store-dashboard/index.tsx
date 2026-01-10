@@ -19,6 +19,7 @@ import { DashboardStats } from "@/components/dashboard/store/[slug]/dashboard-st
 import { InventoryAlert } from "@/components/dashboard/store/[slug]/inventory-alert";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { DeleteConfirmationDialog } from "@/components/dialogs/delete-confirmation-dialog";
+import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import {
   CategoriesDashboard,
@@ -26,7 +27,6 @@ import {
 } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/categories-dashboard";
 import { CategoryFormDialog } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/category-form-dialog";
 import { useStore } from "@/services/hooks/use-store";
-import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 
 interface StoreDashboardProps {
   storeSlug: string;

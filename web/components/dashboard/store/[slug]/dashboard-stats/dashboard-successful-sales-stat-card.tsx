@@ -4,30 +4,25 @@ import { Activity } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
-import { useOrder } from "@/services/hooks/use-order";
 import { DashboardStatCard } from "../../../../dashboard-stat-card";
 
 interface DashboardSuccessfulSalesStatCardProps {
-  storeId: string;
-  isActive: boolean;
+  request: () => Promise<number>;
 }
 
 export const DashboardSuccessfulSalesStatCard = ({
-  storeId,
-  isActive,
+  request,
 }: DashboardSuccessfulSalesStatCardProps) => {
-  const { getSuccessfulSalesCountByStoreId } = useOrder();
-  const [count, setCount] = useState<number>(0);
+  const [count, setCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const fetchSalesCount = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
     setErrorMessage(null);
 
     try {
-      const response = await getSuccessfulSalesCountByStoreId(storeId);
-
+      const response = await request();
       setCount(response);
     } catch (error) {
       if (error instanceof ApiError) {
@@ -38,11 +33,11 @@ export const DashboardSuccessfulSalesStatCard = ({
     } finally {
       setIsLoading(false);
     }
-  }, [storeId, getSuccessfulSalesCountByStoreId]);
+  }, [request]);
 
   useEffect(() => {
-    fetchSalesCount();
-  }, [fetchSalesCount]);
+    fetchData();
+  }, [fetchData]);
 
   return (
     <DashboardStatCard
@@ -50,10 +45,9 @@ export const DashboardSuccessfulSalesStatCard = ({
       value={count.toLocaleString()}
       sub="Volume total de pedidos"
       icon={Activity}
-      isActive={isActive}
       isLoading={isLoading}
       errorMessage={errorMessage}
-      onRetry={fetchSalesCount}
+      onRetry={fetchData}
     />
   );
 };
