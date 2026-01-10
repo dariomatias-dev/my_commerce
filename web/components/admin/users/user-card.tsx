@@ -73,7 +73,7 @@ export const UserCard = ({ user, onDeleteSuccess }: UserCardProps) => {
 
             <div className="flex items-center gap-2 text-slate-400">
               <Mail size={14} />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
+              <span className="text-[10px] font-bold tracking-widest text-slate-500">
                 {user.email}
               </span>
             </div>

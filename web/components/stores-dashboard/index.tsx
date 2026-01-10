@@ -73,7 +73,7 @@ export const StoresDashboard = ({
   }
 
   return (
-    <main className="min-h-screen bg-[#F4F7FA] font-sans text-slate-900">
+    <main className="min-h-screen font-sans text-slate-900">
       <div className="mx-auto max-w-400 px-6 pt-40 pb-20">
         <div
           ref={listTopRef}
@@ -88,12 +88,7 @@ export const StoresDashboard = ({
             backPath={backPath}
           />
 
-          <StoresList
-            stores={stores}
-            isLoading={isLoading}
-            errorMessage={error}
-            onRetry={fetchStores}
-          />
+          <StoresList stores={stores} onRetry={fetchStores} />
 
           <div className="mt-12">
             <Pagination

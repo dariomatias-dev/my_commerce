@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "@/@types/api";
 import { ProductRequest } from "@/@types/product/product-request";
 import { ProductResponse } from "@/@types/product/product-response";
+import { LoadingIndicator } from "@/components/loading-indicator";
 import { ProductForm } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/products-dashboard/product/product-form";
 import { ProductFormValues } from "@/schemas/product.schema";
 import { useProduct } from "@/services/hooks/use-product";
@@ -88,15 +89,11 @@ export const ProductEditForm = ({
   };
 
   if (isLoading) {
-    return (
-      <div className="pt-40 text-center font-black animate-pulse uppercase tracking-widest text-slate-400">
-        Carregando informações...
-      </div>
-    );
+    return <LoadingIndicator message="Carregando dados..." />;
   }
 
   return (
-    <main className="min-h-screen bg-[#F4F7FA] mx-auto max-w-400 px-6 pt-32 pb-20">
+    <main className="min-h-screen mx-auto max-w-400 px-6 pt-32 pb-20">
       <div className="mb-10 border-b border-slate-200 pb-8">
         <Link
           href={backPath}

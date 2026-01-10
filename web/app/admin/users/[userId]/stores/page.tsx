@@ -22,7 +22,7 @@ const AdminUserStoresPage = () => {
     <StoresDashboard
       fetchFunction={fetchUserStores}
       headerTitle="LOJAS DO USUÁRIO"
-      headerSubtitle="Supervisão de Infraestrutura Vinculada"
+      headerSubtitle="Supervisão de Infraestrutura"
       canCreate={false}
       backPath={`/admin/users`}
     />

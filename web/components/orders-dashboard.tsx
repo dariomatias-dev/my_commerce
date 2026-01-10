@@ -19,7 +19,7 @@ interface OrdersDashboardProps {
     page: number,
     size: number
   ) => Promise<PaginatedResponse<OrderResponse>>;
-  backHref: string;
+  backHref?: string;
   emptyDescription: string;
 }
 
@@ -79,14 +79,16 @@ export const OrdersDashboard = ({
     return (
       <>
         <Header />
+
         <ErrorFeedback
           title="Histórico"
           highlightedTitle="Indisponível"
           errorMessage={errorMessage}
           onRetry={fetchOrders}
-          backPath={backHref}
+          backPath={backHref ?? ""}
           backLabel="VOLTAR"
         />
+
         <Footer />
       </>
     );
@@ -98,7 +100,7 @@ export const OrdersDashboard = ({
 
       <main className="min-h-screen mx-auto max-w-400 px-6 pt-32 pb-12">
         <button
-          onClick={() => router.push(backHref)}
+          onClick={() => router.push(backHref ?? "")}
           className="group mb-8 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 transition-colors hover:text-indigo-600"
         >
           <ArrowLeft

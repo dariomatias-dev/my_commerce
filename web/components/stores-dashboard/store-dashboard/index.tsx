@@ -124,11 +124,10 @@ export const StoreDashboard = ({
   }
 
   return (
-    <main className="min-h-screen bg-[#F4F7FA] pb-12 pt-32 lg:px-6">
+    <main className="min-h-screen pb-12 pt-32 lg:px-6">
       <div className="mx-auto max-w-400 animate-in fade-in zoom-in-95 duration-500 px-6">
         <DashboardPageHeader
           backPath={backPath}
-          backLabel={backLabel}
           label={`${store.isActive ? "OPERACIONAL" : "OFFLINE"} — ID: ${store.id
             .slice(0, 8)
             .toUpperCase()}-SECURED`}

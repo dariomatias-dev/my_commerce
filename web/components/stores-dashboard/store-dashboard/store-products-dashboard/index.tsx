@@ -63,11 +63,10 @@ export const StoreProductsDashboard = ({
   };
 
   return (
-    <main className="mx-auto max-w-400 px-6 pt-32 pb-12 font-sans text-slate-900 min-h-screen bg-[#F4F7FA]">
+    <main className="mx-auto max-w-400 px-6 pt-32 pb-12 font-sans text-slate-900 min-h-screen">
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
         <DashboardPageHeader
           backPath={backPath}
-          backLabel="Voltar ao Console"
           label={`Gestão de Ativos — ${store?.name || storeSlug}`}
           title="INVENTÁRIO CENTRAL"
           subtitle="Administração técnica de itens, volumes e departamentos comerciais."

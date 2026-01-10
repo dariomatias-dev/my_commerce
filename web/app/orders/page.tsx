@@ -9,7 +9,6 @@ const OrdersPage = () => {
   return (
     <OrdersDashboard
       fetchFn={getMyOrders}
-      backHref="/"
       emptyDescription="Você ainda não realizou nenhuma compra em nossa plataforma."
     />
   );

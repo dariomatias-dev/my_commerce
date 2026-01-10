@@ -40,7 +40,7 @@ export const StoreCard = ({ store, onDelete }: StoreCardProps) => {
           </div>
 
           <Link
-            href={`/dashboard/stores/${store.slug}`}
+            href={`stores/${store.slug}`}
             className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 text-white transition-all hover:bg-indigo-600 active:scale-90"
           >
             <ArrowUpRight size={24} />
@@ -50,14 +50,14 @@ export const StoreCard = ({ store, onDelete }: StoreCardProps) => {
 
       <div className="mt-10 flex items-center gap-3">
         <Link
-          href={`/dashboard/stores/${store.slug}/products`}
+          href={`stores/${store.slug}/products`}
           className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-100 py-4 text-[10px] font-black uppercase tracking-widest text-slate-600 transition-colors hover:bg-slate-50"
         >
           <Package size={14} /> Produtos
         </Link>
 
         <Link
-          href={`/dashboard/stores/${store.slug}/edit`}
+          href={`stores/${store.slug}/edit`}
           className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-100 text-slate-400 transition-colors hover:bg-slate-50 hover:text-indigo-600"
         >
           <Pencil size={16} />

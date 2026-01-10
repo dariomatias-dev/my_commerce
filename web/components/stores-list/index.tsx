@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, RefreshCcw } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { useState } from "react";
 
 import { ApiError } from "@/@types/api";
@@ -9,19 +9,14 @@ import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { DeleteConfirmationDialog } from "@/components/dialogs/delete-confirmation-dialog";
 import { StoreCard } from "@/components/stores-list/dashboard-store-card";
 import { useStore } from "@/services/hooks/use-store";
-import { LoadingIndicator } from "../loading-indicator";
 
 interface StoresListProps {
   stores: StoreResponse[];
-  isLoading: boolean;
-  errorMessage: string | null;
   onRetry: () => void;
 }
 
 export const StoresList = ({
   stores,
-  isLoading,
-  errorMessage,
   onRetry,
 }: StoresListProps) => {
   const { deleteStore } = useStore();
@@ -78,35 +73,6 @@ export const StoresList = ({
       setIsDeleting(false);
     }
   };
-
-  if (isLoading) {
-    return <LoadingIndicator message="Obtendo lojas..." />;
-  }
-
-  if (errorMessage) {
-    return (
-      <div className="flex flex-col items-center justify-center py-24 bg-white rounded-[3rem] border border-red-100 text-center px-6">
-        <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-[2rem] bg-red-50 text-red-500">
-          <AlertCircle size={40} />
-        </div>
-
-        <h3 className="text-xl font-black uppercase italic tracking-tighter text-slate-950">
-          Falha na <span className="text-red-500">Conexão</span>
-        </h3>
-
-        <p className="mt-2 text-xs font-bold text-slate-400 uppercase tracking-tight max-w-xs">
-          {errorMessage}
-        </p>
-
-        <button
-          onClick={onRetry}
-          className="mt-8 flex items-center gap-2 rounded-2xl bg-slate-950 px-10 py-5 text-[10px] font-black uppercase tracking-widest text-white transition-all hover:bg-indigo-600"
-        >
-          <RefreshCcw size={16} /> Tentar Novamente
-        </button>
-      </div>
-    );
-  }
 
   return (
     <>

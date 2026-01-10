@@ -8,7 +8,6 @@ interface DashboardPageHeaderProps {
   title: string;
   subtitle: string;
   backPath?: string;
-  backLabel?: string;
   label?: string;
   actions?: ReactNode;
 }
@@ -17,7 +16,6 @@ export const DashboardPageHeader = ({
   title,
   subtitle,
   backPath,
-  backLabel,
   label,
   actions,
 }: DashboardPageHeaderProps) => {
@@ -33,7 +31,7 @@ export const DashboardPageHeader = ({
             href={backPath}
             className="mb-6 flex items-center gap-2 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors hover:text-indigo-600"
           >
-            <ArrowLeft size={14} /> {backLabel || "Voltar"}
+            <ArrowLeft size={14} /> Voltar
           </Link>
         )}
 

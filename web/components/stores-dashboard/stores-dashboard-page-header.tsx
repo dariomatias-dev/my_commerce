@@ -31,7 +31,6 @@ export const StoresDashboardPageHeader = ({
       label="Infraestrutura de Lojas"
       title={title}
       subtitle={paginationText}
-      backLabel="Voltar"
       backPath={backPath}
       actions={
         showCreateButton && (
