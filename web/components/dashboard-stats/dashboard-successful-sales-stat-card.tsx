@@ -1,18 +1,18 @@
 "use client";
 
-import { PackageSearch } from "lucide-react";
+import { Activity } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
-import { DashboardStatCard } from "../../../../dashboard-stat-card";
+import { DashboardStatCard } from "../dashboard-stat-card";
 
-interface DashboardActiveProductsStatCardProps {
+interface DashboardSuccessfulSalesStatCardProps {
   request: () => Promise<number>;
 }
 
-export const DashboardActiveProductsStatCard = ({
+export const DashboardSuccessfulSalesStatCard = ({
   request,
-}: DashboardActiveProductsStatCardProps) => {
+}: DashboardSuccessfulSalesStatCardProps) => {
   const [count, setCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -23,7 +23,6 @@ export const DashboardActiveProductsStatCard = ({
 
     try {
       const response = await request();
-
       setCount(response);
     } catch (error) {
       if (error instanceof ApiError) {
@@ -42,9 +41,10 @@ export const DashboardActiveProductsStatCard = ({
 
   return (
     <DashboardStatCard
-      label="Produtos Ativos"
+      label="Vendas Bem-sucedidas"
       value={count.toLocaleString()}
-      icon={PackageSearch}
+      sub="Volume total de pedidos"
+      icon={Activity}
       isLoading={isLoading}
       errorMessage={errorMessage}
       onRetry={fetchData}

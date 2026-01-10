@@ -4,7 +4,7 @@ import { Banknote } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
-import { DashboardStatCard } from "../../../../dashboard-stat-card";
+import { DashboardStatCard } from "../dashboard-stat-card";
 
 interface DashboardTotalRevenueStatCardProps {
   request: () => Promise<{ total: number }>;

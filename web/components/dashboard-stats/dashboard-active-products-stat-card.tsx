@@ -1,19 +1,19 @@
 "use client";
 
-import { Users } from "lucide-react";
+import { PackageSearch } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
-import { DashboardStatCard } from "../../../../dashboard-stat-card";
+import { DashboardStatCard } from "../dashboard-stat-card";
 
-interface DashboardUniqueCustomersStatCardProps {
-  request: () => Promise<{ total: number }>;
+interface DashboardActiveProductsStatCardProps {
+  request: () => Promise<number>;
 }
 
-export const DashboardUniqueCustomersStatCard = ({
+export const DashboardActiveProductsStatCard = ({
   request,
-}: DashboardUniqueCustomersStatCardProps) => {
-  const [totalCustomers, setTotalCustomers] = useState(0);
+}: DashboardActiveProductsStatCardProps) => {
+  const [count, setCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -23,12 +23,13 @@ export const DashboardUniqueCustomersStatCard = ({
 
     try {
       const response = await request();
-      setTotalCustomers(response.total);
+
+      setCount(response);
     } catch (error) {
       if (error instanceof ApiError) {
         setErrorMessage(error.message);
       } else {
-        setErrorMessage("Erro ao carregar clientes");
+        setErrorMessage("Erro ao tentar buscar os dados");
       }
     } finally {
       setIsLoading(false);
@@ -41,9 +42,9 @@ export const DashboardUniqueCustomersStatCard = ({
 
   return (
     <DashboardStatCard
-      label="Clientes Totais"
-      value={totalCustomers.toLocaleString()}
-      icon={Users}
+      label="Produtos Ativos"
+      value={count.toLocaleString()}
+      icon={PackageSearch}
       isLoading={isLoading}
       errorMessage={errorMessage}
       onRetry={fetchData}

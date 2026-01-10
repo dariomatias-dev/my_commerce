@@ -15,7 +15,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
-import { DashboardStats } from "@/components/dashboard/store/[slug]/dashboard-stats";
+import { DashboardStoreStats } from "@/components/dashboard/store/[slug]/dashboard-store-stats";
 import { InventoryAlert } from "@/components/dashboard/store/[slug]/inventory-alert";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { DeleteConfirmationDialog } from "@/components/dialogs/delete-confirmation-dialog";
@@ -184,7 +184,7 @@ export const StoreDashboard = ({
           }
         />
 
-        <DashboardStats storeId={store.id} isActive={store.isActive} />
+        <DashboardStoreStats storeId={store.id} isActive={store.isActive} />
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
           <div className="lg:col-span-8 space-y-10">

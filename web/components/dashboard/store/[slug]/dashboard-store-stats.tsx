@@ -2,17 +2,17 @@ import { useAnalytics } from "@/services/hooks/use-analytics";
 import { useOrder } from "@/services/hooks/use-order";
 import { useProduct } from "@/services/hooks/use-product";
 
-import { DashboardActiveProductsStatCard } from "./dashboard-active-products-stat-card";
-import { DashboardSuccessfulSalesStatCard } from "./dashboard-successful-sales-stat-card";
-import { DashboardTotalRevenueStatCard } from "./dashboard-total-revenue-stat-card";
-import { DashboardUniqueCustomersStatCard } from "./dashboard-unique-customers-stat-card";
+import { DashboardActiveProductsStatCard } from "../../../dashboard-stats/dashboard-active-products-stat-card";
+import { DashboardSuccessfulSalesStatCard } from "../../../dashboard-stats/dashboard-successful-sales-stat-card";
+import { DashboardTotalRevenueStatCard } from "../../../dashboard-stats/dashboard-total-revenue-stat-card";
+import { DashboardUniqueCustomersStatCard } from "../../../dashboard-stats/dashboard-unique-customers-stat-card";
 
-interface DashboardStatsProps {
+interface DashboardStoreStatsProps {
   storeId: string;
   isActive: boolean;
 }
 
-export const DashboardStats = ({ storeId }: DashboardStatsProps) => {
+export const DashboardStoreStats = ({ storeId }: DashboardStoreStatsProps) => {
   const { getActiveProductsCount } = useProduct();
   const { getUniqueCustomersByStoreId, getTotalRevenueByStoreId } =
     useAnalytics();
