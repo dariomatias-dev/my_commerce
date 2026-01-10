@@ -11,14 +11,14 @@ import { useAuthContext } from "@/contexts/auth-context";
 import { useFeedback } from "@/hooks/use-feedback";
 import { useUser } from "@/services/hooks/use-user";
 
-const profileSchema = z.object({
+const settingsSchema = z.object({
   name: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
   email: z.email("E-mail inválido"),
 });
 
-type ProfileFormValues = z.infer<typeof profileSchema>;
+type SettingsFormValues = z.infer<typeof settingsSchema>;
 
-export const ProfileInfoForm = () => {
+export const SettingsInfoForm = () => {
   const { feedback, showFeedback } = useFeedback();
 
   const { user, refreshUser } = useAuthContext();
@@ -26,15 +26,15 @@ export const ProfileInfoForm = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
+  const form = useForm<SettingsFormValues>({
+    resolver: zodResolver(settingsSchema),
     values: {
       name: user?.name || "",
       email: user?.email || "",
     },
   });
 
-  const onSubmit = async (data: ProfileFormValues) => {
+  const onSubmit = async (data: SettingsFormValues) => {
     try {
       setIsLoading(true);
 

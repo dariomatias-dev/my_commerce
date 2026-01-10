@@ -2,7 +2,7 @@
 
 import { UseFormRegisterReturn } from "react-hook-form";
 
-interface ProfileAddressInputProps
+interface SettingsAddressInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   register: UseFormRegisterReturn;
@@ -10,13 +10,13 @@ interface ProfileAddressInputProps
   className?: string;
 }
 
-export const ProfileAddressInput = ({
+export const SettingsAddressInput = ({
   label,
   register,
   error,
   className = "",
   ...props
-}: ProfileAddressInputProps) => {
+}: SettingsAddressInputProps) => {
   return (
     <div className={`space-y-1.5 ${className}`}>
       <label className="ml-1 text-[9px] font-black tracking-widest text-slate-400 uppercase">

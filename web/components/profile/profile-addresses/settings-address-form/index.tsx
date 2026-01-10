@@ -4,9 +4,9 @@ import { Info, Plus, RefreshCw, Search, Tag } from "lucide-react";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 
 import { ProfileAddressFormValues } from "@/schemas/profile-address.schema";
-import { ProfileAddressInput } from "./profile-address-input";
+import { SettingsAddressInput } from "./settings-address-input";
 
-interface ProfileAddressFormProps {
+interface SettingsAddressFormProps {
   register: UseFormRegister<ProfileAddressFormValues>;
   errors: FieldErrors<ProfileAddressFormValues>;
   onSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
@@ -15,14 +15,14 @@ interface ProfileAddressFormProps {
   isLoading: boolean;
 }
 
-export const ProfileAddressForm = ({
+export const SettingsAddressForm = ({
   register,
   errors,
   onSubmit,
   onGetCoordinates,
   isGeocoding,
   isLoading,
-}: ProfileAddressFormProps) => {
+}: SettingsAddressFormProps) => {
   const handleCepFormat = (e: React.FormEvent<HTMLInputElement>) => {
     let value = e.currentTarget.value.replace(/\D/g, "");
     if (value.length > 5) {
@@ -38,7 +38,7 @@ export const ProfileAddressForm = ({
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="grid gap-4 md:grid-cols-1">
-        <ProfileAddressInput
+        <SettingsAddressInput
           label="Identificação do Endereço"
           register={register("label")}
           error={errors.label?.message}
@@ -47,7 +47,7 @@ export const ProfileAddressForm = ({
       </div>
 
       <div className="grid gap-4 md:grid-cols-4">
-        <ProfileAddressInput
+        <SettingsAddressInput
           label="CEP"
           register={register("cep")}
           error={errors.cep?.message}
@@ -56,7 +56,7 @@ export const ProfileAddressForm = ({
           maxLength={9}
         />
 
-        <ProfileAddressInput
+        <SettingsAddressInput
           label="Logradouro"
           className="md:col-span-3"
           register={register("street")}
@@ -66,7 +66,7 @@ export const ProfileAddressForm = ({
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <ProfileAddressInput
+        <SettingsAddressInput
           label="Número"
           register={register("number")}
           error={errors.number?.message}
@@ -74,7 +74,7 @@ export const ProfileAddressForm = ({
           placeholder="1578"
         />
 
-        <ProfileAddressInput
+        <SettingsAddressInput
           label="Complemento"
           className="md:col-span-2"
           register={register("complement")}
@@ -83,21 +83,21 @@ export const ProfileAddressForm = ({
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <ProfileAddressInput
+        <SettingsAddressInput
           label="Bairro"
           register={register("neighborhood")}
           error={errors.neighborhood?.message}
           placeholder="Bela Vista"
         />
 
-        <ProfileAddressInput
+        <SettingsAddressInput
           label="Cidade"
           register={register("city")}
           error={errors.city?.message}
           placeholder="São Paulo"
         />
 
-        <ProfileAddressInput
+        <SettingsAddressInput
           label="UF"
           register={register("state")}
           error={errors.state?.message}

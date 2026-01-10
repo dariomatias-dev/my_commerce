@@ -6,7 +6,7 @@ import {
   LogOut,
   Shield,
   ShoppingBag,
-  User
+  User,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -75,13 +75,6 @@ export const UserProfileDropdown = () => {
           </div>
 
           <Link
-            href="/profile"
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition-all hover:bg-slate-50 hover:text-indigo-600"
-          >
-            <User size={16} /> Meu Perfil
-          </Link>
-
-          <Link
             href="/orders"
             className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition-all hover:bg-slate-50 hover:text-indigo-600"
           >
@@ -105,6 +98,13 @@ export const UserProfileDropdown = () => {
               <Shield size={16} /> Admin
             </Link>
           )}
+
+          <Link
+            href="/settings"
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition-all hover:bg-slate-50 hover:text-indigo-600"
+          >
+            <User size={16} /> Configurações
+          </Link>
 
           <div className="my-2 h-px bg-slate-100" />
 

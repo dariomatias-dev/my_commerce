@@ -3,9 +3,9 @@
 import { AlertCircle, Globe, RefreshCw } from "lucide-react";
 
 import { UserAddressResponse } from "@/@types/address/user-address-response";
-import { ProfileAddressCard } from "./profile-address-card";
+import { SettingsAddressCard } from "./settings-address-card";
 
-interface ProfileAddressesListProps {
+interface SettingsAddressesListProps {
   addresses: UserAddressResponse[];
   isLoading: boolean;
   error: string | null;
@@ -13,13 +13,13 @@ interface ProfileAddressesListProps {
   onRetry: () => void;
 }
 
-export const ProfileAddressesList = ({
+export const SettingsAddressesList = ({
   addresses,
   isLoading,
   error,
   onDelete,
   onRetry,
-}: ProfileAddressesListProps) => {
+}: SettingsAddressesListProps) => {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-16 space-y-4">
@@ -81,7 +81,7 @@ export const ProfileAddressesList = ({
   return (
     <div className="grid gap-4">
       {addresses.map((addr) => (
-        <ProfileAddressCard key={addr.id} addr={addr} onDelete={onDelete} />
+        <SettingsAddressCard key={addr.id} addr={addr} onDelete={onDelete} />
       ))}
     </div>
   );

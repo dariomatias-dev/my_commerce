@@ -14,19 +14,20 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
-import { ProfileAddresses } from "@/components/profile/profile-addresses";
-import { ProfileAdvancedSettings } from "@/components/profile/profile-advanced-settings";
-import { ProfileInfoForm } from "@/components/profile/profile-info-form";
-import { ProfileSecurityForm } from "@/components/profile/profile-security-form";
+import { SettingsAddresses } from "@/components/profile/profile-addresses";
+import { SettingsAdvancedSettings } from "@/components/profile/settings-advanced-settings";
+import { SettingsInfoForm } from "@/components/profile/settings-info-form";
+import { SettingsSecurityForm } from "@/components/profile/settings-security-form";
 
-type ProfileTab = "profile" | "addresses" | "security" | "advanced";
+type SettingsTab = "profile" | "addresses" | "security" | "advanced";
 
-const ProfilePage = () => {
+const SettingsPage = () => {
   const router = useRouter();
+
   const searchParams = useSearchParams();
 
-  const currentTab = searchParams.get("tab") as ProfileTab;
-  const activeTab: ProfileTab = [
+  const currentTab = searchParams.get("tab") as SettingsTab;
+  const activeTab: SettingsTab = [
     "profile",
     "addresses",
     "security",
@@ -35,14 +36,14 @@ const ProfilePage = () => {
     ? currentTab
     : "profile";
 
-  const tabs: { id: ProfileTab; label: string; icon: LucideIcon }[] = [
+  const tabs: { id: SettingsTab; label: string; icon: LucideIcon }[] = [
     { id: "profile", label: "Informações Pessoais", icon: User },
     { id: "addresses", label: "Meus Endereços", icon: MapPin },
     { id: "security", label: "Segurança & Senha", icon: Lock },
     { id: "advanced", label: "Configurações Avançadas", icon: Settings2 },
   ];
 
-  const handleTabChange = (tabId: ProfileTab) => {
+  const handleTabChange = (tabId: SettingsTab) => {
     router.push(`?tab=${tabId}`, { scroll: false });
   };
 
@@ -54,14 +55,14 @@ const ProfilePage = () => {
         <div className="mb-8 border-b border-slate-200 pb-6">
           <div className="mb-2 flex items-center gap-2">
             <div className="rounded bg-indigo-600 px-2 py-0.5 text-[9px] font-black tracking-widest text-white uppercase">
-              USER_PROFILE
+              USER_SETTINGS
             </div>
             <span className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase italic">
               Gerencie suas credenciais e segurança de acesso
             </span>
           </div>
           <h1 className="text-4xl font-black tracking-tighter text-slate-950 uppercase italic">
-            MEU <span className="text-indigo-600">PERFIL.</span>
+            MINHAS <span className="text-indigo-600">CONFIGURAÇÕES.</span>
           </h1>
         </div>
 
@@ -112,10 +113,10 @@ const ProfilePage = () => {
 
           <div className="lg:col-span-8">
             <div className="rounded-3xl border border-slate-200 bg-white p-6 md:p-8 shadow-sm transition-all animate-in fade-in slide-in-from-right-2">
-              {activeTab === "profile" && <ProfileInfoForm />}
-              {activeTab === "addresses" && <ProfileAddresses />}
-              {activeTab === "security" && <ProfileSecurityForm />}
-              {activeTab === "advanced" && <ProfileAdvancedSettings />}
+              {activeTab === "profile" && <SettingsInfoForm />}
+              {activeTab === "addresses" && <SettingsAddresses />}
+              {activeTab === "security" && <SettingsSecurityForm />}
+              {activeTab === "advanced" && <SettingsAdvancedSettings />}
 
               <div className="mt-8 flex items-center justify-between border-t border-slate-100 pt-6">
                 <div className="flex items-center gap-2 text-[9px] font-black tracking-widest text-slate-400 uppercase italic">
@@ -133,4 +134,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default SettingsPage;

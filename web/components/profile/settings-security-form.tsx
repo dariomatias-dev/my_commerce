@@ -26,7 +26,7 @@ const changePasswordSchema = z
 
 type PasswordFormValues = z.infer<typeof changePasswordSchema>;
 
-export const ProfileSecurityForm = () => {
+export const SettingsSecurityForm = () => {
   const { feedback, showFeedback } = useFeedback();
 
   const { changePassword } = useUser();

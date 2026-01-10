@@ -9,15 +9,15 @@ import {
   ProfileAddressFormValues,
   profileAddressSchema,
 } from "@/schemas/profile-address.schema";
-import { ProfileAddressForm } from "./profile-address-form";
+import { SettingsAddressForm } from "./settings-address-form";
 
-interface ProfileAddressAddFormProps {
+interface SettingsAddressAddFormProps {
   onAdd: (data: ProfileAddressFormValues) => Promise<void>;
 }
 
-export const ProfileAddressAddForm = ({
+export const SettingsAddressAddForm = ({
   onAdd,
-}: ProfileAddressAddFormProps) => {
+}: SettingsAddressAddFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
@@ -129,7 +129,7 @@ export const ProfileAddressAddForm = ({
         </div>
       </div>
 
-      <ProfileAddressForm
+      <SettingsAddressForm
         register={form.register}
         errors={form.formState.errors}
         onSubmit={form.handleSubmit(onSubmit)}

@@ -4,7 +4,7 @@ import { MapPin, Plus, X } from "lucide-react";
 import { useState } from "react";
 
 import { UserAddressResponse } from "@/@types/address/user-address-response";
-import { ProfileAddressAddForm } from "@/components/profile/profile-addresses/profile-address-add-form";
+import { SettingsAddressAddForm } from "@/components/profile/profile-addresses/settings-address-add-form";
 import { ProfileAddressFormValues } from "@/schemas/profile-address.schema";
 import { CheckoutAddressCard } from "./checkout-address-card";
 
@@ -68,7 +68,7 @@ export const CheckoutAddressSection = ({
 
       {isAddingNew ? (
         <div className="animate-in fade-in slide-in-from-top-4 duration-300">
-          <ProfileAddressAddForm onAdd={handleAddNewAddress} />
+          <SettingsAddressAddForm onAdd={handleAddNewAddress} />
         </div>
       ) : (
         <>
@@ -77,7 +77,7 @@ export const CheckoutAddressSection = ({
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic mb-4">
                 Nenhum endereço cadastrado.
               </p>
-              
+
               <button
                 onClick={() => setIsAddingNew(true)}
                 className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:underline"

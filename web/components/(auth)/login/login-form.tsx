@@ -87,7 +87,7 @@ export const LoginForm = () => {
         router.push("/admin");
         break;
       default:
-        router.push("/profile");
+        router.push("/settings");
     }
   }, [user, router]);
 

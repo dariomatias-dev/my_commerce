@@ -8,10 +8,10 @@ import { Feedback } from "@/components/feedback";
 import { useFeedback } from "@/hooks/use-feedback";
 import { ProfileAddressFormValues } from "@/schemas/profile-address.schema";
 import { useUserAddress } from "@/services/hooks/use-user-address";
-import { ProfileAddressAddForm } from "./profile-address-add-form";
-import { ProfileAddressesList } from "./profile-addresses-list";
+import { SettingsAddressAddForm } from "./settings-address-add-form";
+import { SettingsAddressesList } from "./settings-addresses-list";
 
-export const ProfileAddresses = () => {
+export const SettingsAddresses = () => {
   const { feedback, showFeedback, clearFeedback } = useFeedback();
 
   const { getAllAddresses, deleteAddress, createAddress } = useUserAddress();
@@ -100,7 +100,7 @@ export const ProfileAddresses = () => {
         </p>
       </div>
 
-      <ProfileAddressesList
+      <SettingsAddressesList
         addresses={addresses}
         isLoading={isLoading}
         error={error}
@@ -116,7 +116,7 @@ export const ProfileAddresses = () => {
         />
       )}
 
-      <ProfileAddressAddForm onAdd={handleAddAddress} />
+      <SettingsAddressAddForm onAdd={handleAddAddress} />
     </div>
   );
 };

@@ -2,7 +2,7 @@
 
 import { AlertTriangle, Trash2 } from "lucide-react";
 
-export const ProfileAdvancedSettings = () => {
+export const SettingsAdvancedSettings = () => {
   const handleDelete = () => {};
 
   return (
