@@ -5,8 +5,8 @@ import {
   Database,
   Lock,
   MapPin,
+  Settings2,
   ShieldCheck,
-  Trash2,
   User,
 } from "lucide-react";
 import { useState } from "react";
@@ -14,7 +14,7 @@ import { useState } from "react";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { ProfileAddresses } from "@/components/profile/profile-addresses";
-import { ProfileDangerZone } from "@/components/profile/profile-danger-zone";
+import { ProfileAdvancedSettings } from "@/components/profile/profile-advanced-settings";
 import { ProfileInfoForm } from "@/components/profile/profile-info-form";
 import { ProfileSecurityForm } from "@/components/profile/profile-security-form";
 
@@ -25,7 +25,7 @@ const ProfilePage = () => {
     { id: "perfil", label: "Informações Pessoais", icon: User },
     { id: "enderecos", label: "Meus Endereços", icon: MapPin },
     { id: "seguranca", label: "Segurança & Senha", icon: Lock },
-    { id: "perigo", label: "Zona de Perigo", icon: Trash2 },
+    { id: "avancado", label: "Configurações Avançadas", icon: Settings2 },
   ];
 
   return (
@@ -39,7 +39,7 @@ const ProfilePage = () => {
               USER_PROFILE
             </div>
             <span className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase italic">
-              Gerencie suas credenciais e segurança
+              Gerencie suas credenciais e segurança de acesso
             </span>
           </div>
           <h1 className="text-4xl font-black tracking-tighter text-slate-950 uppercase italic">
@@ -97,7 +97,7 @@ const ProfilePage = () => {
               {activeTab === "perfil" && <ProfileInfoForm />}
               {activeTab === "enderecos" && <ProfileAddresses />}
               {activeTab === "seguranca" && <ProfileSecurityForm />}
-              {activeTab === "perigo" && <ProfileDangerZone />}
+              {activeTab === "avancado" && <ProfileAdvancedSettings />}
 
               <div className="mt-8 flex items-center justify-between border-t border-slate-100 pt-6">
                 <div className="flex items-center gap-2 text-[9px] font-black tracking-widest text-slate-400 uppercase italic">
