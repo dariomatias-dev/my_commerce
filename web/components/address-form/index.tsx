@@ -3,26 +3,26 @@
 import { Info, Plus, RefreshCw, Search, Tag } from "lucide-react";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 
-import { ProfileAddressFormValues } from "@/schemas/profile-address.schema";
-import { SettingsAddressInput } from "./settings-address-input";
+import { AddressFormValues } from "@/schemas/address.schema";
+import { AddressFormInput } from "./address-form-input";
 
-interface SettingsAddressFormProps {
-  register: UseFormRegister<ProfileAddressFormValues>;
-  errors: FieldErrors<ProfileAddressFormValues>;
+interface AddressFormProps {
+  register: UseFormRegister<AddressFormValues>;
+  errors: FieldErrors<AddressFormValues>;
   onSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
   onGetCoordinates: () => void;
   isGeocoding: boolean;
   isLoading: boolean;
 }
 
-export const SettingsAddressForm = ({
+export const AddressForm = ({
   register,
   errors,
   onSubmit,
   onGetCoordinates,
   isGeocoding,
   isLoading,
-}: SettingsAddressFormProps) => {
+}: AddressFormProps) => {
   const handleCepFormat = (e: React.FormEvent<HTMLInputElement>) => {
     let value = e.currentTarget.value.replace(/\D/g, "");
     if (value.length > 5) {
@@ -38,7 +38,7 @@ export const SettingsAddressForm = ({
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="grid gap-4 md:grid-cols-1">
-        <SettingsAddressInput
+        <AddressFormInput
           label="Identificação do Endereço"
           register={register("label")}
           error={errors.label?.message}
@@ -47,7 +47,7 @@ export const SettingsAddressForm = ({
       </div>
 
       <div className="grid gap-4 md:grid-cols-4">
-        <SettingsAddressInput
+        <AddressFormInput
           label="CEP"
           register={register("cep")}
           error={errors.cep?.message}
@@ -56,7 +56,7 @@ export const SettingsAddressForm = ({
           maxLength={9}
         />
 
-        <SettingsAddressInput
+        <AddressFormInput
           label="Logradouro"
           className="md:col-span-3"
           register={register("street")}
@@ -66,7 +66,7 @@ export const SettingsAddressForm = ({
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <SettingsAddressInput
+        <AddressFormInput
           label="Número"
           register={register("number")}
           error={errors.number?.message}
@@ -74,7 +74,7 @@ export const SettingsAddressForm = ({
           placeholder="1578"
         />
 
-        <SettingsAddressInput
+        <AddressFormInput
           label="Complemento"
           className="md:col-span-2"
           register={register("complement")}
@@ -83,21 +83,21 @@ export const SettingsAddressForm = ({
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <SettingsAddressInput
+        <AddressFormInput
           label="Bairro"
           register={register("neighborhood")}
           error={errors.neighborhood?.message}
           placeholder="Bela Vista"
         />
 
-        <SettingsAddressInput
+        <AddressFormInput
           label="Cidade"
           register={register("city")}
           error={errors.city?.message}
           placeholder="São Paulo"
         />
 
-        <SettingsAddressInput
+        <AddressFormInput
           label="UF"
           register={register("state")}
           error={errors.state?.message}

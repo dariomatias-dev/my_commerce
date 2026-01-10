@@ -6,7 +6,7 @@ import { UserAddressResponse } from "@/@types/address/user-address-response";
 import { ApiError } from "@/@types/api";
 import { Feedback } from "@/components/feedback";
 import { useFeedback } from "@/hooks/use-feedback";
-import { ProfileAddressFormValues } from "@/schemas/profile-address.schema";
+import { AddressFormValues } from "@/schemas/address.schema";
 import { useUserAddress } from "@/services/hooks/use-user-address";
 import { SettingsAddressAddForm } from "./settings-address-add-form";
 import { SettingsAddressesList } from "./settings-addresses-list";
@@ -43,7 +43,7 @@ export const SettingsAddresses = () => {
     fetchAddresses();
   }, [fetchAddresses]);
 
-  const handleAddAddress = async (formData: ProfileAddressFormValues) => {
+  const handleAddAddress = async (formData: AddressFormValues) => {
     try {
       const requestData = {
         label: formData.label,

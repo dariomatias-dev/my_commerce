@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-export const profileAddressSchema = z.object({
+export const addressSchema = z.object({
   label: z.string().min(2, "A identificação deve ter pelo menos 2 caracteres"),
   cep: z.string().min(8, "CEP inválido"),
   street: z.string().min(3, "Rua é obrigatória"),
@@ -13,4 +13,4 @@ export const profileAddressSchema = z.object({
   longitude: z.string().optional(),
 });
 
-export type ProfileAddressFormValues = z.infer<typeof profileAddressSchema>;
+export type AddressFormValues = z.infer<typeof addressSchema>;

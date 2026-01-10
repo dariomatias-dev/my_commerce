@@ -5,14 +5,11 @@ import { LocateFixed, Plus, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
-import {
-  ProfileAddressFormValues,
-  profileAddressSchema,
-} from "@/schemas/profile-address.schema";
-import { SettingsAddressForm } from "./settings-address-form";
+import { AddressForm } from "@/components/address-form";
+import { AddressFormValues, addressSchema } from "@/schemas/address.schema";
 
 interface SettingsAddressAddFormProps {
-  onAdd: (data: ProfileAddressFormValues) => Promise<void>;
+  onAdd: (data: AddressFormValues) => Promise<void>;
 }
 
 export const SettingsAddressAddForm = ({
@@ -22,8 +19,8 @@ export const SettingsAddressAddForm = ({
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
 
-  const form = useForm<ProfileAddressFormValues>({
-    resolver: zodResolver(profileAddressSchema),
+  const form = useForm<AddressFormValues>({
+    resolver: zodResolver(addressSchema),
     defaultValues: {
       cep: "",
       street: "",
@@ -83,7 +80,7 @@ export const SettingsAddressAddForm = ({
     );
   };
 
-  const onSubmit = async (data: ProfileAddressFormValues) => {
+  const onSubmit = async (data: AddressFormValues) => {
     try {
       setIsLoading(true);
 
@@ -129,7 +126,7 @@ export const SettingsAddressAddForm = ({
         </div>
       </div>
 
-      <SettingsAddressForm
+      <AddressForm
         register={form.register}
         errors={form.formState.errors}
         onSubmit={form.handleSubmit(onSubmit)}

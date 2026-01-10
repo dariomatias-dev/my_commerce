@@ -14,7 +14,7 @@ import { OrderRequest } from "@/@types/order/order-request";
 import { StoreResponse } from "@/@types/store/store-response";
 import { Item } from "@/components/layout/store-header/store-cart/store-cart-item";
 import { PaymentMethod } from "@/enums/payment-method";
-import { ProfileAddressFormValues } from "@/schemas/profile-address.schema";
+import { AddressFormValues } from "@/schemas/address.schema";
 import { useFreight } from "@/services/hooks/use-freight";
 import { useOrder } from "@/services/hooks/use-order";
 import { useProduct } from "@/services/hooks/use-product";
@@ -57,7 +57,8 @@ export const useCheckout = () => {
     (storeId: string, updatedItems: Item[]) => {
       const storageKey = `cart-${storeId}`;
       const storageData = updatedItems.map((item) => ({
-        id: item.id,quantity: item.quantity,
+        id: item.id,
+        quantity: item.quantity,
       }));
       localStorage.setItem(storageKey, JSON.stringify(storageData));
       window.dispatchEvent(new Event("cart-updated"));
@@ -173,7 +174,7 @@ export const useCheckout = () => {
     if (updated.length === 0) router.push(`/store/${slug}`);
   };
 
-  const handleCreateAddress = async (formData: ProfileAddressFormValues) => {
+  const handleCreateAddress = async (formData: AddressFormValues) => {
     try {
       const requestData = {
         label: "Endereço de Entrega",

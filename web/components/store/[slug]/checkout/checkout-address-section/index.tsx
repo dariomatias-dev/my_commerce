@@ -5,14 +5,14 @@ import { useState } from "react";
 
 import { UserAddressResponse } from "@/@types/address/user-address-response";
 import { SettingsAddressAddForm } from "@/components/profile/profile-addresses/settings-address-add-form";
-import { ProfileAddressFormValues } from "@/schemas/profile-address.schema";
+import { AddressFormValues } from "@/schemas/address.schema";
 import { CheckoutAddressCard } from "./checkout-address-card";
 
 interface CheckoutAddressSectionProps {
   addresses: UserAddressResponse[];
   selectedAddressId: string | null;
   onSelect: (id: string) => void;
-  onAddAddress: (data: ProfileAddressFormValues) => Promise<void>;
+  onAddAddress: (data: AddressFormValues) => Promise<void>;
 }
 
 export const CheckoutAddressSection = ({
@@ -23,7 +23,7 @@ export const CheckoutAddressSection = ({
 }: CheckoutAddressSectionProps) => {
   const [isAddingNew, setIsAddingNew] = useState(false);
 
-  const handleAddNewAddress = async (formData: ProfileAddressFormValues) => {
+  const handleAddNewAddress = async (formData: AddressFormValues) => {
     try {
       await onAddAddress(formData);
 
