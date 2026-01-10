@@ -4,12 +4,13 @@ import {
   ChevronRight,
   Database,
   Lock,
+  LucideIcon,
   MapPin,
   Settings2,
   ShieldCheck,
   User,
 } from "lucide-react";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
@@ -18,15 +19,32 @@ import { ProfileAdvancedSettings } from "@/components/profile/profile-advanced-s
 import { ProfileInfoForm } from "@/components/profile/profile-info-form";
 import { ProfileSecurityForm } from "@/components/profile/profile-security-form";
 
-const ProfilePage = () => {
-  const [activeTab, setActiveTab] = useState("perfil");
+type ProfileTab = "profile" | "addresses" | "security" | "advanced";
 
-  const tabs = [
-    { id: "perfil", label: "Informações Pessoais", icon: User },
-    { id: "enderecos", label: "Meus Endereços", icon: MapPin },
-    { id: "seguranca", label: "Segurança & Senha", icon: Lock },
-    { id: "avancado", label: "Configurações Avançadas", icon: Settings2 },
+const ProfilePage = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const currentTab = searchParams.get("tab") as ProfileTab;
+  const activeTab: ProfileTab = [
+    "profile",
+    "addresses",
+    "security",
+    "advanced",
+  ].includes(currentTab)
+    ? currentTab
+    : "profile";
+
+  const tabs: { id: ProfileTab; label: string; icon: LucideIcon }[] = [
+    { id: "profile", label: "Informações Pessoais", icon: User },
+    { id: "addresses", label: "Meus Endereços", icon: MapPin },
+    { id: "security", label: "Segurança & Senha", icon: Lock },
+    { id: "advanced", label: "Configurações Avançadas", icon: Settings2 },
   ];
+
+  const handleTabChange = (tabId: ProfileTab) => {
+    router.push(`?tab=${tabId}`, { scroll: false });
+  };
 
   return (
     <>
@@ -53,7 +71,7 @@ const ProfilePage = () => {
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => handleTabChange(tab.id)}
                   className={`flex w-full items-center justify-between rounded-xl px-5 py-4 transition-all ${
                     activeTab === tab.id
                       ? "bg-slate-950 border border-slate-950 text-white shadow-xl shadow-slate-200"
@@ -94,10 +112,10 @@ const ProfilePage = () => {
 
           <div className="lg:col-span-8">
             <div className="rounded-3xl border border-slate-200 bg-white p-6 md:p-8 shadow-sm transition-all animate-in fade-in slide-in-from-right-2">
-              {activeTab === "perfil" && <ProfileInfoForm />}
-              {activeTab === "enderecos" && <ProfileAddresses />}
-              {activeTab === "seguranca" && <ProfileSecurityForm />}
-              {activeTab === "avancado" && <ProfileAdvancedSettings />}
+              {activeTab === "profile" && <ProfileInfoForm />}
+              {activeTab === "addresses" && <ProfileAddresses />}
+              {activeTab === "security" && <ProfileSecurityForm />}
+              {activeTab === "advanced" && <ProfileAdvancedSettings />}
 
               <div className="mt-8 flex items-center justify-between border-t border-slate-100 pt-6">
                 <div className="flex items-center gap-2 text-[9px] font-black tracking-widest text-slate-400 uppercase italic">
