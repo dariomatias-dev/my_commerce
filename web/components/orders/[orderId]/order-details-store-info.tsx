@@ -1,5 +1,4 @@
-import { ExternalLink, Store } from "lucide-react";
-import Link from "next/link";
+import { Store } from "lucide-react";
 
 import { StoreResponse } from "@/@types/store/store-response";
 
@@ -46,13 +45,6 @@ export const OrderDetailsStoreInfo = ({
             {store.isActive ? "Operacional" : "Offline"}
           </span>
         </div>
-
-        <Link
-          href={`/dashboard/stores/${store.slug}`}
-          className="flex items-center justify-center gap-2 rounded-xl border border-slate-900 py-3 text-[10px] font-black uppercase tracking-widest text-slate-900 transition-all hover:bg-slate-900 hover:text-white"
-        >
-          Gerenciar Loja <ExternalLink size={14} />
-        </Link>
       </div>
     </div>
   );

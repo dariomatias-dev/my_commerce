@@ -39,7 +39,7 @@ export const OrderDetailsProducts = ({
                   imagePath={product?.images?.[0]?.url}
                   alt={product?.name || "Produto"}
                   size={90}
-                  className="shrink-0 rounded-2xl border-2 border-slate-50 bg-white shadow-sm transition-transform group-hover:scale-105"
+                  className="shrink-0 rounded-2xl border-2 border-slate-50 bg-white shadow-sm"
                 />
 
                 <div>
