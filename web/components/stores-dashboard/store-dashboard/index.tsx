@@ -1,9 +1,9 @@
 "use client";
 
-import { Eye, Plus, Settings, Tag, Trash2 } from "lucide-react";
+import { Eye, List, PackagePlus, Settings, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
@@ -12,41 +12,34 @@ import { InventoryAlert } from "@/components/dashboard/store/[slug]/inventory-al
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { DeleteConfirmationDialog } from "@/components/dialogs/delete-confirmation-dialog";
 import { ErrorFeedback } from "@/components/error-feedback";
-import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
-import {
-  CategoriesDashboard,
-  CategoriesDashboardRef,
-} from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/categories-dashboard";
-import { CategoryFormDialog } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/category-form-dialog";
+import { ProductsDashboard } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/products-dashboard";
 import { useStore } from "@/services/hooks/use-store";
+import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 
 interface StoreDashboardProps {
   storeSlug: string;
   backPath: string;
   backLabel: string;
+  canCreate?: boolean;
 }
 
 export const StoreDashboard = ({
   storeSlug,
   backPath,
   backLabel,
+  canCreate = true,
 }: StoreDashboardProps) => {
   const router = useRouter();
-
   const { deleteStore, getStoreBySlug } = useStore();
 
   const [store, setStore] = useState<StoreResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [isCategoryFormDialogOpen, setIsCategoryFormDialogOpen] =
-    useState(false);
   const [isFirstConfirmOpen, setIsFirstConfirmOpen] = useState(false);
   const [isSecondConfirmOpen, setIsSecondConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-
-  const categoryManagerRef = useRef<CategoriesDashboardRef>(null);
 
   const fetchStoreData = useCallback(async () => {
     try {
@@ -71,12 +64,7 @@ export const StoreDashboard = ({
     fetchStoreData();
   }, [fetchStoreData]);
 
-  const handleRefreshCategories = () => {
-    categoryManagerRef.current?.refresh();
-  };
-
   const handleOpenDelete = () => setIsFirstConfirmOpen(true);
-
   const handleCloseFirstConfirm = () => setIsFirstConfirmOpen(false);
 
   const handleProceedToFinalDelete = () => {
@@ -99,8 +87,12 @@ export const StoreDashboard = ({
       await deleteStore(store.id);
 
       router.push(backPath);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setError(error.message);
+      } else {
+        setError("Não foi possível excluir a loja.");
+      }
     } finally {
       setIsDeleting(false);
     }
@@ -139,7 +131,7 @@ export const StoreDashboard = ({
                 href={`${storeSlug}/products`}
                 className="flex items-center justify-center gap-3 rounded-xl border border-slate-950 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-slate-950 uppercase transition-all hover:bg-slate-50"
               >
-                <Eye size={16} /> VER PRODUTOS
+                <Eye size={16} /> VER VITRINE
               </Link>
 
               <Link
@@ -167,40 +159,41 @@ export const StoreDashboard = ({
               <div className="mb-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
                 <div className="flex items-center gap-3">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 text-white">
-                    <Tag size={24} />
+                    <List size={24} />
                   </div>
 
                   <h2 className="text-2xl font-black uppercase italic tracking-tighter text-slate-950">
-                    Departamentos{" "}
-                    <span className="text-indigo-600">& Categorias.</span>
+                    Catálogo de{" "}
+                    <span className="text-indigo-600">Produtos.</span>
                   </h2>
                 </div>
 
-                <button
-                  onClick={() => setIsCategoryFormDialogOpen(true)}
-                  className="flex items-center justify-center gap-3 rounded-xl bg-slate-950 px-6 py-4 text-[10px] font-black tracking-widest text-white shadow-2xl transition-all hover:bg-indigo-600"
-                >
-                  <Plus size={16} /> NOVA CATEGORIA
-                </button>
+                <div className="flex items-center gap-2">
+                  {canCreate && (
+                    <Link
+                      href={`${storeSlug}/products/new`}
+                      className="flex items-center justify-center gap-3 rounded-xl bg-slate-950 px-6 py-4 text-[10px] font-black tracking-widest text-white shadow-2xl transition-all hover:bg-indigo-600"
+                    >
+                      <PackagePlus size={16} /> NOVO
+                    </Link>
+                  )}
+
+                  <Link
+                    href={`${storeSlug}/products`}
+                    className="flex items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-5 py-4 text-[10px] font-black tracking-widest text-slate-600 uppercase transition-all hover:bg-slate-50"
+                  >
+                    VER TUDO
+                  </Link>
+                </div>
               </div>
 
-              <CategoriesDashboard
-                storeId={store.id}
-                ref={categoryManagerRef}
-              />
+              <ProductsDashboard storeId={store.id} />
             </div>
           </div>
 
           <InventoryAlert storeId={store.id} />
         </div>
       </div>
-
-      <CategoryFormDialog
-        isOpen={isCategoryFormDialogOpen}
-        onClose={() => setIsCategoryFormDialogOpen(false)}
-        storeId={store.id}
-        onSuccess={handleRefreshCategories}
-      />
 
       <ConfirmDialog
         isOpen={isFirstConfirmOpen}

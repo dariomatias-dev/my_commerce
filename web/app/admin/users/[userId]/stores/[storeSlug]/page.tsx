@@ -15,6 +15,7 @@ const AdminStoreDashboardPage = () => {
       storeSlug={storeSlug}
       backPath={`/admin/users/${userId}/stores`}
       backLabel="Voltar para gestão de lojas"
+      canCreate={false}
     />
   );
 };
