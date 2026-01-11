@@ -8,10 +8,13 @@ import com.dariomatias.my_commerce.dto.stores.StoreResponseDTO;
 import com.dariomatias.my_commerce.model.Order;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.service.OrderService;
+
 import jakarta.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,7 +39,9 @@ public class OrderController {
     ) {
         Order order = service.create(user, request);
 
-        return ResponseEntity.ok(ApiResponse.success("Pedido criado com sucesso", OrderResponseDTO.from(order)));
+        return ResponseEntity.ok(
+                ApiResponse.success("Pedido criado com sucesso", OrderResponseDTO.from(order))
+        );
     }
 
     @GetMapping
@@ -45,10 +50,19 @@ public class OrderController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<OrderResponseDTO> orders = service.getAll(pageable).map(OrderResponseDTO::from);
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "audit.createdAt")
+        );
 
-        return ResponseEntity.ok(ApiResponse.success("Pedidos obtidos com sucesso", orders));
+        Page<OrderResponseDTO> orders =
+                service.getAll(pageable)
+                        .map(OrderResponseDTO::from);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Pedidos obtidos com sucesso", orders)
+        );
     }
 
     @GetMapping("/user/{userId}")
@@ -58,10 +72,19 @@ public class OrderController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<OrderResponseDTO> orders = service.getAllByUser(userId, pageable).map(OrderResponseDTO::from);
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "audit.createdAt")
+        );
 
-        return ResponseEntity.ok(ApiResponse.success("Pedidos do usuário obtidos com sucesso", orders));
+        Page<OrderResponseDTO> orders =
+                service.getAllByUser(userId, pageable)
+                        .map(OrderResponseDTO::from);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Pedidos do usuário obtidos com sucesso", orders)
+        );
     }
 
     @GetMapping("/store/{storeId}")
@@ -71,10 +94,19 @@ public class OrderController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<OrderResponseDTO> orders = service.getAllByStore(storeId, pageable).map(OrderResponseDTO::from);
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "audit.createdAt")
+        );
 
-        return ResponseEntity.ok(ApiResponse.success("Pedidos da loja obtidos com sucesso", orders));
+        Page<OrderResponseDTO> orders =
+                service.getAllByStore(storeId, pageable)
+                        .map(OrderResponseDTO::from);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Pedidos da loja obtidos com sucesso", orders)
+        );
     }
 
     @GetMapping("/me")
@@ -83,11 +115,15 @@ public class OrderController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "audit.createdAt")
+        );
 
-        Page<OrderResponseDTO> orders = service
-                .getAllByUser(user.getId(), pageable)
-                .map(OrderResponseDTO::from);
+        Page<OrderResponseDTO> orders =
+                service.getAllByUser(user.getId(), pageable)
+                        .map(OrderResponseDTO::from);
 
         return ResponseEntity.ok(
                 ApiResponse.success("Pedidos do usuário obtidos com sucesso", orders)
@@ -100,10 +136,19 @@ public class OrderController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<StoreResponseDTO> stores = service.getMyOrderStores(user.getId(), pageable).map(StoreResponseDTO::from);
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "audit.createdAt")
+        );
 
-        return ResponseEntity.ok(ApiResponse.success("Lojas com pedidos obtidas com sucesso", stores));
+        Page<StoreResponseDTO> stores =
+                service.getMyOrderStores(user.getId(), pageable)
+                        .map(StoreResponseDTO::from);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Lojas com pedidos obtidas com sucesso", stores)
+        );
     }
 
     @GetMapping("/me/store/{storeId}")
@@ -113,10 +158,19 @@ public class OrderController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<OrderResponseDTO> orders = service.getMyOrdersByStore(user.getId(), storeId, pageable).map(OrderResponseDTO::from);
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "audit.createdAt")
+        );
 
-        return ResponseEntity.ok(ApiResponse.success("Pedidos da loja obtidos com sucesso", orders));
+        Page<OrderResponseDTO> orders =
+                service.getMyOrdersByStore(user.getId(), storeId, pageable)
+                        .map(OrderResponseDTO::from);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Pedidos da loja obtidos com sucesso", orders)
+        );
     }
 
     @GetMapping("/{id}")
@@ -125,10 +179,7 @@ public class OrderController {
             @PathVariable UUID id
     ) {
         return ResponseEntity.ok(
-                ApiResponse.success(
-                        "Pedido obtido com sucesso",
-                        service.getById(id, user)
-                )
+                ApiResponse.success("Pedido obtido com sucesso", service.getById(id, user))
         );
     }
 
@@ -139,14 +190,20 @@ public class OrderController {
     ) {
         long count = service.getSuccessfulSalesCount(storeId);
 
-        return ResponseEntity.ok(ApiResponse.success("Total de vendas bem-sucedidas", count));
+        return ResponseEntity.ok(
+                ApiResponse.success("Total de vendas bem-sucedidas", count)
+        );
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<Void>> delete(
+            @PathVariable UUID id
+    ) {
         service.delete(id);
 
-        return ResponseEntity.ok(ApiResponse.success("Pedido excluído com sucesso", null));
+        return ResponseEntity.ok(
+                ApiResponse.success("Pedido excluído com sucesso", null)
+        );
     }
 }

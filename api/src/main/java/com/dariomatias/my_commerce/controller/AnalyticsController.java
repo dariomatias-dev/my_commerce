@@ -28,10 +28,7 @@ public class AnalyticsController {
             @AuthenticationPrincipal User user
     ) {
         return ResponseEntity.ok(
-                ApiResponse.success(
-                        "Clientes únicos",
-                        service.getUniqueCustomers(user.getId())
-                )
+                ApiResponse.success("Clientes únicos", service.getUniqueCustomers(user.getId()))
         );
     }
 
@@ -41,10 +38,7 @@ public class AnalyticsController {
             @AuthenticationPrincipal User user
     ) {
         return ResponseEntity.ok(
-                ApiResponse.success(
-                        "Receita total",
-                        service.getTotalRevenue(user.getId())
-                )
+                ApiResponse.success("Receita total", service.getTotalRevenue(user.getId()))
         );
     }
 
@@ -54,10 +48,7 @@ public class AnalyticsController {
             @PathVariable UUID storeId
     ) {
         return ResponseEntity.ok(
-                ApiResponse.success(
-                        "Clientes únicos da loja",
-                        service.getUniqueCustomersByStore(storeId)
-                )
+                ApiResponse.success("Clientes únicos da loja", service.getUniqueCustomersByStore(storeId))
         );
     }
 
@@ -67,10 +58,7 @@ public class AnalyticsController {
             @PathVariable UUID storeId
     ) {
         return ResponseEntity.ok(
-                ApiResponse.success(
-                        "Receita total da loja",
-                        service.getTotalRevenueByStore(storeId)
-                )
+                ApiResponse.success("Receita total da loja",service.getTotalRevenueByStore(storeId))
         );
     }
 }

@@ -27,18 +27,22 @@ public class UserAddressController {
             @AuthenticationPrincipal User user,
             @RequestBody UserAddressRequestDTO request
     ) {
-        UserAddressResponseDTO created = service.create(user, request);
+        UserAddressResponseDTO userAddress = service.create(user, request);
 
-        return ResponseEntity.ok(ApiResponse.success("Endereço criado com sucesso.", created));
+        return ResponseEntity.ok(
+                ApiResponse.success("Endereço criado com sucesso.", userAddress)
+        );
     }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<UserAddressResponseDTO>>> getAll(
             @AuthenticationPrincipal User user
     ) {
-        List<UserAddressResponseDTO> addresses = service.getAllByUser(user);
+        List<UserAddressResponseDTO> userAddresses = service.getAllByUser(user);
 
-        return ResponseEntity.ok(ApiResponse.success("Endereços obtidos com sucesso.", addresses));
+        return ResponseEntity.ok(
+                ApiResponse.success("Endereços obtidos com sucesso.", userAddresses)
+        );
     }
 
     @PutMapping("/{id}")
@@ -47,9 +51,11 @@ public class UserAddressController {
             @PathVariable UUID id,
             @RequestBody UserAddressRequestDTO request
     ) {
-        UserAddressResponseDTO updated = service.update(user, id, request);
+        UserAddressResponseDTO userAddress = service.update(user, id, request);
 
-        return ResponseEntity.ok(ApiResponse.success("Endereço atualizado com sucesso.", updated));
+        return ResponseEntity.ok(
+                ApiResponse.success("Endereço atualizado com sucesso.", userAddress)
+        );
     }
 
     @DeleteMapping("/{id}")
@@ -59,6 +65,8 @@ public class UserAddressController {
     ) {
         service.delete(user, id);
 
-        return ResponseEntity.ok(ApiResponse.success("Endereço excluído com sucesso.", null));
+        return ResponseEntity.ok(
+                ApiResponse.success("Endereço excluído com sucesso.", null)
+        );
     }
 }

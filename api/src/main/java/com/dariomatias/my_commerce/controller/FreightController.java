@@ -22,9 +22,13 @@ public class FreightController {
     }
 
     @GetMapping("/{userAddressId}")
-    public ResponseEntity<ApiResponse<FreightResponseDTO>> calculateFreight(@PathVariable UUID userAddressId) {
+    public ResponseEntity<ApiResponse<FreightResponseDTO>> calculateFreight(
+            @PathVariable UUID userAddressId
+    ) {
         FreightResponseDTO freight = freightService.calculateFreight(userAddressId);
 
-        return ResponseEntity.ok(ApiResponse.success("Frete calculado com sucesso", freight));
+        return ResponseEntity.ok(
+                ApiResponse.success("Frete calculado com sucesso", freight)
+        );
     }
 }

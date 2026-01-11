@@ -11,6 +11,7 @@ import com.dariomatias.my_commerce.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,20 +36,31 @@ public class UserController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "audit.createdAt")
+        );
 
-        Page<AdminUserResponse> users = userService.getAll(filter, pageable)
+        Page<AdminUserResponse> users = userService
+                .getAll(filter, pageable)
                 .map(AdminUserResponse::from);
 
-        return ResponseEntity.ok(ApiResponse.success("Usuários obtidos com sucesso.", users));
+        return ResponseEntity.ok(
+                ApiResponse.success("Usuários obtidos com sucesso.", users)
+        );
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<AdminUserResponse>> getUserById(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<AdminUserResponse>> getUserById(
+            @PathVariable UUID id
+    ) {
         User user = userService.getById(id);
 
-        return ResponseEntity.ok(ApiResponse.success("Usuário obtido com sucesso.", AdminUserResponse.from(user)));
+        return ResponseEntity.ok(
+                ApiResponse.success("Usuário obtido com sucesso.", AdminUserResponse.from(user))
+        );
     }
 
     @PatchMapping("/{id}")
@@ -57,24 +69,34 @@ public class UserController {
             @PathVariable UUID id,
             @RequestBody UserRequest updatedUser
     ) {
-        User updated = userService.update(id, updatedUser);
+        User user = userService.update(id, updatedUser);
 
-        return ResponseEntity.ok(ApiResponse.success("Usuário atualizado com sucesso.", AdminUserResponse.from(updated)));
+        return ResponseEntity.ok(
+                ApiResponse.success("Usuário atualizado com sucesso.", AdminUserResponse.from(user))
+        );
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<Void>> deleteUser(
+            @PathVariable UUID id
+    ) {
         userService.delete(id);
 
-        return ResponseEntity.ok(ApiResponse.success("Usuário excluído com sucesso", null));
+        return ResponseEntity.ok(
+                ApiResponse.success("Usuário excluído com sucesso", null)
+        );
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser(@AuthenticationPrincipal User user) {
+    public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser(
+            @AuthenticationPrincipal User user
+    ) {
         User currentUser = userService.getById(user.getId());
 
-        return ResponseEntity.ok(ApiResponse.success("Usuário obtido com sucesso.", UserResponse.from(currentUser)));
+        return ResponseEntity.ok(
+                ApiResponse.success("Usuário obtido com sucesso.", UserResponse.from(currentUser))
+        );
     }
 
     @GetMapping("/stats/active-users")
@@ -82,7 +104,9 @@ public class UserController {
     public ResponseEntity<ApiResponse<Long>> getActiveUsersCount() {
         long activeUsers = userService.getActiveUsersCount();
 
-        return ResponseEntity.ok(ApiResponse.success("Quantidade de usuários ativos", activeUsers));
+        return ResponseEntity.ok(
+                ApiResponse.success("Quantidade de usuários ativos", activeUsers)
+        );
     }
 
     @GetMapping("/stats/new-users-this-month")
@@ -90,9 +114,10 @@ public class UserController {
     public ResponseEntity<ApiResponse<Long>> getNewActiveUsersThisMonth() {
         long newUsers = userService.getNewActiveUsersSinceStartOfMonth();
 
-        return ResponseEntity.ok(ApiResponse.success("Quantidade de novos usuários ativos desde o início do mês", newUsers));
+        return ResponseEntity.ok(
+                ApiResponse.success("Quantidade de novos usuários ativos desde o início do mês", newUsers)
+        );
     }
-
 
     @PatchMapping("/me")
     public ResponseEntity<ApiResponse<UserResponse>> updateCurrentUser(
@@ -101,7 +126,9 @@ public class UserController {
     ) {
         User updated = userService.update(user.getId(), updatedUser);
 
-        return ResponseEntity.ok(ApiResponse.success("Usuário atualizado com sucesso.", UserResponse.from(updated)));
+        return ResponseEntity.ok(
+                ApiResponse.success("Usuário atualizado com sucesso.", UserResponse.from(updated))
+        );
     }
 
     @PostMapping("/me/change-password")
@@ -111,13 +138,19 @@ public class UserController {
     ) {
         userService.changePassword(user.getId(), request);
 
-        return ResponseEntity.ok(ApiResponse.success("Senha atualizada com sucesso", null));
+        return ResponseEntity.ok(
+                ApiResponse.success("Senha atualizada com sucesso", null)
+        );
     }
 
     @DeleteMapping("/me")
-    public ResponseEntity<ApiResponse<Void>> deleteCurrentUser(@AuthenticationPrincipal User user) {
+    public ResponseEntity<ApiResponse<Void>> deleteCurrentUser(
+            @AuthenticationPrincipal User user
+    ) {
         userService.delete(user.getId());
 
-        return ResponseEntity.ok(ApiResponse.success("Usuário excluído com sucesso", null));
+        return ResponseEntity.ok(
+                ApiResponse.success("Usuário excluído com sucesso", null)
+        );
     }
 }

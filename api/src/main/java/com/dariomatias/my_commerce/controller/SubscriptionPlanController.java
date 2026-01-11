@@ -8,6 +8,7 @@ import com.dariomatias.my_commerce.service.SubscriptionPlanService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -26,10 +27,14 @@ public class SubscriptionPlanController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<SubscriptionPlanResponseDTO>> create(@RequestBody SubscriptionPlanRequestDTO request) {
-        SubscriptionPlan plan = service.create(request);
+    public ResponseEntity<ApiResponse<SubscriptionPlanResponseDTO>> create(
+            @RequestBody SubscriptionPlanRequestDTO request
+    ) {
+        SubscriptionPlan subscriptionPlan = service.create(request);
 
-        return ResponseEntity.ok(ApiResponse.success("Plano criado com sucesso", SubscriptionPlanResponseDTO.from(plan)));
+        return ResponseEntity.ok(
+                ApiResponse.success("Plano criado com sucesso", SubscriptionPlanResponseDTO.from(subscriptionPlan))
+        );
     }
 
     @GetMapping
@@ -37,18 +42,29 @@ public class SubscriptionPlanController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<SubscriptionPlanResponseDTO> plans = service.getAll(pageable)
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "audit.createdAt")
+        );
+
+        Page<SubscriptionPlanResponseDTO> subscriptionPlans = service.getAll(pageable)
                 .map(SubscriptionPlanResponseDTO::from);
 
-        return ResponseEntity.ok(ApiResponse.success("Planos obtidos com sucesso", plans));
+        return ResponseEntity.ok(
+                ApiResponse.success("Planos obtidos com sucesso", subscriptionPlans)
+        );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<SubscriptionPlanResponseDTO>> getById(@PathVariable UUID id) {
-        SubscriptionPlan plan = service.getById(id);
+    public ResponseEntity<ApiResponse<SubscriptionPlanResponseDTO>> getById(
+            @PathVariable UUID id
+    ) {
+        SubscriptionPlan subscriptionPlan = service.getById(id);
 
-        return ResponseEntity.ok(ApiResponse.success("Plano obtido com sucesso", SubscriptionPlanResponseDTO.from(plan)));
+        return ResponseEntity.ok(
+                ApiResponse.success("Plano obtido com sucesso", SubscriptionPlanResponseDTO.from(subscriptionPlan))
+        );
     }
 
     @PatchMapping("/{id}")
@@ -57,16 +73,22 @@ public class SubscriptionPlanController {
             @PathVariable UUID id,
             @RequestBody SubscriptionPlanRequestDTO request
     ) {
-        SubscriptionPlan plan = service.update(id, request);
+        SubscriptionPlan subscriptionPlan = service.update(id, request);
 
-        return ResponseEntity.ok(ApiResponse.success("Plano atualizado com sucesso", SubscriptionPlanResponseDTO.from(plan)));
+        return ResponseEntity.ok(
+                ApiResponse.success("Plano atualizado com sucesso", SubscriptionPlanResponseDTO.from(subscriptionPlan))
+        );
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<Void>> delete(
+            @PathVariable UUID id
+    ) {
         service.delete(id);
 
-        return ResponseEntity.ok(ApiResponse.success("Plano excluído com sucesso", null));
+        return ResponseEntity.ok(
+                ApiResponse.success("Plano excluído com sucesso", null)
+        );
     }
 }

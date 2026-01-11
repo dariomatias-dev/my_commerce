@@ -9,6 +9,7 @@ import com.dariomatias.my_commerce.service.SubscriptionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -44,7 +45,12 @@ public class SubscriptionController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "audit.createdAt")
+        );
+
         Page<SubscriptionResponseDTO> subscriptions = service.getAll(pageable)
                 .map(SubscriptionResponseDTO::from);
 
@@ -60,7 +66,12 @@ public class SubscriptionController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "audit.createdAt")
+        );
+
         Page<SubscriptionResponseDTO> subscriptions = service.getAllByUser(userId, pageable)
                 .map(SubscriptionResponseDTO::from);
 
@@ -76,7 +87,12 @@ public class SubscriptionController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "audit.createdAt")
+        );
+
         Page<SubscriptionResponseDTO> subscriptions = service.getAllByUser(user.getId(), pageable)
                 .map(SubscriptionResponseDTO::from);
 
@@ -93,16 +109,15 @@ public class SubscriptionController {
         Subscription subscription = service.getActiveByUser(user.getId());
 
         return ResponseEntity.ok(
-                ApiResponse.success(
-                        "Assinatura ativa obtida com sucesso",
-                        SubscriptionResponseDTO.from(subscription)
-                )
+                ApiResponse.success("Assinatura ativa obtida com sucesso", SubscriptionResponseDTO.from(subscription))
         );
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> getById(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> getById(
+            @PathVariable UUID id
+    ) {
         Subscription subscription = service.getById(id);
 
         return ResponseEntity.ok(

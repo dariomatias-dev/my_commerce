@@ -11,13 +11,13 @@ import com.dariomatias.my_commerce.service.ProductService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -40,10 +40,7 @@ public class ProductController {
         Product product = service.create(user, request, images);
 
         return ResponseEntity.ok(
-                ApiResponse.success(
-                        "Produto criado com sucesso",
-                        ProductResponseDTO.from(product)
-                )
+                ApiResponse.success("Produto criado com sucesso", ProductResponseDTO.from(product))
         );
     }
 
@@ -54,7 +51,11 @@ public class ProductController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "audit.createdAt")
+        );
 
         Page<ProductResponseDTO> products = service
                 .getAllByStore(user, filter, pageable)
@@ -71,7 +72,11 @@ public class ProductController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "audit.createdAt")
+        );
 
         Page<ProductResponseDTO> products = service
                 .getActiveProductsByStoreAndIds(request.getStoreId(), request.getProductIds(), pageable)
@@ -137,17 +142,16 @@ public class ProductController {
         Product product = service.update(user, id, request, images);
 
         return ResponseEntity.ok(
-                ApiResponse.success(
-                        "Produto atualizado com sucesso",
-                        ProductResponseDTO.from(product)
-                )
+                ApiResponse.success("Produto atualizado com sucesso", ProductResponseDTO.from(product))
         );
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<Void>> delete(@AuthenticationPrincipal User user,
-                                                    @PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<Void>> delete(
+            @AuthenticationPrincipal User user,
+            @PathVariable UUID id
+    ) {
         service.delete(user, id);
 
         return ResponseEntity.ok(ApiResponse.success("Produto excluído com sucesso", null));

@@ -10,6 +10,7 @@ import com.dariomatias.my_commerce.service.StoreService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,12 +37,14 @@ public class StoreController {
             @RequestPart(value = "logo") MultipartFile logo,
             @RequestPart(value = "banner") MultipartFile banner
     ) {
-        Store entity = service.create(user, request, logo, banner);
+        Store store = service.create(user, request, logo, banner);
 
-        return ResponseEntity.ok(ApiResponse.success("Loja criada com sucesso", StoreResponseDTO.from(entity)));
+        return ResponseEntity.ok(
+                ApiResponse.success("Loja criada com sucesso", StoreResponseDTO.from(store))
+        );
     }
 
-    @GetMapping("")
+    @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Page<StoreResponseDTO>>> getAllByUser(
             @AuthenticationPrincipal User user,
@@ -49,7 +52,12 @@ public class StoreController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "audit.createdAt")
+        );
+
         Page<StoreResponseDTO> stores = service
                 .getAllStores(user, filter, pageable)
                 .map(StoreResponseDTO::from);
@@ -67,8 +75,14 @@ public class StoreController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "audit.createdAt")
+        );
+
         filter.setUserId(user.getId());
+
         Page<StoreResponseDTO> stores = service
                 .getAllStores(user, filter, pageable)
                 .map(StoreResponseDTO::from);
@@ -80,17 +94,26 @@ public class StoreController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<StoreResponseDTO>> getById(@AuthenticationPrincipal User user, @PathVariable UUID id) {
-        Store entity = service.getById(id, user);
+    public ResponseEntity<ApiResponse<StoreResponseDTO>> getById(
+            @AuthenticationPrincipal User user,
+            @PathVariable UUID id
+    ) {
+        Store store = service.getById(id, user);
 
-        return ResponseEntity.ok(ApiResponse.success("Loja obtida com sucesso", StoreResponseDTO.from(entity)));
+        return ResponseEntity.ok(
+                ApiResponse.success("Loja obtida com sucesso", StoreResponseDTO.from(store))
+        );
     }
 
     @GetMapping("/slug/{slug}")
-    public ResponseEntity<ApiResponse<StoreResponseDTO>> getBySlug(@PathVariable String slug) {
-        Store entity = service.getBySlug(slug);
+    public ResponseEntity<ApiResponse<StoreResponseDTO>> getBySlug(
+            @PathVariable String slug
+    ) {
+        Store store = service.getBySlug(slug);
 
-        return ResponseEntity.ok(ApiResponse.success("Loja obtida com sucesso", StoreResponseDTO.from(entity)));
+        return ResponseEntity.ok(
+                ApiResponse.success("Loja obtida com sucesso", StoreResponseDTO.from(store))
+        );
     }
 
     @GetMapping("/active/count")
@@ -98,7 +121,9 @@ public class StoreController {
     public ResponseEntity<ApiResponse<Long>> getActiveStoresCount() {
         long count = service.getActiveStoresCount();
 
-        return ResponseEntity.ok(ApiResponse.success("Quantidade de lojas ativas", count));
+        return ResponseEntity.ok(
+                ApiResponse.success("Quantidade de lojas ativas", count)
+        );
     }
 
     @GetMapping("/active/new-this-month")
@@ -106,7 +131,9 @@ public class StoreController {
     public ResponseEntity<ApiResponse<Long>> getNewActiveStoresThisMonth() {
         long count = service.getNewActiveStoresThisMonth();
 
-        return ResponseEntity.ok(ApiResponse.success("Quantidade de novas lojas ativas desde o início do mês", count));
+        return ResponseEntity.ok(
+                ApiResponse.success("Quantidade de novas lojas ativas desde o início do mês", count)
+        );
     }
 
     @PatchMapping("/{id}")
@@ -118,16 +145,23 @@ public class StoreController {
             @RequestPart(value = "logo", required = false) MultipartFile logo,
             @RequestPart(value = "banner", required = false) MultipartFile banner
     ) {
-        Store entity = service.update(id, request, user, logo, banner);
+        Store store = service.update(id, request, user, logo, banner);
 
-        return ResponseEntity.ok(ApiResponse.success("Loja atualizada com sucesso", StoreResponseDTO.from(entity)));
+        return ResponseEntity.ok(
+                ApiResponse.success("Loja atualizada com sucesso", StoreResponseDTO.from(store))
+        );
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<Void>> delete(@AuthenticationPrincipal User user, @PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<Void>> delete(
+            @AuthenticationPrincipal User user,
+            @PathVariable UUID id
+    ) {
         service.delete(id, user);
 
-        return ResponseEntity.ok(ApiResponse.success("Loja excluída com sucesso", null));
+        return ResponseEntity.ok(
+                ApiResponse.success("Loja excluída com sucesso", null)
+        );
     }
 }
