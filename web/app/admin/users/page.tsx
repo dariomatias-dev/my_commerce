@@ -1,7 +1,6 @@
 "use client";
 
-import { ArrowLeft, Filter, Search, ShieldCheck, Users } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Filter, Search, Users } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
@@ -11,12 +10,12 @@ import { UserCard } from "@/components/admin/users/user-card";
 import { DashboardTotalBadge } from "@/components/dashboard-total-badge";
 import { Dropdown } from "@/components/dropdown";
 import { ErrorFeedback } from "@/components/error-feedback";
+import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { Pagination } from "@/components/pagination";
 import { useUser } from "@/services/hooks/use-user";
 
 const UserManagementPage = () => {
-  const router = useRouter();
   const { getAllUsers } = useUser();
 
   const [users, setUsers] = useState<AdminUserResponse[]>([]);
@@ -103,48 +102,26 @@ const UserManagementPage = () => {
   }
 
   return (
-    <main className="min-h-screen mx-auto max-w-400 px-6 pt-32 pb-12">
-      <button
-        onClick={() => router.back()}
-        className="group mb-8 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 transition-colors hover:text-indigo-600"
-      >
-        <ArrowLeft
-          size={16}
-          className="transition-transform group-hover:-translate-x-1"
-        />
-        Voltar
-      </button>
-
-      <div className="mb-12 flex flex-col items-start justify-between gap-6 border-b border-slate-200 pb-12 md:flex-row md:items-end">
-        <div>
-          <div className="mb-3 flex items-center gap-2">
-            <div className="flex items-center gap-2 rounded bg-indigo-600 px-2 py-0.5 text-[9px] font-black tracking-widest text-white uppercase">
-              <ShieldCheck size={10} />
-              USER_MANAGEMENT
-            </div>
-
-            <span className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase italic">
-              Controle de acessos e governança de contas
-            </span>
-          </div>
-
-          <h1 className="text-4xl font-black uppercase italic tracking-tighter text-slate-950 md:text-5xl">
-            GESTÃO DE <span className="text-indigo-600">USUÁRIOS.</span>
-          </h1>
-        </div>
-
-        <DashboardTotalBadge
-          icon={Users}
-          label="Total Encontrado"
-          value={totalElements}
-          unit="Contas"
-        />
-      </div>
+    <main className="mx-auto min-h-screen max-w-400 px-6 pt-32 pb-12">
+      <DashboardPageHeader
+        title="GESTÃO DE USUÁRIOS"
+        subtitle="Controle de acessos e governança de contas"
+        label="USUÁRIOS"
+        backPath="/dashboard/admin"
+        actions={
+          <DashboardTotalBadge
+            icon={Users}
+            label="Total Encontrado"
+            value={totalElements}
+            unit="Contas"
+          />
+        }
+      />
 
       <div className="mb-12 flex flex-col gap-4 lg:flex-row lg:items-end">
-        <div className="relative group flex-1">
+        <div className="group relative flex-1">
           <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-indigo-600"
             size={16}
           />
 
@@ -154,13 +131,13 @@ const UserManagementPage = () => {
             onChange={(e) => setNameInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="PESQUISAR NOME (ENTER)..."
-            className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-slate-50 pl-12 pr-6 text-[10px] font-black uppercase tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:bg-white"
+            className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-slate-50 pr-6 pl-12 text-[10px] font-black uppercase tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:bg-white"
           />
         </div>
 
-        <div className="relative group flex-1">
+        <div className="group relative flex-1">
           <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-indigo-600"
             size={16}
           />
 
@@ -170,7 +147,7 @@ const UserManagementPage = () => {
             onChange={(e) => setEmailInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="PESQUISAR E-MAIL (ENTER)..."
-            className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-slate-50 pl-12 pr-6 text-[10px] font-black uppercase tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:bg-white"
+            className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-slate-50 pr-6 pl-12 text-[10px] font-black uppercase tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:bg-white"
           />
         </div>
 
@@ -192,7 +169,7 @@ const UserManagementPage = () => {
             ))
           ) : (
             <div className="rounded-[2rem] border-2 border-dashed border-slate-100 py-20 text-center">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-300 italic">
+              <p className="text-[10px] font-black italic uppercase tracking-widest text-slate-300">
                 Nenhum usuário localizado com estes critérios
               </p>
             </div>

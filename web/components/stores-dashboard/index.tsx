@@ -10,10 +10,10 @@ import { StoreResponse } from "@/@types/store/store-response";
 import { Dropdown } from "@/components/dropdown";
 import { Pagination } from "@/components/pagination";
 import { StatusFilter } from "@/enums/status-filter";
+import { DashboardTotalBadge } from "../dashboard-total-badge";
 import { StoresList } from "../stores-list";
 import { StoresDashboardEmptyStores } from "./stores-dashboard-empty-stores";
 import { StoresDashboardPageHeader } from "./stores-dashboard-page-header";
-import { DashboardTotalBadge } from "../dashboard-total-badge";
 
 interface StoresDashboardProps {
   fetchFunction: (
@@ -103,10 +103,10 @@ export const StoresDashboard = ({
 
   return (
     <main className="min-h-screen font-sans text-slate-900">
-      <div className="mx-auto max-w-400 px-6 pt-40 pb-20">
+      <div className="mx-auto max-w-400 px-6 pt-32 pb-20">
         <div
           ref={listTopRef}
-          className="animate-in fade-in slide-in-from-bottom-4 duration-700 scroll-mt-40"
+          className="animate-in fade-in slide-in-from-bottom-4 duration-700 scroll-mt-32"
         >
           <div className="mb-12">
             <StoresDashboardPageHeader
