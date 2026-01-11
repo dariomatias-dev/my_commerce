@@ -1,4 +1,4 @@
-export enum AuditAction {
+export enum AuditLogAction {
   LOGIN = "login",
   SIGNUP = "signup",
   VERIFY_EMAIL = "verify_email",

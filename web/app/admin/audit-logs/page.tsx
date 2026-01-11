@@ -17,13 +17,13 @@ import { Dropdown } from "@/components/dropdown";
 import { ErrorFeedback } from "@/components/error-feedback";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { Pagination } from "@/components/pagination";
-import { AuditAction } from "@/enums/audit-action";
+import { AuditLogAction } from "@/enums/audit-action";
 import { useAuditLog } from "@/services/hooks/use-audit-log";
 
 const ITEMS_PER_PAGE = 10;
 
 const AdminAuditLogsPage = () => {
-  const { getLogs, searchLogs } = useAuditLog();
+  const { getLogs } = useAuditLog();
 
   const [logs, setLogs] = useState<AuditLogResponse[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
@@ -34,9 +34,9 @@ const AdminAuditLogsPage = () => {
   const [userIdSearch, setUserIdSearch] = useState("");
   const [actionFilter, setActionFilter] = useState("");
 
-  const auditActionOptions = [
+  const auditlogActionOptions = [
     { id: "", name: "Todas as Ações" },
-    ...Object.values(AuditAction).map((action) => ({
+    ...Object.values(AuditLogAction).map((action) => ({
       id: action,
       name: action.replace("_", " ").toUpperCase(),
     })),
@@ -48,10 +48,12 @@ const AdminAuditLogsPage = () => {
       setErrorMessage(null);
 
       try {
-        const response =
-          userId || action
-            ? await searchLogs({ userId, action }, page, ITEMS_PER_PAGE)
-            : await getLogs(page, ITEMS_PER_PAGE);
+        const filters = {
+          userId: userId || undefined,
+          action: action || undefined,
+        };
+
+        const response = await getLogs(filters, page, ITEMS_PER_PAGE);
 
         setLogs(response.content || []);
         setTotalPages(response.totalPages || 0);
@@ -65,7 +67,7 @@ const AdminAuditLogsPage = () => {
         setIsLoading(false);
       }
     },
-    [getLogs, searchLogs]
+    [getLogs]
   );
 
   useEffect(() => {
@@ -121,7 +123,7 @@ const AdminAuditLogsPage = () => {
             <div className="mb-2 flex items-center gap-2">
               <div className="flex items-center gap-2 rounded bg-slate-950 px-2 py-0.5 text-[9px] font-black tracking-widest text-white uppercase">
                 <History size={10} />
-                AUDIT_TRAIL
+                AUDIT_LOGS
               </div>
 
               <span className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase italic">
@@ -152,7 +154,7 @@ const AdminAuditLogsPage = () => {
 
             <Dropdown
               icon={Filter}
-              options={auditActionOptions}
+              options={auditlogActionOptions}
               value={actionFilter}
               onChange={handleActionChange}
               placeholder="Filtrar Ação"

@@ -19,7 +19,7 @@ export const AdminAuditLogTable = () => {
     setError(null);
 
     try {
-      const response = await getLogs(0, 8);
+      const response = await getLogs({}, 0, 8);
 
       setLogs(response.content || []);
     } catch (error) {
