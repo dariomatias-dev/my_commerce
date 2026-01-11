@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Getter
@@ -16,7 +17,13 @@ public class ProductFilterDTO {
 
     private UUID categoryId;
 
-    private Integer lowStockThreshold;
+    private String name;
+
+    private BigDecimal minPrice;
+
+    private BigDecimal maxPrice;
 
     private StatusFilter status;
+
+    private Integer lowStockThreshold;
 }

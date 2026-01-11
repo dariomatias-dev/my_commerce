@@ -46,16 +46,28 @@ public class ProductJpaRepository implements ProductContract {
             spec = spec.and(ProductSpecification.category(filter.getCategoryId()));
         }
 
+        if (filter.getName() != null && !filter.getName().isBlank()) {
+            spec = spec.and(ProductSpecification.name(filter.getName()));
+        }
+
+        if (filter.getMinPrice() != null) {
+            spec = spec.and(ProductSpecification.minPrice(filter.getMinPrice()));
+        }
+
+        if (filter.getMaxPrice() != null) {
+            spec = spec.and(ProductSpecification.maxPrice(filter.getMaxPrice()));
+        }
+
         if (filter.getLowStockThreshold() != null) {
             spec = spec.and(ProductSpecification.lowStock(filter.getLowStockThreshold()));
         }
 
-        StatusFilter status = filter.getStatus() != null ? filter.getStatus() : StatusFilter.ACTIVE;
+        StatusFilter status = filter.getStatus() != null
+                ? filter.getStatus()
+                : StatusFilter.ACTIVE;
 
-        if (status == StatusFilter.ACTIVE) {
-            spec = spec.and(ProductSpecification.active());
-        } else if (status == StatusFilter.DELETED) {
-            spec = spec.and(ProductSpecification.deleted());
+        if (status != StatusFilter.ALL) {
+            spec = spec.and(ProductSpecification.status(status));
         }
 
         return repository.findAll(spec, pageable);
@@ -77,7 +89,7 @@ public class ProductJpaRepository implements ProductContract {
     }
 
     @Override
-    public long countByStoreUserIdAndActiveTrueAndDeletedAtIsNull(UUID userId){
+    public long countByStoreUserIdAndActiveTrueAndDeletedAtIsNull(UUID userId) {
         return repository.countByStore_User_IdAndActiveTrueAndDeletedAtIsNull(userId);
     }
 

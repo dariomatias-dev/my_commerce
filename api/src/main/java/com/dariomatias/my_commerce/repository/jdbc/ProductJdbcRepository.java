@@ -86,18 +86,32 @@ public class ProductJdbcRepository implements ProductContract {
             params.addValue("categoryId", filter.getCategoryId());
         }
 
+        if (filter.getName() != null && !filter.getName().isBlank()) {
+            conditions.add("LOWER(name) LIKE :name");
+            params.addValue("name", "%" + filter.getName().toLowerCase() + "%");
+        }
+
+        if (filter.getMinPrice() != null) {
+            conditions.add("price >= :minPrice");
+            params.addValue("minPrice", filter.getMinPrice());
+        }
+
+        if (filter.getMaxPrice() != null) {
+            conditions.add("price <= :maxPrice");
+            params.addValue("maxPrice", filter.getMaxPrice());
+        }
+
         if (filter.getLowStockThreshold() != null) {
             conditions.add("stock <= :lowStock");
             params.addValue("lowStock", filter.getLowStockThreshold());
         }
 
-        StatusFilter status = filter.getStatus();
-        if (status == null) {
-            status = StatusFilter.ACTIVE;
-        }
+        StatusFilter status = filter.getStatus() != null
+                ? filter.getStatus()
+                : StatusFilter.ACTIVE;
 
         if (status == StatusFilter.ACTIVE) {
-            conditions.add("deleted_at IS NULL");
+            conditions.add("active = true AND deleted_at IS NULL");
         } else if (status == StatusFilter.DELETED) {
             conditions.add("deleted_at IS NOT NULL");
         }

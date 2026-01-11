@@ -100,6 +100,7 @@ public class ProductService {
         if (filter == null) {
             filter = new ProductFilterDTO();
         }
+
         filter.setStatus(status);
 
         return productRepository.findAll(filter, pageable);
