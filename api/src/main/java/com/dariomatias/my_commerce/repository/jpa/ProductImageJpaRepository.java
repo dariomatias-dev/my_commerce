@@ -29,11 +29,6 @@ public class ProductImageJpaRepository implements ProductImageContract {
     }
 
     @Override
-    public void deleteAllByProduct(UUID productId) {
-        repository.deleteAllByProduct_Id(productId);
-    }
-
-    @Override
     public ProductImage save(ProductImage image) {
         return repository.save(image);
     }

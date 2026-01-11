@@ -68,6 +68,7 @@ public class SubscriptionPlanService {
         if (subscriptionPlanRepository.findById(id).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Plano não encontrado");
         }
+
         subscriptionPlanRepository.deleteById(id);
     }
 }

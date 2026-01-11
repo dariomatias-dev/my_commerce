@@ -98,19 +98,18 @@ public class StoreService {
     public Store getById(UUID id, User user) {
         Store store = getStoreById(id);
         checkAccess(user, store.getUser().getId());
+
         return store;
     }
 
     public Store getBySlug(String slug) {
-        Store store = storeRepository.findBySlug(slug)
+        return storeRepository.findBySlug(slug)
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
                                 "Loja não encontrada"
                         )
                 );
-
-        return store;
     }
 
     public long getActiveStoresCount() {

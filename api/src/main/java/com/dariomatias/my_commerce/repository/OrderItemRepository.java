@@ -11,8 +11,4 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
-    Page<OrderItem> findAllByOrder(Order order, Pageable pageable);
-
-    Page<OrderItem> findAllByProduct(Product product, Pageable pageable);
-}
+public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {}

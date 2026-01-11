@@ -16,5 +16,4 @@ public interface CategoryRepository extends JpaRepository<Category, UUID> {
     Page<Category> findAllByStore(Store store, Pageable pageable);
 
     List<Category> findAllByStore(Store store);
-
 }

@@ -15,10 +15,6 @@ public interface OrderItemContract {
 
     Page<OrderItem> findAll(Pageable pageable);
 
-    Page<OrderItem> findAllByOrderId(UUID orderId, Pageable pageable);
-
-    Page<OrderItem> findAllByProductId(UUID productId, Pageable pageable);
-
     OrderItem update(OrderItem item);
 
     void deleteById(UUID id);

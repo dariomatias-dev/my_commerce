@@ -9,8 +9,6 @@ public interface ProductImageContract {
 
     List<ProductImage> findAllByProduct(UUID productId);
 
-    void deleteAllByProduct(UUID productId);
-
     ProductImage save(ProductImage image);
 
     void delete(ProductImage image);

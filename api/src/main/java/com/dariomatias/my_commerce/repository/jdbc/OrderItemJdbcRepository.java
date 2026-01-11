@@ -94,48 +94,6 @@ public class OrderItemJdbcRepository implements OrderItemContract {
     }
 
     @Override
-    public Page<OrderItem> findAllByOrderId(UUID orderId, Pageable pageable) {
-        String sql = """
-            SELECT * FROM order_items
-            WHERE order_id = :order_id
-            ORDER BY created_at DESC
-            OFFSET :offset LIMIT :limit
-        """;
-
-        List<OrderItem> content = jdbc.query(sql, new MapSqlParameterSource()
-                .addValue("order_id", orderId)
-                .addValue("offset", pageable.getOffset())
-                .addValue("limit", pageable.getPageSize()), mapper);
-
-        Long total = jdbc.queryForObject("""
-                SELECT COUNT(*) FROM order_items WHERE order_id = :order_id
-                """, new MapSqlParameterSource("order_id", orderId), Long.class);
-
-        return new PageImpl<>(content, pageable, total);
-    }
-
-    @Override
-    public Page<OrderItem> findAllByProductId(UUID productId, Pageable pageable) {
-        String sql = """
-            SELECT * FROM order_items
-            WHERE product_id = :product_id
-            ORDER BY created_at DESC
-            OFFSET :offset LIMIT :limit
-        """;
-
-        List<OrderItem> content = jdbc.query(sql, new MapSqlParameterSource()
-                .addValue("product_id", productId)
-                .addValue("offset", pageable.getOffset())
-                .addValue("limit", pageable.getPageSize()), mapper);
-
-        Long total = jdbc.queryForObject("""
-                SELECT COUNT(*) FROM order_items WHERE product_id = :product_id
-                """, new MapSqlParameterSource("product_id", productId), Long.class);
-
-        return new PageImpl<>(content, pageable, total);
-    }
-
-    @Override
     public Optional<OrderItem> findById(UUID id) {
         List<OrderItem> list = jdbc.query(
                 "SELECT * FROM order_items WHERE id = :id",

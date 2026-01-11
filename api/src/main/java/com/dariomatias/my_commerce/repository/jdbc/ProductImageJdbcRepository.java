@@ -50,15 +50,6 @@ public class ProductImageJdbcRepository implements ProductImageContract {
     }
 
     @Override
-    public void deleteAllByProduct(UUID productId) {
-        String sql = "DELETE FROM product_images WHERE product_id = :product_id";
-
-        jdbc.update(sql,
-                new MapSqlParameterSource("product_id", productId)
-        );
-    }
-
-    @Override
     public ProductImage save(ProductImage image) {
         if (image.getId() == null) {
             return insert(image);

@@ -1,8 +1,6 @@
 package com.dariomatias.my_commerce.repository.jpa;
 
-import com.dariomatias.my_commerce.model.Order;
 import com.dariomatias.my_commerce.model.OrderItem;
-import com.dariomatias.my_commerce.model.Product;
 import com.dariomatias.my_commerce.repository.OrderItemRepository;
 import com.dariomatias.my_commerce.repository.contract.OrderItemContract;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -31,20 +29,6 @@ public class OrderItemJpaRepository implements OrderItemContract {
     @Override
     public Page<OrderItem> findAll(Pageable pageable) {
         return repository.findAll(pageable);
-    }
-
-    @Override
-    public Page<OrderItem> findAllByOrderId(UUID orderId, Pageable pageable) {
-        Order order = new Order();
-        order.setId(orderId);
-        return repository.findAllByOrder(order, pageable);
-    }
-
-    @Override
-    public Page<OrderItem> findAllByProductId(UUID productId, Pageable pageable) {
-        Product product = new Product();
-        product.setId(productId);
-        return repository.findAllByProduct(product, pageable);
     }
 
     @Override

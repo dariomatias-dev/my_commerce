@@ -18,6 +18,4 @@ public interface UserAddressRepository extends JpaRepository<UserAddress, UUID> 
     Double findDistanceFromPoint(@Param("id") UUID id,
                                  @Param("lat1") double lat1,
                                  @Param("lon1") double lon1);
-
-    boolean existsByUserId(UUID userId);
 }

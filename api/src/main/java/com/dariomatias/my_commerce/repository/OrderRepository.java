@@ -90,12 +90,4 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
             @Param("storeId") UUID storeId,
             @Param("status") Status status
     );
-
-    @Query("""
-        SELECT o
-        FROM Order o
-        LEFT JOIN FETCH o.items
-        WHERE o.id = :id
-    """)
-    Optional<Order> getByIdWithItems(@Param("id") UUID id);
 }
