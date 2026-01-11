@@ -1,20 +1,19 @@
 "use client";
 
-import {
-  AlertTriangle,
-  CheckCircle2,
-  DollarSign,
-  Search,
-  X,
-  XCircle,
-} from "lucide-react";
+import { AlertTriangle, CheckCircle2, DollarSign, XCircle } from "lucide-react";
 import { KeyboardEvent, useState } from "react";
 
 import { ProductFilters } from "@/@types/product/product-filters";
+import { FilterBooleanCard } from "@/components/filters/filter-boolean-card";
+import { FilterInput } from "@/components/filters/filter-input";
+import { FilterSearch } from "@/components/filters/filter-search";
+import { FilterToggle } from "@/components/filters/filter-toggle";
+
+type LocalFilters = Omit<ProductFilters, "storeId">;
 
 interface ProductsDashboardFilterProps {
-  currentFilters: Omit<ProductFilters, "storeId">;
-  onApply: (filters: Omit<ProductFilters, "storeId">) => void;
+  currentFilters: LocalFilters;
+  onApply: (filters: LocalFilters) => void;
 }
 
 export const ProductsDashboardFilter = ({
@@ -22,202 +21,148 @@ export const ProductsDashboardFilter = ({
   onApply,
 }: ProductsDashboardFilterProps) => {
   const [localFilters, setLocalFilters] =
-    useState<Omit<ProductFilters, "storeId">>(currentFilters);
+    useState<LocalFilters>(currentFilters);
 
-  const triggerApply = (updated: Omit<ProductFilters, "storeId">) => {
-    onApply({
-      ...updated,
-      name: updated.name || undefined,
-    });
+  const triggerApply = (updated: LocalFilters) => {
+    onApply({ ...updated, name: updated.name || undefined });
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Enter") {
-      triggerApply(localFilters);
-    }
-  };
-
-  const handleStatusToggle = (target: "ACTIVE" | "DELETED") => {
-    const newStatus: ProductFilters["status"] =
-      localFilters.status === target ? "ALL" : target;
-    const updated = { ...localFilters, status: newStatus };
-    setLocalFilters(updated);
-    triggerApply(updated);
-  };
-
-  const handleLowStockToggle = () => {
-    const newValue = localFilters.lowStockThreshold ? undefined : 5;
-    const updated = { ...localFilters, lowStockThreshold: newValue };
-    setLocalFilters(updated);
-    triggerApply(updated);
-  };
-
-  const clearField = (field: keyof Omit<ProductFilters, "storeId">) => {
-    const updated = { ...localFilters, [field]: undefined };
-    if (field === "name") updated.name = "";
-    setLocalFilters(updated);
-    triggerApply(updated);
+    if (e.key === "Enter") triggerApply(localFilters);
   };
 
   const blockInvalidChars = (e: KeyboardEvent) => {
     if (["e", "E", "+", "-"].includes(e.key)) e.preventDefault();
   };
 
+  const updateField = <K extends keyof LocalFilters>(
+    field: K,
+    value: LocalFilters[K]
+  ) => {
+    const updated = { ...localFilters, [field]: value };
+
+    setLocalFilters(updated);
+  };
+
   return (
     <section className="mb-10 space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-        <div className="relative flex-1 group">
-          <Search
-            className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-indigo-600"
-            size={20}
-          />
-          <input
-            type="text"
-            value={localFilters.name || ""}
-            onChange={(e) =>
-              setLocalFilters((prev) => ({ ...prev, name: e.target.value }))
-            }
-            onKeyDown={handleKeyDown}
-            placeholder="PESQUISAR E PRESSIONAR ENTER PARA APLICAR..."
-            className="w-full rounded-[2rem] border border-slate-100 bg-white px-14 py-5 text-[11px] font-black tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/5 placeholder:text-slate-400 shadow-sm"
-          />
-          {localFilters.name && (
-            <button
-              onClick={() => clearField("name")}
-              className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-300 hover:text-red-500 transition-all"
-            >
-              <XCircle size={20} />
-            </button>
-          )}
-        </div>
+        <FilterSearch
+          value={localFilters.name || ""}
+          onChange={(val) => updateField("name", val)}
+          onKeyDown={handleKeyDown}
+          onClear={() => {
+            const updated: LocalFilters = { ...localFilters, name: "" };
+
+            setLocalFilters(updated);
+
+            triggerApply(updated);
+          }}
+        />
 
         <div className="flex h-15.5 rounded-2xl bg-slate-200/50 p-1.5">
-          <button
-            onClick={() => handleStatusToggle("ACTIVE")}
-            className={`flex items-center gap-2 px-6 rounded-xl text-[10px] font-black tracking-[0.15em] uppercase transition-all ${
-              localFilters.status === "ACTIVE"
-                ? "bg-white text-emerald-600 shadow-sm"
-                : "text-slate-500 hover:text-slate-700"
-            }`}
-          >
-            <CheckCircle2 size={14} /> Ativos
-          </button>
+          <FilterToggle
+            icon={CheckCircle2}
+            label="Ativos"
+            isActive={localFilters.status === "ACTIVE"}
+            onClick={() => {
+              const status: ProductFilters["status"] =
+                localFilters.status === "ACTIVE" ? "ALL" : "ACTIVE";
+              const updated: LocalFilters = { ...localFilters, status };
 
-          <button
-            onClick={() => handleStatusToggle("DELETED")}
-            className={`flex items-center gap-2 px-6 rounded-xl text-[10px] font-black tracking-[0.15em] uppercase transition-all ${
-              localFilters.status === "DELETED"
-                ? "bg-white text-red-500 shadow-sm"
-                : "text-slate-500 hover:text-slate-700"
-            }`}
-          >
-            <XCircle size={14} /> Inativos
-          </button>
+              setLocalFilters(updated);
+
+              triggerApply(updated);
+            }}
+          />
+
+          <FilterToggle
+            icon={XCircle}
+            label="Inativos"
+            isActive={localFilters.status === "DELETED"}
+            activeClassName="bg-white text-red-500 shadow-sm"
+            onClick={() => {
+              const status: ProductFilters["status"] =
+                localFilters.status === "DELETED" ? "ALL" : "DELETED";
+              const updated: LocalFilters = { ...localFilters, status };
+
+              setLocalFilters(updated);
+
+              triggerApply(updated);
+            }}
+          />
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <button
-          onClick={handleLowStockToggle}
-          className={`flex items-center justify-between rounded-[2rem] border-2 px-8 py-5 transition-all ${
-            localFilters.lowStockThreshold
-              ? "border-amber-500 bg-amber-50/50 text-amber-700"
-              : "border-slate-100 bg-white text-slate-400 hover:border-slate-200 shadow-sm"
-          }`}
-        >
-          <div className="flex items-center gap-4">
-            <div
-              className={`p-2 rounded-xl ${
-                localFilters.lowStockThreshold
-                  ? "bg-amber-500 text-white"
-                  : "bg-slate-50 text-slate-300"
-              }`}
-            >
-              <AlertTriangle size={18} />
-            </div>
-            <div className="flex flex-col items-start text-left">
-              <span className="text-[10px] font-black uppercase tracking-widest">
-                Estoque
-              </span>
-              <span className="text-[9px] font-bold opacity-60 uppercase italic">
-                Nível Crítico
-              </span>
-            </div>
-          </div>
-          {localFilters.lowStockThreshold && (
-            <div className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-          )}
-        </button>
+        <FilterBooleanCard
+          icon={AlertTriangle}
+          title="Estoque"
+          subtitle="Nível Crítico"
+          isActive={!!localFilters.lowStockThreshold}
+          onClick={() => {
+            const val = localFilters.lowStockThreshold ? undefined : 5;
+            const updated: LocalFilters = {
+              ...localFilters,
+              lowStockThreshold: val,
+            };
 
-        <div className="group relative flex items-center gap-4 rounded-[2rem] border border-slate-100 bg-white px-8 py-4 shadow-sm focus-within:border-indigo-600 transition-all">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-300">
-            <DollarSign size={18} />
-          </div>
-          <div className="flex flex-1 flex-col">
-            <label className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-              Preço Mínimo
-            </label>
-            <input
-              type="number"
-              value={localFilters.minPrice ?? ""}
-              onKeyDown={(e) => {
-                blockInvalidChars(e);
-                handleKeyDown(e);
-              }}
-              onChange={(e) =>
-                setLocalFilters((prev) => ({
-                  ...prev,
-                  minPrice: e.target.value ? Number(e.target.value) : undefined,
-                }))
-              }
-              placeholder="0.00"
-              className="w-full bg-transparent text-sm font-black text-slate-950 outline-none placeholder:text-slate-200"
-            />
-          </div>
-          {localFilters.minPrice !== undefined && (
-            <button
-              onClick={() => clearField("minPrice")}
-              className="text-slate-300 hover:text-red-500 transition-colors"
-            >
-              <X size={16} />
-            </button>
-          )}
-        </div>
+            setLocalFilters(updated);
 
-        <div className="group relative flex items-center gap-4 rounded-[2rem] border border-slate-100 bg-white px-8 py-4 shadow-sm focus-within:border-indigo-600 transition-all">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-300">
-            <DollarSign size={18} />
-          </div>
-          <div className="flex flex-1 flex-col">
-            <label className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-              Preço Máximo
-            </label>
-            <input
-              type="number"
-              value={localFilters.maxPrice ?? ""}
-              onKeyDown={(e) => {
-                blockInvalidChars(e);
-                handleKeyDown(e);
-              }}
-              onChange={(e) =>
-                setLocalFilters((prev) => ({
-                  ...prev,
-                  maxPrice: e.target.value ? Number(e.target.value) : undefined,
-                }))
-              }
-              placeholder="10000.00"
-              className="w-full bg-transparent text-sm font-black text-slate-950 outline-none placeholder:text-slate-200"
-            />
-          </div>
-          {localFilters.maxPrice !== undefined && (
-            <button
-              onClick={() => clearField("maxPrice")}
-              className="text-slate-300 hover:text-red-500 transition-colors"
-            >
-              <X size={16} />
-            </button>
-          )}
-        </div>
+            triggerApply(updated);
+          }}
+        />
+
+        <FilterInput
+          icon={DollarSign}
+          label="Preço Mínimo"
+          type="number"
+          value={localFilters.minPrice ?? ""}
+          placeholder="0.00"
+          onKeyDown={(e) => {
+            blockInvalidChars(e);
+            handleKeyDown(e);
+          }}
+          onChange={(val) =>
+            updateField("minPrice", val ? Number(val) : undefined)
+          }
+          onClear={() => {
+            const updated: LocalFilters = {
+              ...localFilters,
+              minPrice: undefined,
+            };
+
+            setLocalFilters(updated);
+
+            triggerApply(updated);
+          }}
+        />
+
+        <FilterInput
+          icon={DollarSign}
+          label="Preço Máximo"
+          type="number"
+          value={localFilters.maxPrice ?? ""}
+          placeholder="10000.00"
+          onKeyDown={(e) => {
+            blockInvalidChars(e);
+
+            handleKeyDown(e);
+          }}
+          onChange={(val) =>
+            updateField("maxPrice", val ? Number(val) : undefined)
+          }
+          onClear={() => {
+            const updated: LocalFilters = {
+              ...localFilters,
+              maxPrice: undefined,
+            };
+
+            setLocalFilters(updated);
+
+            triggerApply(updated);
+          }}
+        />
       </div>
     </section>
   );

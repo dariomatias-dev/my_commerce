@@ -102,6 +102,7 @@ export const ProductsDashboard = ({ storeId }: ProductsDashboardProps) => {
       ) : (
         <>
           <ProductsDashboardTable products={products} onDelete={onDelete} />
+
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

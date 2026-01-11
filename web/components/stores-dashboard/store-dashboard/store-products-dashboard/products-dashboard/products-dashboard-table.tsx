@@ -54,7 +54,7 @@ export const ProductsDashboardTable = ({
       await onDelete(productToDelete.id);
 
       setIsSecondConfirmOpen(false);
-      
+
       setProductToDelete(null);
     } finally {
       setIsDeleting(false);
@@ -90,9 +90,10 @@ export const ProductsDashboardTable = ({
                       />
 
                       <div>
-                        <p className="text-sm font-black text-slate-950 uppercase italic tracking-tight">
+                        <p className="text-sm font-black text-slate-950 italic tracking-tight">
                           {product.name}
                         </p>
+
                         <p className="text-[10px] font-bold text-slate-400 tracking-widest">
                           {product.slug}
                         </p>
