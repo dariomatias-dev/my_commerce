@@ -2,6 +2,7 @@
 
 import { useCallback } from "react";
 
+import { CategoryFilter } from "@/@types/category/category-filter";
 import { CategoryRequest } from "@/@types/category/category-request";
 import { CategoryResponse } from "@/@types/category/category-response";
 import { PaginatedResponse } from "@/@types/paginated-response";
@@ -15,19 +16,10 @@ export const useCategory = () => {
   );
 
   const getAllCategories = useCallback(
-    (page = 0, size = 10) =>
+    (filter?: CategoryFilter, page = 0, size = 10) =>
       apiClient.get<PaginatedResponse<CategoryResponse>>("/categories", {
-        params: { page, size },
+        params: { ...filter, page, size },
       }),
-    []
-  );
-
-  const getCategoriesByStoreId = useCallback(
-    (storeId: string, page = 0, size = 10) =>
-      apiClient.get<PaginatedResponse<CategoryResponse>>(
-        `/categories/store/${storeId}`,
-        { params: { page, size } }
-      ),
     []
   );
 
@@ -50,7 +42,6 @@ export const useCategory = () => {
   return {
     createCategory,
     getAllCategories,
-    getCategoriesByStoreId,
     getCategoryById,
     updateCategory,
     deleteCategory,

@@ -33,7 +33,8 @@ export const CategoriesDashboard = forwardRef<
   CategoriesDashboardRef,
   CategoriesDashboardProps
 >(({ storeId }, ref) => {
-  const { getCategoriesByStoreId, deleteCategory } = useCategory();
+  const { getAllCategories, deleteCategory } = useCategory();
+
   const listTopRef = useRef<HTMLDivElement>(null);
 
   const [categories, setCategories] = useState<CategoryResponse[]>([]);
@@ -47,6 +48,7 @@ export const CategoriesDashboard = forwardRef<
   const [selectedCategory, setSelectedCategory] =
     useState<CategoryResponse | null>(null);
 
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const pageSize = 12;
@@ -56,7 +58,11 @@ export const CategoriesDashboard = forwardRef<
       setIsLoading(true);
       setError(null);
 
-      const data = await getCategoriesByStoreId(storeId, currentPage, pageSize);
+      const data = await getAllCategories(
+        { storeId, name: searchTerm },
+        currentPage,
+        pageSize
+      );
 
       setCategories(data.content);
       setTotalPages(data.totalPages);
@@ -69,7 +75,7 @@ export const CategoriesDashboard = forwardRef<
     } finally {
       setIsLoading(false);
     }
-  }, [storeId, currentPage, getCategoriesByStoreId]);
+  }, [storeId, currentPage, searchTerm, getAllCategories]);
 
   useImperativeHandle(ref, () => ({
     refresh: fetchCategories,
@@ -79,9 +85,13 @@ export const CategoriesDashboard = forwardRef<
     fetchCategories();
   }, [fetchCategories]);
 
+  const handleSearch = (name: string) => {
+    setSearchTerm(name);
+    setCurrentPage(0);
+  };
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-
     listTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
@@ -139,7 +149,7 @@ export const CategoriesDashboard = forwardRef<
       ref={listTopRef}
       className="animate-in fade-in duration-500 scroll-mt-32"
     >
-      <CategoriesDashboardSearchBar />
+      <CategoriesDashboardSearchBar onSearch={handleSearch} />
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {categories.map((category) => (
