@@ -2,6 +2,7 @@
 
 import {
   forwardRef,
+  KeyboardEvent,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -13,13 +14,13 @@ import { ApiError } from "@/@types/api";
 import { CategoryResponse } from "@/@types/category/category-response";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { DeleteConfirmationDialog } from "@/components/dialogs/delete-confirmation-dialog";
+import { FilterSearch } from "@/components/filters/filter-search";
 import { Pagination } from "@/components/pagination";
 import { useCategory } from "@/services/hooks/use-category";
 import { CategoryFormDialog } from "../category-form-dialog";
 import { CategoriesDashboardCard } from "./categories-dashboard-card";
 import { CategoriesDashboardError } from "./categories-dashboard-error";
 import { CategoriesDashboardLoading } from "./categories-dashboard-loading";
-import { CategoriesDashboardSearchBar } from "./categories-dashboard-search-bar";
 
 export interface CategoriesDashboardRef {
   refresh: () => void;
@@ -48,6 +49,7 @@ export const CategoriesDashboard = forwardRef<
   const [selectedCategory, setSelectedCategory] =
     useState<CategoryResponse | null>(null);
 
+  const [localSearch, setLocalSearch] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -85,8 +87,16 @@ export const CategoriesDashboard = forwardRef<
     fetchCategories();
   }, [fetchCategories]);
 
-  const handleSearch = (name: string) => {
-    setSearchTerm(name);
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Enter") {
+      setSearchTerm(localSearch);
+      setCurrentPage(0);
+    }
+  };
+
+  const handleClearSearch = () => {
+    setLocalSearch("");
+    setSearchTerm("");
     setCurrentPage(0);
   };
 
@@ -149,7 +159,15 @@ export const CategoriesDashboard = forwardRef<
       ref={listTopRef}
       className="animate-in fade-in duration-500 scroll-mt-32"
     >
-      <CategoriesDashboardSearchBar onSearch={handleSearch} />
+      <div className="mb-8">
+        <FilterSearch
+          value={localSearch}
+          onChange={setLocalSearch}
+          onKeyDown={handleKeyDown}
+          onClear={handleClearSearch}
+          placeholder="PESQUISAR CATEGORIA E PRESSIONAR ENTER..."
+        />
+      </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {categories.map((category) => (
