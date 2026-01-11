@@ -1,6 +1,6 @@
 import { Status } from "@/enums/status";
 
-const configs: Record<
+const orderStatusConfigs: Record<
   Status,
   { label: string; color: string; bg: string; dot: string }
 > = {
@@ -44,7 +44,7 @@ const configs: Record<
 
 export const getOrderStatusConfig = (status: Status) => {
   return (
-    configs[status] || {
+    orderStatusConfigs[status] || {
       label: "Desconhecido",
       color: "text-slate-600",
       bg: "bg-slate-50",

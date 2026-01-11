@@ -1,6 +1,9 @@
 import { AuditLogResult } from "@/@types/audit-log/audit-log-response";
 
-const configs: Record<AuditLogResult, { label: string; color: string }> = {
+const auditLogResultConfigs: Record<
+  AuditLogResult,
+  { label: string; color: string }
+> = {
   success: {
     label: "Sucesso",
     color: "text-emerald-600",
@@ -13,7 +16,7 @@ const configs: Record<AuditLogResult, { label: string; color: string }> = {
 
 export const getAuditLogResultConfig = (result: AuditLogResult) => {
   return (
-    configs[result] || {
+    auditLogResultConfigs[result] || {
       label: "Desconhecido",
       color: "text-slate-400",
     }
