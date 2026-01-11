@@ -8,6 +8,7 @@ import { ApiError } from "@/@types/api";
 import { AdminUserResponse } from "@/@types/user/admin-user-response";
 import { UserRole } from "@/@types/user/user-response";
 import { UserCard } from "@/components/admin/users/user-card";
+import { DashboardTotalBadge } from "@/components/dashboard-total-badge";
 import { Dropdown } from "@/components/dropdown";
 import { ErrorFeedback } from "@/components/error-feedback";
 import { LoadingIndicator } from "@/components/loading-indicator";
@@ -121,6 +122,7 @@ const UserManagementPage = () => {
               <ShieldCheck size={10} />
               USER_MANAGEMENT
             </div>
+
             <span className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase italic">
               Controle de acessos e governança de contas
             </span>
@@ -131,19 +133,12 @@ const UserManagementPage = () => {
           </h1>
         </div>
 
-        <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-400">
-            <Users size={20} />
-          </div>
-          <div className="pr-4">
-            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-              Total Encontrado
-            </p>
-            <p className="text-lg font-black text-slate-950">
-              {String(totalElements).padStart(2, "0")} Contas
-            </p>
-          </div>
-        </div>
+        <DashboardTotalBadge
+          icon={Users}
+          label="Total Encontrado"
+          value={totalElements}
+          unit="Contas"
+        />
       </div>
 
       <div className="mb-12 flex flex-col gap-4 lg:flex-row lg:items-end">
@@ -152,13 +147,14 @@ const UserManagementPage = () => {
             className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors"
             size={16}
           />
+
           <input
             type="text"
             value={nameInput}
             onChange={(e) => setNameInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="PESQUISAR NOME (ENTER)..."
-            className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-slate-50 pl-12 pr-6 text-[10px] font-black tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:bg-white"
+            className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-slate-50 pl-12 pr-6 text-[10px] font-black uppercase tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:bg-white"
           />
         </div>
 
@@ -167,13 +163,14 @@ const UserManagementPage = () => {
             className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors"
             size={16}
           />
+
           <input
             type="text"
             value={emailInput}
             onChange={(e) => setEmailInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="PESQUISAR E-MAIL (ENTER)..."
-            className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-slate-50 pl-12 pr-6 text-[10px] font-black tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:bg-white"
+            className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-slate-50 pl-12 pr-6 text-[10px] font-black uppercase tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:bg-white"
           />
         </div>
 
