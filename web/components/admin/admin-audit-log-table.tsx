@@ -1,13 +1,13 @@
 "use client";
 
-import { Activity, ArrowRight, History, RefreshCcw } from "lucide-react";
+import { ArrowRight, History } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { AuditLogResponse } from "@/@types/audit-log/audit-log-response";
 import { useAuditLog } from "@/services/hooks/use-audit-log";
-import { getAuditLogResultConfig } from "@/utils/get-audit-log-result-config";
+import { AuditLogTable } from "../audit-log-table";
 
 export const AdminAuditLogTable = () => {
   const { getLogs } = useAuditLog();
@@ -59,18 +59,9 @@ export const AdminAuditLogTable = () => {
         </Link>
       </div>
 
-      <div className="overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white shadow-sm min-h-100 flex flex-col">
-        {isLoading ? (
-          <div className="flex flex-1 items-center justify-center p-12">
-            <div className="flex flex-col items-center gap-3">
-              <RefreshCcw className="h-8 w-8 animate-spin text-indigo-600" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                Sincronizando registros...
-              </span>
-            </div>
-          </div>
-        ) : error ? (
-          <div className="flex flex-1 flex-col items-center justify-center p-12 text-center">
+      <div className="min-h-100 flex flex-col">
+        {error ? (
+          <div className="flex flex-1 flex-col items-center justify-center p-12 text-center rounded-[2.5rem] border border-slate-100 bg-white">
             <p className="mb-4 text-xs font-bold text-red-500 uppercase tracking-widest">
               {error}
             </p>
@@ -82,68 +73,7 @@ export const AdminAuditLogTable = () => {
             </button>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="border-b border-slate-100 bg-slate-50">
-                <tr>
-                  <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                    Ação Realizada
-                  </th>
-                  <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                    Usuário
-                  </th>
-                  <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                    Status
-                  </th>
-                  <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                    Data / Hora
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody className="divide-y divide-slate-50">
-                {logs.map((log) => {
-                  const status = getAuditLogResultConfig(log.result);
-
-                  return (
-                    <tr
-                      key={log.id}
-                      className="group transition-colors hover:bg-slate-50/50"
-                    >
-                      <td className="px-8 py-5">
-                        <span className="text-xs font-black uppercase italic text-slate-950">
-                          {log.action}
-                        </span>
-                      </td>
-
-                      <td className="px-8 py-5">
-                        <div className="flex items-center gap-2">
-                          <div className="flex h-6 w-6 items-center justify-center rounded bg-slate-100 text-slate-500">
-                            <Activity size={12} />
-                          </div>
-                          <span className="text-[11px] font-bold text-slate-600">
-                            {log.userId}
-                          </span>
-                        </div>
-                      </td>
-
-                      <td className="px-8 py-5">
-                        <span
-                          className={`text-[10px] font-black uppercase tracking-tighter ${status.color}`}
-                        >
-                          {status.label}
-                        </span>
-                      </td>
-
-                      <td className="px-8 py-5 text-[11px] font-bold uppercase text-slate-500">
-                        {new Date(log.timestamp).toLocaleString("pt-BR")}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <AuditLogTable logs={logs} isLoading={isLoading} />
         )}
       </div>
     </section>

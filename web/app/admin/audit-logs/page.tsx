@@ -1,25 +1,18 @@
 "use client";
 
-import {
-  Activity,
-  ArrowLeft,
-  Filter,
-  History,
-  RefreshCcw,
-  Search,
-} from "lucide-react";
+import { ArrowLeft, Filter, History, Search } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { AuditLogResponse } from "@/@types/audit-log/audit-log-response";
+import { AuditLogTable } from "@/components/audit-log-table";
 import { Dropdown } from "@/components/dropdown";
 import { ErrorFeedback } from "@/components/error-feedback";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { Pagination } from "@/components/pagination";
 import { AuditLogAction } from "@/enums/audit-action";
 import { useAuditLog } from "@/services/hooks/use-audit-log";
-import { getAuditLogResultConfig } from "@/utils/get-audit-log-result-config";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -109,7 +102,7 @@ const AdminAuditLogsPage = () => {
   }
 
   return (
-    <main className="min-h-screen mx-auto max-w-400 px-6 pt-32 pb-12">
+    <main className="min-h-screen mx-auto max-w-400 px-6 pt-32 pb-12 flex flex-col">
       <div className="mb-12 border-b border-slate-200 pb-8">
         <Link
           href="/admin"
@@ -166,97 +159,8 @@ const AdminAuditLogsPage = () => {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white shadow-sm transition-opacity duration-300 min-h-120 flex flex-col">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="border-b border-slate-100 bg-slate-50">
-              <tr>
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                  Ação Realizada
-                </th>
-
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                  Usuário
-                </th>
-
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                  Status
-                </th>
-
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                  Data / Hora
-                </th>
-              </tr>
-            </thead>
-
-            <tbody
-              className={`divide-y divide-slate-50 ${
-                isLoading ? "opacity-50" : "opacity-100"
-              }`}
-            >
-              {logs.map((log) => {
-                const status = getAuditLogResultConfig(log.result);
-
-                return (
-                  <tr
-                    key={log.id}
-                    className="group transition-colors hover:bg-slate-50/50"
-                  >
-                    <td className="px-8 py-5">
-                      <span className="text-xs font-black uppercase italic text-slate-950">
-                        {log.action}
-                      </span>
-                    </td>
-
-                    <td className="px-8 py-5">
-                      <div className="flex items-center gap-2">
-                        <div className="flex h-6 w-6 items-center justify-center rounded bg-slate-100 text-slate-500">
-                          <Activity size={12} />
-                        </div>
-
-                        <span className="text-[11px] font-bold text-slate-600">
-                          {log.userId}
-                        </span>
-                      </div>
-                    </td>
-
-                    <td className="px-8 py-5">
-                      <span
-                        className={`text-[10px] font-black uppercase tracking-tighter ${status.color}`}
-                      >
-                        {status.label}
-                      </span>
-                    </td>
-
-                    <td className="px-8 py-5 text-[11px] font-bold uppercase text-slate-500">
-                      {new Date(log.timestamp).toLocaleString("pt-BR")}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        {isLoading && (
-          <div className="flex flex-1 items-center justify-center border-t border-slate-50 bg-white/80 p-12">
-            <div className="flex flex-col items-center gap-3">
-              <RefreshCcw size={24} className="animate-spin text-indigo-600" />
-
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                Sincronizando registros...
-              </span>
-            </div>
-          </div>
-        )}
-
-        {!isLoading && logs.length === 0 && (
-          <div className="flex flex-1 items-center justify-center p-12">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-              Nenhum registro encontrado para os filtros aplicados
-            </span>
-          </div>
-        )}
+      <div className="min-h-120 flex flex-col">
+        <AuditLogTable logs={logs} isLoading={isLoading} />
       </div>
 
       <Pagination
