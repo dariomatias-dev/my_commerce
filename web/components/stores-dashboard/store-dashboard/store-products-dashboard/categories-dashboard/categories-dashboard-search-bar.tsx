@@ -10,29 +10,29 @@ interface CategoriesDashboardSearchBarProps {
 export const CategoriesDashboardSearchBar = ({
   onSearch,
 }: CategoriesDashboardSearchBarProps) => {
-  const [inputValue, setInputValue] = useState("");
+  const [name, setName] = useState("");
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      onSearch(inputValue);
+      onSearch(name);
     }
   };
 
   return (
-    <section className="mb-8 bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
+    <section className="mb-8">
       <div className="relative">
         <Search
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+          className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400"
           size={18}
         />
 
         <input
           type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Filtrar categorias por nome..."
-          className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 py-3.5 pl-12 pr-4 text-xs font-bold text-slate-950 outline-none transition-all focus:border-indigo-600 focus:bg-white"
+          placeholder="PESQUISAR E PRESSIONAR ENTER PARA APLICAR..."
+          className="w-full rounded-[2rem] border border-slate-100 bg-white px-14 py-5 text-[11px] font-black tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/5 placeholder:text-slate-400 shadow-sm"
         />
       </div>
     </section>
