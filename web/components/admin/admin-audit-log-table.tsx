@@ -51,7 +51,7 @@ export const AdminAuditLogTable = () => {
         </div>
 
         <Link
-          href="admin/logs"
+          href="admin/audit-logs"
           className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-indigo-600 transition-colors hover:text-indigo-700"
         >
           Ver Tudo
