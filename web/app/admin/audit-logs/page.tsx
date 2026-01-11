@@ -1,20 +1,29 @@
 "use client";
 
-import { Activity, ArrowLeft, History, RefreshCcw, Search } from "lucide-react";
+import {
+  Activity,
+  ArrowLeft,
+  Filter,
+  History,
+  RefreshCcw,
+  Search,
+} from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { AuditLogResponse } from "@/@types/audit-log/audit-log-response";
+import { Dropdown } from "@/components/dropdown";
 import { ErrorFeedback } from "@/components/error-feedback";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { Pagination } from "@/components/pagination";
+import { AuditAction } from "@/enums/audit-action";
 import { useAuditLog } from "@/services/hooks/use-audit-log";
 
 const ITEMS_PER_PAGE = 10;
 
 const AdminAuditLogsPage = () => {
-  const { getLogs } = useAuditLog();
+  const { getLogs, searchLogs } = useAuditLog();
 
   const [logs, setLogs] = useState<AuditLogResponse[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
@@ -22,13 +31,27 @@ const AdminAuditLogsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const [userIdSearch, setUserIdSearch] = useState("");
+  const [actionFilter, setActionFilter] = useState("");
+
+  const auditActionOptions = [
+    { id: "", name: "Todas as Ações" },
+    ...Object.values(AuditAction).map((action) => ({
+      id: action,
+      name: action.replace("_", " ").toUpperCase(),
+    })),
+  ];
+
   const fetchLogs = useCallback(
-    async (page: number) => {
+    async (page: number, userId?: string, action?: string) => {
       setIsLoading(true);
       setErrorMessage(null);
 
       try {
-        const response = await getLogs(page, ITEMS_PER_PAGE);
+        const response =
+          userId || action
+            ? await searchLogs({ userId, action }, page, ITEMS_PER_PAGE)
+            : await getLogs(page, ITEMS_PER_PAGE);
 
         setLogs(response.content || []);
         setTotalPages(response.totalPages || 0);
@@ -42,17 +65,27 @@ const AdminAuditLogsPage = () => {
         setIsLoading(false);
       }
     },
-    [getLogs]
+    [getLogs, searchLogs]
   );
 
   useEffect(() => {
-    fetchLogs(currentPage);
-  }, [currentPage, fetchLogs]);
+    fetchLogs(currentPage, userIdSearch, actionFilter);
+  }, [currentPage, fetchLogs, userIdSearch, actionFilter]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
 
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleSearchChange = (value: string) => {
+    setUserIdSearch(value);
+    setCurrentPage(0);
+  };
+
+  const handleActionChange = (value: string) => {
+    setActionFilter(value);
+    setCurrentPage(0);
   };
 
   if (isLoading && logs.length === 0) {
@@ -65,7 +98,7 @@ const AdminAuditLogsPage = () => {
         title="Erro de"
         highlightedTitle="Acesso"
         errorMessage={errorMessage}
-        onRetry={() => fetchLogs(currentPage)}
+        onRetry={() => fetchLogs(currentPage, userIdSearch, actionFilter)}
         backPath="/admin"
         backLabel="VOLTAR AO CONSOLE"
       />
@@ -83,7 +116,7 @@ const AdminAuditLogsPage = () => {
           Voltar ao Console
         </Link>
 
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
             <div className="mb-2 flex items-center gap-2">
               <div className="flex items-center gap-2 rounded bg-slate-950 px-2 py-0.5 text-[9px] font-black tracking-widest text-white uppercase">
@@ -101,16 +134,29 @@ const AdminAuditLogsPage = () => {
             </h1>
           </div>
 
-          <div className="relative group">
-            <Search
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors"
-              size={16}
-            />
+          <div className="flex flex-col gap-4 sm:flex-row items-end">
+            <div className="relative group w-full sm:w-64">
+              <Search
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors"
+                size={16}
+              />
 
-            <input
-              type="text"
-              placeholder="BUSCAR EVENTO OU ID..."
-              className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-12 pr-6 text-[11px] font-black uppercase tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 md:w-80"
+              <input
+                type="text"
+                value={userIdSearch}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                placeholder="BUSCAR POR USER ID..."
+                className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-slate-50 pl-12 pr-6 text-[11px] font-black uppercase tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:bg-white sm:w-64"
+              />
+            </div>
+
+            <Dropdown
+              icon={Filter}
+              options={auditActionOptions}
+              value={actionFilter}
+              onChange={handleActionChange}
+              placeholder="Filtrar Ação"
+              className="w-full sm:w-64"
             />
           </div>
         </div>
@@ -191,6 +237,14 @@ const AdminAuditLogsPage = () => {
                 Sincronizando registros...
               </span>
             </div>
+          </div>
+        )}
+
+        {!isLoading && logs.length === 0 && (
+          <div className="flex flex-1 items-center justify-center p-12">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              Nenhum registro encontrado para os filtros aplicados
+            </span>
           </div>
         )}
       </div>
