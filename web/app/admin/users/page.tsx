@@ -105,7 +105,9 @@ const UserManagementPage = () => {
     <main className="mx-auto min-h-screen max-w-400 px-6 pt-32 pb-12">
       <DashboardPageHeader
         title="GESTÃO DE USUÁRIOS"
-        subtitle="Controle de acessos e governança de contas"
+        subtitle={`Página ${currentPage + 1} de ${
+          totalPages || 1
+        } — Controle de acessos e governança de contas`}
         label="USUÁRIOS"
         backPath="/dashboard/admin"
         actions={

@@ -24,7 +24,7 @@ export const DashboardPageHeader = ({
   const remainingWords = titleWords.slice(1).join(" ");
 
   return (
-    <div className="mb-10 flex flex-col items-start justify-between gap-6 border-b border-slate-200 pb-8 lg:flex-row lg:items-end">
+    <div className="mb-12 flex flex-col items-start justify-between gap-6 border-b border-slate-200 pb-8 lg:flex-row lg:items-end">
       <div>
         {backPath && (
           <Link
