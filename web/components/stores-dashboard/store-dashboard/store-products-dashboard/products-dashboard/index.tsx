@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ApiError } from "@/@types/api";
+import { ProductFilters } from "@/@types/product/product-filters";
 import { ProductResponse } from "@/@types/product/product-response";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { Pagination } from "@/components/pagination";
@@ -24,17 +25,31 @@ export const ProductsDashboard = ({ storeId }: ProductsDashboardProps) => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const pageSize = 10;
+
+  const [appliedFilters, setAppliedFilters] = useState<
+    Omit<ProductFilters, "storeId">
+  >({
+    status: "ACTIVE",
+    minPrice: undefined,
+    maxPrice: undefined,
+    lowStockThreshold: undefined,
+    categoryId: undefined,
+    name: undefined,
+  });
 
   const fetchProducts = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
 
-      const data = await getAllProducts({ storeId }, currentPage, pageSize);
+      const data = await getAllProducts(
+        { storeId, ...appliedFilters },
+        currentPage,
+        10
+      );
 
-      setProducts(data.content);
-      setTotalPages(data.totalPages);
+      setProducts(data.content || []);
+      setTotalPages(data.totalPages || 0);
     } catch (error) {
       if (error instanceof ApiError) {
         setError(error.message);
@@ -44,7 +59,7 @@ export const ProductsDashboard = ({ storeId }: ProductsDashboardProps) => {
     } finally {
       setIsLoading(false);
     }
-  }, [storeId, currentPage, getAllProducts]);
+  }, [storeId, currentPage, getAllProducts, appliedFilters]);
 
   useEffect(() => {
     fetchProducts();
@@ -52,21 +67,18 @@ export const ProductsDashboard = ({ storeId }: ProductsDashboardProps) => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-
     listTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const handleApplyFilters = (newFilters: Omit<ProductFilters, "storeId">) => {
+    setAppliedFilters(newFilters);
+    setCurrentPage(0);
   };
 
   const onDelete = async (productId: string) => {
     await deleteProduct(productId);
-
     fetchProducts();
   };
-
-  if (isLoading) {
-    return (
-      <LoadingIndicator message="Obtendo produtos..." className="min-h-100" />
-    );
-  }
 
   if (error) {
     return <ProductsDashboardError message={error} onRetry={fetchProducts} />;
@@ -77,15 +89,26 @@ export const ProductsDashboard = ({ storeId }: ProductsDashboardProps) => {
       ref={listTopRef}
       className="animate-in fade-in duration-500 scroll-mt-32"
     >
-      <ProductsDashboardFilter />
-
-      <ProductsDashboardTable products={products} onDelete={onDelete} />
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
+      <ProductsDashboardFilter
+        onApply={handleApplyFilters}
+        currentFilters={appliedFilters}
       />
+
+      {isLoading ? (
+        <LoadingIndicator
+          message="Sincronizando inventário..."
+          className="min-h-64"
+        />
+      ) : (
+        <>
+          <ProductsDashboardTable products={products} onDelete={onDelete} />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </>
+      )}
     </div>
   );
 };
