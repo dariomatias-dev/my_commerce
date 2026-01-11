@@ -1,11 +1,15 @@
 package com.dariomatias.my_commerce.repository.jpa;
 
+import com.dariomatias.my_commerce.dto.user.UserFilterDTO;
+import com.dariomatias.my_commerce.model.Product;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.UserRepository;
 import com.dariomatias.my_commerce.repository.contract.UserContract;
+import com.dariomatias.my_commerce.repository.specification.UserSpecification;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -28,8 +32,26 @@ public class UserJpaRepository implements UserContract {
     }
 
     @Override
-    public Page<User> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<User> findAll(UserFilterDTO filter, Pageable pageable) {
+        Specification<User> spec = (root, query, cb) -> null;
+
+        if (filter != null) {
+            if (filter.getName() != null && !filter.getName().isEmpty()) {
+                spec = spec.and(UserSpecification.name(filter.getName()));
+            }
+
+            if (filter.getEmail() != null && !filter.getEmail().isEmpty()) {
+                spec = spec.and(UserSpecification.email(filter.getEmail()));
+            }
+
+            if (filter.getRole() != null) {
+                spec = spec.and(UserSpecification.role(filter.getRole()));
+            }
+        }
+
+        spec = spec.and(UserSpecification.active());
+
+        return repository.findAll(spec, pageable);
     }
 
     @Override
@@ -44,7 +66,7 @@ public class UserJpaRepository implements UserContract {
 
     @Override
     public long countByEnabledTrueAndDeletedAtIsNull() {
-        return  repository.countByEnabledTrueAndDeletedAtIsNull();
+        return repository.countByEnabledTrueAndDeletedAtIsNull();
     }
 
     @Override
@@ -58,7 +80,12 @@ public class UserJpaRepository implements UserContract {
     }
 
     @Override
-    public void deleteById(UUID id) {
-        repository.deleteById(id);
+    public void delete(UUID id) {
+        User user = repository.findById(id)
+                .orElseThrow();
+
+        user.delete();
+
+        repository.save(user);
     }
 }

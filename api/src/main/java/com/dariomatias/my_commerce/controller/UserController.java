@@ -3,6 +3,7 @@ package com.dariomatias.my_commerce.controller;
 import com.dariomatias.my_commerce.dto.ApiResponse;
 import com.dariomatias.my_commerce.dto.PasswordUpdateRequest;
 import com.dariomatias.my_commerce.dto.user.AdminUserResponse;
+import com.dariomatias.my_commerce.dto.user.UserFilterDTO;
 import com.dariomatias.my_commerce.dto.user.UserRequest;
 import com.dariomatias.my_commerce.dto.user.UserResponse;
 import com.dariomatias.my_commerce.model.User;
@@ -29,12 +30,14 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Page<AdminUserResponse>>> getAllUsers(
+    public ResponseEntity<ApiResponse<Page<AdminUserResponse>>> getAll(
+            UserFilterDTO filter,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<AdminUserResponse> users = userService.getAll(pageable)
+
+        Page<AdminUserResponse> users = userService.getAll(filter, pageable)
                 .map(AdminUserResponse::from);
 
         return ResponseEntity.ok(ApiResponse.success("Usuários obtidos com sucesso.", users));

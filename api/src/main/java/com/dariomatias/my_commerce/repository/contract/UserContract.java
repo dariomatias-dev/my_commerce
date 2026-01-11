@@ -1,8 +1,8 @@
 package com.dariomatias.my_commerce.repository.contract;
 
+import com.dariomatias.my_commerce.dto.user.UserFilterDTO;
 import com.dariomatias.my_commerce.model.User;
 import org.springframework.data.domain.Page;
-
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
@@ -10,13 +10,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface UserContract {
+
     User save(User user);
 
     Optional<User> findById(UUID id);
 
     Optional<User> findByEmail(String email);
 
-    Page<User> findAll(Pageable pageable);
+    Page<User> findAll(UserFilterDTO filter, Pageable pageable);
 
     long countByEnabledTrueAndDeletedAtIsNull();
 
@@ -24,5 +25,5 @@ public interface UserContract {
 
     User update(User user);
 
-    void deleteById(UUID id);
+    void delete(UUID id);
 }

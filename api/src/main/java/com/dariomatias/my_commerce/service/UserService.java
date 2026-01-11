@@ -1,6 +1,7 @@
 package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.PasswordUpdateRequest;
+import com.dariomatias.my_commerce.dto.user.UserFilterDTO;
 import com.dariomatias.my_commerce.dto.user.UserRequest;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.contract.UserContract;
@@ -24,16 +25,18 @@ public class UserService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserContract userRepository,
-                       RedisTemplate<String, Object> redisTemplate,
-                       PasswordEncoder passwordEncoder) {
+    public UserService(
+            UserContract userRepository,
+            RedisTemplate<String, Object> redisTemplate,
+            PasswordEncoder passwordEncoder
+    ) {
         this.userRepository = userRepository;
         this.redisTemplate = redisTemplate;
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Page<User> getAll(Pageable pageable) {
-        return userRepository.findAll(pageable);
+    public Page<User> getAll(UserFilterDTO filter, Pageable pageable) {
+        return userRepository.findAll(filter, pageable);
     }
 
     public User getById(UUID id) {
