@@ -1,5 +1,6 @@
 package com.dariomatias.my_commerce.model;
 
+import com.dariomatias.my_commerce.enums.AuditLogAction;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -15,7 +16,7 @@ public class AuditLog {
     private String id;
     private LocalDateTime timestamp;
     private String userId;
-    private String action;
+    private AuditLogAction action;
     private String result;
     private Map<String, Object> details;
 }
