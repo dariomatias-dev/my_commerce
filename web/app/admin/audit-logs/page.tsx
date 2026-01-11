@@ -13,6 +13,7 @@ import { LoadingIndicator } from "@/components/loading-indicator";
 import { Pagination } from "@/components/pagination";
 import { AuditLogAction } from "@/enums/audit-action";
 import { useAuditLog } from "@/services/hooks/use-audit-log";
+import { getAuditLogActionConfigs } from "@/utils/get-audit-log-action-config";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -33,7 +34,7 @@ const AdminAuditLogsPage = () => {
     { id: "", name: "Todas as Ações" },
     ...Object.values(AuditLogAction).map((action) => ({
       id: action,
-      name: action.replace("_", " ").toUpperCase(),
+      name: getAuditLogActionConfigs(action),
     })),
   ];
 
