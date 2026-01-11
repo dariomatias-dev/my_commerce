@@ -1,5 +1,6 @@
 package com.dariomatias.my_commerce.repository.contract;
 
+import com.dariomatias.my_commerce.dto.category.CategoryFilterDTO;
 import com.dariomatias.my_commerce.model.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,9 +14,7 @@ public interface CategoryContract {
 
     Optional<Category> findById(UUID id);
 
-    Page<Category> findAll(Pageable pageable);
-
-    Page<Category> findAllByStoreId(UUID storeId, Pageable pageable);
+    Page<Category> findAll(CategoryFilterDTO filter, Pageable pageable);
 
     Category update(Category category);
 

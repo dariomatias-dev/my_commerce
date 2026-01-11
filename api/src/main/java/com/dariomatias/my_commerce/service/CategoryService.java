@@ -1,10 +1,11 @@
 package com.dariomatias.my_commerce.service;
 
+import com.dariomatias.my_commerce.dto.category.CategoryFilterDTO;
 import com.dariomatias.my_commerce.dto.category.CategoryRequestDTO;
 import com.dariomatias.my_commerce.model.Category;
 import com.dariomatias.my_commerce.model.Store;
-import com.dariomatias.my_commerce.repository.contract.StoreContract;
 import com.dariomatias.my_commerce.repository.contract.CategoryContract;
+import com.dariomatias.my_commerce.repository.contract.StoreContract;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -36,13 +37,15 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    public Page<Category> getAll(Pageable pageable) {
-        return categoryRepository.findAll(pageable);
-    }
+    public Page<Category> getAll(CategoryFilterDTO filter, Pageable pageable) {
+        if (filter == null) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Filtro inválido");
 
-    public Page<Category> getAllByStore(UUID storeId, Pageable pageable) {
-        getStoreOrThrow(storeId);
-        return categoryRepository.findAllByStoreId(storeId, pageable);
+        getStoreOrThrow(filter.getStoreId());
+
+        return categoryRepository.findAll(
+                filter,
+                pageable
+        );
     }
 
     public Category getById(UUID id) {

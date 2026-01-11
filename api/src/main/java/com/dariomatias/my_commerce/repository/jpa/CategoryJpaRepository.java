@@ -1,12 +1,14 @@
 package com.dariomatias.my_commerce.repository.jpa;
 
+import com.dariomatias.my_commerce.dto.category.CategoryFilterDTO;
 import com.dariomatias.my_commerce.model.Category;
-import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.repository.CategoryRepository;
 import com.dariomatias.my_commerce.repository.contract.CategoryContract;
+import com.dariomatias.my_commerce.repository.specification.CategorySpecification;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -28,15 +30,18 @@ public class CategoryJpaRepository implements CategoryContract {
     }
 
     @Override
-    public Page<Category> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
-    }
+    public Page<Category> findAll(CategoryFilterDTO filter, Pageable pageable) {
+        Specification<Category> spec = (root, query, cb) -> null;
 
-    @Override
-    public Page<Category> findAllByStoreId(UUID storeId, Pageable pageable) {
-        Store store = new Store();
-        store.setId(storeId);
-        return repository.findAllByStore(store, pageable);
+        if (filter.getStoreId() != null) {
+            spec = spec.and(CategorySpecification.store(filter.getStoreId()));
+        }
+
+        if (filter.getName() != null && !filter.getName().isBlank()) {
+            spec = spec.and(CategorySpecification.name(filter.getName()));
+        }
+
+        return repository.findAll(spec, pageable);
     }
 
     @Override

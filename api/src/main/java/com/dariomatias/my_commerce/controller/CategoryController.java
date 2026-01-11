@@ -1,6 +1,7 @@
 package com.dariomatias.my_commerce.controller;
 
 import com.dariomatias.my_commerce.dto.ApiResponse;
+import com.dariomatias.my_commerce.dto.category.CategoryFilterDTO;
 import com.dariomatias.my_commerce.dto.category.CategoryRequestDTO;
 import com.dariomatias.my_commerce.dto.category.CategoryResponseDTO;
 import com.dariomatias.my_commerce.model.Category;
@@ -36,8 +37,8 @@ public class CategoryController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Page<CategoryResponseDTO>>> getAll(
+            CategoryFilterDTO filter,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
@@ -47,27 +48,7 @@ public class CategoryController {
                 Sort.by(Sort.Direction.DESC, "audit.createdAt")
         );
 
-        Page<CategoryResponseDTO> categories = service.getAll(pageable)
-                .map(CategoryResponseDTO::from);
-
-        return ResponseEntity.ok(
-                ApiResponse.success("Categorias obtidas com sucesso", categories)
-        );
-    }
-
-    @GetMapping("/store/{storeId}")
-    public ResponseEntity<ApiResponse<Page<CategoryResponseDTO>>> getAllByStore(
-            @PathVariable UUID storeId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Pageable pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by(Sort.Direction.DESC, "audit.createdAt")
-        );
-
-        Page<CategoryResponseDTO> categories = service.getAllByStore(storeId, pageable)
+        Page<CategoryResponseDTO> categories = service.getAll(filter, pageable)
                 .map(CategoryResponseDTO::from);
 
         return ResponseEntity.ok(

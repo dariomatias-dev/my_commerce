@@ -1,5 +1,6 @@
 package com.dariomatias.my_commerce.repository.jdbc;
 
+import com.dariomatias.my_commerce.dto.category.CategoryFilterDTO;
 import com.dariomatias.my_commerce.model.Category;
 import com.dariomatias.my_commerce.repository.contract.CategoryContract;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -61,52 +62,42 @@ public class CategoryJdbcRepository implements CategoryContract {
     }
 
     @Override
-    public Page<Category> findAll(Pageable pageable) {
+    public Page<Category> findAll(CategoryFilterDTO filter, Pageable pageable) {
+        List<String> conditions = new ArrayList<>();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+
+        if (filter.getStoreId() != null) {
+            conditions.add("store_id = :storeId");
+            params.addValue("storeId", filter.getStoreId());
+        }
+
+        if (filter.getName() != null && !filter.getName().isBlank()) {
+            conditions.add("LOWER(name) LIKE :name");
+            params.addValue("name", "%" + filter.getName().toLowerCase() + "%");
+        }
+
+        String where = conditions.isEmpty() ? "1=1" : String.join(" AND ", conditions);
+
         String sql = """
-            SELECT * FROM categories
+            SELECT *
+            FROM categories
+            WHERE %s
             ORDER BY created_at DESC
             OFFSET :offset LIMIT :limit
-        """;
+        """.formatted(where);
 
-        List<Category> content = jdbc.query(sql,
-                new MapSqlParameterSource()
-                        .addValue("offset", pageable.getOffset())
-                        .addValue("limit", pageable.getPageSize()),
-                mapper);
+        params.addValue("offset", pageable.getOffset());
+        params.addValue("limit", pageable.getPageSize());
 
-        long total = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM categories",
-                new MapSqlParameterSource(),
-                Long.class
-        );
-
-        return new PageImpl<>(content, pageable, total);
-    }
-
-    @Override
-    public Page<Category> findAllByStoreId(UUID storeId, Pageable pageable) {
-        String sql = """
-            SELECT * FROM categories
-            WHERE store_id = :store_id
-            ORDER BY created_at DESC
-            OFFSET :offset LIMIT :limit
-        """;
-
-        List<Category> content = jdbc.query(sql,
-                new MapSqlParameterSource()
-                        .addValue("store_id", storeId)
-                        .addValue("offset", pageable.getOffset())
-                        .addValue("limit", pageable.getPageSize()),
-                mapper);
+        List<Category> content = jdbc.query(sql, params, mapper);
 
         String countSql = """
-            SELECT COUNT(*) FROM categories
-            WHERE store_id = :store_id
-        """;
+            SELECT COUNT(*)
+            FROM categories
+            WHERE %s
+        """.formatted(where);
 
-        long total = jdbc.queryForObject(countSql,
-                new MapSqlParameterSource("store_id", storeId),
-                Long.class);
+        long total = jdbc.queryForObject(countSql, params, Long.class);
 
         return new PageImpl<>(content, pageable, total);
     }
