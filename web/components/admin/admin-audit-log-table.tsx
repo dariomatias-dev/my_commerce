@@ -1,12 +1,13 @@
 "use client";
 
 import { Activity, ArrowRight, History, RefreshCcw } from "lucide-react";
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { AuditLogResponse } from "@/@types/audit-log/audit-log-response";
 import { useAuditLog } from "@/services/hooks/use-audit-log";
-import Link from "next/link";
+import { getAuditLogResultConfig } from "@/utils/get-audit-log-result-config";
 
 export const AdminAuditLogTable = () => {
   const { getLogs } = useAuditLog();
@@ -20,7 +21,6 @@ export const AdminAuditLogTable = () => {
 
     try {
       const response = await getLogs({}, 0, 8);
-
       setLogs(response.content || []);
     } catch (error) {
       if (error instanceof ApiError) {
@@ -64,7 +64,6 @@ export const AdminAuditLogTable = () => {
           <div className="flex flex-1 items-center justify-center p-12">
             <div className="flex flex-col items-center gap-3">
               <RefreshCcw className="h-8 w-8 animate-spin text-indigo-600" />
-
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
                 Sincronizando registros...
               </span>
@@ -75,7 +74,6 @@ export const AdminAuditLogTable = () => {
             <p className="mb-4 text-xs font-bold text-red-500 uppercase tracking-widest">
               {error}
             </p>
-
             <button
               onClick={fetchLogs}
               className="text-[10px] font-black uppercase underline tracking-widest text-slate-950"
@@ -91,15 +89,12 @@ export const AdminAuditLogTable = () => {
                   <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">
                     Ação Realizada
                   </th>
-
                   <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">
                     Usuário
                   </th>
-
                   <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">
                     Status
                   </th>
-
                   <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">
                     Data / Hora
                   </th>
@@ -107,40 +102,45 @@ export const AdminAuditLogTable = () => {
               </thead>
 
               <tbody className="divide-y divide-slate-50">
-                {logs.map((log) => (
-                  <tr
-                    key={log.id}
-                    className="group transition-colors hover:bg-slate-50/50"
-                  >
-                    <td className="px-8 py-5">
-                      <span className="text-xs font-black uppercase italic text-slate-950">
-                        {log.action}
-                      </span>
-                    </td>
+                {logs.map((log) => {
+                  const status = getAuditLogResultConfig(log.result);
 
-                    <td className="px-8 py-5">
-                      <div className="flex items-center gap-2">
-                        <div className="flex h-6 w-6 items-center justify-center rounded bg-slate-100 text-slate-500">
-                          <Activity size={12} />
-                        </div>
-
-                        <span className="text-[11px] font-bold text-slate-600">
-                          {log.userId}
+                  return (
+                    <tr
+                      key={log.id}
+                      className="group transition-colors hover:bg-slate-50/50"
+                    >
+                      <td className="px-8 py-5">
+                        <span className="text-xs font-black uppercase italic text-slate-950">
+                          {log.action}
                         </span>
-                      </div>
-                    </td>
+                      </td>
 
-                    <td className="px-8 py-5">
-                      <span className="text-[10px] font-black uppercase tracking-tighter text-slate-950">
-                        {log.result}
-                      </span>
-                    </td>
+                      <td className="px-8 py-5">
+                        <div className="flex items-center gap-2">
+                          <div className="flex h-6 w-6 items-center justify-center rounded bg-slate-100 text-slate-500">
+                            <Activity size={12} />
+                          </div>
+                          <span className="text-[11px] font-bold text-slate-600">
+                            {log.userId}
+                          </span>
+                        </div>
+                      </td>
 
-                    <td className="px-8 py-5 text-[11px] font-bold uppercase text-slate-500">
-                      {new Date(log.timestamp).toLocaleString("pt-BR")}
-                    </td>
-                  </tr>
-                ))}
+                      <td className="px-8 py-5">
+                        <span
+                          className={`text-[10px] font-black uppercase tracking-tighter ${status.color}`}
+                        >
+                          {status.label}
+                        </span>
+                      </td>
+
+                      <td className="px-8 py-5 text-[11px] font-bold uppercase text-slate-500">
+                        {new Date(log.timestamp).toLocaleString("pt-BR")}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -19,6 +19,7 @@ import { LoadingIndicator } from "@/components/loading-indicator";
 import { Pagination } from "@/components/pagination";
 import { AuditLogAction } from "@/enums/audit-action";
 import { useAuditLog } from "@/services/hooks/use-audit-log";
+import { getAuditLogResultConfig } from "@/utils/get-audit-log-result-config";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -77,7 +78,6 @@ const AdminAuditLogsPage = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -89,13 +89,6 @@ const AdminAuditLogsPage = () => {
   const handleActionChange = (value: string) => {
     setActionFilter(value);
     setCurrentPage(0);
-  };
-
-  const translateResult = (result: string) => {
-    const status = result.toLowerCase();
-    if (status === "success") return "Sucesso";
-    if (status === "failure") return "Falha";
-    return result;
   };
 
   if (isLoading && logs.length === 0) {
@@ -201,46 +194,46 @@ const AdminAuditLogsPage = () => {
                 isLoading ? "opacity-50" : "opacity-100"
               }`}
             >
-              {logs.map((log) => (
-                <tr
-                  key={log.id}
-                  className="group transition-colors hover:bg-slate-50/50"
-                >
-                  <td className="px-8 py-5">
-                    <span className="text-xs font-black uppercase italic text-slate-950">
-                      {log.action}
-                    </span>
-                  </td>
+              {logs.map((log) => {
+                const status = getAuditLogResultConfig(log.result);
 
-                  <td className="px-8 py-5">
-                    <div className="flex items-center gap-2">
-                      <div className="flex h-6 w-6 items-center justify-center rounded bg-slate-100 text-slate-500">
-                        <Activity size={12} />
-                      </div>
-
-                      <span className="text-[11px] font-bold text-slate-600">
-                        {log.userId}
+                return (
+                  <tr
+                    key={log.id}
+                    className="group transition-colors hover:bg-slate-50/50"
+                  >
+                    <td className="px-8 py-5">
+                      <span className="text-xs font-black uppercase italic text-slate-950">
+                        {log.action}
                       </span>
-                    </div>
-                  </td>
+                    </td>
 
-                  <td className="px-8 py-5">
-                    <span
-                      className={`text-[10px] font-black uppercase tracking-tighter ${
-                        log.result.toLowerCase() === "success"
-                          ? "text-emerald-600"
-                          : "text-red-500"
-                      }`}
-                    >
-                      {translateResult(log.result)}
-                    </span>
-                  </td>
+                    <td className="px-8 py-5">
+                      <div className="flex items-center gap-2">
+                        <div className="flex h-6 w-6 items-center justify-center rounded bg-slate-100 text-slate-500">
+                          <Activity size={12} />
+                        </div>
 
-                  <td className="px-8 py-5 text-[11px] font-bold uppercase text-slate-500">
-                    {new Date(log.timestamp).toLocaleString("pt-BR")}
-                  </td>
-                </tr>
-              ))}
+                        <span className="text-[11px] font-bold text-slate-600">
+                          {log.userId}
+                        </span>
+                      </div>
+                    </td>
+
+                    <td className="px-8 py-5">
+                      <span
+                        className={`text-[10px] font-black uppercase tracking-tighter ${status.color}`}
+                      >
+                        {status.label}
+                      </span>
+                    </td>
+
+                    <td className="px-8 py-5 text-[11px] font-bold uppercase text-slate-500">
+                      {new Date(log.timestamp).toLocaleString("pt-BR")}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
