@@ -31,6 +31,7 @@ const AdminAuditLogsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const [inputValue, setInputValue] = useState("");
   const [userIdSearch, setUserIdSearch] = useState("");
   const [actionFilter, setActionFilter] = useState("");
 
@@ -80,14 +81,21 @@ const AdminAuditLogsPage = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleSearchChange = (value: string) => {
-    setUserIdSearch(value);
+  const handleSearchSubmit = () => {
+    setUserIdSearch(inputValue);
     setCurrentPage(0);
   };
 
   const handleActionChange = (value: string) => {
     setActionFilter(value);
     setCurrentPage(0);
+  };
+
+  const translateResult = (result: string) => {
+    const status = result.toLowerCase();
+    if (status === "success") return "Sucesso";
+    if (status === "failure") return "Falha";
+    return result;
   };
 
   if (isLoading && logs.length === 0) {
@@ -118,7 +126,7 @@ const AdminAuditLogsPage = () => {
           Voltar ao Console
         </Link>
 
-        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <div className="mb-2 flex items-center gap-2">
               <div className="flex items-center gap-2 rounded bg-slate-950 px-2 py-0.5 text-[9px] font-black tracking-widest text-white uppercase">
@@ -136,8 +144,8 @@ const AdminAuditLogsPage = () => {
             </h1>
           </div>
 
-          <div className="flex flex-col gap-4 sm:flex-row items-end">
-            <div className="relative group w-full sm:w-64">
+          <div className="flex flex-col gap-4 sm:flex-row items-end w-full lg:w-auto">
+            <div className="relative group w-full lg:w-112.5">
               <Search
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors"
                 size={16}
@@ -145,10 +153,11 @@ const AdminAuditLogsPage = () => {
 
               <input
                 type="text"
-                value={userIdSearch}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                placeholder="BUSCAR POR USER ID..."
-                className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-slate-50 pl-12 pr-6 text-[11px] font-black uppercase tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:bg-white sm:w-64"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit()}
+                placeholder="PESQUISAR POR IDENTIFICADOR DE USUÁRIO (UUID)..."
+                className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-slate-50 pl-12 pr-6 text-[10px] font-black uppercase tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:bg-white"
               />
             </div>
 
@@ -216,8 +225,14 @@ const AdminAuditLogsPage = () => {
                   </td>
 
                   <td className="px-8 py-5">
-                    <span className="text-[10px] font-black uppercase tracking-tighter text-slate-950">
-                      {log.result}
+                    <span
+                      className={`text-[10px] font-black uppercase tracking-tighter ${
+                        log.result.toLowerCase() === "success"
+                          ? "text-emerald-600"
+                          : "text-red-500"
+                      }`}
+                    >
+                      {translateResult(log.result)}
                     </span>
                   </td>
 
