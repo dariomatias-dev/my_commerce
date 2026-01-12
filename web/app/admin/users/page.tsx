@@ -10,6 +10,7 @@ import { UserCard } from "@/components/admin/users/user-card";
 import { DashboardTotalBadge } from "@/components/dashboard-total-badge";
 import { Dropdown } from "@/components/dropdown";
 import { ErrorFeedback } from "@/components/error-feedback";
+import { StatusDropdownFilter } from "@/components/filters/status-dropdown-filter";
 import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { Pagination } from "@/components/pagination";
@@ -38,12 +39,6 @@ const UserManagementPage = () => {
     { id: "ADMIN", name: "ADMINISTRADOR" },
     { id: "SUBSCRIBER", name: "ASSINANTE" },
     { id: "USER", name: "USUÁRIO" },
-  ];
-
-  const statusOptions = [
-    { id: StatusFilter.ALL, name: "Todos os Status" },
-    { id: StatusFilter.ACTIVE, name: "Ativos" },
-    { id: StatusFilter.DELETED, name: "Removidos" },
   ];
 
   const fetchUsers = useCallback(async () => {
@@ -184,13 +179,9 @@ const UserManagementPage = () => {
             className="w-full lg:w-64"
           />
 
-          <Dropdown
-            icon={Filter}
-            options={statusOptions}
+          <StatusDropdownFilter
             value={statusFilter}
             onChange={handleStatusChange}
-            placeholder="Filtrar Status"
-            className="w-full lg:w-64"
           />
         </div>
       </div>
