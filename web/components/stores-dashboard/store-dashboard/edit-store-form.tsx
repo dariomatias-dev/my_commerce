@@ -1,7 +1,5 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -12,6 +10,8 @@ import {
   StoreForm,
   StoreFormValues,
 } from "@/components/dashboard/store/store-form";
+import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
+import { LoadingIndicator } from "@/components/loading-indicator";
 import { useStore } from "@/services/hooks/use-store";
 
 interface EditStoreFormProps {
@@ -81,40 +81,33 @@ export const EditStoreForm = ({
   };
 
   if (isLoading) {
-    return (
-      <div className="pt-40 text-center font-black animate-pulse uppercase tracking-[0.2em] text-slate-400">
-        Sincronizando Instância...
-      </div>
-    );
+    return <LoadingIndicator message="Sincronizando instância..." />;
   }
 
   return (
-    <main className="min-h-screen mx-auto max-w-400 px-6 pt-32 pb-20">
-      <div className="mb-10 border-b border-slate-200 pb-8">
-        <Link
-          href={backPath}
-          className="mb-6 flex items-center gap-2 text-[10px] font-black tracking-widest text-slate-400 uppercase hover:text-indigo-600 transition-colors"
-        >
-          <ArrowLeft size={14} /> Cancelar Edição
-        </Link>
-        <h1 className="text-5xl font-black tracking-tighter text-slate-950 uppercase italic leading-none">
-          EDITAR <span className="text-indigo-600">UNIDADE.</span>
-        </h1>
-      </div>
+    <main className="mx-auto min-h-screen max-w-400 px-6 pt-32 pb-20">
+      <DashboardPageHeader
+        title="EDITAR UNIDADE"
+        subtitle="Gerencie as informações e a identidade visual da sua loja"
+        label="CONFIGURAÇÕES"
+        backPath={backPath}
+      />
 
       {apiError && (
-        <div className="mb-8 rounded-2xl border border-red-100 bg-red-50 p-4 text-center">
-          <p className="text-[10px] font-black tracking-widest text-red-500 uppercase">
+        <div className="mb-8 animate-in fade-in slide-in-from-top-2 rounded-2xl border border-red-100 bg-red-50 p-6 text-center">
+          <p className="text-[10px] font-black uppercase tracking-widest text-red-500">
             {apiError}
           </p>
         </div>
       )}
 
-      <StoreForm
-        initialData={store}
-        onSubmit={onSubmit}
-        isLoading={isSubmitting}
-      />
+      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <StoreForm
+          initialData={store}
+          onSubmit={onSubmit}
+          isLoading={isSubmitting}
+        />
+      </div>
     </main>
   );
 };
