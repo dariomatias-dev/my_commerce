@@ -161,13 +161,6 @@ public class StoreJdbcRepository implements StoreContract {
     }
 
     @Override
-    public long countByIsActiveTrueAndDeletedAtIsNullAndAuditCreatedAtAfter(LocalDateTime startDate) {
-        String sql = "SELECT COUNT(*) FROM stores WHERE is_active = true AND deleted_at IS NULL AND created_at >= :startDate";
-
-        return jdbc.queryForObject(sql, new MapSqlParameterSource("startDate", startDate), Long.class);
-    }
-
-    @Override
     public Store update(Store store) {
         LocalDateTime now = LocalDateTime.now();
 

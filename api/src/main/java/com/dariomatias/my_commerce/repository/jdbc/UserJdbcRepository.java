@@ -15,7 +15,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -137,12 +136,6 @@ public class UserJdbcRepository implements UserContract {
     public long countByEnabledTrueAndDeletedAtIsNull() {
         String sql = "SELECT COUNT(*) FROM users WHERE enabled = TRUE AND deleted_at IS NULL";
         return jdbc.queryForObject(sql, new MapSqlParameterSource(), Long.class);
-    }
-
-    @Override
-    public long countByEnabledTrueAndDeletedAtIsNullAndAuditCreatedAtAfter(LocalDateTime startDate) {
-        String sql = "SELECT COUNT(*) FROM users WHERE enabled = TRUE AND deleted_at IS NULL AND created_at >= :startDate";
-        return jdbc.queryForObject(sql, new MapSqlParameterSource("startDate", startDate), Long.class);
     }
 
     @Override

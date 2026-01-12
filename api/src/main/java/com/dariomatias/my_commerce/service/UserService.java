@@ -15,8 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
-import java.time.YearMonth;
 import java.util.Set;
 import java.util.UUID;
 
@@ -52,11 +50,6 @@ public class UserService {
         return userRepository.countByEnabledTrueAndDeletedAtIsNull();
     }
 
-    public long getNewActiveUsersSinceStartOfMonth() {
-        LocalDateTime startOfMonth = YearMonth.now().atDay(1).atStartOfDay();
-        return userRepository.countByEnabledTrueAndDeletedAtIsNullAndAuditCreatedAtAfter(startOfMonth);
-    }
-
     public User update(User authenticatedUser, UUID id, UserRequest updatedUser) {
         User user = getUserOrThrow(authenticatedUser, id);
 
@@ -75,6 +68,7 @@ public class UserService {
         }
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
         userRepository.update(user);
     }
 

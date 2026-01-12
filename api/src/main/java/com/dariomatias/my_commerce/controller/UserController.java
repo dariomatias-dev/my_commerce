@@ -112,16 +112,6 @@ public class UserController {
         );
     }
 
-    @GetMapping("/stats/new-users-this-month")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Long>> getNewActiveUsersThisMonth() {
-        long newUsers = userService.getNewActiveUsersSinceStartOfMonth();
-
-        return ResponseEntity.ok(
-                ApiResponse.success("Quantidade de novos usuários ativos desde o início do mês", newUsers)
-        );
-    }
-
     @PatchMapping("/me")
     public ResponseEntity<ApiResponse<UserResponse>> updateCurrentUser(
             @AuthenticationPrincipal User authenticatedUser,

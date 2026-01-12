@@ -5,7 +5,6 @@ import com.dariomatias.my_commerce.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,8 +19,6 @@ public interface UserContract {
     Page<User> findAll(UserFilterDTO filter, Pageable pageable);
 
     long countByEnabledTrueAndDeletedAtIsNull();
-
-    long countByEnabledTrueAndDeletedAtIsNullAndAuditCreatedAtAfter(LocalDateTime startDate);
 
     User update(User user);
 

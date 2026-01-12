@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -72,11 +71,6 @@ public class UserJpaRepository implements UserContract {
     @Override
     public long countByEnabledTrueAndDeletedAtIsNull() {
         return repository.countByEnabledTrueAndDeletedAtIsNull();
-    }
-
-    @Override
-    public long countByEnabledTrueAndDeletedAtIsNullAndAuditCreatedAtAfter(LocalDateTime startDate) {
-        return repository.countByEnabledTrueAndDeletedAtIsNullAndAuditCreatedAtAfter(startDate);
     }
 
     @Override

@@ -18,8 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
-import java.time.YearMonth;
 import java.util.UUID;
 
 @Service
@@ -114,12 +112,6 @@ public class StoreService {
 
     public long getActiveStoresCount() {
         return storeRepository.countByIsActiveTrueAndDeletedAtIsNull();
-    }
-
-    public long getNewActiveStoresThisMonth() {
-        LocalDateTime startOfMonth = YearMonth.now().atDay(1).atStartOfDay();
-
-        return storeRepository.countByIsActiveTrueAndDeletedAtIsNullAndAuditCreatedAtAfter(startOfMonth);
     }
 
     public Store update(UUID id, StoreRequestDTO request, User user, MultipartFile logo, MultipartFile banner) {

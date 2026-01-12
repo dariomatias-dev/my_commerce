@@ -126,16 +126,6 @@ public class StoreController {
         );
     }
 
-    @GetMapping("/active/new-this-month")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Long>> getNewActiveStoresThisMonth() {
-        long count = service.getNewActiveStoresThisMonth();
-
-        return ResponseEntity.ok(
-                ApiResponse.success("Quantidade de novas lojas ativas desde o início do mês", count)
-        );
-    }
-
     @PatchMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<StoreResponseDTO>> update(
