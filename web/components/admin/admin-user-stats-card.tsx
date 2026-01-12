@@ -8,9 +8,9 @@ import { DashboardStatCard } from "@/components/dashboard-stat-card";
 import { useUser } from "@/services/hooks/use-user";
 
 export const AdminUserStatsCard = () => {
-  const { getActiveUsersCount, getNewActiveUsersThisMonth } = useUser();
+  const { getActiveUsersCount } = useUser();
 
-  const [data, setData] = useState({ total: 0, trend: "0%" });
+  const [totalActive, setTotalActive] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -19,20 +19,9 @@ export const AdminUserStatsCard = () => {
     setErrorMessage(null);
 
     try {
-      const [totalActive, newActive] = await Promise.all([
-        getActiveUsersCount(),
-        getNewActiveUsersThisMonth(),
-      ]);
+      const response = await getActiveUsersCount();
 
-      const previousTotal = totalActive - newActive;
-      const percentage =
-        previousTotal > 0
-          ? ((newActive / previousTotal) * 100).toFixed(1)
-          : newActive > 0
-          ? "100"
-          : "0";
-
-      setData({ total: totalActive, trend: `+${percentage}%` });
+      setTotalActive(response);
     } catch (error) {
       if (error instanceof ApiError) {
         setErrorMessage(error.message);
@@ -42,7 +31,7 @@ export const AdminUserStatsCard = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [getActiveUsersCount, getNewActiveUsersThisMonth]);
+  }, [getActiveUsersCount]);
 
   useEffect(() => {
     fetchData();
@@ -52,8 +41,7 @@ export const AdminUserStatsCard = () => {
     <DashboardStatCard
       icon={Users}
       label="Usuários Ativos"
-      value={data.total.toLocaleString()}
-      sub={data.trend}
+      value={totalActive.toLocaleString()}
       isLoading={isLoading}
       errorMessage={errorMessage}
       onRetry={fetchData}

@@ -73,7 +73,6 @@ const AdminDashboard = () => {
           icon={DollarSign}
           label="Volume Total"
           value="R$ 142.580"
-          sub="+12.5%"
         />
 
         <AdminUserStatsCard />
@@ -84,7 +83,6 @@ const AdminDashboard = () => {
           icon={TrendingUp}
           label="Pedidos/Dia"
           value={totalOrders.toString()}
-          sub="+14.1%"
         />
       </div>
 

@@ -57,11 +57,6 @@ export const useStore = () => {
     []
   );
 
-  const getNewActiveStoresThisMonth = useCallback(
-    () => apiClient.get<number>("/stores/active/new-this-month"),
-    []
-  );
-
   const updateStore = useCallback(
     (id: string, data?: Partial<StoreRequest>, logo?: File, banner?: File) => {
       const formData = new FormData();
@@ -93,7 +88,6 @@ export const useStore = () => {
     getStoreById,
     getStoreBySlug,
     getTotalActiveStores,
-    getNewActiveStoresThisMonth,
     updateStore,
     deleteStore,
   };
