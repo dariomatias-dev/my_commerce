@@ -1,6 +1,7 @@
 package com.dariomatias.my_commerce.repository.jdbc;
 
 import com.dariomatias.my_commerce.dto.user.UserFilterDTO;
+import com.dariomatias.my_commerce.enums.StatusFilter;
 import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.contract.UserContract;
@@ -71,50 +72,49 @@ public class UserJdbcRepository implements UserContract {
 
     @Override
     public Page<User> findAll(UserFilterDTO filter, Pageable pageable) {
-        List<String> conditions = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM users WHERE 1=1");
+        StringBuilder countSql = new StringBuilder("SELECT COUNT(*) FROM users WHERE 1=1");
         MapSqlParameterSource params = new MapSqlParameterSource();
 
-        conditions.add("deleted_at IS NULL");
+        if (filter != null && filter.getStatus() != null) {
+            if (filter.getStatus() == StatusFilter.ACTIVE) {
+                sql.append(" AND deleted_at IS NULL");
+                countSql.append(" AND deleted_at IS NULL");
+            } else if (filter.getStatus() == StatusFilter.DELETED) {
+                sql.append(" AND deleted_at IS NOT NULL");
+                countSql.append(" AND deleted_at IS NOT NULL");
+            }
+        } else {
+            sql.append(" AND deleted_at IS NULL");
+            countSql.append(" AND deleted_at IS NULL");
+        }
 
         if (filter != null) {
             if (filter.getName() != null && !filter.getName().isEmpty()) {
-                conditions.add("LOWER(name) LIKE :name");
+                sql.append(" AND LOWER(name) LIKE :name");
+                countSql.append(" AND LOWER(name) LIKE :name");
                 params.addValue("name", "%" + filter.getName().toLowerCase() + "%");
             }
 
             if (filter.getEmail() != null && !filter.getEmail().isEmpty()) {
-                conditions.add("LOWER(email) LIKE :email");
+                sql.append(" AND LOWER(email) LIKE :email");
+                countSql.append(" AND LOWER(email) LIKE :email");
                 params.addValue("email", "%" + filter.getEmail().toLowerCase() + "%");
             }
 
             if (filter.getRole() != null) {
-                conditions.add("role = :role");
+                sql.append(" AND role = :role");
+                countSql.append(" AND role = :role");
                 params.addValue("role", filter.getRole().name());
             }
         }
 
-        String where = String.join(" AND ", conditions);
-
-        String sql = """
-            SELECT *
-            FROM users
-            WHERE %s
-            ORDER BY name ASC
-            OFFSET :offset LIMIT :limit
-        """.formatted(where);
-
+        sql.append(" ORDER BY name ASC OFFSET :offset LIMIT :limit");
         params.addValue("offset", pageable.getOffset());
         params.addValue("limit", pageable.getPageSize());
 
-        List<User> content = jdbc.query(sql, params, mapper);
-
-        String countSql = """
-            SELECT COUNT(*)
-            FROM users
-            WHERE %s
-        """.formatted(where);
-
-        long total = jdbc.queryForObject(countSql, params, Long.class);
+        List<User> content = jdbc.query(sql.toString(), params, mapper);
+        long total = jdbc.queryForObject(countSql.toString(), params, Long.class);
 
         return new PageImpl<>(content, pageable, total);
     }

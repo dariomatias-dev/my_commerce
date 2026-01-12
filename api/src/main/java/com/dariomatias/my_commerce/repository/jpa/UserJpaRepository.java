@@ -1,7 +1,7 @@
 package com.dariomatias.my_commerce.repository.jpa;
 
 import com.dariomatias.my_commerce.dto.user.UserFilterDTO;
-import com.dariomatias.my_commerce.model.Product;
+import com.dariomatias.my_commerce.enums.StatusFilter;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.UserRepository;
 import com.dariomatias.my_commerce.repository.contract.UserContract;
@@ -39,17 +39,22 @@ public class UserJpaRepository implements UserContract {
             if (filter.getName() != null && !filter.getName().isEmpty()) {
                 spec = spec.and(UserSpecification.name(filter.getName()));
             }
-
             if (filter.getEmail() != null && !filter.getEmail().isEmpty()) {
                 spec = spec.and(UserSpecification.email(filter.getEmail()));
             }
-
             if (filter.getRole() != null) {
                 spec = spec.and(UserSpecification.role(filter.getRole()));
             }
-        }
 
-        spec = spec.and(UserSpecification.active());
+            StatusFilter status = filter.getStatus() != null ? filter.getStatus() : StatusFilter.ACTIVE;
+            if (status == StatusFilter.ACTIVE) {
+                spec = spec.and(UserSpecification.active());
+            } else if (status == StatusFilter.DELETED) {
+                spec = spec.and(UserSpecification.deleted());
+            }
+        } else {
+            spec = spec.and(UserSpecification.active());
+        }
 
         return repository.findAll(spec, pageable);
     }
@@ -81,11 +86,8 @@ public class UserJpaRepository implements UserContract {
 
     @Override
     public void delete(UUID id) {
-        User user = repository.findById(id)
-                .orElseThrow();
-
+        User user = repository.findById(id).orElseThrow();
         user.delete();
-
         repository.save(user);
     }
 }

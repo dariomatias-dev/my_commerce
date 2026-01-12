@@ -1,5 +1,6 @@
 package com.dariomatias.my_commerce.dto.user;
 
+import com.dariomatias.my_commerce.enums.StatusFilter;
 import com.dariomatias.my_commerce.enums.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
@@ -17,4 +18,6 @@ public class UserFilterDTO {
     private String email;
 
     private UserRole role;
+
+    private StatusFilter status = StatusFilter.ACTIVE;
 }
