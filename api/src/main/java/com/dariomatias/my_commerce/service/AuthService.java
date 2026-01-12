@@ -92,8 +92,16 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao enviar e-mail de verificação");
         }
 
-        return new UserResponse(savedUser.getId(), savedUser.getName(), savedUser.getEmail(),
-                savedUser.getRole(), savedUser.isEnabled());
+        return new UserResponse(
+                savedUser.getId(),
+                savedUser.getName(),
+                savedUser.getEmail(),
+                savedUser.getRole(),
+                savedUser.isEnabled(),
+                savedUser.getAudit().getCreatedAt(),
+                savedUser.getAudit().getUpdatedAt(),
+                savedUser.getDeletedAt()
+        );
     }
 
     public void verifyEmail(String token) {
