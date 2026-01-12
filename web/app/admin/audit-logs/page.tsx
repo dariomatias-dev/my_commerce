@@ -1,7 +1,6 @@
 "use client";
 
-import { ArrowLeft, Filter, History, Search } from "lucide-react";
-import Link from "next/link";
+import { Filter, Search } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
@@ -9,6 +8,7 @@ import { AuditLogResponse } from "@/@types/audit-log/audit-log-response";
 import { AuditLogTable } from "@/components/audit-log-table";
 import { Dropdown } from "@/components/dropdown";
 import { ErrorFeedback } from "@/components/error-feedback";
+import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { Pagination } from "@/components/pagination";
 import { AuditLogAction } from "@/enums/audit-action";
@@ -103,72 +103,52 @@ const AdminAuditLogsPage = () => {
   }
 
   return (
-    <main className="min-h-screen mx-auto max-w-400 px-6 pt-32 pb-12 flex flex-col">
-      <div className="mb-12 border-b border-slate-200 pb-8">
-        <Link
-          href="/admin"
-          className="mb-6 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 transition-colors hover:text-indigo-600"
-        >
-          <ArrowLeft size={12} />
-          Voltar ao Console
-        </Link>
+    <main className="mx-auto flex min-h-screen max-w-400 flex-col px-6 pt-32 pb-12">
+      <DashboardPageHeader
+        title="LOGS DE AUDITORIA"
+        subtitle="Histórico completo de operações e rastreabilidade de sistema"
+        label="Registros"
+        backPath="/admin"
+      />
 
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <div className="mb-2 flex items-center gap-2">
-              <div className="flex items-center gap-2 rounded bg-slate-950 px-2 py-0.5 text-[9px] font-black tracking-widest text-white uppercase">
-                <History size={10} />
-                AUDIT_LOGS
-              </div>
+      <div className="mb-12 flex flex-col gap-4 lg:flex-row lg:items-end">
+        <div className="group relative flex-1">
+          <Search
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-indigo-600"
+            size={16}
+          />
 
-              <span className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase italic">
-                Histórico completo de operações
-              </span>
-            </div>
-
-            <h1 className="text-4xl font-black tracking-tighter text-slate-950 uppercase italic md:text-5xl">
-              LOGS DE <span className="text-indigo-600">AUDITORIA.</span>
-            </h1>
-          </div>
-
-          <div className="flex flex-col gap-4 sm:flex-row items-end w-full lg:w-auto">
-            <div className="relative group w-full lg:w-112.5">
-              <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors"
-                size={16}
-              />
-
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit()}
-                placeholder="PESQUISAR POR IDENTIFICADOR DE USUÁRIO (UUID)..."
-                className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-slate-50 pl-12 pr-6 text-[10px] font-black uppercase tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:bg-white"
-              />
-            </div>
-
-            <Dropdown
-              icon={Filter}
-              options={auditlogActionOptions}
-              value={actionFilter}
-              onChange={handleActionChange}
-              placeholder="Filtrar Ação"
-              className="w-full sm:w-64"
-            />
-          </div>
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit()}
+            placeholder="PESQUISAR POR IDENTIFICADOR DE USUÁRIO (UUID)..."
+            className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-slate-50 pr-6 pl-12 text-[10px] font-black uppercase tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:bg-white"
+          />
         </div>
+
+        <Dropdown
+          icon={Filter}
+          options={auditlogActionOptions}
+          value={actionFilter}
+          onChange={handleActionChange}
+          placeholder="Filtrar Ação"
+          className="w-full lg:w-72"
+        />
       </div>
 
-      <div className="min-h-120 flex flex-col">
+      <div className="flex min-h-120 flex-col">
         <AuditLogTable logs={logs} isLoading={isLoading} />
       </div>
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-      />
+      <div className="mt-8">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      </div>
     </main>
   );
 };
