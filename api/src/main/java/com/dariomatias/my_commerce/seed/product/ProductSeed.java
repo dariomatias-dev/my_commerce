@@ -6,6 +6,7 @@ import com.dariomatias.my_commerce.repository.ProductRepository;
 import com.dariomatias.my_commerce.repository.StoreRepository;
 import com.dariomatias.my_commerce.repository.contract.ProductImageContract;
 import com.dariomatias.my_commerce.service.MinioService;
+import com.dariomatias.my_commerce.util.RandomUtil;
 import com.dariomatias.my_commerce.util.SlugUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
@@ -61,7 +62,6 @@ public class ProductSeed {
                 int productsPerCategory = 2 + (productIndex % 3);
 
                 for (int i = 0; i < productsPerCategory; i++) {
-
                     String name = "Produto " + productIndex;
                     String slug = SlugUtil.generateSlug(name + "-" + productIndex);
 
@@ -72,10 +72,9 @@ public class ProductSeed {
                         active = false;
                         deletedAt = LocalDateTime.now().minusDays(10);
                     } else {
-                        active = productIndex % 15 != 0;
-                        if (!active) {
-                            deletedAt = LocalDateTime.now().minusDays(1);
-                        }
+                        RandomUtil.RandomResult result = RandomUtil.randomDeletion(10, 3);
+                        active = !result.isDeleted();
+                        deletedAt = result.getDeletedAt();
                     }
 
                     Product product = new Product();
