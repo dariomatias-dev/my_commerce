@@ -13,6 +13,7 @@ import { ErrorFeedback } from "@/components/error-feedback";
 import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { Pagination } from "@/components/pagination";
+import { StatusFilter } from "@/enums/status-filter";
 import { useUser } from "@/services/hooks/use-user";
 
 const UserManagementPage = () => {
@@ -30,12 +31,19 @@ const UserManagementPage = () => {
   const [searchName, setSearchName] = useState("");
   const [searchEmail, setSearchEmail] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>(StatusFilter.ALL);
 
   const roleOptions = [
     { id: "", name: "Todos os Cargos" },
     { id: "ADMIN", name: "ADMINISTRADOR" },
     { id: "SUBSCRIBER", name: "ASSINANTE" },
     { id: "USER", name: "USUÁRIO" },
+  ];
+
+  const statusOptions = [
+    { id: StatusFilter.ALL, name: "Todos os Status" },
+    { id: StatusFilter.ACTIVE, name: "Ativos" },
+    { id: StatusFilter.DELETED, name: "Removidos" },
   ];
 
   const fetchUsers = useCallback(async () => {
@@ -47,6 +55,7 @@ const UserManagementPage = () => {
         name: searchName || undefined,
         email: searchEmail || undefined,
         role: (roleFilter as UserRole) || undefined,
+        status: (statusFilter as StatusFilter) || undefined,
       };
 
       const response = await getAllUsers(filters, currentPage, 10);
@@ -65,7 +74,14 @@ const UserManagementPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [getAllUsers, currentPage, searchName, searchEmail, roleFilter]);
+  }, [
+    getAllUsers,
+    currentPage,
+    searchName,
+    searchEmail,
+    roleFilter,
+    statusFilter,
+  ]);
 
   useEffect(() => {
     fetchUsers();
@@ -81,6 +97,11 @@ const UserManagementPage = () => {
 
   const handleRoleChange = (value: string) => {
     setRoleFilter(value);
+    setCurrentPage(0);
+  };
+
+  const handleStatusChange = (value: string) => {
+    setStatusFilter(value);
     setCurrentPage(0);
   };
 
@@ -153,14 +174,25 @@ const UserManagementPage = () => {
           />
         </div>
 
-        <Dropdown
-          icon={Filter}
-          options={roleOptions}
-          value={roleFilter}
-          onChange={handleRoleChange}
-          placeholder="Filtrar Cargo"
-          className="w-full lg:w-64"
-        />
+        <div className="flex flex-col gap-4 sm:flex-row lg:w-auto">
+          <Dropdown
+            icon={Filter}
+            options={roleOptions}
+            value={roleFilter}
+            onChange={handleRoleChange}
+            placeholder="Filtrar Cargo"
+            className="w-full lg:w-64"
+          />
+
+          <Dropdown
+            icon={Filter}
+            options={statusOptions}
+            value={statusFilter}
+            onChange={handleStatusChange}
+            placeholder="Filtrar Status"
+            className="w-full lg:w-64"
+          />
+        </div>
       </div>
 
       <div className="space-y-10">
