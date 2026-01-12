@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -36,8 +37,7 @@ public class StoreSeed {
 
     @Transactional
     public void createStores() {
-        List<User> subscribers =
-                userRepository.findByRoleAndEnabledTrue(UserRole.SUBSCRIBER);
+        List<User> subscribers = userRepository.findByRole(UserRole.SUBSCRIBER);
 
         if (subscribers.isEmpty()) return;
 
@@ -45,6 +45,11 @@ public class StoreSeed {
 
         for (int u = 0; u < subscribers.size(); u++) {
             User user = subscribers.get(u);
+
+            if (!user.isEnabled() && user.getDeletedAt() == null) {
+                continue;
+            }
+
             int storesPerUser = (u % 20) + 1;
 
             for (int i = 0; i < storesPerUser; i++) {
@@ -74,8 +79,19 @@ public class StoreSeed {
                 store.setSlug(slug);
                 store.setDescription("Descrição da Loja " + storeIndex);
                 store.setThemeColor(randomColor());
-                store.setIsActive(true);
                 store.setUser(user);
+
+                if (user.isDeleted()) {
+                    store.setIsActive(false);
+                    store.setDeletedAt(LocalDateTime.now().minusDays(10));
+                } else if (user.isEnabled()) {
+                    if (storeIndex % 10 == 0) {
+                        store.setIsActive(false);
+                        store.setDeletedAt(LocalDateTime.now().minusDays(1));
+                    } else {
+                        store.setIsActive(true);
+                    }
+                }
 
                 storeRepository.save(store);
                 storeIndex++;
