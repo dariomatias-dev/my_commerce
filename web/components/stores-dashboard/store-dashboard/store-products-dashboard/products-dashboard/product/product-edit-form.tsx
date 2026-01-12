@@ -1,13 +1,12 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { ProductRequest } from "@/@types/product/product-request";
 import { ProductResponse } from "@/@types/product/product-response";
+import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { ProductForm } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/products-dashboard/product/product-form";
 import { ProductFormValues } from "@/schemas/product.schema";
@@ -89,37 +88,34 @@ export const ProductEditForm = ({
   };
 
   if (isLoading) {
-    return <LoadingIndicator message="Carregando dados..." />;
+    return <LoadingIndicator message="Sincronizando dados do produto..." />;
   }
 
   return (
-    <main className="min-h-screen mx-auto max-w-400 px-6 pt-32 pb-20">
-      <div className="mb-10 border-b border-slate-200 pb-8">
-        <Link
-          href={backPath}
-          className="mb-6 flex items-center gap-2 text-[10px] font-black tracking-widest text-slate-400 uppercase hover:text-indigo-600 transition-colors"
-        >
-          <ArrowLeft size={14} /> Cancelar Operação
-        </Link>
-        <h1 className="text-5xl font-black tracking-tighter text-slate-950 uppercase italic leading-none">
-          EDITAR <span className="text-indigo-600">PRODUTO.</span>
-        </h1>
-      </div>
+    <main className="mx-auto min-h-screen max-w-400 px-6 pt-32 pb-20">
+      <DashboardPageHeader
+        title="EDITAR PRODUTO"
+        subtitle="Gerencie as informações, preço e disponibilidade do item no catálogo"
+        label="CATÁLOGO"
+        backPath={backPath}
+      />
 
       {apiError && (
-        <div className="mb-8 rounded-2xl border border-red-100 bg-red-50 p-4 text-center">
-          <p className="text-[10px] font-black tracking-widest text-red-500 uppercase">
+        <div className="mb-8 animate-in fade-in slide-in-from-top-2 rounded-2xl border border-red-100 bg-red-50 p-6 text-center">
+          <p className="text-[10px] font-black uppercase tracking-widest text-red-500">
             {apiError}
           </p>
         </div>
       )}
 
-      <ProductForm
-        initialData={product}
-        onSubmit={onSubmit}
-        isSubmitting={isSubmitting}
-        storeSlug={storeSlug}
-      />
+      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <ProductForm
+          initialData={product}
+          onSubmit={onSubmit}
+          isSubmitting={isSubmitting}
+          storeSlug={storeSlug}
+        />
+      </div>
     </main>
   );
 };
