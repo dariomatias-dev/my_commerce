@@ -7,6 +7,7 @@ import { ProductFilters } from "@/@types/product/product-filters";
 import { ProductResponse } from "@/@types/product/product-response";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { Pagination } from "@/components/pagination";
+import { StatusFilter } from "@/enums/status-filter";
 import { useProduct } from "@/services/hooks/use-product";
 import { ProductsDashboardError } from "./products-dashboard-error";
 import { ProductsDashboardFilter } from "./products-dashboard-filter";
@@ -29,7 +30,7 @@ export const ProductsDashboard = ({ storeId }: ProductsDashboardProps) => {
   const [appliedFilters, setAppliedFilters] = useState<
     Omit<ProductFilters, "storeId">
   >({
-    status: "ACTIVE",
+    status: StatusFilter.ALL,
     minPrice: undefined,
     maxPrice: undefined,
     lowStockThreshold: undefined,

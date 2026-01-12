@@ -1,13 +1,13 @@
 "use client";
 
-import { AlertTriangle, CheckCircle2, DollarSign, XCircle } from "lucide-react";
+import { AlertTriangle, DollarSign } from "lucide-react";
 import { KeyboardEvent, useState } from "react";
 
 import { ProductFilters } from "@/@types/product/product-filters";
 import { FilterBooleanCard } from "@/components/filters/filter-boolean-card";
 import { FilterInput } from "@/components/filters/filter-input";
 import { FilterSearch } from "@/components/filters/filter-search";
-import { FilterToggle } from "@/components/filters/filter-toggle";
+import { StatusDropdownFilter } from "@/components/filters/status-dropdown-filter";
 
 type LocalFilters = Omit<ProductFilters, "storeId">;
 
@@ -60,38 +60,20 @@ export const ProductsDashboardFilter = ({
           }}
         />
 
-        <div className="flex h-15.5 rounded-2xl bg-slate-200/50 p-1.5">
-          <FilterToggle
-            icon={CheckCircle2}
-            label="Ativos"
-            isActive={localFilters.status === "ACTIVE"}
-            onClick={() => {
-              const status: ProductFilters["status"] =
-                localFilters.status === "ACTIVE" ? "ALL" : "ACTIVE";
-              const updated: LocalFilters = { ...localFilters, status };
+        <StatusDropdownFilter
+          value={localFilters.status || ""}
+          onChange={(val) => {
+            const updated: LocalFilters = {
+              ...localFilters,
+              status: val as ProductFilters["status"],
+            };
 
-              setLocalFilters(updated);
+            setLocalFilters(updated);
 
-              triggerApply(updated);
-            }}
-          />
-
-          <FilterToggle
-            icon={XCircle}
-            label="Inativos"
-            isActive={localFilters.status === "DELETED"}
-            activeClassName="bg-white text-red-500 shadow-sm"
-            onClick={() => {
-              const status: ProductFilters["status"] =
-                localFilters.status === "DELETED" ? "ALL" : "DELETED";
-              const updated: LocalFilters = { ...localFilters, status };
-
-              setLocalFilters(updated);
-
-              triggerApply(updated);
-            }}
-          />
-        </div>
+            triggerApply(updated);
+          }}
+          className="w-full lg:w-72"
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -121,6 +103,7 @@ export const ProductsDashboardFilter = ({
           placeholder="0.00"
           onKeyDown={(e) => {
             blockInvalidChars(e);
+
             handleKeyDown(e);
           }}
           onChange={(val) =>
