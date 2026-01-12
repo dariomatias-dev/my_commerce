@@ -3,6 +3,7 @@ package com.dariomatias.my_commerce.service;
 import com.dariomatias.my_commerce.dto.PasswordUpdateRequest;
 import com.dariomatias.my_commerce.dto.user.UserFilterDTO;
 import com.dariomatias.my_commerce.dto.user.UserRequest;
+import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.contract.UserContract;
 import jakarta.transaction.Transactional;
@@ -16,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -24,6 +26,9 @@ public class UserService {
     private final UserContract userRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private final PasswordEncoder passwordEncoder;
+
+    private static final String EMAIL_VERIFICATION_PREFIX = "email_verification:";
+    private static final String PASSWORD_RECOVERY_PREFIX = "password_recovery:";
 
     public UserService(
             UserContract userRepository,
@@ -39,8 +44,8 @@ public class UserService {
         return userRepository.findAll(filter, pageable);
     }
 
-    public User getById(UUID id) {
-        return getUserOrThrow(id);
+    public User getById(User authenticatedUser, UUID id) {
+        return getUserOrThrow(authenticatedUser, id);
     }
 
     public long getActiveUsersCount() {
@@ -49,12 +54,11 @@ public class UserService {
 
     public long getNewActiveUsersSinceStartOfMonth() {
         LocalDateTime startOfMonth = YearMonth.now().atDay(1).atStartOfDay();
-
         return userRepository.countByEnabledTrueAndDeletedAtIsNullAndAuditCreatedAtAfter(startOfMonth);
     }
 
-    public User update(UUID id, UserRequest updatedUser) {
-        User user = getUserOrThrow(id);
+    public User update(User authenticatedUser, UUID id, UserRequest updatedUser) {
+        User user = getUserOrThrow(authenticatedUser, id);
 
         if (updatedUser.getName() != null) {
             user.setName(updatedUser.getName());
@@ -63,8 +67,8 @@ public class UserService {
         return userRepository.update(user);
     }
 
-    public void changePassword(UUID userId, PasswordUpdateRequest request) {
-        User user = getUserOrThrow(userId);
+    public void changePassword(User authenticatedUser, UUID userId, PasswordUpdateRequest request) {
+        User user = getUserOrThrow(authenticatedUser, userId);
 
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Senha atual é incorreta");
@@ -75,20 +79,45 @@ public class UserService {
     }
 
     @Transactional
-    public void delete(UUID id) {
-        User user = getUserOrThrow(id);
+    public void delete(User authenticatedUser, UUID id) {
+        User user = getUserOrThrow(authenticatedUser, id);
 
         user.delete();
 
-        redisTemplate.keys("*").stream()
-                .filter(key -> id.toString().equals(redisTemplate.opsForValue().get(key)))
-                .forEach(redisTemplate::delete);
+        invalidateUserTokens(id);
 
         userRepository.update(user);
     }
 
-    private User getUserOrThrow(UUID id) {
-        return userRepository.findById(id)
+    private User getUserOrThrow(User authenticatedUser, UUID id) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+
+        if (user.isDeleted()) {
+            if (authenticatedUser.getRole() == UserRole.ADMIN) {
+                return user;
+            }
+
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado");
+        }
+
+        return user;
+    }
+
+    private void invalidateUserTokens(UUID userId) {
+        Set<String> keys = redisTemplate.keys("*");
+        if (keys.isEmpty()) {
+            return;
+        }
+
+        keys.stream()
+                .filter(key -> {
+                    if (key.startsWith(EMAIL_VERIFICATION_PREFIX) || key.startsWith(PASSWORD_RECOVERY_PREFIX)) {
+                        return false;
+                    }
+                    Object value = redisTemplate.opsForValue().get(key);
+                    return userId.toString().equals(value);
+                })
+                .forEach(redisTemplate::delete);
     }
 }

@@ -125,7 +125,7 @@ const UserManagementPage = () => {
           totalPages || 1
         } — Controle de acessos e governança de contas`}
         label="USUÁRIOS"
-        backPath="/dashboard/admin"
+        backPath="/admin"
         actions={
           <DashboardTotalBadge
             icon={Users}
