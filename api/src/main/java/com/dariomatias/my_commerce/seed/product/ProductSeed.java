@@ -15,6 +15,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,10 +52,10 @@ public class ProductSeed {
         int productIndex = 1;
 
         for (Store store : stores) {
-            List<Category> categories =
-                    categoryRepository.findAllByStore(store);
-
+            List<Category> categories = categoryRepository.findAllByStore(store);
             if (categories.isEmpty()) continue;
+
+            boolean storeDeleted = store.getDeletedAt() != null;
 
             for (Category category : categories) {
                 int productsPerCategory = 2 + (productIndex % 3);
@@ -62,33 +63,34 @@ public class ProductSeed {
                 for (int i = 0; i < productsPerCategory; i++) {
 
                     String name = "Produto " + productIndex;
-                    String slug = SlugUtil.generateSlug(
-                            name + "-" + productIndex
-                    );
+                    String slug = SlugUtil.generateSlug(name + "-" + productIndex);
 
-                    boolean active = productIndex % 15 != 0;
+                    boolean active;
+                    LocalDateTime deletedAt = null;
+
+                    if (storeDeleted) {
+                        active = false;
+                        deletedAt = LocalDateTime.now().minusDays(10);
+                    } else {
+                        active = productIndex % 15 != 0;
+                        if (!active) {
+                            deletedAt = LocalDateTime.now().minusDays(1);
+                        }
+                    }
 
                     Product product = new Product();
                     product.setStore(store);
                     product.setCategory(category);
                     product.setName(name);
                     product.setSlug(slug);
-                    product.setDescription(
-                            "Produto da categoria " + category.getName()
-                    );
-                    product.setPrice(
-                            BigDecimal.valueOf(39.90 + productIndex)
-                    );
+                    product.setDescription("Produto da categoria " + category.getName());
+                    product.setPrice(BigDecimal.valueOf(39.90 + productIndex));
                     product.setStock(5 + productIndex);
                     product.setActive(active);
+                    product.setDeletedAt(deletedAt);
 
                     productRepository.save(product);
-
-                    createProductImage(
-                            store.getSlug(),
-                            product,
-                            productIndex
-                    );
+                    createProductImage(store.getSlug(), product, productIndex);
 
                     productIndex++;
                 }
@@ -96,25 +98,12 @@ public class ProductSeed {
         }
     }
 
-    private void createProductImage(
-            String storeSlug,
-            Product product,
-            int index
-    ) {
-        String folder =
-                storeSlug + "/products/" + product.getSlug() + "/";
+    private void createProductImage(String storeSlug, Product product, int index) {
+        String folder = storeSlug + "/products/" + product.getSlug() + "/";
+        String objectName = folder + UUID.randomUUID() + ".png";
+        byte[] imageBytes = generateProductImage("P" + index);
 
-        String objectName =
-                folder + UUID.randomUUID() + ".png";
-
-        byte[] imageBytes =
-                generateProductImage("P" + index);
-
-        minioService.uploadImage(
-                BUCKET_NAME,
-                objectName,
-                imageBytes
-        );
+        minioService.uploadImage(BUCKET_NAME, objectName, imageBytes);
 
         ProductImage image = new ProductImage();
         image.setProduct(product);
@@ -125,9 +114,7 @@ public class ProductSeed {
     }
 
     private byte[] generateProductImage(String text) {
-        BufferedImage image =
-                new BufferedImage(600, 600, BufferedImage.TYPE_INT_ARGB);
-
+        BufferedImage image = new BufferedImage(600, 600, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = image.createGraphics();
 
         g.setColor(Color.decode(randomColor()));
