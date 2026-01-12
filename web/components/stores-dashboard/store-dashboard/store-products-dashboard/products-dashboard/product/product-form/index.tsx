@@ -35,7 +35,7 @@ export const ProductForm = ({
   storeSlug,
 }: ProductFormProps) => {
   const { getStoreBySlug } = useStore();
-  const { getCategoriesByStoreId } = useCategory();
+  const { getAllCategories } = useCategory();
 
   const [storeId, setStoreId] = useState<string | null>(null);
   const [categories, setCategories] = useState<CategoryResponse[]>([]);
@@ -78,7 +78,7 @@ export const ProductForm = ({
 
       setStoreId(storeData.id);
 
-      const catData = await getCategoriesByStoreId(storeData.id, 0, 100);
+      const catData = await getAllCategories({ storeId: storeData.id }, 0, 100);
 
       setCategories(catData.content);
     } catch (error) {
@@ -86,7 +86,7 @@ export const ProductForm = ({
     } finally {
       setIsLoadingData(false);
     }
-  }, [storeSlug, getStoreBySlug, getCategoriesByStoreId]);
+  }, [storeSlug, getStoreBySlug, getAllCategories]);
 
   useEffect(() => {
     if (initialData) {
@@ -104,7 +104,7 @@ export const ProductForm = ({
       const images = initialData.images.map((image) => {
         return image.url;
       });
-      
+
       setExistingImages(images);
     }
   }, [initialData, reset]);
