@@ -1,16 +1,16 @@
 "use client";
 
-import { Filter, Store } from "lucide-react";
+import { Store } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { PaginatedResponse } from "@/@types/paginated-response";
 import { StoreFilter } from "@/@types/store/store-filter";
 import { StoreResponse } from "@/@types/store/store-response";
-import { Dropdown } from "@/components/dropdown";
 import { Pagination } from "@/components/pagination";
 import { StatusFilter } from "@/enums/status-filter";
 import { DashboardTotalBadge } from "../dashboard-total-badge";
+import { StatusDropdownFilter } from "../filters/status-dropdown-filter";
 import { StoresList } from "../stores-list";
 import { StoresDashboardEmptyStores } from "./stores-dashboard-empty-stores";
 import { StoresDashboardPageHeader } from "./stores-dashboard-page-header";
@@ -47,14 +47,8 @@ export const StoresDashboard = ({
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
-  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>(StatusFilter.ALL);
   const pageSize = 9;
-
-  const statusOptions = [
-    { id: "", name: "Todos os Status" },
-    { id: StatusFilter.ACTIVE, name: "Ativos" },
-    { id: StatusFilter.DELETED, name: "Removidos" },
-  ];
 
   const fetchStores = useCallback(async () => {
     try {
@@ -97,7 +91,12 @@ export const StoresDashboard = ({
     setCurrentPage(0);
   };
 
-  if (stores.length === 0 && !error && !isLoading && !statusFilter) {
+  if (
+    stores.length === 0 &&
+    !error &&
+    !isLoading &&
+    statusFilter === StatusFilter.ALL
+  ) {
     return <StoresDashboardEmptyStores />;
   }
 
@@ -129,12 +128,9 @@ export const StoresDashboard = ({
 
           {showStatusFilter && (
             <div className="mb-12 flex justify-end">
-              <Dropdown
-                icon={Filter}
-                options={statusOptions}
+              <StatusDropdownFilter
                 value={statusFilter}
                 onChange={handleStatusChange}
-                placeholder="Filtrar por Status"
                 className="w-full sm:w-72"
               />
             </div>
