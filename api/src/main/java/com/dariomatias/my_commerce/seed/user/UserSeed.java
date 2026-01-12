@@ -30,7 +30,7 @@ public class UserSeed {
                 UserRole.ADMIN
         );
 
-        for (int i = 1; i <= 20; i++) {
+        for (int i = 1; i <= 30; i++) {
             String email = "user" + i + "@gmail.com";
 
             if (userRepository.existsByEmail(email)) {
@@ -42,11 +42,14 @@ public class UserSeed {
             User user = new User();
             user.setName("Usuário " + i);
             user.setEmail(email);
-            user.setPassword(
-                    passwordEncoder.encode(BASE_PASSWORD + i)
-            );
+            user.setPassword(passwordEncoder.encode(BASE_PASSWORD + i));
             user.setRole(role);
-            user.setEnabled(true);
+
+            if (i % 10 == 0) {
+                user.delete();
+            } else {
+                user.setEnabled(i % 7 != 0);
+            }
 
             userRepository.save(user);
         }
