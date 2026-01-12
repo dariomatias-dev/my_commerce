@@ -4,8 +4,8 @@ import { Store } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
+import { DashboardStatCard } from "@/components/dashboard-stat-card";
 import { useStore } from "@/services/hooks/use-store";
-import { AdminStatCard } from "./admin-stat-card";
 
 export const AdminStoreStatsCard = () => {
   const { getTotalActiveStores, getNewActiveStoresThisMonth } = useStore();
@@ -49,11 +49,11 @@ export const AdminStoreStatsCard = () => {
   }, [fetchData]);
 
   return (
-    <AdminStatCard
-      icon={<Store size={24} />}
+    <DashboardStatCard
+      icon={Store}
       label="Lojas Ativas"
       value={data.total.toLocaleString()}
-      trend={data.trend}
+      sub={data.trend}
       isLoading={isLoading}
       errorMessage={errorMessage}
       onRetry={fetchData}

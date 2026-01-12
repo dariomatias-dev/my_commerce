@@ -5,13 +5,13 @@ import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { AdminAuditLogTable } from "@/components/admin/admin-audit-log-table";
-import { AdminStatCard } from "@/components/admin/admin-stat-card";
 import { AdminStoreStatsCard } from "@/components/admin/admin-store-stats-card";
 import { AdminUserStatsCard } from "@/components/admin/admin-user-stats-card";
+import { DashboardStatCard } from "@/components/dashboard-stat-card";
 import { ErrorFeedback } from "@/components/error-feedback";
+import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { useOrder } from "@/services/hooks/use-order";
-import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 
 const AdminDashboard = () => {
   const { getAllOrders } = useOrder();
@@ -69,22 +69,22 @@ const AdminDashboard = () => {
       />
 
       <div className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <AdminStatCard
-          icon={<DollarSign size={24} />}
+        <DashboardStatCard
+          icon={DollarSign}
           label="Volume Total"
           value="R$ 142.580"
-          trend="+12.5%"
+          sub="+12.5%"
         />
 
         <AdminUserStatsCard />
 
         <AdminStoreStatsCard />
 
-        <AdminStatCard
-          icon={<TrendingUp size={24} />}
+        <DashboardStatCard
+          icon={TrendingUp}
           label="Pedidos/Dia"
           value={totalOrders.toString()}
-          trend="+14.1%"
+          sub="+14.1%"
         />
       </div>
 

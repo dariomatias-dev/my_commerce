@@ -4,8 +4,8 @@ import { Users } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
+import { DashboardStatCard } from "@/components/dashboard-stat-card";
 import { useUser } from "@/services/hooks/use-user";
-import { AdminStatCard } from "./admin-stat-card";
 
 export const AdminUserStatsCard = () => {
   const { getActiveUsersCount, getNewActiveUsersThisMonth } = useUser();
@@ -49,11 +49,11 @@ export const AdminUserStatsCard = () => {
   }, [fetchData]);
 
   return (
-    <AdminStatCard
-      icon={<Users size={24} />}
+    <DashboardStatCard
+      icon={Users}
       label="Usuários Ativos"
       value={data.total.toLocaleString()}
-      trend={data.trend}
+      sub={data.trend}
       isLoading={isLoading}
       errorMessage={errorMessage}
       onRetry={fetchData}
