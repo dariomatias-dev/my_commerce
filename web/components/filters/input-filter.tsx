@@ -1,7 +1,7 @@
 import { LucideIcon, X } from "lucide-react";
 import { KeyboardEvent } from "react";
 
-interface FilterInputProps {
+interface InputFilterProps {
   label: string;
   value: string | number;
   onChange: (val: string) => void;
@@ -12,7 +12,7 @@ interface FilterInputProps {
   placeholder?: string;
 }
 
-export const FilterInput = ({
+export const InputFilter = ({
   label,
   value,
   onChange,
@@ -21,7 +21,7 @@ export const FilterInput = ({
   icon: Icon,
   type = "text",
   placeholder,
-}: FilterInputProps) => (
+}: InputFilterProps) => (
   <div className="group relative flex items-center gap-4 rounded-[2rem] border border-slate-100 bg-white px-8 py-4 shadow-sm focus-within:border-indigo-600 transition-all">
     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-300">
       <Icon size={18} />

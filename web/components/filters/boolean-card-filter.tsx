@@ -1,6 +1,6 @@
 import { LucideIcon } from "lucide-react";
 
-interface FilterBooleanCardProps {
+interface BooleanCardFilterProps {
   isActive: boolean | undefined;
   onClick: () => void;
   icon: LucideIcon;
@@ -9,14 +9,14 @@ interface FilterBooleanCardProps {
   activeColorClass?: string;
 }
 
-export const FilterBooleanCard = ({
+export const BooleanCardFilter = ({
   isActive,
   onClick,
   icon: Icon,
   title,
   subtitle,
   activeColorClass = "border-amber-500 bg-amber-50/50 text-amber-700",
-}: FilterBooleanCardProps) => (
+}: BooleanCardFilterProps) => (
   <button
     onClick={onClick}
     className={`flex items-center justify-between rounded-[2rem] border-2 px-8 py-5 transition-all ${

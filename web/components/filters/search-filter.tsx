@@ -1,7 +1,7 @@
 import { KeyboardEvent } from "react";
 import { Search, XCircle } from "lucide-react";
 
-interface FilterSearchProps {
+interface SearchFilterProps {
   value: string;
   onChange: (val: string) => void;
   onClear: () => void;
@@ -9,13 +9,13 @@ interface FilterSearchProps {
   placeholder?: string;
 }
 
-export const FilterSearch = ({
+export const SearchFilter = ({
   value,
   onChange,
   onClear,
   onKeyDown,
   placeholder = "PESQUISAR...",
-}: FilterSearchProps) => (
+}: SearchFilterProps) => (
   <div className="relative flex-1 group">
     <Search
       className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-indigo-600"

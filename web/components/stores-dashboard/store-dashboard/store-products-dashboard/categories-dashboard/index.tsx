@@ -14,7 +14,7 @@ import { ApiError } from "@/@types/api";
 import { CategoryResponse } from "@/@types/category/category-response";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { DeleteConfirmationDialog } from "@/components/dialogs/delete-confirmation-dialog";
-import { FilterSearch } from "@/components/filters/filter-search";
+import { SearchFilter } from "@/components/filters/search-filter";
 import { Pagination } from "@/components/pagination";
 import { useCategory } from "@/services/hooks/use-category";
 import { CategoryFormDialog } from "../category-form-dialog";
@@ -160,7 +160,7 @@ export const CategoriesDashboard = forwardRef<
       className="animate-in fade-in duration-500 scroll-mt-32"
     >
       <div className="mb-8">
-        <FilterSearch
+        <SearchFilter
           value={localSearch}
           onChange={setLocalSearch}
           onKeyDown={handleKeyDown}

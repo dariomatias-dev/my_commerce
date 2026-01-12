@@ -4,9 +4,9 @@ import { AlertTriangle, DollarSign } from "lucide-react";
 import { KeyboardEvent, useState } from "react";
 
 import { ProductFilters } from "@/@types/product/product-filters";
-import { FilterBooleanCard } from "@/components/filters/filter-boolean-card";
-import { FilterInput } from "@/components/filters/filter-input";
-import { FilterSearch } from "@/components/filters/filter-search";
+import { BooleanCardFilter } from "@/components/filters/boolean-card-filter";
+import { InputFilter } from "@/components/filters/input-filter";
+import { SearchFilter } from "@/components/filters/search-filter";
 import { StatusDropdownFilter } from "@/components/filters/status-dropdown-filter";
 
 type LocalFilters = Omit<ProductFilters, "storeId">;
@@ -47,7 +47,7 @@ export const ProductsDashboardFilter = ({
   return (
     <section className="mb-10 space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-        <FilterSearch
+        <SearchFilter
           value={localFilters.name || ""}
           onChange={(val) => updateField("name", val)}
           onKeyDown={handleKeyDown}
@@ -77,7 +77,7 @@ export const ProductsDashboardFilter = ({
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <FilterBooleanCard
+        <BooleanCardFilter
           icon={AlertTriangle}
           title="Estoque"
           subtitle="Nível Crítico"
@@ -95,7 +95,7 @@ export const ProductsDashboardFilter = ({
           }}
         />
 
-        <FilterInput
+        <InputFilter
           icon={DollarSign}
           label="Preço Mínimo"
           type="number"
@@ -121,7 +121,7 @@ export const ProductsDashboardFilter = ({
           }}
         />
 
-        <FilterInput
+        <InputFilter
           icon={DollarSign}
           label="Preço Máximo"
           type="number"
