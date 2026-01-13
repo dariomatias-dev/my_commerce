@@ -19,14 +19,14 @@ import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 
 interface StoreDashboardProps {
   storeSlug: string;
-  backPath: string;
+  basePath: string;
   backLabel: string;
   canCreate?: boolean;
 }
 
 export const StoreDashboard = ({
   storeSlug,
-  backPath,
+  basePath,
   backLabel,
   canCreate = true,
 }: StoreDashboardProps) => {
@@ -86,7 +86,7 @@ export const StoreDashboard = ({
 
       await deleteStore(store.id);
 
-      router.push(backPath);
+      router.push(basePath);
     } catch (error) {
       if (error instanceof ApiError) {
         setError(error.message);
@@ -109,7 +109,7 @@ export const StoreDashboard = ({
         highlightedTitle="Indisponível"
         errorMessage={error}
         onRetry={fetchStoreData}
-        backPath={backPath}
+        backPath={basePath}
         backLabel={backLabel}
       />
     );
@@ -119,7 +119,7 @@ export const StoreDashboard = ({
     <main className="min-h-screen pb-12 pt-32 lg:px-6">
       <div className="mx-auto max-w-400 animate-in fade-in zoom-in-95 duration-500 px-6">
         <DashboardPageHeader
-          backPath={backPath}
+          backPath={basePath}
           label={`${store.isActive ? "OPERACIONAL" : "OFFLINE"} — ID: ${store.id
             .slice(0, 8)
             .toUpperCase()}-SECURED`}
@@ -187,7 +187,7 @@ export const StoreDashboard = ({
                 </div>
               </div>
 
-              <ProductsDashboard storeId={store.id} />
+              <ProductsDashboard storeId={store.id} basePath={`${basePath}/${storeSlug}`} />
             </div>
           </div>
 

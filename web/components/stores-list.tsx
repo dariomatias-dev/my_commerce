@@ -12,10 +12,11 @@ import { useStore } from "@/services/hooks/use-store";
 
 interface StoresListProps {
   stores: StoreResponse[];
+  basePath: string;
   onRetry: () => void;
 }
 
-export const StoresList = ({ stores, onRetry }: StoresListProps) => {
+export const StoresList = ({ stores, basePath, onRetry }: StoresListProps) => {
   const { deleteStore } = useStore();
 
   const [isFirstConfirmOpen, setIsFirstConfirmOpen] = useState(false);
@@ -89,6 +90,7 @@ export const StoresList = ({ stores, onRetry }: StoresListProps) => {
             <StoreCard
               key={store.id}
               store={store}
+              basePath={basePath}
               onDelete={() => handleOpenFirstConfirm(store)}
             />
           ))}

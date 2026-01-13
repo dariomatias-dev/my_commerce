@@ -13,7 +13,7 @@ const AdminStoreDashboardPage = () => {
   return (
     <StoreDashboard
       storeSlug={storeSlug}
-      backPath={`/admin/users/${userId}/stores`}
+      basePath={`/admin/users/${userId}/stores`}
       backLabel="Voltar para gestão de lojas"
       canCreate={false}
     />

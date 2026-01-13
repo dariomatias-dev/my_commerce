@@ -10,7 +10,7 @@ const StoreDashboardPage = () => {
   return (
     <StoreDashboard
       storeSlug={storeSlug}
-      backPath="/dashboard/stores"
+      basePath="/dashboard/stores"
       backLabel="Voltar para as lojas"
     />
   );

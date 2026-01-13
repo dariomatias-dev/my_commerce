@@ -15,9 +15,10 @@ import { ProductsDashboardTable } from "./products-dashboard-table";
 
 interface ProductsDashboardProps {
   storeId: string;
+  basePath: string;
 }
 
-export const ProductsDashboard = ({ storeId }: ProductsDashboardProps) => {
+export const ProductsDashboard = ({ storeId, basePath }: ProductsDashboardProps) => {
   const { getAllProducts, deleteProduct } = useProduct();
   const listTopRef = useRef<HTMLDivElement>(null);
 
@@ -102,7 +103,7 @@ export const ProductsDashboard = ({ storeId }: ProductsDashboardProps) => {
         />
       ) : (
         <>
-          <ProductsDashboardTable products={products} onDelete={onDelete} />
+          <ProductsDashboardTable products={products} basePath={basePath} onDelete={onDelete} />
 
           <Pagination
             currentPage={currentPage}

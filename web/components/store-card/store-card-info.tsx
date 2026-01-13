@@ -5,9 +5,10 @@ import { StoreResponse } from "@/@types/store/store-response";
 
 interface StoreCardInfoProps {
   store: StoreResponse;
+  basePath: string;
 }
 
-export const StoreCardInfo = ({ store }: StoreCardInfoProps) => {
+export const StoreCardInfo = ({ store, basePath }: StoreCardInfoProps) => {
   return (
     <div className="flex items-start justify-between">
       <div>
@@ -35,7 +36,7 @@ export const StoreCardInfo = ({ store }: StoreCardInfoProps) => {
       </div>
 
       <Link
-        href={`stores/${store.slug}`}
+        href={`${basePath}/stores/${store.slug}`}
         className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 text-white transition-all hover:bg-indigo-600 active:scale-90"
       >
         <ArrowUpRight size={24} />

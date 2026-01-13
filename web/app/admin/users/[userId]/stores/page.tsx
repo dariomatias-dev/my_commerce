@@ -19,6 +19,7 @@ const AdminUserStoresPage = () => {
       canCreate={false}
       showStatusFilter={true}
       backPath="/admin/users"
+      basePath={`/admin/users/${userId}`}
     />
   );
 };

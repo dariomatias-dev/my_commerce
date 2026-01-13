@@ -13,7 +13,7 @@ const AdminStoreProductsPage = () => {
   return (
     <StoreProductsDashboard
       storeSlug={storeSlug}
-      backPath={`/admin/users/${userId}/stores/${storeSlug}`}
+      basePath={`/admin/users/${userId}/stores/${storeSlug}`}
       canCreate={false}
     />
   );

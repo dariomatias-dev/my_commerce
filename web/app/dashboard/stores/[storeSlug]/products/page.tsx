@@ -10,7 +10,7 @@ const StoreProductsPage = () => {
   return (
     <StoreProductsDashboard
       storeSlug={storeSlug}
-      backPath={`/dashboard/stores/${storeSlug}`}
+      basePath={`/dashboard/stores/${storeSlug}`}
     />
   );
 };

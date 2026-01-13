@@ -98,7 +98,7 @@ const OrdersPage = () => {
               onClick={() => router.push(`by-store/${store.id}`)}
               className="group relative flex flex-col overflow-hidden rounded-[3rem] border border-slate-100 bg-white p-10 text-left shadow-sm transition-all hover:border-indigo-600 hover:shadow-2xl hover:shadow-slate-200/50 active:scale-[0.98]"
             >
-              <StoreCardInfo store={store} />
+              <StoreCardInfo store={store} basePath="/orders" />
             </button>
           ))}
         </div>

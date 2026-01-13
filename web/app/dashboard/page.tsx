@@ -129,8 +129,7 @@ const DashboardPage = () => {
 
             <StoresList
               stores={stores}
-              isLoading={isLoading}
-              errorMessage={errorMessage}
+              basePath="/dashboard"
               onRetry={fetchDashboardData}
             />
           </section>

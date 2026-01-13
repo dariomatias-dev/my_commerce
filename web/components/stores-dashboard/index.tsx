@@ -25,6 +25,7 @@ interface StoresDashboardProps {
   headerSubtitle: string;
   canCreate?: boolean;
   backPath: string;
+  basePath: string;
   userId?: string;
   showStatusFilter?: boolean;
 }
@@ -35,6 +36,7 @@ export const StoresDashboard = ({
   headerSubtitle,
   canCreate = true,
   backPath,
+  basePath,
   userId,
   showStatusFilter = false,
 }: StoresDashboardProps) => {
@@ -136,7 +138,11 @@ export const StoresDashboard = ({
           )}
 
           {stores.length > 0 ? (
-            <StoresList stores={stores} onRetry={fetchStores} />
+            <StoresList
+              stores={stores}
+              basePath={basePath}
+              onRetry={fetchStores}
+            />
           ) : (
             <div className="rounded-[3rem] border-2 border-dashed border-slate-100 py-32 text-center">
               <p className="text-xs font-black uppercase italic tracking-widest text-slate-300">

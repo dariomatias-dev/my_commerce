@@ -8,21 +8,18 @@ import { ProductResponse } from "@/@types/product/product-response";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { DeleteConfirmationDialog } from "@/components/dialogs/delete-confirmation-dialog";
 import { ProductImage } from "@/components/product-image";
-import { useParams } from "next/navigation";
 
 interface ProductsDashboardTableProps {
   products: ProductResponse[];
+  basePath: string;
   onDelete: (productId: string) => Promise<void>;
 }
 
 export const ProductsDashboardTable = ({
   products,
+  basePath,
   onDelete,
 }: ProductsDashboardTableProps) => {
-  const { storeSlug } = useParams() as {
-    storeSlug: string;
-  };
-
   const [isFirstConfirmOpen, setIsFirstConfirmOpen] = useState(false);
   const [isSecondConfirmOpen, setIsSecondConfirmOpen] = useState(false);
   const [productToDelete, setProductToDelete] =
@@ -114,7 +111,7 @@ export const ProductsDashboardTable = ({
                           : "bg-slate-100 text-slate-400"
                       }`}
                     >
-                      {product.active ? "Publicado" : "Oculto"}
+                      {product.active ? "Ativo" : "Removido"}
                     </span>
                   </td>
 
@@ -134,12 +131,14 @@ export const ProductsDashboardTable = ({
 
                   <td className="py-6 pr-10 text-right">
                     <div className="flex justify-end gap-2">
-                      <Link
-                        href={`${storeSlug}/products/${product.slug}/edit`}
-                        className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-slate-100 bg-white text-slate-400 hover:text-indigo-600"
-                      >
-                        <Edit3 size={18} />
-                      </Link>
+                      {product.active && (
+                        <Link
+                          href={`${basePath}/products/${product.slug}/edit`}
+                          className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-slate-100 bg-white text-slate-400 hover:text-indigo-600"
+                        >
+                          <Edit3 size={18} />
+                        </Link>
+                      )}
 
                       <button
                         onClick={() => handleOpenFirstConfirm(product)}

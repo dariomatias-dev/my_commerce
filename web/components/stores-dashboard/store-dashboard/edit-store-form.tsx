@@ -57,6 +57,7 @@ export const EditStoreForm = ({
 
   const onSubmit = async (values: StoreFormValues) => {
     if (!store) return;
+
     try {
       setIsSubmitting(true);
       setApiError(null);

@@ -16,13 +16,13 @@ import { useStore } from "@/services/hooks/use-store";
 
 interface StoreProductsDashboardProps {
   storeSlug: string;
-  backPath: string;
+  basePath: string;
   canCreate?: boolean;
 }
 
 export const StoreProductsDashboard = ({
   storeSlug,
-  backPath,
+  basePath,
   canCreate = true,
 }: StoreProductsDashboardProps) => {
   const router = useRouter();
@@ -66,7 +66,7 @@ export const StoreProductsDashboard = ({
     <main className="mx-auto max-w-400 px-6 pt-32 pb-12 font-sans text-slate-900 min-h-screen">
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
         <DashboardPageHeader
-          backPath={backPath}
+          backPath={basePath}
           label={`Gestão de Ativos — ${store?.name || storeSlug}`}
           title="INVENTÁRIO CENTRAL"
           subtitle="Administração técnica de itens, volumes e departamentos comerciais."
@@ -110,7 +110,7 @@ export const StoreProductsDashboard = ({
         />
 
         {view === "products" && store && (
-          <ProductsDashboard storeId={store.id} />
+          <ProductsDashboard storeId={store.id} basePath={basePath} />
         )}
 
         {view === "categories" && store && (

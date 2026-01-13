@@ -22,6 +22,7 @@ const DashboardPage = () => {
       headerSubtitle="Console Administrativo Global"
       canCreate={true}
       showStatusFilter={false}
+      basePath="/dashboard"
       backPath="/dashboard"
     />
   );

@@ -3,18 +3,26 @@ import Link from "next/link";
 
 import { StoreCardProps } from ".";
 
-export const StoreCardActions = ({ store, onDelete }: StoreCardProps) => {
+interface StoreCardActionsProps extends StoreCardProps {
+  basePath: string;
+}
+
+export const StoreCardActions = ({
+  store,
+  onDelete,
+  basePath,
+}: StoreCardActionsProps) => {
   return (
     <div className="mt-10 flex items-center gap-3">
       <Link
-        href={`stores/${store.slug}/products`}
+        href={`${basePath}/stores/${store.slug}/products`}
         className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-100 py-4 text-[10px] font-black uppercase tracking-widest text-slate-600 transition-colors hover:bg-slate-50"
       >
         <Package size={14} /> Produtos
       </Link>
 
       <Link
-        href={`stores/${store.slug}/edit`}
+        href={`${basePath}/stores/${store.slug}/edit`}
         className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-100 text-slate-400 transition-colors hover:bg-slate-50 hover:text-indigo-600"
       >
         <Pencil size={16} />
