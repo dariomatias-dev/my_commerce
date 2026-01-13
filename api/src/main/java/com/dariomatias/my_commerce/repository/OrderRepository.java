@@ -22,13 +22,26 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
 
     Page<Order> findAllByStore(Store store, Pageable pageable);
 
-    @Query("""
-        SELECT DISTINCT s
+    @Query(
+            value = """
+        SELECT s
         FROM Order o
         JOIN o.store s
         WHERE o.user.id = :userId
-    """)
-    Page<Store> findStoresWithOrdersByUserId(@Param("userId") UUID userId, Pageable pageable);
+        GROUP BY s
+        ORDER BY MAX(o.audit.createdAt) DESC
+    """,
+            countQuery = """
+        SELECT COUNT(DISTINCT s)
+        FROM Order o
+        JOIN o.store s
+        WHERE o.user.id = :userId
+    """
+    )
+    Page<Store> findStoresWithOrdersByUserId(
+            @Param("userId") UUID userId,
+            Pageable pageable
+    );
 
     @Query("""
         SELECT o

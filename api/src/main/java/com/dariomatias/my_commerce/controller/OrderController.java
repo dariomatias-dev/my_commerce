@@ -136,11 +136,7 @@ public class OrderController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by(Sort.Direction.DESC, "audit.createdAt")
-        );
+        Pageable pageable = PageRequest.of(page, size);
 
         Page<StoreResponseDTO> stores =
                 service.getMyOrderStores(user.getId(), pageable)

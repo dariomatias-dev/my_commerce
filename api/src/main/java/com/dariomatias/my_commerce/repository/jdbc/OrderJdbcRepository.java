@@ -266,17 +266,19 @@ public class OrderJdbcRepository implements OrderContract {
         String sql = """
             SELECT s.*
             FROM stores s
-            JOIN orders o ON o.store_id = s.id
-            WHERE o.user_id = :user_id
-            GROUP BY s.id, s.name, s.created_at, s.updated_at
-            ORDER BY MAX(o.created_at) DESC
+            JOIN (
+                SELECT o.store_id, MAX(o.created_at) AS last_order
+                FROM orders o
+                WHERE o.user_id = :user_id
+                GROUP BY o.store_id
+            ) t ON t.store_id = s.id
+            ORDER BY t.last_order DESC
             OFFSET :offset LIMIT :limit
         """;
 
         String countSql = """
-            SELECT COUNT(DISTINCT s.id)
-            FROM stores s
-            JOIN orders o ON o.store_id = s.id
+            SELECT COUNT(DISTINCT o.store_id)
+            FROM orders o
             WHERE o.user_id = :user_id
         """;
 
