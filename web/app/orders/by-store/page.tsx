@@ -8,8 +8,6 @@ import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
 import { DashboardTotalBadge } from "@/components/dashboard-total-badge";
 import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
-import { Footer } from "@/components/layout/footer";
-import { Header } from "@/components/layout/header";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { StoreCardInfo } from "@/components/store-card/store-card-info";
 import { useOrder } from "@/services/hooks/use-order";
@@ -47,15 +45,7 @@ const OrdersPage = () => {
   }, [fetchStores]);
 
   if (isLoading) {
-    return (
-      <>
-        <Header />
-
-        <LoadingIndicator message="Sincronizando lojas..." />
-
-        <Footer />
-      </>
-    );
+    return <LoadingIndicator message="Carregando lojas..." />;
   }
 
   if (errorMessage) {
@@ -85,55 +75,49 @@ const OrdersPage = () => {
   }
 
   return (
-    <>
-      <Header />
+    <main className="min-h-screen mx-auto max-w-400 px-6 pt-32 pb-12">
+      <DashboardPageHeader
+        title="Meus Pedidos"
+        subtitle="Selecione uma loja para gerenciar seu histórico"
+        label="Dashboard de Compras"
+        actions={
+          <DashboardTotalBadge
+            icon={Store}
+            value={stores.length}
+            unit="Lojas"
+          />
+        }
+      />
 
-      <main className="min-h-screen mx-auto max-w-400 px-6 pt-32 pb-12">
-        <DashboardPageHeader
-          title="Meus Pedidos"
-          subtitle="Selecione uma loja para gerenciar seu histórico"
-          label="Dashboard de Compras"
-          actions={
-            <DashboardTotalBadge
-              icon={Store}
-              value={stores.length}
-              unit="Lojas"
-            />
-          }
-        />
-
-        {stores.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {stores.map((store) => (
-              <button
-                key={store.id}
-                onClick={() => router.push(`by-store/${store.id}`)}
-                className="group relative flex flex-col overflow-hidden rounded-[3rem] border border-slate-100 bg-white p-10 text-left shadow-sm transition-all hover:border-indigo-600 hover:shadow-2xl hover:shadow-slate-200/50 active:scale-[0.98]"
-              >
-                <StoreCardInfo store={store} />
-              </button>
-            ))}
+      {stores.length > 0 ? (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {stores.map((store) => (
+            <button
+              key={store.id}
+              onClick={() => router.push(`by-store/${store.id}`)}
+              className="group relative flex flex-col overflow-hidden rounded-[3rem] border border-slate-100 bg-white p-10 text-left shadow-sm transition-all hover:border-indigo-600 hover:shadow-2xl hover:shadow-slate-200/50 active:scale-[0.98]"
+            >
+              <StoreCardInfo store={store} />
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center rounded-[3rem] border-2 border-dashed border-slate-100 bg-white py-32 text-center">
+          <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-[2.5rem] bg-slate-50 text-slate-200">
+            <Package size={48} />
           </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center rounded-[3rem] border-2 border-dashed border-slate-100 bg-white py-32 text-center">
-            <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-[2.5rem] bg-slate-50 text-slate-200">
-              <Package size={48} />
-            </div>
 
-            <h2 className="text-2xl font-black uppercase italic tracking-tighter text-slate-950">
-              Histórico Vazio.
-            </h2>
+          <h2 className="text-2xl font-black uppercase italic tracking-tighter text-slate-950">
+            Histórico Vazio.
+          </h2>
 
-            <p className="mt-4 max-w-xs text-xs font-bold uppercase tracking-widest text-slate-400 leading-relaxed">
-              Você ainda não realizou pedidos. Explore nossas lojas e comece
-              agora.
-            </p>
-          </div>
-        )}
-      </main>
-
-      <Footer />
-    </>
+          <p className="mt-4 max-w-xs text-xs font-bold uppercase tracking-widest text-slate-400 leading-relaxed">
+            Você ainda não realizou pedidos. Explore nossas lojas e comece
+            agora.
+          </p>
+        </div>
+      )}
+    </main>
   );
 };
 
