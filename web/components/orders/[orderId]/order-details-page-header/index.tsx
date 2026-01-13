@@ -27,7 +27,7 @@ export const OrderDetailsPageHeader = ({
           onClick={onBack}
           className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors"
         >
-          <ArrowLeft size={16} /> Voltar ao Histórico
+          <ArrowLeft size={16} /> Voltar
         </button>
 
         <div className="flex items-center gap-3 rounded-full border border-slate-200 bg-white px-5 py-2">

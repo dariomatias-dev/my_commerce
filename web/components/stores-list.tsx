@@ -7,7 +7,7 @@ import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { DeleteConfirmationDialog } from "@/components/dialogs/delete-confirmation-dialog";
-import { StoreCard } from "@/components/stores-list/dashboard-store-card";
+import { StoreCard } from "@/components/store-card";
 import { useStore } from "@/services/hooks/use-store";
 
 interface StoresListProps {
@@ -15,10 +15,7 @@ interface StoresListProps {
   onRetry: () => void;
 }
 
-export const StoresList = ({
-  stores,
-  onRetry,
-}: StoresListProps) => {
+export const StoresList = ({ stores, onRetry }: StoresListProps) => {
   const { deleteStore } = useStore();
 
   const [isFirstConfirmOpen, setIsFirstConfirmOpen] = useState(false);
