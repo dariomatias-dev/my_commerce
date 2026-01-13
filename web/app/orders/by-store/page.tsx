@@ -80,6 +80,7 @@ const OrdersPage = () => {
         title="Meus Pedidos"
         subtitle="Selecione uma loja para gerenciar seu histórico"
         label="Dashboard de Compras"
+        backPath="/orders"
         actions={
           <DashboardTotalBadge
             icon={Store}
