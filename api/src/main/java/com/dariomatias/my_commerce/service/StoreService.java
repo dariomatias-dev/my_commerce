@@ -85,8 +85,12 @@ public class StoreService {
         }
 
         if (filter.getStatus() == StatusFilter.DELETED || filter.getStatus() == StatusFilter.ALL) {
-            if (!authUser.getRole().equals(UserRole.ADMIN)) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado para filtragem por status");
+            if (!authUser.getRole().equals(UserRole.ADMIN)
+                    && !authUser.getRole().equals(UserRole.SUBSCRIBER)) {
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "Acesso negado para filtragem por status"
+                );
             }
         }
 
@@ -103,10 +107,7 @@ public class StoreService {
     public Store getBySlug(String slug) {
         return storeRepository.findBySlug(slug)
                 .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Loja não encontrada"
-                        )
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada")
                 );
     }
 
@@ -123,10 +124,7 @@ public class StoreService {
                 String newSlug = SlugUtil.generateSlug(request.getName());
 
                 if (storeRepository.existsBySlugAndDeletedAtIsNull(newSlug)) {
-                    throw new ResponseStatusException(
-                            HttpStatus.CONFLICT,
-                            "O nome da loja já está em uso."
-                    );
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "O nome da loja já está em uso.");
                 }
 
                 store.setName(request.getName());

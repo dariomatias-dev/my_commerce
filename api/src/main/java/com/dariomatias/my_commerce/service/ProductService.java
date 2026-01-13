@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -93,8 +94,11 @@ public class ProductService {
                 : StatusFilter.ACTIVE;
 
         if ((status == StatusFilter.DELETED || status == StatusFilter.ALL)
-                && !user.getRole().equals(UserRole.ADMIN)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado para filtragem por status");
+                && !EnumSet.of(UserRole.ADMIN, UserRole.SUBSCRIBER).contains(user.getRole())) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Acesso negado para filtragem por status"
+            );
         }
 
         if (filter == null) {
