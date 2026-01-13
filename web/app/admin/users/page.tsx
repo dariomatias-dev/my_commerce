@@ -129,7 +129,6 @@ const UserManagementPage = () => {
         actions={
           <DashboardTotalBadge
             icon={Users}
-            label="Total Encontrado"
             value={totalElements}
             unit="Contas"
           />

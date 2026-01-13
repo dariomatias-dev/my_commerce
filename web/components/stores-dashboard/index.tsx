@@ -118,7 +118,6 @@ export const StoresDashboard = ({
               actions={
                 <DashboardTotalBadge
                   icon={Store}
-                  label="Total Encontrado"
                   value={totalElements}
                   unit="Lojas"
                 />

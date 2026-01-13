@@ -4,14 +4,12 @@ import { LucideIcon } from "lucide-react";
 
 interface DashboardTotalBadgeProps {
   icon: LucideIcon;
-  label: string;
   value: number;
   unit: string;
 }
 
 export const DashboardTotalBadge = ({
   icon: Icon,
-  label,
   value,
   unit,
 }: DashboardTotalBadgeProps) => {
@@ -23,7 +21,7 @@ export const DashboardTotalBadge = ({
 
       <div className="pr-4">
         <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-          {label}
+          Total Encontrado
         </p>
 
         <p className="text-lg font-black text-slate-950">
