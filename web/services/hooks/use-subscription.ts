@@ -11,7 +11,7 @@ export const useSubscription = () => {
   const createSubscription = useCallback(
     (data: SubscriptionRequest) =>
       apiClient.post<SubscriptionResponse>("/subscriptions", data),
-    []
+    [],
   );
 
   const getAllSubscriptions = useCallback(
@@ -19,7 +19,7 @@ export const useSubscription = () => {
       apiClient.get<PaginatedResponse<SubscriptionResponse>>("/subscriptions", {
         params: { page, size },
       }),
-    []
+    [],
   );
 
   const getMySubscriptions = useCallback(
@@ -28,9 +28,9 @@ export const useSubscription = () => {
         "/subscriptions/user/me",
         {
           params: { page, size },
-        }
+        },
       ),
-    []
+    [],
   );
 
   const getSubscriptionsByUserId = useCallback(
@@ -39,25 +39,30 @@ export const useSubscription = () => {
         `/subscriptions/user/${userId}`,
         {
           params: { page, size },
-        }
+        },
       ),
-    []
+    [],
   );
 
   const getMyActiveSubscription = useCallback(
     () => apiClient.get<SubscriptionResponse>("/subscriptions/me/active"),
-    []
+    [],
   );
 
   const getSubscriptionById = useCallback(
     (id: string) => apiClient.get<SubscriptionResponse>(`/subscriptions/${id}`),
-    []
+    [],
   );
 
   const changeSubscriptionPlan = useCallback(
     (data: SubscriptionRequest) =>
       apiClient.patch<SubscriptionResponse>("/subscriptions/change-plan", data),
-    []
+    [],
+  );
+
+  const cancelSubscription = useCallback(
+    () => apiClient.patch<void>("/subscriptions/cancel"),
+    [],
   );
 
   return {
@@ -68,5 +73,6 @@ export const useSubscription = () => {
     getMyActiveSubscription,
     getSubscriptionById,
     changeSubscriptionPlan,
+    cancelSubscription,
   };
 };
