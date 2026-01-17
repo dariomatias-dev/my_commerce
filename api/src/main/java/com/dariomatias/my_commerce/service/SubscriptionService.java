@@ -128,6 +128,26 @@ public class SubscriptionService {
         return subscriptionRepository.save(newSubscription);
     }
 
+    public Subscription cancelActiveSubscription(User user) {
+        Page<Subscription> subscriptions =
+                subscriptionRepository.findAllByUser_Id(user.getId(), Pageable.unpaged());
+
+        Subscription active = subscriptions.stream()
+                .filter(Subscription::getIsActive)
+                .findFirst()
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nenhuma assinatura ativa encontrada")
+                );
+
+        active.setIsActive(false);
+        subscriptionRepository.update(active);
+
+        user.setRole(UserRole.USER);
+        userRepository.update(user);
+
+        return active;
+    }
+
     private SubscriptionPlan getPlanOrThrow(UUID planId) {
         return subscriptionPlanRepository.findById(planId)
                 .orElseThrow(() ->

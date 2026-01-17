@@ -81,7 +81,6 @@ public class SubscriptionController {
     }
 
     @GetMapping("/user/me")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResponse<Page<SubscriptionResponseDTO>>> getAllByMe(
             @AuthenticationPrincipal User user,
             @RequestParam(defaultValue = "0") int page,
@@ -135,6 +134,18 @@ public class SubscriptionController {
 
         return ResponseEntity.ok(
                 ApiResponse.success("Plano alterado com sucesso", SubscriptionResponseDTO.from(subscription))
+        );
+    }
+
+    @PatchMapping("/cancel")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
+    public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> cancelActive(
+            @AuthenticationPrincipal User user
+    ) {
+        Subscription subscription = service.cancelActiveSubscription(user);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Assinatura cancelada com sucesso", SubscriptionResponseDTO.from(subscription))
         );
     }
 }
