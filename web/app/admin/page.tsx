@@ -1,11 +1,12 @@
 "use client";
 
-import { DollarSign, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { AdminAuditLogTable } from "@/components/admin/admin-audit-log-table";
 import { AdminStoreStatsCard } from "@/components/admin/admin-store-stats-card";
+import { AdminTotalRevenueStatCard } from "@/components/admin/admin-total-revenue-stat-card";
 import { AdminUserStatsCard } from "@/components/admin/admin-user-stats-card";
 import { DashboardStatCard } from "@/components/dashboard-stat-card";
 import { ErrorFeedback } from "@/components/error-feedback";
@@ -69,11 +70,7 @@ const AdminDashboard = () => {
       />
 
       <div className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <DashboardStatCard
-          icon={DollarSign}
-          label="Volume Total"
-          value="R$ 142.580"
-        />
+        <AdminTotalRevenueStatCard />
 
         <AdminUserStatsCard />
 

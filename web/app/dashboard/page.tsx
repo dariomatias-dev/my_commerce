@@ -24,7 +24,7 @@ import { useStore } from "@/services/hooks/use-store";
 const DashboardPage = () => {
   const { getMyStores } = useStore();
   const { getUserActiveProductsCount } = useProduct();
-  const { getUniqueCustomers, getTotalRevenue } = useAnalytics();
+  const { getUniqueCustomers, getMyTotalRevenue } = useAnalytics();
 
   const [stores, setStores] = useState<StoreResponse[]>([]);
   const [totalStores, setTotalStores] = useState(0);
@@ -107,7 +107,7 @@ const DashboardPage = () => {
 
             <DashboardUniqueCustomersStatCard request={getUniqueCustomers} />
 
-            <DashboardTotalRevenueStatCard request={getTotalRevenue} />
+            <DashboardTotalRevenueStatCard request={getMyTotalRevenue} />
           </section>
 
           <section>

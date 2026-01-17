@@ -10,37 +10,44 @@ export const useAnalytics = () => {
   const getUniqueCustomers = useCallback(
     () =>
       apiClient.get<UniqueCustomersResponse>(
-        `/analytics/me/stats/unique-customers`
+        `/analytics/me/stats/unique-customers`,
       ),
-    []
+    [],
   );
 
-  const getTotalRevenue = useCallback(
+  const getMyTotalRevenue = useCallback(
     () =>
       apiClient.get<TotalRevenueResponse>(`/analytics/me/stats/total-revenue`),
-    []
+    [],
   );
 
   const getUniqueCustomersByStoreId = useCallback(
     (storeId: string) =>
       apiClient.get<UniqueCustomersResponse>(
-        `/analytics/store/${storeId}/stats/unique-customers`
+        `/analytics/store/${storeId}/stats/unique-customers`,
       ),
-    []
+    [],
   );
 
   const getTotalRevenueByStoreId = useCallback(
     (storeId: string) =>
       apiClient.get<TotalRevenueResponse>(
-        `/analytics/store/${storeId}/stats/total-revenue`
+        `/analytics/store/${storeId}/stats/total-revenue`,
       ),
-    []
+    [],
+  );
+
+  const getTotalRevenue = useCallback(
+    () =>
+      apiClient.get<TotalRevenueResponse>("/analytics/total-revenue"),
+    [],
   );
 
   return {
     getUniqueCustomers,
-    getTotalRevenue,
+    getMyTotalRevenue,
     getUniqueCustomersByStoreId,
     getTotalRevenueByStoreId,
+    getTotalRevenue,
   };
 };
