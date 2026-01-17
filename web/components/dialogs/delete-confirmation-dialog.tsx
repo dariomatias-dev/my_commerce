@@ -52,6 +52,7 @@ export const DeleteConfirmationDialog = ({
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-600">
             <AlertTriangle size={24} />
           </div>
+
           <button
             onClick={onClose}
             className="rounded-xl p-2 text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-colors"
@@ -74,6 +75,7 @@ export const DeleteConfirmationDialog = ({
             <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase mb-1">
               Digite o nome para confirmar:
             </p>
+
             <p className="text-xs font-bold text-slate-900 select-none">
               {confirmationName}
             </p>
@@ -96,6 +98,7 @@ export const DeleteConfirmationDialog = ({
           >
             Cancelar
           </button>
+
           <button
             onClick={handleConfirm}
             disabled={!isMatch || isLoading}

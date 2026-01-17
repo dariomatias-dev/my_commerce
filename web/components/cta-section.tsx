@@ -9,12 +9,14 @@ export const CtaSection = () => {
       <div className="pointer-events-none absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
 
       <div className="absolute -top-[10%] -left-[10%] h-[40%] w-[40%] rounded-full bg-white/10 blur-[100px]" />
+
       <div className="absolute -right-[10%] -bottom-[10%] h-[40%] w-[40%] rounded-full bg-indigo-400/20 blur-[100px]" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6">
         <div className="flex flex-col items-center text-center">
           <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 backdrop-blur-md">
             <Sparkles size={14} className="text-white" />
+
             <span className="text-[10px] font-black tracking-[0.2em] text-white uppercase italic">
               Expansão Imediata
             </span>
@@ -42,6 +44,7 @@ export const CtaSection = () => {
                 <span className="mb-1 text-[8px] font-black tracking-[0.3em] text-indigo-400 uppercase">
                   Setup em 2 minutos
                 </span>
+
                 <span className="text-xl font-black text-slate-950 uppercase italic md:text-2xl">
                   Criar minha loja
                 </span>
@@ -58,10 +61,12 @@ export const CtaSection = () => {
                   <span className="mb-1 text-[8px] font-black tracking-[0.3em] text-indigo-500 uppercase">
                     Grátis para sempre
                   </span>
+
                   <span className="text-xl font-black text-white uppercase italic md:text-2xl">
                     Começar Agora
                   </span>
                 </div>
+
                 <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-slate-950 md:h-12 md:w-12">
                   <ArrowRight size={20} strokeWidth={3} />
                 </div>
@@ -74,6 +79,7 @@ export const CtaSection = () => {
               (text, i) => (
                 <div key={i} className="flex items-center gap-2">
                   <div className="h-1 w-1 rounded-full bg-indigo-300" />
+
                   <span className="text-[10px] font-black tracking-widest text-indigo-200 uppercase italic">
                     {text}
                   </span>

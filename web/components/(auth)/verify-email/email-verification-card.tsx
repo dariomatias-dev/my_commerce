@@ -92,7 +92,7 @@ export const EmailVerificationCard = () => {
                 href="/login"
                 className="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-8 py-4 text-xs font-black tracking-widest text-white transition-all hover:bg-indigo-600 active:scale-95"
               >
-                ACESSAR CONSOLE
+                ACESSAR LOGIN
               </Link>
             </div>
           </div>

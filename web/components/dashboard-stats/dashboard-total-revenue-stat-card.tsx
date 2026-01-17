@@ -23,6 +23,7 @@ export const DashboardTotalRevenueStatCard = ({
 
     try {
       const response = await request();
+
       setRevenue(response.total);
     } catch (error) {
       if (error instanceof ApiError) {

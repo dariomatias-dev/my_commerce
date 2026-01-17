@@ -78,7 +78,7 @@ const AdminDashboard = () => {
 
         <DashboardStatCard
           icon={TrendingUp}
-          label="Pedidos/Dia"
+          label="Pedidos Concluídos Totais"
           value={totalOrders.toString()}
         />
       </div>

@@ -68,10 +68,12 @@ export const ConfirmDialog = ({
             >
               <Icon size={20} />
             </div>
+
             <h2 className="text-xl font-black tracking-tighter text-slate-950 uppercase italic">
               {title}
             </h2>
           </div>
+
           {!isLoading && (
             <button
               onClick={onClose}

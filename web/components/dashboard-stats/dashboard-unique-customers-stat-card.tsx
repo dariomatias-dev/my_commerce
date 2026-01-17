@@ -23,6 +23,7 @@ export const DashboardUniqueCustomersStatCard = ({
 
     try {
       const response = await request();
+
       setTotalCustomers(response.total);
     } catch (error) {
       if (error instanceof ApiError) {

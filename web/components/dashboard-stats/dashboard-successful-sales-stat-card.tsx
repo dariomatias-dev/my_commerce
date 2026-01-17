@@ -23,6 +23,7 @@ export const DashboardSuccessfulSalesStatCard = ({
 
     try {
       const response = await request();
+
       setCount(response);
     } catch (error) {
       if (error instanceof ApiError) {

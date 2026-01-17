@@ -34,11 +34,15 @@ export const AddressContentCard = ({
 
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">
         <span>{address.neighborhood}</span>
+
         <span className="h-1 w-1 rounded-full bg-slate-200" />
+
         <span>
           {address.city}, {address.state}
         </span>
+
         <span className="h-1 w-1 rounded-full bg-slate-200" />
+
         <span className="font-mono text-indigo-400">{address.zip}</span>
       </div>
     </div>

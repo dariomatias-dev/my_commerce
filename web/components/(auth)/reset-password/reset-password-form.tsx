@@ -100,7 +100,7 @@ export const ResetPasswordForm = () => {
           href="/login"
           className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-slate-950 px-10 py-4 text-xs font-black tracking-widest text-white shadow-2xl transition-all hover:bg-indigo-600 active:scale-95"
         >
-          ACESSAR CONSOLE
+          ACESSAR LOGIN
           <ArrowRight
             size={16}
             className="transition-transform group-hover:translate-x-1"

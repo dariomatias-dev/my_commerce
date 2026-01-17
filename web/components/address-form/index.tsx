@@ -112,6 +112,7 @@ export const AddressForm = ({
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600">
               <Tag size={14} className="text-white" />
             </div>
+
             <h4 className="text-[10px] font-black uppercase tracking-widest text-white">
               Posicionamento Geográfico
             </h4>
@@ -130,6 +131,7 @@ export const AddressForm = ({
             <label className="mb-1 block text-[8px] font-black uppercase tracking-widest text-slate-500">
               Coordenada Latitude
             </label>
+
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-bold text-indigo-600">LAT</span>
               <input
@@ -145,6 +147,7 @@ export const AddressForm = ({
             <label className="mb-1 block text-[8px] font-black uppercase tracking-widest text-slate-500">
               Coordenada Longitude
             </label>
+
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-bold text-indigo-600">LON</span>
               <input

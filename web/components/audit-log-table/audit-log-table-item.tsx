@@ -24,6 +24,7 @@ export const AuditLogTableItem = ({ log }: AuditLogTableItemProps) => {
           <div className="flex h-6 w-6 items-center justify-center rounded bg-slate-100 text-slate-500">
             <Activity size={12} />
           </div>
+
           <span className="text-[11px] font-bold text-slate-600">
             {log.userId}
           </span>
