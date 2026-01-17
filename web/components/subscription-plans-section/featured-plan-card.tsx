@@ -1,13 +1,22 @@
-import { CheckCircle2, Sparkles } from "lucide-react";
-import Link from "next/link";
+"use client";
+
+import { CheckCircle2, Loader2, Sparkles } from "lucide-react";
 
 import { SubscriptionPlanResponse } from "@/@types/subscription-plan/subscription-plan-response";
 
 interface FeaturedPlanCardProps {
   plan: SubscriptionPlanResponse;
+  onSelect: () => void;
+  isLoading: boolean;
+  isActive: boolean;
 }
 
-export const FeaturedPlanCard = ({ plan }: FeaturedPlanCardProps) => {
+export const FeaturedPlanCard = ({
+  plan,
+  onSelect,
+  isLoading,
+  isActive,
+}: FeaturedPlanCardProps) => {
   const featuresList = plan.features?.split(",").map((f) => f.trim()) || [];
 
   return (
@@ -60,13 +69,24 @@ export const FeaturedPlanCard = ({ plan }: FeaturedPlanCardProps) => {
         ))}
       </div>
 
-      <Link
-        href="/signup"
-        className="group relative flex w-full items-center justify-center overflow-hidden rounded-2xl bg-indigo-600 py-5 text-xs font-black tracking-widest text-white transition-all hover:bg-indigo-500 active:scale-95 text-center"
+      <button
+        onClick={onSelect}
+        disabled={isLoading || isActive}
+        className="group relative flex w-full items-center justify-center overflow-hidden rounded-2xl bg-indigo-600 py-5 text-xs font-black tracking-widest text-white transition-all hover:bg-indigo-500 active:scale-95 text-center disabled:opacity-50 disabled:pointer-events-none"
       >
-        <span className="relative z-10 uppercase italic">Assinar agora</span>
-        <div className="absolute inset-0 -translate-x-full bg-white/10 transition-transform duration-500 group-hover:translate-x-0" />
-      </Link>
+        <div className="relative z-10 flex items-center gap-2 uppercase italic">
+          {isLoading ? (
+            <Loader2 size={16} className="animate-spin" />
+          ) : isActive ? (
+            "Seu Plano Atual"
+          ) : (
+            "Assinar agora"
+          )}
+        </div>
+        {!isLoading && !isActive && (
+          <div className="absolute inset-0 -translate-x-full bg-white/10 transition-transform duration-500 group-hover:translate-x-0" />
+        )}
+      </button>
     </div>
   );
 };

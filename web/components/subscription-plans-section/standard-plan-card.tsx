@@ -1,14 +1,24 @@
-import { CheckCircle2 } from "lucide-react";
-import Link from "next/link";
+"use client";
+
+import { CheckCircle2, Loader2 } from "lucide-react";
 
 import { SubscriptionPlanResponse } from "@/@types/subscription-plan/subscription-plan-response";
 
-interface StandardPlanCard {
+interface StandardPlanCardProps {
   plan: SubscriptionPlanResponse;
   index: number;
+  onSelect: () => void;
+  isLoading: boolean;
+  isActive: boolean;
 }
 
-export const StandardPlanCard = ({ plan, index }: StandardPlanCard) => {
+export const StandardPlanCard = ({
+  plan,
+  index,
+  onSelect,
+  isLoading,
+  isActive,
+}: StandardPlanCardProps) => {
   const featuresList = plan.features?.split(",").map((f) => f.trim()) || [];
   const isBusiness = index === 2;
 
@@ -66,12 +76,21 @@ export const StandardPlanCard = ({ plan, index }: StandardPlanCard) => {
         ))}
       </div>
 
-      <Link
-        href={isBusiness ? "/contact" : "/signup"}
-        className="flex w-full items-center justify-center rounded-2xl border-2 border-slate-950 py-4 text-[10px] font-black tracking-widest text-slate-950 uppercase transition-all hover:bg-slate-950 hover:text-white active:scale-95 text-center"
+      <button
+        onClick={onSelect}
+        disabled={isLoading || isActive}
+        className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-slate-950 py-4 text-[10px] font-black tracking-widest text-slate-950 uppercase transition-all hover:bg-slate-950 hover:text-white active:scale-95 text-center disabled:opacity-50 disabled:pointer-events-none"
       >
-        {isBusiness ? "Falar com Consultor" : "Começar Agora"}
-      </Link>
+        {isLoading ? (
+          <Loader2 size={16} className="animate-spin" />
+        ) : isActive ? (
+          "Seu Plano Atual"
+        ) : isBusiness ? (
+          "Falar com Consultor"
+        ) : (
+          "Começar Agora"
+        )}
+      </button>
     </div>
   );
 };

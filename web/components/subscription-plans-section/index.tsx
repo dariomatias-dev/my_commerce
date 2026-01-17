@@ -5,24 +5,46 @@ import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { SubscriptionPlanResponse } from "@/@types/subscription-plan/subscription-plan-response";
+import { useSubscription } from "@/services/hooks/use-subscription";
 import { useSubscriptionPlan } from "@/services/hooks/use-subscription-plan";
 import { FeaturedPlanCard } from "./featured-plan-card";
 import { StandardPlanCard } from "./standard-plan-card";
+import { SubscriptionCheckoutModal } from "./subscription-checkout-modal";
 
 export const SubscriptionPlansSection = () => {
   const { getAllPlans } = useSubscriptionPlan();
+  const { getMyActiveSubscription } = useSubscription();
 
   const [plans, setPlans] = useState<SubscriptionPlanResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [activeSubscriptionId, setActiveSubscriptionId] = useState<
+    string | null
+  >(null);
 
-  const fetchPlans = useCallback(async () => {
+  const [selectedPlan, setSelectedPlan] =
+    useState<SubscriptionPlanResponse | null>(null);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+
+  const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
       setApiError(null);
 
-      const response = await getAllPlans(0, 3);
-      setPlans(response.content);
+      const [plansData, activeSubData] = await Promise.allSettled([
+        getAllPlans(0, 3),
+        getMyActiveSubscription(),
+      ]);
+
+      if (plansData.status === "fulfilled") {
+        setPlans(plansData.value.content);
+      } else {
+        throw plansData.reason;
+      }
+
+      if (activeSubData.status === "fulfilled") {
+        setActiveSubscriptionId(activeSubData.value.planId);
+      }
     } catch (error: unknown) {
       if (error instanceof ApiError) {
         setApiError(error.message);
@@ -32,11 +54,18 @@ export const SubscriptionPlansSection = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [getAllPlans]);
+  }, [getAllPlans, getMyActiveSubscription]);
 
   useEffect(() => {
-    fetchPlans();
-  }, [fetchPlans]);
+    fetchData();
+  }, [fetchData]);
+
+  const handlePlanClick = (plan: SubscriptionPlanResponse) => {
+    if (plan.id === activeSubscriptionId) return;
+
+    setSelectedPlan(plan);
+    setIsCheckoutOpen(true);
+  };
 
   return (
     <section
@@ -92,7 +121,7 @@ export const SubscriptionPlansSection = () => {
               {apiError}
             </p>
             <button
-              onClick={fetchPlans}
+              onClick={fetchData}
               className="flex items-center gap-2 rounded-xl bg-slate-950 px-6 py-3 text-[10px] font-black tracking-widest text-white uppercase transition-all hover:bg-indigo-600 active:scale-95"
             >
               <RefreshCw size={14} /> Tentar Novamente
@@ -102,10 +131,23 @@ export const SubscriptionPlansSection = () => {
           <div className="grid items-center gap-8 lg:grid-cols-3">
             {plans.map((plan, index) =>
               index === 1 ? (
-                <FeaturedPlanCard key={plan.id} plan={plan} />
+                <FeaturedPlanCard
+                  key={plan.id}
+                  plan={plan}
+                  onSelect={() => handlePlanClick(plan)}
+                  isLoading={false}
+                  isActive={plan.id === activeSubscriptionId}
+                />
               ) : (
-                <StandardPlanCard key={plan.id} plan={plan} index={index} />
-              )
+                <StandardPlanCard
+                  key={plan.id}
+                  plan={plan}
+                  index={index}
+                  onSelect={() => handlePlanClick(plan)}
+                  isLoading={false}
+                  isActive={plan.id === activeSubscriptionId}
+                />
+              ),
             )}
           </div>
         )}
@@ -116,6 +158,15 @@ export const SubscriptionPlansSection = () => {
           </p>
         </div>
       </div>
+
+      <SubscriptionCheckoutModal
+        isOpen={isCheckoutOpen}
+        onClose={() => {
+          setIsCheckoutOpen(false);
+          setSelectedPlan(null);
+        }}
+        plan={selectedPlan}
+      />
     </section>
   );
 };
