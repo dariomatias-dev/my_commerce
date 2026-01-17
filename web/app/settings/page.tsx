@@ -2,6 +2,7 @@
 
 import {
   ChevronRight,
+  CreditCard,
   Database,
   Lock,
   LucideIcon,
@@ -19,8 +20,14 @@ import { SettingsAddresses } from "@/components/profile/profile-addresses";
 import { SettingsAdvancedSettings } from "@/components/profile/settings-advanced-settings";
 import { SettingsInfoForm } from "@/components/profile/settings-info-form";
 import { SettingsSecurityForm } from "@/components/profile/settings-security-form";
+import { SettingsSubscriptions } from "@/components/profile/settings-subscriptions";
 
-type SettingsTab = "profile" | "addresses" | "security" | "advanced";
+type SettingsTab =
+  | "profile"
+  | "addresses"
+  | "subscriptions"
+  | "security"
+  | "advanced";
 
 const SettingsPage = () => {
   const router = useRouter();
@@ -30,6 +37,7 @@ const SettingsPage = () => {
   const activeTab: SettingsTab = [
     "profile",
     "addresses",
+    "subscriptions",
     "security",
     "advanced",
   ].includes(currentTab)
@@ -39,6 +47,7 @@ const SettingsPage = () => {
   const tabs: { id: SettingsTab; label: string; icon: LucideIcon }[] = [
     { id: "profile", label: "Informações Pessoais", icon: User },
     { id: "addresses", label: "Meus Endereços", icon: MapPin },
+    { id: "subscriptions", label: "Assinaturas", icon: CreditCard },
     { id: "security", label: "Segurança & Senha", icon: Lock },
     { id: "advanced", label: "Configurações Avançadas", icon: Settings2 },
   ];
@@ -107,6 +116,7 @@ const SettingsPage = () => {
             <div className="rounded-3xl border border-slate-200 bg-white p-6 md:p-8 shadow-sm transition-all animate-in fade-in slide-in-from-right-2">
               {activeTab === "profile" && <SettingsInfoForm />}
               {activeTab === "addresses" && <SettingsAddresses />}
+              {activeTab === "subscriptions" && <SettingsSubscriptions />}
               {activeTab === "security" && <SettingsSecurityForm />}
               {activeTab === "advanced" && <SettingsAdvancedSettings />}
 
