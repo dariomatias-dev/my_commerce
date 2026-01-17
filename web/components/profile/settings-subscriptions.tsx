@@ -14,14 +14,14 @@ import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "@/@types/api";
 import { SubscriptionResponse } from "@/@types/subscription/subscription-response";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
-import { useSubscription } from "@/services/hooks/use-subscription";
 import { useAuthContext } from "@/contexts/auth-context";
+import { useSubscription } from "@/services/hooks/use-subscription";
 
 export const SettingsSubscriptions = () => {
   const { getMySubscriptions, getMyActiveSubscription, cancelSubscription } =
     useSubscription();
 
-  const { setSubscription } = useAuthContext();
+  const { refreshUser } = useAuthContext();
 
   const [subscriptions, setSubscriptions] = useState<SubscriptionResponse[]>(
     [],
@@ -67,7 +67,7 @@ export const SettingsSubscriptions = () => {
       await cancelSubscription();
       await fetchData();
 
-      setSubscription(null);
+      refreshUser();
 
       setIsCancelDialogOpen(false);
     } catch (error) {

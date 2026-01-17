@@ -12,7 +12,9 @@ export const Header = () => {
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
+
     window.addEventListener("scroll", handleScroll);
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -51,7 +53,7 @@ export const Header = () => {
               {["Funcionalidades", "Planos", "FAQ"].map((item) => (
                 <Link
                   key={item}
-                  href={`#${item.toLowerCase()}`}
+                  href={`/#${item.toLowerCase()}`}
                   className="group relative text-[10px] font-black tracking-widest text-slate-500 uppercase transition-colors hover:text-indigo-600"
                 >
                   {item}
@@ -81,7 +83,7 @@ export const Header = () => {
               {["Funcionalidades", "Planos", "FAQ"].map((item) => (
                 <Link
                   key={item}
-                  href={`#${item.toLowerCase()}`}
+                  href={`/#${item.toLowerCase()}`}
                   className="text-2xl font-black uppercase italic text-slate-950"
                   onClick={() => setIsMenuOpen(false)}
                 >

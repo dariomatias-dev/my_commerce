@@ -15,6 +15,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "@/@types/api";
 import { SubscriptionPlanResponse } from "@/@types/subscription-plan/subscription-plan-response";
 import { useSubscription } from "@/services/hooks/use-subscription";
+import { useAuthContext } from "@/contexts/auth-context";
 
 interface SubscriptionCheckoutModalProps {
   isOpen: boolean;
@@ -34,6 +35,8 @@ export const SubscriptionCheckoutModal = ({
     changeSubscriptionPlan,
     getMyActiveSubscription,
   } = useSubscription();
+
+  const { refreshUser } = useAuthContext();
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [activePlanId, setActivePlanId] = useState<string | null>(null);
@@ -70,6 +73,8 @@ export const SubscriptionCheckoutModal = ({
 
       router.push("/dashboard");
       router.refresh();
+
+      refreshUser();
 
       onClose();
     } catch (error: unknown) {
