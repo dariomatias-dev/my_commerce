@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
+import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { SettingsAddresses } from "@/components/profile/profile-addresses";
@@ -23,7 +24,6 @@ type SettingsTab = "profile" | "addresses" | "security" | "advanced";
 
 const SettingsPage = () => {
   const router = useRouter();
-
   const searchParams = useSearchParams();
 
   const currentTab = searchParams.get("tab") as SettingsTab;
@@ -52,19 +52,11 @@ const SettingsPage = () => {
       <Header />
 
       <main className="min-h-screen mx-auto max-w-400 px-6 pt-32 pb-12">
-        <div className="mb-8 border-b border-slate-200 pb-6">
-          <div className="mb-2 flex items-center gap-2">
-            <div className="rounded bg-indigo-600 px-2 py-0.5 text-[9px] font-black tracking-widest text-white uppercase">
-              USER_SETTINGS
-            </div>
-            <span className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase italic">
-              Gerencie suas credenciais e segurança de acesso
-            </span>
-          </div>
-          <h1 className="text-4xl font-black tracking-tighter text-slate-950 uppercase italic">
-            MINHAS <span className="text-indigo-600">CONFIGURAÇÕES.</span>
-          </h1>
-        </div>
+        <DashboardPageHeader
+          title="Minhas Configurações"
+          subtitle="Gerencie suas credenciais e segurança de acesso"
+          label="Configurações do Usuário"
+        />
 
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
           <aside className="lg:col-span-3">

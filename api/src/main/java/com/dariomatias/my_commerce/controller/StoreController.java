@@ -30,7 +30,7 @@ public class StoreController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
+    @PreAuthorize("hasRole('SUBSCRIBER')")
     public ResponseEntity<ApiResponse<StoreResponseDTO>> create(
             @AuthenticationPrincipal User user,
             @RequestPart(value = "data") StoreRequestDTO request,
