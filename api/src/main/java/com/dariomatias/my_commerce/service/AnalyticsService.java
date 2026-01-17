@@ -60,4 +60,10 @@ public class AnalyticsService {
                 total != null ? total : BigDecimal.ZERO
         );
     }
+
+    public BigDecimal getTotalRevenue() {
+        BigDecimal total = orderRepository.sumTotalRevenueByStatus(Status.COMPLETED);
+
+        return total != null ? total : BigDecimal.ZERO;
+    }
 }

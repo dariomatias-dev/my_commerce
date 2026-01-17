@@ -434,6 +434,21 @@ public class OrderJdbcRepository implements OrderContract {
     }
 
     @Override
+    public BigDecimal sumTotalRevenueByStatus(Status status) {
+        String sql = """
+        SELECT COALESCE(SUM(o.total_amount), 0)
+        FROM orders o
+        WHERE o.status = :status
+    """;
+
+        return jdbc.queryForObject(
+                sql,
+                new MapSqlParameterSource("status", status.name()),
+                BigDecimal.class
+        );
+    }
+
+    @Override
     public Order update(Order order) {
         LocalDateTime now = LocalDateTime.now();
         order.getAudit().setUpdatedAt(now);

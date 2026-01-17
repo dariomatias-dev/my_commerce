@@ -103,4 +103,11 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
             @Param("storeId") UUID storeId,
             @Param("status") Status status
     );
+
+    @Query("""
+        SELECT COALESCE(SUM(o.totalAmount), 0)
+        FROM Order o
+        WHERE o.status = :status
+    """)
+    BigDecimal sumTotalRevenueByStatus(@Param("status") Status status);
 }

@@ -106,6 +106,11 @@ public class OrderJpaRepository implements OrderContract {
     }
 
     @Override
+    public BigDecimal sumTotalRevenueByStatus(Status status) {
+        return repository.sumTotalRevenueByStatus(status);
+    }
+
+    @Override
     public Order update(Order order) {
         return repository.save(order);
     }

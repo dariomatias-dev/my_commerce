@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @RestController
@@ -59,6 +60,16 @@ public class AnalyticsController {
     ) {
         return ResponseEntity.ok(
                 ApiResponse.success("Receita total da loja",service.getTotalRevenueByStore(storeId))
+        );
+    }
+
+    @GetMapping("/total-revenue")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<TotalRevenueResponseDTO>> getTotalRevenue() {
+        BigDecimal totalRevenue = service.getTotalRevenue();
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Receita total geral", new TotalRevenueResponseDTO(totalRevenue))
         );
     }
 }

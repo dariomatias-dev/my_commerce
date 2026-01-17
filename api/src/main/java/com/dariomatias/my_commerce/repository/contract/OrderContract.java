@@ -52,6 +52,8 @@ public interface OrderContract {
             Status status
     );
 
+    BigDecimal sumTotalRevenueByStatus(Status status);
+
     Order update(Order order);
 
     void deleteById(UUID id);
