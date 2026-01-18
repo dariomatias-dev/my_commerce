@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,6 +25,11 @@ public class OrderItemJpaRepository implements OrderItemContract {
     @Override
     public OrderItem save(OrderItem item) {
         return repository.save(item);
+    }
+
+    @Override
+    public void addItemToOrder(UUID orderId, UUID productId, Integer quantity, BigDecimal price) {
+        repository.addItemToOrder(orderId, productId, quantity, price);
     }
 
     @Override

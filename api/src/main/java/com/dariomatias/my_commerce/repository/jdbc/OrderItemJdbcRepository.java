@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -71,6 +72,18 @@ public class OrderItemJdbcRepository implements OrderItemContract {
                 .addValue("updated_at", now));
 
         return item;
+    }
+
+    @Override
+    public void addItemToOrder(UUID orderId, UUID productId, Integer quantity, BigDecimal price) {
+        String sql = "SELECT add_item_to_order(:orderId, :productId, :quantity, :price)";
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("orderId", orderId)
+                .addValue("productId", productId)
+                .addValue("quantity", quantity)
+                .addValue("price", price);
+
+        jdbc.update(sql, params);
     }
 
     @Override

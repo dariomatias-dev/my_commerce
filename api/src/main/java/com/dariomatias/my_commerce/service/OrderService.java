@@ -14,11 +14,7 @@ import com.dariomatias.my_commerce.model.Product;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.model.UserAddress;
-import com.dariomatias.my_commerce.repository.contract.OrderContract;
-import com.dariomatias.my_commerce.repository.contract.ProductContract;
-import com.dariomatias.my_commerce.repository.contract.StoreContract;
-import com.dariomatias.my_commerce.repository.contract.UserAddressContract;
-import com.dariomatias.my_commerce.repository.contract.UserContract;
+import com.dariomatias.my_commerce.repository.contract.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -35,6 +31,7 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderContract orderRepository;
+    private final OrderItemContract orderItemRepository;
     private final StoreContract storeRepository;
     private final UserContract userRepository;
     private final ProductContract productRepository;
@@ -43,6 +40,7 @@ public class OrderService {
 
     public OrderService(
             OrderContract orderRepository,
+            OrderItemContract orderItemRepository,
             StoreContract storeRepository,
             UserContract userRepository,
             ProductContract productRepository,
@@ -50,6 +48,7 @@ public class OrderService {
             FreightService freightService
     ) {
         this.orderRepository = orderRepository;
+        this.orderItemRepository = orderItemRepository;
         this.storeRepository = storeRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
@@ -68,29 +67,8 @@ public class OrderService {
         order.setPaymentMethod(request.getPaymentMethod());
         order.setFreightType(request.getFreightType());
         order.setStatus(Status.PENDING);
-        order.setItems(new ArrayList<>());
 
-        BigDecimal itemsAmount = BigDecimal.ZERO;
-
-        for (OrderItemRequestDTO itemRequest : request.getItems()) {
-            Product product = getProductOrThrow(itemRequest.getProductId());
-
-            OrderItem item = new OrderItem();
-            item.setOrder(order);
-            item.setProduct(product);
-            item.setQuantity(itemRequest.getQuantity());
-            item.setPrice(product.getPrice());
-
-            itemsAmount = itemsAmount.add(
-                    product.getPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity()))
-            );
-
-            order.getItems().add(item);
-        }
-
-        FreightResponseDTO freight = freightService.calculateFreight(
-                userAddress.getId()
-        );
+        FreightResponseDTO freight = freightService.calculateFreight(userAddress.getId());
 
         if (request.getFreightType() == FreightType.ECONOMICAL) {
             order.setFreightAmount(freight.getEconomical().getValue());
@@ -98,9 +76,30 @@ public class OrderService {
             order.setFreightAmount(freight.getEconomical().getValue());
         }
 
-        order.setTotalAmount(itemsAmount.add(order.getFreightAmount()));
+        order.setTotalAmount(order.getFreightAmount());
 
-        return orderRepository.save(order);
+        order = orderRepository.save(order);
+
+        BigDecimal itemsAmount = BigDecimal.ZERO;
+
+        for (OrderItemRequestDTO itemRequest : request.getItems()) {
+            Product product = getProductOrThrow(itemRequest.getProductId());
+
+            orderItemRepository.addItemToOrder(
+                    order.getId(),
+                    product.getId(),
+                    itemRequest.getQuantity(),
+                    product.getPrice()
+            );
+
+            itemsAmount = itemsAmount.add(
+                    product.getPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity()))
+            );
+        }
+
+        order.setTotalAmount(order.getFreightAmount().add(itemsAmount));
+
+        return orderRepository.update(order);
     }
 
     public Page<Order> getAll(Pageable pageable) {
