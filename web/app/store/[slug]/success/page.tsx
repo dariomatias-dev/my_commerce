@@ -7,7 +7,9 @@ import { ActionButton } from "@/components/buttons/action-button";
 
 export default function OrderSuccessPage() {
   const router = useRouter();
+
   const params = useParams();
+
   const searchParams = useSearchParams();
 
   const orderId = searchParams.get("orderId");
@@ -23,6 +25,7 @@ export default function OrderSuccessPage() {
           <div className="mb-8 flex justify-center">
             <div className="relative">
               <div className="absolute inset-0 animate-ping rounded-full bg-emerald-100 opacity-75" />
+
               <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-emerald-50 text-emerald-500">
                 <CheckCircle2 size={48} strokeWidth={2.5} />
               </div>
@@ -47,10 +50,12 @@ export default function OrderSuccessPage() {
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-indigo-600 shadow-sm">
                 <Package size={24} />
               </div>
+
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                   Status
                 </p>
+
                 <p className="text-sm font-black text-slate-950">
                   Preparando Pedido
                 </p>
@@ -61,10 +66,12 @@ export default function OrderSuccessPage() {
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-indigo-600 shadow-sm">
                 <ShoppingBag size={24} />
               </div>
+
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                   Entrega
                 </p>
+
                 <p className="text-sm font-black text-slate-950">
                   Envio Imediato
                 </p>

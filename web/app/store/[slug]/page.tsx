@@ -20,7 +20,7 @@ const StorePage = () => {
     useState<ProductResponse | null>(null);
   const [isProductsLoading, setIsProductsLoading] = useState(true);
 
-  const loadPageData = useCallback(async () => {
+  const fecthProducts = useCallback(async () => {
     try {
       setIsProductsLoading(true);
 
@@ -35,11 +35,11 @@ const StorePage = () => {
   }, [store.id, getAllProducts]);
 
   useEffect(() => {
-    loadPageData();
-  }, [loadPageData]);
+    fecthProducts();
+  }, [fecthProducts]);
 
   return (
-    <main className="mx-auto max-w-400 px-8 pb-20">
+    <main className="mx-auto max-w-400 pt-32 px-8 pb-20">
       <StoreHero
         store={store}
         bannerUrl={`${process.env.NEXT_PUBLIC_API_URL}/files/stores/${store.slug}/banner.png`}

@@ -15,7 +15,7 @@ interface StoreCatalogSectionProps {
 
 export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
   const { getAllProducts } = useProduct();
-  const { getCategoriesByStoreId } = useCategory();
+  const { getAllCategories } = useCategory();
 
   const [products, setProducts] = useState<ProductResponse[]>([]);
   const [categories, setCategories] = useState<CategoryResponse[]>([]);
@@ -31,12 +31,13 @@ export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
 
   const fetchCategories = useCallback(async () => {
     try {
-      const res = await getCategoriesByStoreId(storeId, 0, 100);
+      const res = await getAllCategories({ storeId }, 0, 100);
+
       setCategories(res.content);
     } catch (err) {
       console.error(err);
     }
-  }, [storeId, getCategoriesByStoreId]);
+  }, [storeId, getAllCategories]);
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -49,7 +50,7 @@ export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
           categoryId: activeCategoryId === "all" ? undefined : activeCategoryId,
         },
         currentPage,
-        productsPerPage
+        productsPerPage,
       );
 
       setProducts(res.content);
@@ -94,14 +95,17 @@ export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
       {error && (
         <div className="mb-12 flex flex-col items-center justify-center gap-6 rounded-[3rem] border-2 border-dashed border-red-100 bg-red-50/30 p-16 text-center">
           <AlertCircle size={48} className="text-red-500" />
+
           <div className="space-y-2">
             <h3 className="text-2xl font-black tracking-tighter text-slate-950 uppercase italic">
               Falha na Sincronização
             </h3>
+
             <p className="text-sm font-medium text-slate-500 italic uppercase tracking-wider">
               {error}
             </p>
           </div>
+
           <button
             onClick={fetchProducts}
             className="rounded-xl bg-slate-950 px-8 py-4 text-[10px] font-black tracking-[0.2em] text-white uppercase transition-all hover:bg-indigo-600 active:scale-95"
@@ -114,6 +118,7 @@ export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-40 gap-6">
           <Loader2 className="h-12 w-12 animate-spin text-indigo-600" />
+
           <p className="text-[10px] font-black tracking-[0.5em] text-slate-400 uppercase italic">
             Processando Requisição...
           </p>
@@ -123,6 +128,7 @@ export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
           <div className="inline-flex h-24 w-24 items-center justify-center rounded-full bg-slate-50 text-slate-200">
             <AlertCircle size={40} />
           </div>
+
           <h3 className="mt-8 text-2xl font-black uppercase italic text-slate-300">
             Nenhum registro localizado
           </h3>
