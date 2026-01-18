@@ -1,0 +1,66 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006-create-product-images
+      author: dariomatias
+      changes:
+        - createTable:
+            tableName: product_images
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: product_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: url
+                  type: varchar(500)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: position
+                  type: integer
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: product_images
+            baseColumnNames: product_id
+            referencedTableName: products
+            referencedColumnNames: id
+            constraintName: fk_product_images_product
+
+        - createIndex:
+            tableName: product_images
+            indexName: idx_product_images_product_id
+            columns:
+              - column:
+                  name: product_id
+
+        - createIndex:
+            tableName: product_images
+            indexName: idx_product_images_position
+            columns:
+              - column:
+                  name: position

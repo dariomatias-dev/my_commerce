@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changes/000-extensions.yaml
+
+  - include:
+      file: db/changelog/changes/001-users.yaml
+
+  - include:
+      file: db/changelog/changes/002-subscription-plans.yaml
+
+  - include:
+      file: db/changelog/changes/003-stores.yaml
+
+  - include:
+      file: db/changelog/changes/004-categories.yaml
+
+  - include:
+      file: db/changelog/changes/005-products.yaml
+
+  - include:
+      file: db/changelog/changes/006-product-images.yaml
+
+  - include:
+      file: db/changelog/changes/007-user-addresses.yaml
+
+  - include:
+      file: db/changelog/changes/008-order-addresses.yaml
+
+  - include:
+      file: db/changelog/changes/009-orders.yaml
+
+  - include:
+      file: db/changelog/changes/010-order-items.yaml
+
+  - include:
+      file: db/changelog/changes/011-subscriptions.yaml
+
+  - include:
+      file: db/changelog/changes/012-add-item-to-order-function.yaml

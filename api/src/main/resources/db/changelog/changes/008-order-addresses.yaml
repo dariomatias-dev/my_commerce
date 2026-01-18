@@ -1,0 +1,66 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008-create-order-addresses
+      author: dariomatias
+      changes:
+        - createTable:
+            tableName: order_addresses
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: label
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: street
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: number
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: complement
+                  type: varchar(255)
+
+              - column:
+                  name: neighborhood
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: city
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: state
+                  type: varchar(2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: zip
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: location
+                  type: geometry(Point,4326)
+                  constraints:
+                    nullable: false
