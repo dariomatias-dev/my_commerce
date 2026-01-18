@@ -40,7 +40,7 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="overflow-hidden py-40" id="funcionalidades">
+      <section id="features" className="overflow-hidden py-40">
         <div className="mx-auto max-w-7xl px-6">
           <div className="relative mb-40 flex flex-col items-center gap-16 lg:flex-row">
             <div className="relative z-10 lg:w-1/2">

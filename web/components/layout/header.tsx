@@ -4,6 +4,7 @@ import { Menu, Store, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { NAV_ITEMS } from "@/constants/nav-items";
 import { HeaderNavAuth } from "./header-nav-auth";
 
 export const Header = () => {
@@ -34,6 +35,7 @@ export const Header = () => {
                 <div className="rounded-xl bg-indigo-600 p-1.5 shadow-lg shadow-indigo-100 transition-transform group-hover:rotate-12">
                   <Store className="h-5 w-5 text-white" />
                 </div>
+
                 <div className="absolute -top-1 -right-1 h-2 w-2 rounded-full border-2 border-white bg-indigo-400" />
               </div>
 
@@ -41,6 +43,7 @@ export const Header = () => {
                 <span className="text-lg font-black tracking-tighter text-slate-950 uppercase italic">
                   My<span className="text-indigo-600">Ecommerce</span>
                 </span>
+
                 <span className="text-[8px] font-black tracking-[0.3em] text-slate-400 uppercase">
                   Sistema SaaS de Lojas
                 </span>
@@ -50,13 +53,13 @@ export const Header = () => {
 
           <div className="flex flex-1 items-center justify-center">
             <div className="hidden items-center gap-8 lg:flex">
-              {["Funcionalidades", "Planos", "FAQ"].map((item) => (
+              {NAV_ITEMS.map((item) => (
                 <Link
-                  key={item}
-                  href={`/#${item.toLowerCase()}`}
+                  key={item.label}
+                  href={item.href}
                   className="group relative text-[10px] font-black tracking-widest text-slate-500 uppercase transition-colors hover:text-indigo-600"
                 >
-                  {item}
+                  {item.label}
                   <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-indigo-600 transition-all group-hover:w-full" />
                 </Link>
               ))}
@@ -80,14 +83,14 @@ export const Header = () => {
         {isMenuOpen && (
           <div className="absolute inset-x-0 top-full h-screen bg-white p-6 shadow-2xl animate-in fade-in slide-in-from-top-4 lg:hidden">
             <div className="flex flex-col gap-6 items-center">
-              {["Funcionalidades", "Planos", "FAQ"].map((item) => (
+              {NAV_ITEMS.map((item) => (
                 <Link
-                  key={item}
-                  href={`/#${item.toLowerCase()}`}
+                  key={item.label}
+                  href={item.href}
                   className="text-2xl font-black uppercase italic text-slate-950"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  {item}
+                  {item.label}
                 </Link>
               ))}
 

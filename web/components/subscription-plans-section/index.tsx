@@ -69,8 +69,8 @@ export const SubscriptionPlansSection = () => {
 
   return (
     <section
+      id="plans"
       className="relative overflow-hidden bg-white py-32 lg:py-48"
-      id="planos"
     >
       <div className="pointer-events-none absolute inset-0 z-0">
         <div className="absolute top-[-10%] left-[-10%] h-125 w-125 rounded-full bg-indigo-50/50 blur-[120px]" />
