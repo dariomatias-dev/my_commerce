@@ -103,7 +103,7 @@ const AdminAuditLogsPage = () => {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-400 flex-col px-6 pt-32 pb-12">
+    <>
       <DashboardPageHeader
         title="LOGS DE AUDITORIA"
         subtitle="Histórico completo de operações e rastreabilidade de sistema"
@@ -149,7 +149,7 @@ const AdminAuditLogsPage = () => {
           onPageChange={handlePageChange}
         />
       </div>
-    </main>
+    </>
   );
 };
 

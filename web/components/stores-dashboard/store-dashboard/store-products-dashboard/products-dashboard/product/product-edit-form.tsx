@@ -92,7 +92,7 @@ export const ProductEditForm = ({
   }
 
   return (
-    <main className="mx-auto min-h-screen max-w-400 px-6 pt-32 pb-20">
+    <>
       <DashboardPageHeader
         title="EDITAR PRODUTO"
         subtitle="Gerencie as informações, preço e disponibilidade do item no catálogo"
@@ -116,6 +116,6 @@ export const ProductEditForm = ({
           storeSlug={storeSlug}
         />
       </div>
-    </main>
+    </>
   );
 };

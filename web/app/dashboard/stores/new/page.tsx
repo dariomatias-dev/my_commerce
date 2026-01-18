@@ -47,7 +47,7 @@ const NewStorePage = () => {
   };
 
   return (
-    <main className="min-h-screen bg-[#F4F7FA] mx-auto max-w-400 px-6 pt-32 pb-20">
+    <>
       <div className="mb-10 border-b border-slate-200 pb-8">
         <Link
           href="/dashboard"
@@ -69,7 +69,7 @@ const NewStorePage = () => {
       )}
 
       <StoreForm onSubmit={onSubmit} isLoading={isLoading} />
-    </main>
+    </>
   );
 };
 

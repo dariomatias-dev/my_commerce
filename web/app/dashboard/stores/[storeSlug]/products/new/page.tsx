@@ -42,13 +42,13 @@ const NewProductPage = () => {
   };
 
   return (
-    <main className="min-h-screen bg-[#F4F7FA] mx-auto max-w-4xl px-6 pt-32 pb-20">
+    <>
       <div className="mb-10">
         <Link
-          href={`/dashboard/store/${storeSlug}/products`}
-          className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase hover:text-indigo-600"
+          href={`/dashboard/stores/${storeSlug}/products`}
+          className="mb-6 flex items-center gap-2 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors hover:text-indigo-600"
         >
-          <ArrowLeft size={14} /> Voltar ao Inventário
+          <ArrowLeft size={14} /> Voltar
         </Link>
 
         <h1 className="text-5xl font-black text-slate-950 uppercase italic mt-4">
@@ -67,7 +67,7 @@ const NewProductPage = () => {
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
       />
-    </main>
+    </>
   );
 };
 

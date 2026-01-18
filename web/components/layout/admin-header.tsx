@@ -31,7 +31,7 @@ export const AdminHeader = () => {
         className={`border-b transition-all duration-300 ${
           scrolled
             ? "border-slate-200 bg-white/90 backdrop-blur-md"
-            : "border-transparent bg-transparent"
+            : "border-transparent bg-white"
         }`}
       >
         <div className="mx-auto flex h-20 max-w-400 items-center px-6">

@@ -73,69 +73,63 @@ const DashboardPage = () => {
   }
 
   return (
-    <main className="min-h-screen bg-[#F4F7FA] font-sans text-slate-900">
-      <div className="mx-auto max-w-400 px-6 pt-40 pb-20">
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <DashboardPageHeader
-            label="Painel de Controle"
-            title="Olá, Subscriber"
-            subtitle="Gerencie suas lojas e monitore o desempenho global."
-            actions={
-              <Link
-                href="/dashboard/stores/new"
-                className="flex items-center gap-3 rounded-2xl bg-slate-950 px-8 py-5 text-[11px] font-black uppercase tracking-widest text-white transition-all hover:bg-indigo-600 hover:shadow-xl hover:shadow-indigo-100 active:scale-95"
-              >
-                <Plus size={18} />
-                Criar loja
-              </Link>
-            }
-          />
+    <>
+      <DashboardPageHeader
+        label="Painel de Controle"
+        title="Olá, Subscriber"
+        subtitle="Gerencie suas lojas e monitore o desempenho global."
+        actions={
+          <Link
+            href="/dashboard/stores/new"
+            className="flex items-center gap-3 rounded-2xl bg-slate-950 px-8 py-5 text-[11px] font-black uppercase tracking-widest text-white transition-all hover:bg-indigo-600 hover:shadow-xl hover:shadow-indigo-100 active:scale-95"
+          >
+            <Plus size={18} />
+            Criar loja
+          </Link>
+        }
+      />
 
-          <section className="mb-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <DashboardStatCard
-              label="Quantidade de Lojas"
-              value={totalStores.toString().padStart(2, "0")}
-              icon={Store}
-              isLoading={isLoading}
-              errorMessage={errorMessage}
-              onRetry={fetchDashboardData}
-            />
+      <section className="mb-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <DashboardStatCard
+          label="Quantidade de Lojas"
+          value={totalStores.toString().padStart(2, "0")}
+          icon={Store}
+          isLoading={isLoading}
+          errorMessage={errorMessage}
+          onRetry={fetchDashboardData}
+        />
 
-            <DashboardActiveProductsStatCard
-              request={getUserActiveProductsCount}
-            />
+        <DashboardActiveProductsStatCard request={getUserActiveProductsCount} />
 
-            <DashboardUniqueCustomersStatCard request={getUniqueCustomers} />
+        <DashboardUniqueCustomersStatCard request={getUniqueCustomers} />
 
-            <DashboardTotalRevenueStatCard request={getMyTotalRevenue} />
-          </section>
+        <DashboardTotalRevenueStatCard request={getMyTotalRevenue} />
+      </section>
 
-          <section>
-            <div className="mb-8 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="h-1 w-8 rounded-full bg-indigo-600" />
-                <h2 className="text-2xl font-black uppercase italic tracking-tighter text-slate-950">
-                  Minhas <span className="text-indigo-600">Lojas</span>
-                </h2>
-              </div>
+      <section>
+        <div className="mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-1 w-8 rounded-full bg-indigo-600" />
+            <h2 className="text-2xl font-black uppercase italic tracking-tighter text-slate-950">
+              Minhas <span className="text-indigo-600">Lojas</span>
+            </h2>
+          </div>
 
-              <Link
-                href="/dashboard/stores"
-                className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors"
-              >
-                Ver todas as lojas
-              </Link>
-            </div>
-
-            <StoresList
-              stores={stores}
-              basePath="/dashboard"
-              onRetry={fetchDashboardData}
-            />
-          </section>
+          <Link
+            href="/dashboard/stores"
+            className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors"
+          >
+            Ver todas as lojas
+          </Link>
         </div>
-      </div>
-    </main>
+
+        <StoresList
+          stores={stores}
+          basePath="/dashboard"
+          onRetry={fetchDashboardData}
+        />
+      </section>
+    </>
   );
 };
 

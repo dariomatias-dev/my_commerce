@@ -19,7 +19,7 @@ interface StoresDashboardProps {
   fetchFunction: (
     filters: StoreFilter,
     page: number,
-    size: number
+    size: number,
   ) => Promise<PaginatedResponse<StoreResponse>>;
   headerTitle: string;
   headerSubtitle: string;
@@ -103,63 +103,55 @@ export const StoresDashboard = ({
   }
 
   return (
-    <main className="min-h-screen font-sans text-slate-900">
-      <div className="mx-auto max-w-400 px-6 pt-32 pb-20">
-        <div
-          ref={listTopRef}
-          className="animate-in fade-in slide-in-from-bottom-4 duration-700 scroll-mt-32"
-        >
-          <div className="mb-12">
-            <StoresDashboardPageHeader
-              currentPage={currentPage}
-              totalPages={totalPages}
-              title={headerTitle}
-              subtitle={headerSubtitle}
-              showCreateButton={canCreate}
-              backPath={backPath}
-              actions={
-                <DashboardTotalBadge
-                  icon={Store}
-                  value={totalElements}
-                  unit="Lojas"
-                />
-              }
+    <div
+      ref={listTopRef}
+      className="animate-in fade-in slide-in-from-bottom-4 duration-700 scroll-mt-32"
+    >
+      <div className="mb-12">
+        <StoresDashboardPageHeader
+          currentPage={currentPage}
+          totalPages={totalPages}
+          title={headerTitle}
+          subtitle={headerSubtitle}
+          showCreateButton={canCreate}
+          backPath={backPath}
+          actions={
+            <DashboardTotalBadge
+              icon={Store}
+              value={totalElements}
+              unit="Lojas"
             />
-          </div>
-
-          {showStatusFilter && (
-            <div className="mb-12 flex justify-end">
-              <StatusDropdownFilter
-                value={statusFilter}
-                onChange={handleStatusChange}
-                className="w-full sm:w-72"
-              />
-            </div>
-          )}
-
-          {stores.length > 0 ? (
-            <StoresList
-              stores={stores}
-              basePath={basePath}
-              onRetry={fetchStores}
-            />
-          ) : (
-            <div className="rounded-[3rem] border-2 border-dashed border-slate-100 py-32 text-center">
-              <p className="text-xs font-black uppercase italic tracking-widest text-slate-300">
-                Nenhuma loja localizada para os critérios selecionados
-              </p>
-            </div>
-          )}
-
-          <div className="mt-12">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
-          </div>
-        </div>
+          }
+        />
       </div>
-    </main>
+
+      {showStatusFilter && (
+        <div className="mb-12 flex justify-end">
+          <StatusDropdownFilter
+            value={statusFilter}
+            onChange={handleStatusChange}
+            className="w-full sm:w-72"
+          />
+        </div>
+      )}
+
+      {stores.length > 0 ? (
+        <StoresList stores={stores} basePath={basePath} onRetry={fetchStores} />
+      ) : (
+        <div className="rounded-[3rem] border-2 border-dashed border-slate-100 py-32 text-center">
+          <p className="text-xs font-black uppercase italic tracking-widest text-slate-300">
+            Nenhuma loja localizada para os critérios selecionados
+          </p>
+        </div>
+      )}
+
+      <div className="mt-12">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      </div>
+    </div>
   );
 };

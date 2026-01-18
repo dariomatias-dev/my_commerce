@@ -62,7 +62,7 @@ const AdminDashboard = () => {
   }
 
   return (
-    <main className="mx-auto min-h-screen max-w-400 px-6 pt-32 pb-12">
+    <>
       <DashboardPageHeader
         title="GERENCIAMENTO CENTRALIZADO"
         subtitle="Sistema de governança e monitoramento"
@@ -84,7 +84,7 @@ const AdminDashboard = () => {
       </div>
 
       <AdminAuditLogTable />
-    </main>
+    </>
   );
 };
 

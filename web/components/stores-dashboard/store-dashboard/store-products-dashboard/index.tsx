@@ -63,60 +63,58 @@ export const StoreProductsDashboard = ({
   };
 
   return (
-    <main className="mx-auto max-w-400 px-6 pt-32 pb-12 font-sans text-slate-900 min-h-screen">
-      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <DashboardPageHeader
-          backPath={basePath}
-          label={`Gestão de Ativos — ${store?.name || storeSlug}`}
-          title="INVENTÁRIO CENTRAL"
-          subtitle="Administração técnica de itens, volumes e departamentos comerciais."
-          actions={
-            <div className="flex w-full flex-wrap items-center gap-3 lg:w-auto h-14">
-              <div className="flex h-full rounded-xl bg-slate-200/50 p-1">
-                <button
-                  onClick={() => setView("products")}
-                  className={`flex h-full items-center gap-2 px-6 text-[10px] font-black tracking-widest uppercase transition-all rounded-lg ${
-                    view === "products"
-                      ? "bg-white text-indigo-600 shadow-sm"
-                      : "text-slate-500"
-                  }`}
-                >
-                  <Package size={14} /> Produtos
-                </button>
+    <>
+      <DashboardPageHeader
+        backPath={basePath}
+        label={`Gestão de Ativos — ${store?.name || storeSlug}`}
+        title="INVENTÁRIO CENTRAL"
+        subtitle="Administração técnica de itens, volumes e departamentos comerciais."
+        actions={
+          <div className="flex w-full flex-wrap items-center gap-3 lg:w-auto h-14">
+            <div className="flex h-full rounded-xl bg-slate-200/50 p-1">
+              <button
+                onClick={() => setView("products")}
+                className={`flex h-full items-center gap-2 px-6 text-[10px] font-black tracking-widest uppercase transition-all rounded-lg ${
+                  view === "products"
+                    ? "bg-white text-indigo-600 shadow-sm"
+                    : "text-slate-500"
+                }`}
+              >
+                <Package size={14} /> Produtos
+              </button>
 
-                <button
-                  onClick={() => setView("categories")}
-                  className={`flex h-full items-center gap-2 px-6 text-[10px] font-black tracking-widest uppercase transition-all rounded-lg ${
-                    view === "categories"
-                      ? "bg-white text-indigo-600 shadow-sm"
-                      : "text-slate-500"
-                  }`}
-                >
-                  <Tag size={14} /> Categorias
-                </button>
-              </div>
-
-              {canCreate && (
-                <button
-                  onClick={handleCreateClick}
-                  className="flex h-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-8 text-[10px] font-black tracking-widest text-white shadow-2xl hover:bg-indigo-600 transition-all border-2 border-transparent focus:border-indigo-400 outline-none"
-                >
-                  <Plus size={16} />{" "}
-                  {view === "products" ? "NOVO PRODUTO" : "NOVA CATEGORIA"}
-                </button>
-              )}
+              <button
+                onClick={() => setView("categories")}
+                className={`flex h-full items-center gap-2 px-6 text-[10px] font-black tracking-widest uppercase transition-all rounded-lg ${
+                  view === "categories"
+                    ? "bg-white text-indigo-600 shadow-sm"
+                    : "text-slate-500"
+                }`}
+              >
+                <Tag size={14} /> Categorias
+              </button>
             </div>
-          }
-        />
 
-        {view === "products" && store && (
-          <ProductsDashboard storeId={store.id} basePath={basePath} />
-        )}
+            {canCreate && (
+              <button
+                onClick={handleCreateClick}
+                className="flex h-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-8 text-[10px] font-black tracking-widest text-white shadow-2xl hover:bg-indigo-600 transition-all border-2 border-transparent focus:border-indigo-400 outline-none"
+              >
+                <Plus size={16} />{" "}
+                {view === "products" ? "NOVO PRODUTO" : "NOVA CATEGORIA"}
+              </button>
+            )}
+          </div>
+        }
+      />
 
-        {view === "categories" && store && (
-          <CategoriesDashboard storeId={store.id} ref={categoryManagerRef} />
-        )}
-      </div>
+      {view === "products" && store && (
+        <ProductsDashboard storeId={store.id} basePath={basePath} />
+      )}
+
+      {view === "categories" && store && (
+        <CategoriesDashboard storeId={store.id} ref={categoryManagerRef} />
+      )}
 
       {store && (
         <CategoryFormDialog
@@ -126,6 +124,6 @@ export const StoreProductsDashboard = ({
           onSuccess={handleRefresh}
         />
       )}
-    </main>
+    </>
   );
 };

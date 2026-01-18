@@ -38,7 +38,7 @@ const AdminUserEditPage = () => {
         setErrorMessage(error.message);
       } else {
         setErrorMessage(
-          "Não foi possível carregar os dados do perfil do usuário."
+          "Não foi possível carregar os dados do perfil do usuário.",
         );
       }
     } finally {
@@ -89,7 +89,7 @@ const AdminUserEditPage = () => {
   }
 
   return (
-    <main className="mx-auto min-h-screen max-w-400 px-6 pt-32 pb-12">
+    <>
       <DashboardPageHeader
         title="EDITAR PERFIL"
         subtitle="Atualize as informações de identificação e acesso do usuário"
@@ -172,7 +172,7 @@ const AdminUserEditPage = () => {
           As alterações serão sincronizadas globalmente
         </div>
       </div>
-    </main>
+    </>
   );
 };
 

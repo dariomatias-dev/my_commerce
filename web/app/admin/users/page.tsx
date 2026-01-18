@@ -118,7 +118,7 @@ const UserManagementPage = () => {
   }
 
   return (
-    <main className="mx-auto min-h-screen max-w-400 px-6 pt-32 pb-12">
+    <>
       <DashboardPageHeader
         title="GESTÃO DE USUÁRIOS"
         subtitle={`Página ${currentPage + 1} de ${
@@ -206,7 +206,7 @@ const UserManagementPage = () => {
           onPageChange={setCurrentPage}
         />
       </div>
-    </main>
+    </>
   );
 };
 

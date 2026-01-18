@@ -86,7 +86,7 @@ export const EditStoreForm = ({
   }
 
   return (
-    <main className="mx-auto min-h-screen max-w-400 px-6 pt-32 pb-20">
+    <>
       <DashboardPageHeader
         title="EDITAR UNIDADE"
         subtitle="Gerencie as informações e a identidade visual da sua loja"
@@ -109,6 +109,6 @@ export const EditStoreForm = ({
           isLoading={isSubmitting}
         />
       </div>
-    </main>
+    </>
   );
 };

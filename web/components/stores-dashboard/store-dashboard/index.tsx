@@ -116,83 +116,83 @@ export const StoreDashboard = ({
   }
 
   return (
-    <main className="min-h-screen pb-12 pt-32 lg:px-6">
-      <div className="mx-auto max-w-400 animate-in fade-in zoom-in-95 duration-500 px-6">
-        <DashboardPageHeader
-          backPath={basePath}
-          label={`${store.isActive ? "OPERACIONAL" : "OFFLINE"} — ID: ${store.id
-            .slice(0, 8)
-            .toUpperCase()}-SECURED`}
-          title={`CONSOLE ${store.name}`}
-          subtitle={`Gerenciamento centralizado da unidade comercial ${store.name}.`}
-          actions={
-            <>
-              <Link
-                href={`${storeSlug}/products`}
-                className="flex items-center justify-center gap-3 rounded-xl border border-slate-950 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-slate-950 uppercase transition-all hover:bg-slate-50"
-              >
-                <Eye size={16} /> VER VITRINE
-              </Link>
+    <>
+      <DashboardPageHeader
+        backPath={basePath}
+        label={`${store.isActive ? "OPERACIONAL" : "OFFLINE"} — ID: ${store.id
+          .slice(0, 8)
+          .toUpperCase()}-SECURED`}
+        title={`CONSOLE ${store.name}`}
+        subtitle={`Gerenciamento centralizado da unidade comercial ${store.name}.`}
+        actions={
+          <>
+            <Link
+              href={`${storeSlug}/products`}
+              className="flex items-center justify-center gap-3 rounded-xl border border-slate-950 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-slate-950 uppercase transition-all hover:bg-slate-50"
+            >
+              <Eye size={16} /> VER VITRINE
+            </Link>
 
-              <Link
-                href={`${storeSlug}/edit`}
-                className="flex items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-slate-600 uppercase transition-all hover:bg-slate-50 hover:text-indigo-600"
-              >
-                <Settings size={16} /> EDITAR LOJA
-              </Link>
+            <Link
+              href={`${storeSlug}/edit`}
+              className="flex items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-slate-600 uppercase transition-all hover:bg-slate-50 hover:text-indigo-600"
+            >
+              <Settings size={16} /> EDITAR LOJA
+            </Link>
 
-              <button
-                onClick={handleOpenDelete}
-                className="flex items-center justify-center gap-3 rounded-xl border border-red-100 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-red-500 uppercase transition-all hover:bg-red-50"
-              >
-                <Trash2 size={16} /> EXCLUIR
-              </button>
-            </>
-          }
-        />
+            <button
+              onClick={handleOpenDelete}
+              className="flex items-center justify-center gap-3 rounded-xl border border-red-100 bg-white px-6 py-4 text-[10px] font-black tracking-widest text-red-500 uppercase transition-all hover:bg-red-50"
+            >
+              <Trash2 size={16} /> EXCLUIR
+            </button>
+          </>
+        }
+      />
 
-        <DashboardStoreStats storeId={store.id} isActive={store.isActive} />
+      <DashboardStoreStats storeId={store.id} isActive={store.isActive} />
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-          <div className="lg:col-span-8 space-y-10">
-            <div className="rounded-[2.5rem] border border-slate-100 bg-white p-10 shadow-sm">
-              <div className="mb-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 text-white">
-                    <List size={24} />
-                  </div>
-
-                  <h2 className="text-2xl font-black uppercase italic tracking-tighter text-slate-950">
-                    Catálogo de{" "}
-                    <span className="text-indigo-600">Produtos.</span>
-                  </h2>
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+        <div className="lg:col-span-8 space-y-10">
+          <div className="rounded-[2.5rem] border border-slate-100 bg-white p-10 shadow-sm">
+            <div className="mb-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 text-white">
+                  <List size={24} />
                 </div>
 
-                <div className="flex items-center gap-2">
-                  {canCreate && (
-                    <Link
-                      href={`${storeSlug}/products/new`}
-                      className="flex items-center justify-center gap-3 rounded-xl bg-slate-950 px-6 py-4 text-[10px] font-black tracking-widest text-white shadow-2xl transition-all hover:bg-indigo-600"
-                    >
-                      <PackagePlus size={16} /> NOVO
-                    </Link>
-                  )}
-
-                  <Link
-                    href={`${storeSlug}/products`}
-                    className="flex items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-5 py-4 text-[10px] font-black tracking-widest text-slate-600 uppercase transition-all hover:bg-slate-50"
-                  >
-                    VER TUDO
-                  </Link>
-                </div>
+                <h2 className="text-2xl font-black uppercase italic tracking-tighter text-slate-950">
+                  Catálogo de <span className="text-indigo-600">Produtos.</span>
+                </h2>
               </div>
 
-              <ProductsDashboard storeId={store.id} basePath={`${basePath}/${storeSlug}`} />
-            </div>
-          </div>
+              <div className="flex items-center gap-2">
+                {canCreate && (
+                  <Link
+                    href={`${storeSlug}/products/new`}
+                    className="flex items-center justify-center gap-3 rounded-xl bg-slate-950 px-6 py-4 text-[10px] font-black tracking-widest text-white shadow-2xl transition-all hover:bg-indigo-600"
+                  >
+                    <PackagePlus size={16} /> NOVO
+                  </Link>
+                )}
 
-          <InventoryAlert storeId={store.id} />
+                <Link
+                  href={`${storeSlug}/products`}
+                  className="flex items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-5 py-4 text-[10px] font-black tracking-widest text-slate-600 uppercase transition-all hover:bg-slate-50"
+                >
+                  VER TUDO
+                </Link>
+              </div>
+            </div>
+
+            <ProductsDashboard
+              storeId={store.id}
+              basePath={`${basePath}/${storeSlug}`}
+            />
+          </div>
         </div>
+
+        <InventoryAlert storeId={store.id} />
       </div>
 
       <ConfirmDialog
@@ -214,6 +214,6 @@ export const StoreDashboard = ({
         description="Ao confirmar, todos os produtos, categorias, mídias e logs de transação desta loja serão removidos permanentemente."
         confirmationName={store.name}
       />
-    </main>
+    </>
   );
 };
