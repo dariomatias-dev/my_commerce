@@ -43,14 +43,14 @@ const OrderDetailsPage = () => {
         const productIds = orderResponse.items.map((item) => item.productId);
         const productsResponse = await getProductsByIds(
           orderResponse.store.id,
-          productIds
+          productIds,
         );
         const productsMap = (productsResponse.content || []).reduce(
           (acc, product) => {
             acc[product.id] = product;
             return acc;
           },
-          {} as Record<string, ProductResponse>
+          {} as Record<string, ProductResponse>,
         );
 
         setProducts(productsMap);
@@ -92,7 +92,7 @@ const OrderDetailsPage = () => {
     order.freightType === FreightType.ECONOMICAL ? "Econômico" : "Expresso";
 
   return (
-    <main className="min-h-screen bg-[#F4F7FA] pb-40 pt-32">
+    <>
       <div className="mx-auto max-w-400 px-6">
         <OrderDetailsPageHeader order={order} onBack={() => router.back()} />
 
@@ -131,7 +131,7 @@ const OrderDetailsPage = () => {
           </aside>
         </div>
       </div>
-    </main>
+    </>
   );
 };
 

@@ -85,7 +85,7 @@ export const OrdersDashboard = ({
   }
 
   return (
-    <main className="min-h-screen mx-auto max-w-400 px-6 pt-32 pb-12">
+    <>
       <DashboardPageHeader
         title="MEUS PEDIDOS"
         subtitle="Rastreio e gestão centralizada de transações"
@@ -133,6 +133,6 @@ export const OrdersDashboard = ({
           />
         </div>
       )}
-    </main>
+    </>
   );
 };

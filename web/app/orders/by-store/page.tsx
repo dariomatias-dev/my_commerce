@@ -75,7 +75,7 @@ const OrdersPage = () => {
   }
 
   return (
-    <main className="min-h-screen mx-auto max-w-400 px-6 pt-32 pb-12">
+    <>
       <DashboardPageHeader
         title="Meus Pedidos"
         subtitle="Selecione uma loja para gerenciar seu histórico"
@@ -118,7 +118,7 @@ const OrdersPage = () => {
           </p>
         </div>
       )}
-    </main>
+    </>
   );
 };
 
