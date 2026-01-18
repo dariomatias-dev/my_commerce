@@ -8,32 +8,25 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "categories")
+@Getter
+@Setter
 public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Getter
-    @Setter
     private UUID id;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "store_id")
-    @Getter
-    @Setter
     private Store store;
 
     @Column(nullable = false)
-    @Getter
-    @Setter
     private String name;
 
     @Embedded
-    @Getter
-    @Setter
     private AuditMetadata audit = new AuditMetadata();
 
     @Transient
-    @Setter
     private UUID storeId;
 
     public Category() {}
