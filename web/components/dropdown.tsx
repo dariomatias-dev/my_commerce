@@ -3,6 +3,8 @@
 import { Check, ChevronDown, LucideIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import { cn } from "@/lib/utils";
+
 interface DropdownOption {
   id: string;
   name: string;
@@ -16,6 +18,7 @@ interface DropdownProps {
   onChange: (id: string) => void;
   placeholder?: string;
   className?: string;
+  buttonClassName?: string;
 }
 
 export const Dropdown = ({
@@ -26,6 +29,7 @@ export const Dropdown = ({
   onChange,
   placeholder = "— Selecionar —",
   className,
+  buttonClassName,
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -43,6 +47,7 @@ export const Dropdown = ({
     };
 
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
@@ -52,7 +57,7 @@ export const Dropdown = ({
   };
 
   return (
-    <div className={`space-y-2 ${className}`} ref={containerRef}>
+    <div className={cn("space-y-2", className)} ref={containerRef}>
       {label && (
         <label className="ml-1 text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase flex items-center gap-2">
           {Icon && <Icon size={12} className="text-indigo-600" />}
@@ -64,16 +69,13 @@ export const Dropdown = ({
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className={`
-            w-full flex items-center justify-between rounded-2xl border-2 py-4.5 px-6 
-            text-[11px] font-black uppercase italic tracking-wider
-            outline-none transition-all duration-300 cursor-pointer
-            ${
-              isOpen
-                ? "border-indigo-600 bg-white shadow-lg"
-                : "border-slate-100 bg-slate-50 hover:border-slate-300"
-            }
-          `}
+          className={cn(
+            "w-full flex items-center justify-between rounded-2xl border-2 py-4.5 px-6 text-[11px] font-black uppercase italic tracking-wider outline-none transition-all duration-300 cursor-pointer",
+            isOpen
+              ? "border-indigo-600 bg-white shadow-lg"
+              : "border-slate-100 bg-white hover:border-slate-300",
+            buttonClassName,
+          )}
         >
           <span
             className={selectedOption ? "text-slate-950" : "text-slate-400"}
@@ -83,9 +85,10 @@ export const Dropdown = ({
 
           <ChevronDown
             size={18}
-            className={`transition-transform duration-300 ${
-              isOpen ? "rotate-180 text-indigo-600" : "text-slate-400"
-            }`}
+            className={cn(
+              "transition-transform duration-300",
+              isOpen ? "rotate-180 text-indigo-600" : "text-slate-400",
+            )}
           />
         </button>
 
@@ -98,15 +101,12 @@ export const Dropdown = ({
                     key={opt.id}
                     type="button"
                     onClick={() => handleSelect(opt.id)}
-                    className={`
-                      w-full flex items-center justify-between rounded-xl px-5 py-4
-                      text-[10px] font-black uppercase italic tracking-widest transition-all cursor-pointer
-                      ${
-                        value === opt.id
-                          ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
-                          : "text-slate-500 hover:bg-slate-50 hover:text-indigo-600"
-                      }
-                    `}
+                    className={cn(
+                      "w-full flex items-center justify-between rounded-xl px-5 py-4 text-[10px] font-black uppercase italic tracking-widest transition-all cursor-pointer",
+                      value === opt.id
+                        ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
+                        : "text-slate-500 hover:bg-slate-50 hover:text-indigo-600",
+                    )}
                   >
                     {opt.name}
 
@@ -131,10 +131,10 @@ export const Dropdown = ({
         )}
 
         <div
-          className={`
-          absolute bottom-0 left-6 right-6 h-0.5 transition-all duration-500 scale-x-0 group-focus-within:scale-x-100 bg-indigo-600
-          ${isOpen ? "scale-x-100" : ""}
-        `}
+          className={cn(
+            "absolute bottom-0 left-6 right-6 h-0.5 transition-all duration-500 scale-x-0 group-focus-within:scale-x-100 bg-indigo-600",
+            isOpen ? "scale-x-100" : "",
+          )}
         />
       </div>
     </div>

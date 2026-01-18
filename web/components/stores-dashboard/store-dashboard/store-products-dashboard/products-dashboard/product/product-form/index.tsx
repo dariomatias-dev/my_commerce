@@ -9,6 +9,7 @@ import { CategoryResponse } from "@/@types/category/category-response";
 import { ProductResponse } from "@/@types/product/product-response";
 import { ActionButton } from "@/components/buttons/action-button";
 import { ProductFormMediaGallery } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/products-dashboard/product/product-form/product-form-media-gallery";
+import { cn } from "@/lib/utils";
 import { ProductFormValues, productSchema } from "@/schemas/product.schema";
 import { useCategory } from "@/services/hooks/use-category";
 import { useStore } from "@/services/hooks/use-store";
@@ -22,7 +23,7 @@ interface ProductFormProps {
   onSubmit: (
     data: ProductFormValues,
     storeId: string,
-    removedImages?: string[]
+    removedImages?: string[],
   ) => Promise<void>;
   isSubmitting: boolean;
   storeSlug: string;
@@ -126,8 +127,8 @@ export const ProductForm = ({
           onSubmit(
             data,
             storeId,
-            removedImages.length > 0 ? removedImages : undefined
-          )
+            removedImages.length > 0 ? removedImages : undefined,
+          ),
       )}
       className="space-y-8"
     >
@@ -141,11 +142,12 @@ export const ProductForm = ({
             <input
               {...register("name")}
               placeholder="Ex: Alpha Pro Sneakers v2"
-              className={`w-full rounded-2xl border-2 bg-slate-50 py-4 px-6 font-bold text-slate-900 outline-none transition-all focus:bg-white ${
+              className={cn(
+                "w-full rounded-2xl border-2 bg-slate-50 py-4 px-6 font-bold text-slate-900 outline-none transition-all focus:bg-white",
                 errors.name
                   ? "border-red-500"
-                  : "border-slate-100 focus:border-indigo-600"
-              }`}
+                  : "border-slate-100 focus:border-indigo-600",
+              )}
             />
           </ProductFormField>
 
@@ -165,11 +167,12 @@ export const ProductForm = ({
             <textarea
               {...register("description")}
               rows={6}
-              className={`w-full resize-none rounded-[2rem] border-2 bg-slate-50 py-4 px-6 font-bold text-slate-950 outline-none transition-all focus:bg-white ${
+              className={cn(
+                "w-full resize-none rounded-[2rem] border-2 bg-slate-50 py-4 px-6 font-bold text-slate-950 outline-none transition-all focus:bg-white",
                 errors.description
                   ? "border-red-500"
-                  : "border-slate-100 focus:border-indigo-600"
-              }`}
+                  : "border-slate-100 focus:border-indigo-600",
+              )}
             />
           </ProductFormField>
         </div>
@@ -190,7 +193,7 @@ export const ProductForm = ({
               {...register("price", { valueAsNumber: true })}
               type="number"
               step="0.01"
-              className="w-full rounded-2xl border-2 bg-slate-50 py-4 px-6 font-bold text-slate-950 border-slate-100 outline-none focus:border-indigo-600"
+              className="w-full rounded-2xl border-2 bg-slate-50 py-4 px-6 font-bold text-slate-950 border-slate-100 outline-none focus:bg-white focus:border-indigo-600"
             />
           </ProductFormField>
 
@@ -198,7 +201,7 @@ export const ProductForm = ({
             <input
               {...register("stock", { valueAsNumber: true })}
               type="number"
-              className="w-full rounded-2xl border-2 bg-slate-50 py-4 px-6 font-bold text-slate-950 border-slate-100 outline-none focus:border-indigo-600"
+              className="w-full rounded-2xl border-2 bg-slate-50 py-4 px-6 font-bold text-slate-950 border-slate-100 outline-none focus:bg-white focus:border-indigo-600"
             />
           </ProductFormField>
         </div>
@@ -216,8 +219,8 @@ export const ProductForm = ({
         {isSubmitting
           ? "SINCRONIZANDO..."
           : initialData
-          ? "ATUALIZAR DADOS"
-          : "FINALIZAR CADASTRO"}
+            ? "ATUALIZAR DADOS"
+            : "FINALIZAR CADASTRO"}
       </ActionButton>
     </form>
   );

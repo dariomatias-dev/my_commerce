@@ -51,6 +51,7 @@ export const ProductFormCategorySelect = <T extends FieldValues>({
           isLoading ? "Sincronizando Database..." : "— Selecionar Categoria —"
         }
         className={error ? "border-red-500/50" : ""}
+        buttonClassName="bg-slate-50 focus:bg-white"
       />
 
       {error && (

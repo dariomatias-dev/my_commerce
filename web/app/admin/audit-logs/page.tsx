@@ -63,7 +63,7 @@ const AdminAuditLogsPage = () => {
         setIsLoading(false);
       }
     },
-    [getLogs]
+    [getLogs],
   );
 
   useEffect(() => {
@@ -72,6 +72,7 @@ const AdminAuditLogsPage = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -123,8 +124,8 @@ const AdminAuditLogsPage = () => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit()}
-            placeholder="PESQUISAR POR IDENTIFICADOR DE USUÁRIO (UUID)..."
-            className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-slate-50 pr-6 pl-12 text-[10px] font-black uppercase tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:bg-white"
+            placeholder="PESQUISAR POR IDENTIFICADOR DE USUÁRIO (ID)..."
+            className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-white pr-6 pl-12 text-[10px] font-black uppercase tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600"
           />
         </div>
 
