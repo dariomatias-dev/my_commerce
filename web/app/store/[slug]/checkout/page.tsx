@@ -1,15 +1,21 @@
 "use client";
 
-import { AlertCircle, ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
-import { ActionButton } from "@/components/buttons/action-button";
+import { ErrorFeedback } from "@/components/error-feedback";
+import { LoadingIndicator } from "@/components/loading-indicator";
 import { CheckoutAddressSection } from "@/components/store/[slug]/checkout/checkout-address-section";
 import { CheckoutPaymentSection } from "@/components/store/[slug]/checkout/checkout-payment-section";
 import { CheckoutSummarySection } from "@/components/store/[slug]/checkout/checkout-summary-section";
 import { CheckoutFreightSection } from "@/components/store/[slug]/checkout/checkout-summary-section/checkout-freight-section";
 import { useCheckout } from "@/hooks/use-checkout";
+import { useParams } from "next/navigation";
 
 const CheckoutPage = () => {
+  const { slug } = useParams() as {
+    slug: string;
+  };
+
   const {
     items,
     addresses,
@@ -27,6 +33,7 @@ const CheckoutPage = () => {
     subtotal,
     freightValue,
     total,
+    fetchCheckoutData,
     handleQuantity,
     handleRemove,
     handleCreateAddress,
@@ -35,39 +42,19 @@ const CheckoutPage = () => {
   } = useCheckout();
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-white gap-4">
-        <Loader2 className="h-10 w-10 animate-spin text-indigo-600" />
-
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-          Sincronizando pedido...
-        </p>
-      </div>
-    );
+    return <LoadingIndicator message="Carregando pedido..." />;
   }
 
   if (errorMessage) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-white p-4 text-center">
-        <AlertCircle size={48} className="text-red-500 mb-4" />
-
-        <h2 className="text-2xl font-black uppercase italic tracking-tighter text-slate-950 mb-2">
-          Ops! Falha no Checkout
-        </h2>
-
-        <p className="text-sm font-bold text-slate-500 mb-8 max-w-xs">
-          {errorMessage}
-        </p>
-
-        <ActionButton
-          onClick={() => router.back()}
-          variant="dark"
-          size="sm"
-          className="max-w-xs"
-        >
-          Voltar para a Loja
-        </ActionButton>
-      </div>
+      <ErrorFeedback
+        title="Erro de"
+        highlightedTitle="Processamento"
+        errorMessage={errorMessage}
+        onRetry={fetchCheckoutData}
+        backPath={`/store/${slug}`}
+        backLabel="VOLTAR PARA A LOJA"
+      />
     );
   }
 

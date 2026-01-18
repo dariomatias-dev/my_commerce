@@ -262,6 +262,7 @@ export const useCheckout = () => {
     subtotal,
     freightValue,
     total,
+    fetchCheckoutData,
     handleQuantity,
     handleRemove,
     handleCreateAddress,
