@@ -45,7 +45,7 @@ public class SubscriptionPlanController {
         Pageable pageable = PageRequest.of(
                 page,
                 size,
-                Sort.by(Sort.Direction.DESC, "audit.createdAt")
+                Sort.by(Sort.Direction.ASC, "price")
         );
 
         Page<SubscriptionPlanResponseDTO> subscriptionPlans = service.getAll(pageable)

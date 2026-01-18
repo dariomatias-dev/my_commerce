@@ -22,21 +22,43 @@ public class SubscriptionPlanSeed {
         starter.setName("Starter");
         starter.setMaxStores(1);
         starter.setMaxProducts(20);
-        starter.setFeatures("Layout simples, Estatísticas básicas");
+        starter.setFeatures(
+                "Gestão de 1 Loja; " +
+                "Criação de 20 Produtos; " +
+                "Gestão de pedidos; " +
+                "Relatórios básicos; " +
+                "Suporte básico"
+        );
         starter.setPrice(BigDecimal.valueOf(0));
 
         SubscriptionPlan pro = new SubscriptionPlan();
         pro.setName("Pro");
         pro.setMaxStores(3);
         pro.setMaxProducts(Integer.MAX_VALUE);
-        pro.setFeatures("Layouts personalizados, Estatísticas avançadas, Suporte básico");
+        pro.setFeatures(
+                "Gestão de 3 Lojas; " +
+                "Criação Imitada de Produtos; " +
+                "Relatórios avançados; " +
+                "Cupons de desconto; " +
+                "Suporte avançado; " +
+                "Os mesmos do anterior"
+        );
         pro.setPrice(BigDecimal.valueOf(29.99));
 
         SubscriptionPlan business = new SubscriptionPlan();
         business.setName("Business");
         business.setMaxStores(Integer.MAX_VALUE);
         business.setMaxProducts(Integer.MAX_VALUE);
-        business.setFeatures("Personalização completa, Relatórios detalhados e exportáveis, Recursos extras (cupons, promoções, avaliações), Suporte prioritário");
+        business.setFeatures(
+                "Criação Ilimitada de Lojas; " +
+                "Criação Imitada de Produtos; " +
+                "Múltiplos administradores; " +
+                "Exportação de relatórios; " +
+                "Integração com meios de pagamento; " +
+                "Prioridade em recursos novos; " +
+                "Suporte 24h por semana; " +
+                "Os mesmos do anterior"
+        );
         business.setPrice(BigDecimal.valueOf(99.99));
 
         List<SubscriptionPlan> plans = List.of(starter, pro, business);
