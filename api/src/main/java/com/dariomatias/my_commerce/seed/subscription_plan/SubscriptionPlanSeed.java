@@ -2,13 +2,15 @@ package com.dariomatias.my_commerce.seed.subscription_plan;
 
 import com.dariomatias.my_commerce.model.SubscriptionPlan;
 import com.dariomatias.my_commerce.repository.SubscriptionPlanRepository;
-import org.springframework.stereotype.Component;
+import com.dariomatias.my_commerce.seed.Seed;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
 import java.util.List;
 
 @Component
-public class SubscriptionPlanSeed {
+public class SubscriptionPlanSeed implements Seed {
 
     private final SubscriptionPlanRepository repository;
 
@@ -16,7 +18,12 @@ public class SubscriptionPlanSeed {
         this.repository = repository;
     }
 
+    @Override
     @Transactional
+    public void run() {
+        createPlans();
+    }
+
     public void createPlans() {
         SubscriptionPlan starter = new SubscriptionPlan();
         starter.setName("Starter");

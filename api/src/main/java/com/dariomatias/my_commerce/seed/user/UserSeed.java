@@ -3,6 +3,7 @@ package com.dariomatias.my_commerce.seed.user;
 import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.UserRepository;
+import com.dariomatias.my_commerce.seed.Seed;
 import com.dariomatias.my_commerce.util.RandomUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,10 +12,11 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class UserSeed {
+public class UserSeed implements Seed {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
     private static final String BASE_PASSWORD = "Admin@123";
 
     public UserSeed(UserRepository userRepository, PasswordEncoder passwordEncoder) {
@@ -22,15 +24,25 @@ public class UserSeed {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Override
     @Transactional
+    public void run() {
+        createUsers();
+    }
+
     public void createUsers() {
-        List<UserRole> roles = List.of(UserRole.USER, UserRole.SUBSCRIBER, UserRole.ADMIN);
+        List<UserRole> roles = List.of(
+                UserRole.USER,
+                UserRole.SUBSCRIBER,
+                UserRole.ADMIN
+        );
 
         for (int i = 1; i <= 30; i++) {
             String email = "user" + i + "@gmail.com";
             if (userRepository.existsByEmail(email)) continue;
 
             UserRole role = roles.get((i - 1) % roles.size());
+
             User user = new User();
             user.setName("Usuário " + i);
             user.setEmail(email);
@@ -38,6 +50,7 @@ public class UserSeed {
             user.setRole(role);
 
             RandomUtil.RandomResult result = RandomUtil.randomDeletion(20, 10);
+
             if (result.isDeleted()) {
                 user.delete();
                 user.setDeletedAt(result.getDeletedAt());

@@ -6,28 +6,36 @@ import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.SubscriptionPlanRepository;
 import com.dariomatias.my_commerce.repository.SubscriptionRepository;
 import com.dariomatias.my_commerce.repository.UserRepository;
+import com.dariomatias.my_commerce.seed.Seed;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
 
-import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
-public class SubscriptionSeed {
+public class SubscriptionSeed implements Seed {
 
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
     private final SubscriptionPlanRepository planRepository;
 
-    public SubscriptionSeed(SubscriptionRepository subscriptionRepository,
-                            UserRepository userRepository,
-                            SubscriptionPlanRepository planRepository) {
+    public SubscriptionSeed(
+            SubscriptionRepository subscriptionRepository,
+            UserRepository userRepository,
+            SubscriptionPlanRepository planRepository
+    ) {
         this.subscriptionRepository = subscriptionRepository;
         this.userRepository = userRepository;
         this.planRepository = planRepository;
     }
 
+    @Override
     @Transactional
+    public void run() {
+        createSubscriptions();
+    }
+
     public void createSubscriptions() {
         List<User> users = userRepository.findAll();
         List<SubscriptionPlan> plans = planRepository.findAll();

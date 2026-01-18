@@ -5,6 +5,7 @@ import com.dariomatias.my_commerce.repository.CategoryRepository;
 import com.dariomatias.my_commerce.repository.ProductRepository;
 import com.dariomatias.my_commerce.repository.StoreRepository;
 import com.dariomatias.my_commerce.repository.contract.ProductImageContract;
+import com.dariomatias.my_commerce.seed.Seed;
 import com.dariomatias.my_commerce.service.MinioService;
 import com.dariomatias.my_commerce.util.RandomUtil;
 import com.dariomatias.my_commerce.util.SlugUtil;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
-public class ProductSeed {
+public class ProductSeed implements Seed {
 
     private static final String BUCKET_NAME = "stores";
 
@@ -45,7 +46,12 @@ public class ProductSeed {
         this.minioService = minioService;
     }
 
+    @Override
     @Transactional
+    public void run() {
+        createProducts();
+    }
+
     public void createProducts() {
         List<Store> stores = storeRepository.findAll();
         if (stores.isEmpty()) return;

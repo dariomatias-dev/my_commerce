@@ -4,13 +4,14 @@ import com.dariomatias.my_commerce.model.Category;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.repository.CategoryRepository;
 import com.dariomatias.my_commerce.repository.StoreRepository;
+import com.dariomatias.my_commerce.seed.Seed;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-public class CategorySeed {
+public class CategorySeed implements Seed {
 
     private final CategoryRepository categoryRepository;
     private final StoreRepository storeRepository;
@@ -18,6 +19,12 @@ public class CategorySeed {
     public CategorySeed(CategoryRepository categoryRepository, StoreRepository storeRepository) {
         this.categoryRepository = categoryRepository;
         this.storeRepository = storeRepository;
+    }
+
+    @Override
+    @Transactional
+    public void run() {
+        createCategories();
     }
 
     @Transactional

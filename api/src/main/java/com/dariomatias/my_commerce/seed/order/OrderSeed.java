@@ -5,6 +5,7 @@ import com.dariomatias.my_commerce.enums.PaymentMethod;
 import com.dariomatias.my_commerce.enums.Status;
 import com.dariomatias.my_commerce.model.*;
 import com.dariomatias.my_commerce.repository.*;
+import com.dariomatias.my_commerce.seed.Seed;
 import com.dariomatias.my_commerce.service.FreightService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Random;
 
 @Component
-public class OrderSeed {
+public class OrderSeed implements Seed {
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
@@ -40,6 +41,12 @@ public class OrderSeed {
         this.productRepository = productRepository;
         this.userAddressRepository = userAddressRepository;
         this.freightService = freightService;
+    }
+
+    @Override
+    @Transactional
+    public void run() {
+        createOrders();
     }
 
     @Transactional

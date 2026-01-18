@@ -4,6 +4,7 @@ import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.model.UserAddress;
 import com.dariomatias.my_commerce.repository.UserAddressRepository;
 import com.dariomatias.my_commerce.repository.UserRepository;
+import com.dariomatias.my_commerce.seed.Seed;
 import jakarta.transaction.Transactional;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -14,9 +15,11 @@ import java.util.List;
 import java.util.Random;
 
 @Component
-public class UserAddressSeed {
+public class UserAddressSeed implements Seed {
+
     private final UserRepository userRepository;
     private final UserAddressRepository userAddressRepository;
+
     private final GeometryFactory geometryFactory = new GeometryFactory();
     private final Random random = new Random();
 
@@ -54,7 +57,12 @@ public class UserAddressSeed {
         this.userAddressRepository = userAddressRepository;
     }
 
+    @Override
     @Transactional
+    public void run() {
+        createAddresses();
+    }
+
     public void createAddresses() {
         List<User> users = userRepository.findAll();
 
@@ -90,6 +98,7 @@ public class UserAddressSeed {
     private Point mockPoint(double lon, double lat) {
         double offsetLon = (random.nextDouble() - 0.5) * 0.02;
         double offsetLat = (random.nextDouble() - 0.5) * 0.02;
+
         return geometryFactory.createPoint(
                 new Coordinate(lon + offsetLon, lat + offsetLat)
         );
