@@ -75,15 +75,31 @@ public class OrderItemJdbcRepository implements OrderItemContract {
     }
 
     @Override
-    public void addItemToOrder(UUID orderId, UUID productId, Integer quantity, BigDecimal price) {
-        String sql = "SELECT add_item_to_order(:orderId, :productId, :quantity, :price)";
+    public void addItemToOrder(
+            UUID orderId,
+            UUID productId,
+            Integer quantity,
+            BigDecimal price
+    ) {
+        String sql = """
+            SELECT add_item_to_order(
+                :orderId,
+                :productId,
+                :quantity,
+                :price
+            )
+        """;
+
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("orderId", orderId)
                 .addValue("productId", productId)
                 .addValue("quantity", quantity)
                 .addValue("price", price);
 
-        jdbc.update(sql, params);
+        jdbc.execute(sql, params, ps -> {
+            ps.execute();
+            return null;
+        });
     }
 
     @Override
