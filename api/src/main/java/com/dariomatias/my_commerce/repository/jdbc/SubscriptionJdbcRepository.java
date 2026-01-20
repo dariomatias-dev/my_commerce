@@ -91,23 +91,42 @@ public class SubscriptionJdbcRepository implements SubscriptionContract {
 
     @Override
     public Page<Subscription> findAllByUser_Id(UUID userId, Pageable pageable) {
-        int offset = pageable.getPageNumber() * pageable.getPageSize();
-
-        String sql = """
-            SELECT * FROM subscriptions
-            WHERE user_id = :user_id
-            ORDER BY created_at DESC
-            OFFSET :offset LIMIT :limit
-        """;
-
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("user_id", userId)
-                .addValue("offset", offset)
-                .addValue("limit", pageable.getPageSize());
+                .addValue("user_id", userId);
 
-        List<Subscription> list = jdbc.query(sql, params, mapper);
+        List<Subscription> subscriptions;
 
-        return new PageImpl<>(list, pageable, list.size());
+        if (pageable.isUnpaged()) {
+            String sql = """
+                SELECT * FROM subscriptions
+                WHERE user_id = :user_id
+                ORDER BY created_at DESC
+            """;
+
+            subscriptions = jdbc.query(sql, params, mapper);
+            return new PageImpl<>(subscriptions);
+        } else {
+            int offset = pageable.getPageNumber() * pageable.getPageSize();
+            params.addValue("offset", offset)
+                    .addValue("limit", pageable.getPageSize());
+
+            String sql = """
+                SELECT * FROM subscriptions
+                WHERE user_id = :user_id
+                ORDER BY created_at DESC
+                OFFSET :offset LIMIT :limit
+            """;
+
+            subscriptions = jdbc.query(sql, params, mapper);
+
+            Long total = jdbc.queryForObject(
+                    "SELECT COUNT(*) FROM subscriptions WHERE user_id = :user_id",
+                    new MapSqlParameterSource("user_id", userId),
+                    Long.class
+            );
+
+            return new PageImpl<>(subscriptions, pageable, total);
+        }
     }
 
     @Override
