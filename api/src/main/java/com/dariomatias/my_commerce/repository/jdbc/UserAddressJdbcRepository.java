@@ -10,12 +10,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,12 +26,11 @@ import java.util.UUID;
 @ConditionalOnProperty(name = "app.persistence", havingValue = "jdbc")
 public class UserAddressJdbcRepository implements UserAddressContract {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final GeometryFactory geometryFactory =
-            new GeometryFactory(new PrecisionModel(), 4326);
+    private final NamedParameterJdbcTemplate jdbc;
+    private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
 
-    public UserAddressJdbcRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public UserAddressJdbcRepository(NamedParameterJdbcTemplate jdbc) {
+        this.jdbc = jdbc;
     }
 
     private final RowMapper<UserAddress> rowMapper = this::mapAddress;
@@ -70,31 +71,33 @@ public class UserAddressJdbcRepository implements UserAddressContract {
         String sql = """
             INSERT INTO user_addresses
             (id, label, street, number, complement, neighborhood, city, state, zip, location, user_id, deleted_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (:id, :label, :street, :number, :complement, :neighborhood, :city, :state, :zip,
+                    ST_SetSRID(ST_MakePoint(:lon, :lat), 4326), :userId, :deletedAt)
         """;
 
-        jdbcTemplate.update(
-                sql,
-                address.getId(),
-                address.getLabel(),
-                address.getStreet(),
-                address.getNumber(),
-                address.getComplement(),
-                address.getNeighborhood(),
-                address.getCity(),
-                address.getState(),
-                address.getZip(),
-                address.getLocation(),
-                address.getUser().getId(),
-                address.getDeletedAt()
-        );
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", address.getId())
+                .addValue("label", address.getLabel())
+                .addValue("street", address.getStreet())
+                .addValue("number", address.getNumber())
+                .addValue("complement", address.getComplement())
+                .addValue("neighborhood", address.getNeighborhood())
+                .addValue("city", address.getCity())
+                .addValue("state", address.getState())
+                .addValue("zip", address.getZip())
+                .addValue("lon", address.getLocation().getX())
+                .addValue("lat", address.getLocation().getY())
+                .addValue("userId", address.getUserId())
+                .addValue("deletedAt", address.getDeletedAt());
+
+        jdbc.update(sql, params);
 
         return address;
     }
 
     @Override
     public Page<UserAddress> findAll(Pageable pageable) {
-        int offset = pageable.getPageNumber() * pageable.getPageSize();
+        int offset = (int) pageable.getOffset();
 
         String sql = """
             SELECT *,
@@ -102,13 +105,19 @@ public class UserAddressJdbcRepository implements UserAddressContract {
                    ST_Y(location) AS lat
             FROM user_addresses
             ORDER BY label
-            LIMIT ? OFFSET ?
+            LIMIT :limit OFFSET :offset
         """;
 
-        List<UserAddress> list =
-                jdbcTemplate.query(sql, rowMapper, pageable.getPageSize(), offset);
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("limit", pageable.getPageSize())
+                .addValue("offset", offset);
 
-        return new PageImpl<>(list, pageable, list.size());
+        List<UserAddress> list = jdbc.query(sql, params, rowMapper);
+
+        String countSql = "SELECT COUNT(*) FROM user_addresses";
+        Long total = jdbc.queryForObject(countSql, new MapSqlParameterSource(), Long.class);
+
+        return new PageImpl<>(list, pageable, total);
     }
 
     @Override
@@ -118,10 +127,10 @@ public class UserAddressJdbcRepository implements UserAddressContract {
                    ST_X(location) AS lon,
                    ST_Y(location) AS lat
             FROM user_addresses
-            WHERE id = ?
+            WHERE id = :id
         """;
 
-        List<UserAddress> list = jdbcTemplate.query(sql, rowMapper, id);
+        List<UserAddress> list = jdbc.query(sql, new MapSqlParameterSource("id", id), rowMapper);
 
         return list.stream().findFirst();
     }
@@ -133,58 +142,64 @@ public class UserAddressJdbcRepository implements UserAddressContract {
                    ST_X(location) AS lon,
                    ST_Y(location) AS lat
             FROM user_addresses
-            WHERE user_id = ?
+            WHERE user_id = :userId
               AND deleted_at IS NULL
         """;
 
-        return jdbcTemplate.query(sql, rowMapper, userId);
+        return jdbc.query(sql, new MapSqlParameterSource("userId", userId), rowMapper);
     }
 
     @Override
     public Double calculateDistanceFromPoint(UUID id, double lat, double lon) {
         String sql = """
             SELECT ST_DistanceSphere(
-                ST_MakePoint(?, ?),
+                ST_MakePoint(:lon, :lat),
                 location
             )
             FROM user_addresses
-            WHERE id = ?
+            WHERE id = :id
         """;
 
-        return jdbcTemplate.queryForObject(sql, Double.class, lon, lat, id);
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("lon", lon)
+                .addValue("lat", lat)
+                .addValue("id", id);
+
+        return jdbc.queryForObject(sql, params, Double.class);
     }
 
     @Override
     public UserAddress update(UserAddress address) {
         String sql = """
             UPDATE user_addresses SET
-                label = ?,
-                street = ?,
-                number = ?,
-                complement = ?,
-                neighborhood = ?,
-                city = ?,
-                state = ?,
-                zip = ?,
-                location = ?,
-                deleted_at = ?
-            WHERE id = ?
+                label = :label,
+                street = :street,
+                number = :number,
+                complement = :complement,
+                neighborhood = :neighborhood,
+                city = :city,
+                state = :state,
+                zip = :zip,
+                location = ST_SetSRID(ST_MakePoint(:lon, :lat), 4326),
+                deleted_at = :deletedAt
+            WHERE id = :id
         """;
 
-        jdbcTemplate.update(
-                sql,
-                address.getLabel(),
-                address.getStreet(),
-                address.getNumber(),
-                address.getComplement(),
-                address.getNeighborhood(),
-                address.getCity(),
-                address.getState(),
-                address.getZip(),
-                address.getLocation(),
-                address.getDeletedAt(),
-                address.getId()
-        );
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("label", address.getLabel())
+                .addValue("street", address.getStreet())
+                .addValue("number", address.getNumber())
+                .addValue("complement", address.getComplement())
+                .addValue("neighborhood", address.getNeighborhood())
+                .addValue("city", address.getCity())
+                .addValue("state", address.getState())
+                .addValue("zip", address.getZip())
+                .addValue("lon", address.getLocation().getX())
+                .addValue("lat", address.getLocation().getY())
+                .addValue("deletedAt", address.getDeletedAt())
+                .addValue("id", address.getId());
+
+        jdbc.update(sql, params);
 
         return address;
     }
