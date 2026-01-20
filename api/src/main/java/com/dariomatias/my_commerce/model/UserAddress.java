@@ -33,6 +33,16 @@ public class UserAddress extends Address {
     @Column
     private LocalDateTime deletedAt;
 
+    @Transient
+    @Setter
+    private UUID userId;
+
+    public UserAddress() {}
+
+    public UUID getUserId() {
+        return user != null ? user.getId() : userId;
+    }
+
     public boolean isDeleted() {
         return deletedAt != null;
     }

@@ -45,6 +45,7 @@ public class UserAddressJdbcRepository implements UserAddressContract {
         address.setCity(rs.getString("city"));
         address.setState(rs.getString("state"));
         address.setZip(rs.getString("zip"));
+        address.setUserId(UUID.fromString(rs.getString("user_id")));
 
         double lon = rs.getDouble("lon");
         double lat = rs.getDouble("lat");

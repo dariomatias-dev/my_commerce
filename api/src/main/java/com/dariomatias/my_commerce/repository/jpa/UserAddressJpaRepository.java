@@ -40,7 +40,7 @@ public class UserAddressJpaRepository implements UserAddressContract {
 
     @Override
     public List<UserAddress> findAllByUserId(UUID userId) {
-        return repository.findAllByUserIdAndDeletedAtIsNull(userId);
+        return repository.findAllByUser_IdAndDeletedAtIsNull(userId);
     }
 
     @Override

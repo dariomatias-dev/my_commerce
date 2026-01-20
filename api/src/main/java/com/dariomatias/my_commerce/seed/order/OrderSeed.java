@@ -58,7 +58,7 @@ public class OrderSeed implements Seed {
 
         for (User user : users) {
             List<UserAddress> addresses =
-                    userAddressRepository.findAllByUserIdAndDeletedAtIsNull(user.getId());
+                    userAddressRepository.findAllByUser_IdAndDeletedAtIsNull(user.getId());
 
             if (addresses.isEmpty()) continue;
 

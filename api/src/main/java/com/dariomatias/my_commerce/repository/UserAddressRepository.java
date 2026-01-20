@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface UserAddressRepository extends JpaRepository<UserAddress, UUID> {
 
-    List<UserAddress> findAllByUserIdAndDeletedAtIsNull(UUID userId);
+    List<UserAddress> findAllByUser_IdAndDeletedAtIsNull(UUID userId);
 
     @Query(value = "SELECT ST_DistanceSphere(ST_MakePoint(:lon1, :lat1), location) " +
             "FROM user_addresses " +

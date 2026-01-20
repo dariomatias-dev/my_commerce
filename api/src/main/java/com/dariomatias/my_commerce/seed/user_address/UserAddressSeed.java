@@ -68,7 +68,7 @@ public class UserAddressSeed implements Seed {
 
         for (User user : users) {
             if (!userAddressRepository
-                    .findAllByUserIdAndDeletedAtIsNull(user.getId())
+                    .findAllByUser_IdAndDeletedAtIsNull(user.getId())
                     .isEmpty()) {
                 continue;
             }
