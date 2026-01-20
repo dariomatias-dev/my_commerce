@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -37,14 +38,9 @@ public class SubscriptionService {
     }
 
     public Subscription create(User user, SubscriptionRequestDTO request) {
-        Page<Subscription> subscriptions =
-                subscriptionRepository.findAllByUser_Id(user.getId(), Pageable.unpaged());
-
-        boolean hasActive = subscriptions.stream().anyMatch(Subscription::getIsActive);
-
-        if (hasActive) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O usuário já possui uma assinatura ativa");
-        }
+        subscriptionRepository.findActiveByUserId(user.getId()).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.BAD_REQUEST, "O usuário já possui uma assinatura ativa")
+        );
 
         SubscriptionPlan plan = getPlanOrThrow(request.getPlanId());
 
@@ -93,23 +89,19 @@ public class SubscriptionService {
     }
 
     public Subscription changePlan(User user, SubscriptionRequestDTO request) {
+        Subscription activeSubscription = subscriptionRepository.findActiveByUserId(user.getId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "Nenhuma assinatura ativa encontrada"
+                ));
 
-        Page<Subscription> subscriptions =
-                subscriptionRepository.findAllByUser_Id(user.getId(), Pageable.unpaged());
-
-        Subscription active = subscriptions.stream()
-                .filter(Subscription::getIsActive)
-                .findFirst()
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nenhuma assinatura ativa encontrada")
-                );
-
-        if (active.getPlanId().equals(request.getPlanId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O usuário já está nesse plano");
+        if (activeSubscription.getPlanId().equals(request.getPlanId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "O usuário já está nesse plano"
+            );
         }
 
-        active.setIsActive(false);
-        subscriptionRepository.update(active);
+        activeSubscription.setIsActive(false);
+        subscriptionRepository.update(activeSubscription);
 
         SubscriptionPlan plan = getPlanOrThrow(request.getPlanId());
 
