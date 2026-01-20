@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -33,6 +34,7 @@ public class OrderJdbcRepository implements OrderContract {
         order.setStatus(Status.valueOf(rs.getString("status")));
         order.setPaymentMethod(PaymentMethod.valueOf(rs.getString("payment_method")));
         order.setFreightType(FreightType.valueOf(rs.getString("freight_type")));
+        order.setFreightAmount(rs.getBigDecimal("freight_amount"));
 
         order.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         order.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
@@ -216,55 +218,9 @@ public class OrderJdbcRepository implements OrderContract {
 
     @Override
     public Optional<Order> findById(UUID id) {
+        String sql = "SELECT * FROM orders WHERE id = :id";
 
-        String orderSql = """
-            SELECT
-                id,
-                store_id,
-                user_id,
-                address_id,
-                payment_method,
-                freight_type,
-                freight_amount,
-                total_amount,
-                status,
-                created_at,
-                updated_at
-            FROM orders
-            WHERE id = :id
-        """;
-
-        List<Order> orders = jdbc.query(
-                orderSql,
-                new MapSqlParameterSource("id", id),
-                (rs, rowNum) -> {
-                    Order o = new Order();
-                    o.setId(UUID.fromString(rs.getString("id")));
-                    o.setTotalAmount(rs.getBigDecimal("total_amount"));
-                    o.setFreightAmount(rs.getBigDecimal("freight_amount"));
-                    o.setStatus(Status.valueOf(rs.getString("status")));
-                    o.setPaymentMethod(PaymentMethod.valueOf(rs.getString("payment_method")));
-                    o.setFreightType(FreightType.valueOf(rs.getString("freight_type")));
-
-                    o.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-                    o.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
-
-                    Store store = new Store();
-                    store.setId(UUID.fromString(rs.getString("store_id")));
-                    o.setStore(store);
-
-                    User user = new User();
-                    user.setId(UUID.fromString(rs.getString("user_id")));
-                    o.setUser(user);
-
-                    OrderAddress address = new OrderAddress();
-                    address.setId(UUID.fromString(rs.getString("address_id")));
-                    o.setAddress(address);
-
-                    o.setItems(new ArrayList<>());
-                    return o;
-                }
-        );
+        List<Order> orders = jdbc.query(sql, new MapSqlParameterSource("id", id), mapper);
 
         if (orders.isEmpty()) {
             return Optional.empty();
@@ -272,31 +228,40 @@ public class OrderJdbcRepository implements OrderContract {
 
         Order order = orders.get(0);
 
-        String itemsSql = """
-            SELECT
-                id,
-                product_id,
-                quantity,
-                price
-            FROM order_items
-            WHERE order_id = :order_id
+        loadOrderItems(order);
+
+        String storeSql = """
+            SELECT *
+            FROM stores
+            WHERE id = :storeId
         """;
 
-        List<OrderItem> items = jdbc.query(
-                itemsSql,
-                new MapSqlParameterSource("order_id", id),
+        Store store = jdbc.queryForObject(storeSql,
+                new MapSqlParameterSource("storeId", order.getStore().getId()),
                 (rs, rowNum) -> {
-                    OrderItem item = new OrderItem();
-                    item.setId(UUID.fromString(rs.getString("id")));
-                    item.setQuantity(rs.getInt("quantity"));
-                    item.setPrice(rs.getBigDecimal("price"));
-                    item.setProductId(UUID.fromString(rs.getString("product_id")));
-                    item.setOrderId(id);
-                    return item;
-                }
-        );
+                    Store s = new Store();
+                    s.setId(UUID.fromString(rs.getString("id")));
+                    s.setName(rs.getString("name"));
+                    s.setSlug(rs.getString("slug"));
+                    s.setDescription(rs.getString("description"));
+                    s.setThemeColor(rs.getString("theme_color"));
+                    s.setIsActive(rs.getBoolean("is_active"));
+                    Timestamp deletedAtTs = rs.getTimestamp("deleted_at");
+                    if (deletedAtTs != null) {
+                        s.setDeletedAt(deletedAtTs.toLocalDateTime());
+                    }
 
-        order.setItems(items);
+                    User user = new User();
+                    user.setId(UUID.fromString(rs.getString("user_id")));
+                    s.setUser(user);
+
+                    s.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                    s.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+
+                    return s;
+                });
+
+        order.setStore(store);
 
         return Optional.of(order);
     }
