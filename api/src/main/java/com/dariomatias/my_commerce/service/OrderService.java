@@ -14,6 +14,7 @@ import com.dariomatias.my_commerce.model.Product;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.model.UserAddress;
+import com.dariomatias.my_commerce.repository.OrderAddressRepository;
 import com.dariomatias.my_commerce.repository.contract.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +33,7 @@ public class OrderService {
 
     private final OrderContract orderRepository;
     private final OrderItemContract orderItemRepository;
+    private final OrderAddressContract orderAddressRepository;
     private final StoreContract storeRepository;
     private final UserContract userRepository;
     private final ProductContract productRepository;
@@ -41,6 +43,7 @@ public class OrderService {
     public OrderService(
             OrderContract orderRepository,
             OrderItemContract orderItemRepository,
+            OrderAddressContract orderAddressRepository,
             StoreContract storeRepository,
             UserContract userRepository,
             ProductContract productRepository,
@@ -49,6 +52,7 @@ public class OrderService {
     ) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
+        this.orderAddressRepository = orderAddressRepository;
         this.storeRepository = storeRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
@@ -63,17 +67,30 @@ public class OrderService {
         Order order = new Order();
         order.setStore(getStoreOrThrow(request.getStoreId()));
         order.setUser(authenticatedUser);
-        order.setAddress(snapshotAddress(userAddress));
+
+        OrderAddress orderAddress = new OrderAddress();
+        orderAddress.setLabel(userAddress.getLabel());
+        orderAddress.setStreet(userAddress.getStreet());
+        orderAddress.setNumber(userAddress.getNumber());
+        orderAddress.setComplement(userAddress.getComplement());
+        orderAddress.setNeighborhood(userAddress.getNeighborhood());
+        orderAddress.setCity(userAddress.getCity());
+        orderAddress.setState(userAddress.getState());
+        orderAddress.setZip(userAddress.getZip());
+        orderAddress.setLocation(userAddress.getLocation());
+
+        orderAddress = orderAddressRepository.save(orderAddress);
+        order.setAddress(orderAddress);
+
         order.setPaymentMethod(request.getPaymentMethod());
         order.setFreightType(request.getFreightType());
-        order.setStatus(Status.PENDING);
+        order.setStatus(Status.COMPLETED);
 
         FreightResponseDTO freight = freightService.calculateFreight(userAddress.getId());
 
-        if (request.getFreightType() == FreightType.ECONOMICAL) {
-            order.setFreightAmount(freight.getEconomical().getValue());
-        } else {
-            order.setFreightAmount(freight.getEconomical().getValue());
+        switch (request.getFreightType()) {
+            case ECONOMICAL -> order.setFreightAmount(freight.getEconomical().getValue());
+            case EXPRESS -> order.setFreightAmount(freight.getExpress().getValue());
         }
 
         order.setTotalAmount(order.getFreightAmount());
@@ -165,23 +182,9 @@ public class OrderService {
     private UserAddress getUserAddressOrThrow(UUID addressId, User user) {
         return userAddressRepository.findById(addressId)
                 .filter(address -> !address.isDeleted())
-                .filter(address -> address.getUser().getId().equals(user.getId()))
+                .filter(address -> address.getUserId().equals(user.getId()))
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.BAD_REQUEST, "Endereço inválido"));
-    }
-
-    private OrderAddress snapshotAddress(UserAddress address) {
-        OrderAddress snapshot = new OrderAddress();
-        snapshot.setLabel(address.getLabel());
-        snapshot.setStreet(address.getStreet());
-        snapshot.setNumber(address.getNumber());
-        snapshot.setComplement(address.getComplement());
-        snapshot.setNeighborhood(address.getNeighborhood());
-        snapshot.setCity(address.getCity());
-        snapshot.setState(address.getState());
-        snapshot.setZip(address.getZip());
-        snapshot.setLocation(address.getLocation());
-        return snapshot;
     }
 
 
