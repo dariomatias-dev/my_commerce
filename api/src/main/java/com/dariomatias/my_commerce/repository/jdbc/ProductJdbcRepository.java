@@ -172,6 +172,10 @@ public class ProductJdbcRepository implements ProductContract {
 
         List<Product> content = jdbc.query(sql, params, mapper);
 
+        for (Product product : content) {
+            loadProductImages(product);
+        }
+
         String countSql = """
             SELECT COUNT(*)
             FROM products
@@ -215,7 +219,14 @@ public class ProductJdbcRepository implements ProductContract {
 
         List<Product> list = jdbc.query(sql, new MapSqlParameterSource("id", id), mapper);
 
-        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+        if (list.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Product product = list.get(0);
+        loadProductImages(product);
+
+        return Optional.of(product);
     }
 
     @Override
@@ -226,7 +237,14 @@ public class ProductJdbcRepository implements ProductContract {
                 mapper
         );
 
-        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+        if (list.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Product product = list.get(0);
+        loadProductImages(product);
+
+        return Optional.of(product);
     }
 
     @Override
@@ -252,8 +270,7 @@ public class ProductJdbcRepository implements ProductContract {
         String sql = """
             SELECT COUNT(*)
             FROM products
-            WHERE store_id = :store_id
-              AND active = TRUE
+            WHERE store_id = :store_id              AND active = TRUE
               AND deleted_at IS NULL
         """;
 
