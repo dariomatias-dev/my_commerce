@@ -3,6 +3,7 @@ package com.dariomatias.my_commerce.repository.jdbc;
 import com.dariomatias.my_commerce.dto.product.ProductFilterDTO;
 import com.dariomatias.my_commerce.enums.StatusFilter;
 import com.dariomatias.my_commerce.model.Product;
+import com.dariomatias.my_commerce.model.ProductImage;
 import com.dariomatias.my_commerce.repository.contract.ProductContract;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
@@ -132,6 +133,10 @@ public class ProductJdbcRepository implements ProductContract {
 
         List<Product> content = jdbc.query(sql, params, mapper);
 
+        for (Product product : content) {
+            loadProductImages(product);
+        }
+
         String countSql = """
             SELECT COUNT(*)
             FROM products
@@ -141,6 +146,29 @@ public class ProductJdbcRepository implements ProductContract {
         long total = jdbc.queryForObject(countSql, params, Long.class);
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    private void loadProductImages(Product product) {
+        String imageSql = """
+            SELECT id, product_id, url, position
+            FROM product_images
+            WHERE product_id = :productId
+            ORDER BY position ASC
+        """;
+
+        MapSqlParameterSource imageParams = new MapSqlParameterSource();
+        imageParams.addValue("productId", product.getId());
+
+        List<ProductImage> images = jdbc.query(imageSql, imageParams, (imageRs, imageRowNum) -> {
+            ProductImage img = new ProductImage();
+            img.setId(UUID.fromString(imageRs.getString("id")));
+            img.setProductId(UUID.fromString(imageRs.getString("product_id")));
+            img.setUrl(imageRs.getString("url"));
+            img.setPosition(imageRs.getInt("position"));
+            return img;
+        });
+
+        product.setImages(images);
     }
 
     @Override
