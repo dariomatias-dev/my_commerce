@@ -160,24 +160,58 @@ public class OrderJdbcRepository implements OrderContract {
 
     @Override
     public Page<Order> findAllByUserId(UUID userId, Pageable pageable) {
-
         String sql = """
-            SELECT * FROM orders
-            WHERE user_id = :user_id
+            SELECT *
+            FROM orders
+            WHERE user_id = :userId
             ORDER BY created_at DESC
             OFFSET :offset LIMIT :limit
         """;
 
-        List<Order> content = jdbc.query(sql, new MapSqlParameterSource()
-                .addValue("user_id", userId)
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("userId", userId)
                 .addValue("offset", pageable.getOffset())
-                .addValue("limit", pageable.getPageSize()), mapper);
+                .addValue("limit", pageable.getPageSize());
 
-        Long total = jdbc.queryForObject("""
-                SELECT COUNT(*) FROM orders WHERE user_id = :user_id
-                """, new MapSqlParameterSource("user_id", userId), Long.class);
+        List<Order> orders = jdbc.query(sql, params, mapper);
 
-        return new PageImpl<>(content, pageable, total);
+        for (Order order : orders) {
+            loadOrderItems(order);
+        }
+
+        Long total = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM orders WHERE user_id = :userId",
+                new MapSqlParameterSource("userId", userId),
+                Long.class
+        );
+
+        return new PageImpl<>(orders, pageable, total);
+    }
+
+    private void loadOrderItems(Order order) {
+        String sql = """
+            SELECT *
+            FROM order_items
+            WHERE order_id = :orderId
+            ORDER BY created_at ASC
+        """;
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("orderId", order.getId());
+
+        List<OrderItem> items = jdbc.query(sql, params, (rs, rowNum) -> {
+            OrderItem item = new OrderItem();
+            item.setId(UUID.fromString(rs.getString("id")));
+            item.setOrder(order);
+            item.setProductId(UUID.fromString(rs.getString("product_id")));
+            item.setQuantity(rs.getInt("quantity"));
+            item.setPrice(rs.getBigDecimal("price"));
+            item.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+            item.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+            return item;
+        });
+
+        order.setItems(items);
     }
 
     @Override
@@ -328,6 +362,10 @@ public class OrderJdbcRepository implements OrderContract {
                 .addValue("limit", pageable.getPageSize());
 
         List<Order> content = jdbc.query(sql, params, mapper);
+
+        for (Order order : content) {
+            loadOrderItems(order);
+        }
 
         Long total = jdbc.queryForObject(
                 """
