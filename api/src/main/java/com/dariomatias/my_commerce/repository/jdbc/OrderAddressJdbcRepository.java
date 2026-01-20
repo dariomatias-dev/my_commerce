@@ -9,8 +9,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
@@ -24,11 +25,11 @@ import java.util.UUID;
 @ConditionalOnProperty(name = "app.persistence", havingValue = "jdbc")
 public class OrderAddressJdbcRepository implements OrderAddressContract {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbc;
     private final GeometryFactory geometryFactory = new GeometryFactory();
 
-    public OrderAddressJdbcRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public OrderAddressJdbcRepository(NamedParameterJdbcTemplate jdbc) {
+        this.jdbc = jdbc;
     }
 
     private final RowMapper<OrderAddress> rowMapper = this::mapAddress;
@@ -62,30 +63,31 @@ public class OrderAddressJdbcRepository implements OrderAddressContract {
         String sql = """
             INSERT INTO order_addresses
             (id, label, street, number, complement, neighborhood, city, state, zip, location)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ST_SetSRID(ST_MakePoint(?, ?), 4326))
+            VALUES (:id, :label, :street, :number, :complement, :neighborhood, :city, :state, :zip,
+                    ST_SetSRID(ST_MakePoint(:lon, :lat), 4326))
         """;
 
-        jdbcTemplate.update(
-                sql,
-                orderAddress.getId(),
-                orderAddress.getLabel(),
-                orderAddress.getStreet(),
-                orderAddress.getNumber(),
-                orderAddress.getComplement(),
-                orderAddress.getNeighborhood(),
-                orderAddress.getCity(),
-                orderAddress.getState(),
-                orderAddress.getZip(),
-                orderAddress.getLocation().getX(),
-                orderAddress.getLocation().getY()
-        );
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", orderAddress.getId())
+                .addValue("label", orderAddress.getLabel())
+                .addValue("street", orderAddress.getStreet())
+                .addValue("number", orderAddress.getNumber())
+                .addValue("complement", orderAddress.getComplement())
+                .addValue("neighborhood", orderAddress.getNeighborhood())
+                .addValue("city", orderAddress.getCity())
+                .addValue("state", orderAddress.getState())
+                .addValue("zip", orderAddress.getZip())
+                .addValue("lon", orderAddress.getLocation().getX())
+                .addValue("lat", orderAddress.getLocation().getY());
+
+        jdbc.update(sql, params);
 
         return orderAddress;
     }
 
     @Override
     public Page<OrderAddress> findAll(Pageable pageable) {
-        int offset = pageable.getPageNumber() * pageable.getPageSize();
+        int offset = (int) pageable.getOffset();
 
         String sql = """
             SELECT *,
@@ -93,12 +95,19 @@ public class OrderAddressJdbcRepository implements OrderAddressContract {
                    ST_Y(location) AS lat
             FROM order_addresses
             ORDER BY created_at
-            LIMIT ? OFFSET ?
+            LIMIT :limit OFFSET :offset
         """;
 
-        List<OrderAddress> list = jdbcTemplate.query(sql, rowMapper, pageable.getPageSize(), offset);
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("limit", pageable.getPageSize())
+                .addValue("offset", offset);
 
-        return new PageImpl<>(list, pageable, list.size());
+        List<OrderAddress> list = jdbc.query(sql, params, rowMapper);
+
+        String countSql = "SELECT COUNT(*) FROM order_addresses";
+        Long total = jdbc.queryForObject(countSql, new MapSqlParameterSource(), Long.class);
+
+        return new PageImpl<>(list, pageable, total);
     }
 
     @Override
@@ -108,10 +117,10 @@ public class OrderAddressJdbcRepository implements OrderAddressContract {
                    ST_X(location) AS lon,
                    ST_Y(location) AS lat
             FROM order_addresses
-            WHERE id = ?
+            WHERE id = :id
         """;
 
-        List<OrderAddress> list = jdbcTemplate.query(sql, rowMapper, id);
+        List<OrderAddress> list = jdbc.query(sql, new MapSqlParameterSource("id", id), rowMapper);
 
         return list.stream().findFirst();
     }
@@ -120,41 +129,42 @@ public class OrderAddressJdbcRepository implements OrderAddressContract {
     public OrderAddress update(OrderAddress orderAddress) {
         String sql = """
             UPDATE order_addresses SET
-                label = ?,
-                street = ?,
-                number = ?,
-                complement = ?,
-                neighborhood = ?,
-                city = ?,
-                state = ?,
-                zip = ?,
-                location = ?,
-                updated_at = ?
-            WHERE id = ?
+                label = :label,
+                street = :street,
+                number = :number,
+                complement = :complement,
+                neighborhood = :neighborhood,
+                city = :city,
+                state = :state,
+                zip = :zip,
+                location = ST_SetSRID(ST_MakePoint(:lon, :lat), 4326),
+                updated_at = :updatedAt
+            WHERE id = :id
         """;
 
-        jdbcTemplate.update(
-                sql,
-                orderAddress.getLabel(),
-                orderAddress.getStreet(),
-                orderAddress.getNumber(),
-                orderAddress.getComplement(),
-                orderAddress.getNeighborhood(),
-                orderAddress.getCity(),
-                orderAddress.getState(),
-                orderAddress.getZip(),
-                orderAddress.getLocation(),
-                LocalDateTime.now(),
-                orderAddress.getId()
-        );
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("label", orderAddress.getLabel())
+                .addValue("street", orderAddress.getStreet())
+                .addValue("number", orderAddress.getNumber())
+                .addValue("complement", orderAddress.getComplement())
+                .addValue("neighborhood", orderAddress.getNeighborhood())
+                .addValue("city", orderAddress.getCity())
+                .addValue("state", orderAddress.getState())
+                .addValue("zip", orderAddress.getZip())
+                .addValue("lon", orderAddress.getLocation().getX())
+                .addValue("lat", orderAddress.getLocation().getY())
+                .addValue("updatedAt", LocalDateTime.now())
+                .addValue("id", orderAddress.getId());
+
+        jdbc.update(sql, params);
 
         return orderAddress;
     }
 
     @Override
     public void deleteById(UUID id) {
-        OrderAddress orderAddress = findById(id).orElseThrow();
-        String sql = "DELETE FROM order_addresses WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        findById(id).orElseThrow();
+        String sql = "DELETE FROM order_addresses WHERE id = :id";
+        jdbc.update(sql, new MapSqlParameterSource("id", id));
     }
 }
