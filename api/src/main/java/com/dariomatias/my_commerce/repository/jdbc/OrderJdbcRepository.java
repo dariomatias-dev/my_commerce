@@ -79,6 +79,7 @@ public class OrderJdbcRepository implements OrderContract {
                 address_id,
                 payment_method,
                 freight_type,
+                freight_amount,
                 total_amount,
                 status,
                 created_at,
@@ -91,6 +92,7 @@ public class OrderJdbcRepository implements OrderContract {
                 :address_id,
                 :payment_method,
                 :freight_type,
+                :freight_amount,
                 :total_amount,
                 :status,
                 :created_at,
@@ -98,17 +100,21 @@ public class OrderJdbcRepository implements OrderContract {
             )
         """;
 
-        jdbc.update(sql, new MapSqlParameterSource()
-                .addValue("id", id)
-                .addValue("store_id", order.getStore().getId())
-                .addValue("user_id", order.getUser().getId())
-                .addValue("address_id", order.getAddress().getId())
-                .addValue("payment_method", order.getPaymentMethod().name())
-                .addValue("freight_type", order.getFreightType().name())
-                .addValue("total_amount", order.getTotalAmount())
-                .addValue("status", order.getStatus().name())
-                .addValue("created_at", now)
-                .addValue("updated_at", now));
+        jdbc.update(
+                sql,
+                new MapSqlParameterSource()
+                        .addValue("id", id)
+                        .addValue("store_id", order.getStore().getId())
+                        .addValue("user_id", order.getUser().getId())
+                        .addValue("address_id", order.getAddress().getId())
+                        .addValue("payment_method", order.getPaymentMethod().name())
+                        .addValue("freight_type", order.getFreightType().name())
+                        .addValue("freight_amount", order.getFreightAmount())
+                        .addValue("total_amount", order.getTotalAmount())
+                        .addValue("status", order.getStatus().name())
+                        .addValue("created_at", now)
+                        .addValue("updated_at", now)
+        );
 
         return order;
     }
