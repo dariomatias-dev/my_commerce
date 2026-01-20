@@ -7,23 +7,26 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 @ConditionalOnProperty(name = "app.persistence", havingValue = "jdbc")
 public class UserAddressJdbcRepository implements UserAddressContract {
 
     private final JdbcTemplate jdbcTemplate;
-    private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+    private final GeometryFactory geometryFactory =
+            new GeometryFactory(new PrecisionModel(), 4326);
 
     public UserAddressJdbcRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -36,18 +39,22 @@ public class UserAddressJdbcRepository implements UserAddressContract {
         address.setId(UUID.fromString(rs.getString("id")));
         address.setLabel(rs.getString("label"));
         address.setStreet(rs.getString("street"));
+        address.setNumber(rs.getString("number"));
+        address.setComplement(rs.getString("complement"));
         address.setNeighborhood(rs.getString("neighborhood"));
         address.setCity(rs.getString("city"));
+        address.setState(rs.getString("state"));
         address.setZip(rs.getString("zip"));
 
-        double longitude = rs.getDouble("longitude");
-        double latitude = rs.getDouble("latitude");
-        Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
+        double lon = rs.getDouble("lon");
+        double lat = rs.getDouble("lat");
+        Point point = geometryFactory.createPoint(new Coordinate(lon, lat));
         address.setLocation(point);
 
-        address.setDeletedAt(rs.getTimestamp("deleted_at") != null
-                ? rs.getTimestamp("deleted_at").toLocalDateTime()
-                : null
+        address.setDeletedAt(
+                rs.getTimestamp("deleted_at") != null
+                        ? rs.getTimestamp("deleted_at").toLocalDateTime()
+                        : null
         );
 
         return address;
@@ -55,23 +62,28 @@ public class UserAddressJdbcRepository implements UserAddressContract {
 
     @Override
     public UserAddress save(UserAddress address) {
-        if (address.getId() == null) address.setId(UUID.randomUUID());
+        if (address.getId() == null) {
+            address.setId(UUID.randomUUID());
+        }
 
         String sql = """
-            INSERT INTO user_addresses 
-            (id, label, street, neighborhood, city, zip, longitude, latitude, user_id, deleted_at) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO user_addresses
+            (id, label, street, number, complement, neighborhood, city, state, zip, location, user_id, deleted_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """;
 
-        jdbcTemplate.update(sql,
+        jdbcTemplate.update(
+                sql,
                 address.getId(),
                 address.getLabel(),
                 address.getStreet(),
+                address.getNumber(),
+                address.getComplement(),
                 address.getNeighborhood(),
                 address.getCity(),
+                address.getState(),
                 address.getZip(),
-                address.getLocation().getX(),
-                address.getLocation().getY(),
+                address.getLocation(),
                 address.getUser().getId(),
                 address.getDeletedAt()
         );
@@ -82,15 +94,32 @@ public class UserAddressJdbcRepository implements UserAddressContract {
     @Override
     public Page<UserAddress> findAll(Pageable pageable) {
         int offset = pageable.getPageNumber() * pageable.getPageSize();
-        String sql = "SELECT * FROM user_addresses ORDER BY label LIMIT ? OFFSET ?";
-        List<UserAddress> list = jdbcTemplate.query(sql, rowMapper, pageable.getPageSize(), offset);
+
+        String sql = """
+            SELECT *,
+                   ST_X(location) AS lon,
+                   ST_Y(location) AS lat
+            FROM user_addresses
+            ORDER BY label
+            LIMIT ? OFFSET ?
+        """;
+
+        List<UserAddress> list =
+                jdbcTemplate.query(sql, rowMapper, pageable.getPageSize(), offset);
 
         return new PageImpl<>(list, pageable, list.size());
     }
 
     @Override
     public Optional<UserAddress> findById(UUID id) {
-        String sql = "SELECT * FROM user_addresses WHERE id = ?";
+        String sql = """
+            SELECT *,
+                   ST_X(location) AS lon,
+                   ST_Y(location) AS lat
+            FROM user_addresses
+            WHERE id = ?
+        """;
+
         List<UserAddress> list = jdbcTemplate.query(sql, rowMapper, id);
 
         return list.stream().findFirst();
@@ -98,7 +127,14 @@ public class UserAddressJdbcRepository implements UserAddressContract {
 
     @Override
     public List<UserAddress> findAllByUserId(UUID userId) {
-        String sql = "SELECT * FROM user_addresses WHERE user_id = ? AND deleted_at IS NULL";
+        String sql = """
+            SELECT *,
+                   ST_X(location) AS lon,
+                   ST_Y(location) AS lat
+            FROM user_addresses
+            WHERE user_id = ?
+              AND deleted_at IS NULL
+        """;
 
         return jdbcTemplate.query(sql, rowMapper, userId);
     }
@@ -107,10 +143,10 @@ public class UserAddressJdbcRepository implements UserAddressContract {
     public Double calculateDistanceFromPoint(UUID id, double lat, double lon) {
         String sql = """
             SELECT ST_DistanceSphere(
-                ST_MakePoint(longitude, latitude),
-                ST_MakePoint(?, ?)
-            ) 
-            FROM user_addresses 
+                ST_MakePoint(?, ?),
+                location
+            )
+            FROM user_addresses
             WHERE id = ?
         """;
 
@@ -120,20 +156,31 @@ public class UserAddressJdbcRepository implements UserAddressContract {
     @Override
     public UserAddress update(UserAddress address) {
         String sql = """
-            UPDATE user_addresses SET 
-                label = ?, street = ?, neighborhood = ?, city = ?, zip = ?, 
-                longitude = ?, latitude = ?, deleted_at = ? 
+            UPDATE user_addresses SET
+                label = ?,
+                street = ?,
+                number = ?,
+                complement = ?,
+                neighborhood = ?,
+                city = ?,
+                state = ?,
+                zip = ?,
+                location = ?,
+                deleted_at = ?
             WHERE id = ?
         """;
 
-        jdbcTemplate.update(sql,
+        jdbcTemplate.update(
+                sql,
                 address.getLabel(),
                 address.getStreet(),
+                address.getNumber(),
+                address.getComplement(),
                 address.getNeighborhood(),
                 address.getCity(),
+                address.getState(),
                 address.getZip(),
-                address.getLocation().getX(),
-                address.getLocation().getY(),
+                address.getLocation(),
                 address.getDeletedAt(),
                 address.getId()
         );
