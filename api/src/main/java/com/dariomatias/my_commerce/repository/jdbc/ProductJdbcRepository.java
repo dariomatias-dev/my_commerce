@@ -148,29 +148,6 @@ public class ProductJdbcRepository implements ProductContract {
         return new PageImpl<>(content, pageable, total);
     }
 
-    private void loadProductImages(Product product) {
-        String imageSql = """
-            SELECT id, product_id, url, position
-            FROM product_images
-            WHERE product_id = :productId
-            ORDER BY position ASC
-        """;
-
-        MapSqlParameterSource imageParams = new MapSqlParameterSource();
-        imageParams.addValue("productId", product.getId());
-
-        List<ProductImage> images = jdbc.query(imageSql, imageParams, (imageRs, imageRowNum) -> {
-            ProductImage img = new ProductImage();
-            img.setId(UUID.fromString(imageRs.getString("id")));
-            img.setProductId(UUID.fromString(imageRs.getString("product_id")));
-            img.setUrl(imageRs.getString("url"));
-            img.setPosition(imageRs.getInt("position"));
-            return img;
-        });
-
-        product.setImages(images);
-    }
-
     @Override
     public Page<Product> findAllByStoreIdAndIdInAndDeletedAtIsNull(UUID storeId, List<UUID> productIds, Pageable pageable) {
         if (productIds == null || productIds.isEmpty()) {
@@ -211,18 +188,25 @@ public class ProductJdbcRepository implements ProductContract {
     @Override
     public Optional<Product> findByStoreSlugAndProductSlug(String storeSlug, String productSlug) {
         List<Product> list = jdbc.query("""
-            SELECT p.*
-            FROM products p
-            INNER JOIN stores s ON p.store_id = s.id
-            WHERE s.slug = :storeSlug
-              AND p.slug = :productSlug
-              AND p.deleted_at IS NULL
-        """, new MapSqlParameterSource()
+        SELECT p.*
+        FROM products p
+        INNER JOIN stores s ON p.store_id = s.id
+        WHERE s.slug = :storeSlug
+          AND p.slug = :productSlug
+          AND p.deleted_at IS NULL
+    """, new MapSqlParameterSource()
                         .addValue("storeSlug", storeSlug)
                         .addValue("productSlug", productSlug),
                 mapper);
 
-        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+        if (list.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Product product = list.get(0);
+        loadProductImages(product);
+
+        return Optional.of(product);
     }
 
     @Override
@@ -323,5 +307,28 @@ public class ProductJdbcRepository implements ProductContract {
         """, new MapSqlParameterSource()
                 .addValue("id", id)
                 .addValue("deletedAt", LocalDateTime.now()));
+    }
+
+    private void loadProductImages(Product product) {
+        String imageSql = """
+            SELECT id, product_id, url, position
+            FROM product_images
+            WHERE product_id = :productId
+            ORDER BY position ASC
+        """;
+
+        MapSqlParameterSource imageParams = new MapSqlParameterSource();
+        imageParams.addValue("productId", product.getId());
+
+        List<ProductImage> images = jdbc.query(imageSql, imageParams, (imageRs, imageRowNum) -> {
+            ProductImage img = new ProductImage();
+            img.setId(UUID.fromString(imageRs.getString("id")));
+            img.setProductId(UUID.fromString(imageRs.getString("product_id")));
+            img.setUrl(imageRs.getString("url"));
+            img.setPosition(imageRs.getInt("position"));
+            return img;
+        });
+
+        product.setImages(images);
     }
 }
