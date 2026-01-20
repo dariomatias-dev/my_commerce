@@ -5,6 +5,7 @@ import com.dariomatias.my_commerce.enums.PaymentMethod;
 import com.dariomatias.my_commerce.enums.Status;
 import com.dariomatias.my_commerce.model.*;
 import com.dariomatias.my_commerce.repository.contract.OrderContract;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.postgresql.util.PGobject;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.*;
@@ -23,6 +24,7 @@ import java.util.*;
 public class OrderJdbcRepository implements OrderContract {
 
     private final NamedParameterJdbcTemplate jdbc;
+    private final GeometryFactory geometryFactory = new GeometryFactory();
 
     public OrderJdbcRepository(NamedParameterJdbcTemplate jdbc) {
         this.jdbc = jdbc;
@@ -191,32 +193,6 @@ public class OrderJdbcRepository implements OrderContract {
         return new PageImpl<>(orders, pageable, total);
     }
 
-    private void loadOrderItems(Order order) {
-        String sql = """
-            SELECT *
-            FROM order_items
-            WHERE order_id = :orderId
-            ORDER BY created_at ASC
-        """;
-
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("orderId", order.getId());
-
-        List<OrderItem> items = jdbc.query(sql, params, (rs, rowNum) -> {
-            OrderItem item = new OrderItem();
-            item.setId(UUID.fromString(rs.getString("id")));
-            item.setOrder(order);
-            item.setProductId(UUID.fromString(rs.getString("product_id")));
-            item.setQuantity(rs.getInt("quantity"));
-            item.setPrice(rs.getBigDecimal("price"));
-            item.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-            item.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
-            return item;
-        });
-
-        order.setItems(items);
-    }
-
     @Override
     public Optional<Order> findById(UUID id) {
         String sql = "SELECT * FROM orders WHERE id = :id";
@@ -234,75 +210,6 @@ public class OrderJdbcRepository implements OrderContract {
         loadOrderAddress(order);
 
         return Optional.of(order);
-    }
-
-    private void loadOrderStore(Order order) {
-        String storeSql = "SELECT * FROM stores WHERE id = :storeId";
-
-        Store store = jdbc.queryForObject(storeSql,
-                new MapSqlParameterSource("storeId", order.getStore().getId()),
-                (rs, rowNum) -> {
-                    Store s = new Store();
-                    s.setId(UUID.fromString(rs.getString("id")));
-                    s.setName(rs.getString("name"));
-                    s.setSlug(rs.getString("slug"));
-                    s.setDescription(rs.getString("description"));
-                    s.setThemeColor(rs.getString("theme_color"));
-                    s.setIsActive(rs.getBoolean("is_active"));
-
-                    Timestamp deletedAtTs = rs.getTimestamp("deleted_at");
-                    if (deletedAtTs != null) {
-                        s.setDeletedAt(deletedAtTs.toLocalDateTime());
-                    }
-
-                    User user = new User();
-                    user.setId(UUID.fromString(rs.getString("user_id")));
-                    s.setUser(user);
-
-                    s.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-                    s.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
-
-                    return s;
-                });
-
-        order.setStore(store);
-    }
-
-    private final org.locationtech.jts.geom.GeometryFactory geometryFactory = new org.locationtech.jts.geom.GeometryFactory();
-
-    private void loadOrderAddress(Order order) {
-        String addressSql = """
-            SELECT *,
-                   ST_X(location) AS lon,
-                   ST_Y(location) AS lat
-            FROM order_addresses
-            WHERE id = :addressId
-        """;
-
-        OrderAddress address = jdbc.queryForObject(
-                addressSql,
-                new MapSqlParameterSource("addressId", order.getAddress().getId()),
-                (rs, rowNum) -> {
-                    OrderAddress a = new OrderAddress();
-                    a.setId(UUID.fromString(rs.getString("id")));
-                    a.setLabel(rs.getString("label"));
-                    a.setStreet(rs.getString("street"));
-                    a.setNumber(rs.getString("number"));
-                    a.setComplement(rs.getString("complement"));
-                    a.setNeighborhood(rs.getString("neighborhood"));
-                    a.setCity(rs.getString("city"));
-                    a.setState(rs.getString("state"));
-                    a.setZip(rs.getString("zip"));
-
-                    double lon = rs.getDouble("lon");
-                    double lat = rs.getDouble("lat");
-                    a.setLocation(geometryFactory.createPoint(new org.locationtech.jts.geom.Coordinate(lon, lat)));
-
-                    return a;
-                }
-        );
-
-        order.setAddress(address);
     }
 
     @Override
@@ -527,5 +434,98 @@ public class OrderJdbcRepository implements OrderContract {
     public void deleteById(UUID id) {
         jdbc.update("DELETE FROM orders WHERE id = :id",
                 new MapSqlParameterSource("id", id));
+    }
+
+    private void loadOrderItems(Order order) {
+        String sql = """
+            SELECT *
+            FROM order_items
+            WHERE order_id = :orderId
+            ORDER BY created_at ASC
+        """;
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("orderId", order.getId());
+
+        List<OrderItem> items = jdbc.query(sql, params, (rs, rowNum) -> {
+            OrderItem item = new OrderItem();
+            item.setId(UUID.fromString(rs.getString("id")));
+            item.setOrder(order);
+            item.setProductId(UUID.fromString(rs.getString("product_id")));
+            item.setQuantity(rs.getInt("quantity"));
+            item.setPrice(rs.getBigDecimal("price"));
+            item.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+            item.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+            return item;
+        });
+
+        order.setItems(items);
+    }
+
+    private void loadOrderStore(Order order) {
+        String storeSql = "SELECT * FROM stores WHERE id = :storeId";
+
+        Store store = jdbc.queryForObject(storeSql,
+                new MapSqlParameterSource("storeId", order.getStore().getId()),
+                (rs, rowNum) -> {
+                    Store s = new Store();
+                    s.setId(UUID.fromString(rs.getString("id")));
+                    s.setName(rs.getString("name"));
+                    s.setSlug(rs.getString("slug"));
+                    s.setDescription(rs.getString("description"));
+                    s.setThemeColor(rs.getString("theme_color"));
+                    s.setIsActive(rs.getBoolean("is_active"));
+
+                    Timestamp deletedAtTs = rs.getTimestamp("deleted_at");
+                    if (deletedAtTs != null) {
+                        s.setDeletedAt(deletedAtTs.toLocalDateTime());
+                    }
+
+                    User user = new User();
+                    user.setId(UUID.fromString(rs.getString("user_id")));
+                    s.setUser(user);
+
+                    s.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                    s.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+
+                    return s;
+                });
+
+        order.setStore(store);
+    }
+
+    private void loadOrderAddress(Order order) {
+        String addressSql = """
+            SELECT *,
+                   ST_X(location) AS lon,
+                   ST_Y(location) AS lat
+            FROM order_addresses
+            WHERE id = :addressId
+        """;
+
+        OrderAddress address = jdbc.queryForObject(
+                addressSql,
+                new MapSqlParameterSource("addressId", order.getAddress().getId()),
+                (rs, rowNum) -> {
+                    OrderAddress a = new OrderAddress();
+                    a.setId(UUID.fromString(rs.getString("id")));
+                    a.setLabel(rs.getString("label"));
+                    a.setStreet(rs.getString("street"));
+                    a.setNumber(rs.getString("number"));
+                    a.setComplement(rs.getString("complement"));
+                    a.setNeighborhood(rs.getString("neighborhood"));
+                    a.setCity(rs.getString("city"));
+                    a.setState(rs.getString("state"));
+                    a.setZip(rs.getString("zip"));
+
+                    double lon = rs.getDouble("lon");
+                    double lat = rs.getDouble("lat");
+                    a.setLocation(geometryFactory.createPoint(new org.locationtech.jts.geom.Coordinate(lon, lat)));
+
+                    return a;
+                }
+        );
+
+        order.setAddress(address);
     }
 }
