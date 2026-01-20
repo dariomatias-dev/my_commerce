@@ -34,6 +34,7 @@ public class SubscriptionJdbcRepository implements SubscriptionContract {
         s.setIsActive(rs.getBoolean("is_active"));
         s.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         s.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+
         return s;
     };
 
@@ -63,6 +64,7 @@ public class SubscriptionJdbcRepository implements SubscriptionContract {
         s.setId(id);
         s.getAudit().setCreatedAt(now);
         s.getAudit().setUpdatedAt(now);
+
         return s;
     }
 
@@ -111,13 +113,13 @@ public class SubscriptionJdbcRepository implements SubscriptionContract {
     @Override
     public Optional<Subscription> findActiveByUserId(UUID userId) {
         String sql = """
-        SELECT *
-        FROM subscriptions
-        WHERE user_id = :user_id
-          AND is_active = true
-        ORDER BY created_at DESC
-        LIMIT 1
-    """;
+            SELECT *
+            FROM subscriptions
+            WHERE user_id = :user_id
+              AND is_active = true
+            ORDER BY created_at DESC
+            LIMIT 1
+        """;
 
         List<Subscription> list = jdbc.query(
                 sql,
@@ -131,11 +133,11 @@ public class SubscriptionJdbcRepository implements SubscriptionContract {
     @Override
     public boolean existsActiveSubscriptionByUserId(UUID userId) {
         String sql = """
-        SELECT COUNT(1)
-        FROM subscriptions
-        WHERE user_id = :user_id
-          AND is_active = true
-    """;
+            SELECT COUNT(1)
+            FROM subscriptions
+            WHERE user_id = :user_id
+              AND is_active = true
+        """;
 
         Integer count = jdbc.queryForObject(
                 sql,
@@ -187,6 +189,7 @@ public class SubscriptionJdbcRepository implements SubscriptionContract {
         jdbc.update(sql, params);
 
         s.getAudit().setUpdatedAt(now);
+
         return s;
     }
 }

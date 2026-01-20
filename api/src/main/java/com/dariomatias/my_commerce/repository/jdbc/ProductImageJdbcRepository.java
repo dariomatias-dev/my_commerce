@@ -30,8 +30,18 @@ public class ProductImageJdbcRepository implements ProductImageContract {
         image.setPosition(rs.getInt("position"));
         image.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         image.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+
         return image;
     };
+
+    @Override
+    public ProductImage save(ProductImage image) {
+        if (image.getId() == null) {
+            return insert(image);
+        }
+
+        return update(image);
+    }
 
     @Override
     public List<ProductImage> findAllByProduct(UUID productId) {
@@ -47,14 +57,6 @@ public class ProductImageJdbcRepository implements ProductImageContract {
                 new MapSqlParameterSource("product_id", productId),
                 mapper
         );
-    }
-
-    @Override
-    public ProductImage save(ProductImage image) {
-        if (image.getId() == null) {
-            return insert(image);
-        }
-        return update(image);
     }
 
     private ProductImage insert(ProductImage image) {
@@ -104,6 +106,7 @@ public class ProductImageJdbcRepository implements ProductImageContract {
         );
 
         image.getAudit().setUpdatedAt(now);
+
         return image;
     }
 

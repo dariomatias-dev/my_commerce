@@ -138,7 +138,7 @@ public class SubscriptionController {
     }
 
     @PatchMapping("/cancel")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
+    @PreAuthorize("hasRole('SUBSCRIBER')")
     public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> cancelActive(
             @AuthenticationPrincipal User user
     ) {

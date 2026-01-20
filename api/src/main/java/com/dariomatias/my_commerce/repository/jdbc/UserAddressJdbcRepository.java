@@ -61,7 +61,7 @@ public class UserAddressJdbcRepository implements UserAddressContract {
             INSERT INTO user_addresses 
             (id, label, street, neighborhood, city, zip, longitude, latitude, user_id, deleted_at) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """;
+        """;
 
         jdbcTemplate.update(sql,
                 address.getId(),
@@ -84,6 +84,7 @@ public class UserAddressJdbcRepository implements UserAddressContract {
         int offset = pageable.getPageNumber() * pageable.getPageSize();
         String sql = "SELECT * FROM user_addresses ORDER BY label LIMIT ? OFFSET ?";
         List<UserAddress> list = jdbcTemplate.query(sql, rowMapper, pageable.getPageSize(), offset);
+
         return new PageImpl<>(list, pageable, list.size());
     }
 
@@ -91,25 +92,28 @@ public class UserAddressJdbcRepository implements UserAddressContract {
     public Optional<UserAddress> findById(UUID id) {
         String sql = "SELECT * FROM user_addresses WHERE id = ?";
         List<UserAddress> list = jdbcTemplate.query(sql, rowMapper, id);
+
         return list.stream().findFirst();
     }
 
     @Override
     public List<UserAddress> findAllByUserId(UUID userId) {
         String sql = "SELECT * FROM user_addresses WHERE user_id = ? AND deleted_at IS NULL";
+
         return jdbcTemplate.query(sql, rowMapper, userId);
     }
 
     @Override
     public Double calculateDistanceFromPoint(UUID id, double lat, double lon) {
         String sql = """
-        SELECT ST_DistanceSphere(
-            ST_MakePoint(longitude, latitude),
-            ST_MakePoint(?, ?)
-        ) 
-        FROM user_addresses 
-        WHERE id = ?
-    """;
+            SELECT ST_DistanceSphere(
+                ST_MakePoint(longitude, latitude),
+                ST_MakePoint(?, ?)
+            ) 
+            FROM user_addresses 
+            WHERE id = ?
+        """;
+
         return jdbcTemplate.queryForObject(sql, Double.class, lon, lat, id);
     }
 

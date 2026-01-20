@@ -34,6 +34,7 @@ public class CategoryJdbcRepository implements CategoryContract {
         category.setStoreId(UUID.fromString(rs.getString("store_id")));
         category.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         category.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+
         return category;
     }
 

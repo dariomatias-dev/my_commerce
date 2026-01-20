@@ -7,9 +7,9 @@ import java.util.UUID;
 
 public interface ProductImageContract {
 
-    List<ProductImage> findAllByProduct(UUID productId);
-
     ProductImage save(ProductImage image);
+
+    List<ProductImage> findAllByProduct(UUID productId);
 
     void delete(ProductImage image);
 }

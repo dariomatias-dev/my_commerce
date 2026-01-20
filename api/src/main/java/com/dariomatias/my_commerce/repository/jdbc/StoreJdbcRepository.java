@@ -137,12 +137,12 @@ public class StoreJdbcRepository implements StoreContract {
     @Override
     public boolean existsBySlugAndDeletedAtIsNull(String slug) {
         String sql = """
-        SELECT 1
-        FROM stores
-        WHERE slug = :slug
-          AND deleted_at IS NULL
-        LIMIT 1
-    """;
+            SELECT 1
+            FROM stores
+            WHERE slug = :slug
+              AND deleted_at IS NULL
+            LIMIT 1
+        """;
 
         List<Integer> result = jdbc.query(
                 sql,
@@ -193,12 +193,12 @@ public class StoreJdbcRepository implements StoreContract {
     @Override
     public void delete(Store store) {
         String sql = """
-        UPDATE stores
-        SET is_active = false,
-            deleted_at = :deleted_at,
-            updated_at = :updated_at
-        WHERE id = :id
-    """;
+            UPDATE stores
+            SET is_active = false,
+                deleted_at = :deleted_at,
+                updated_at = :updated_at
+            WHERE id = :id
+        """;
 
         LocalDateTime now = LocalDateTime.now();
 

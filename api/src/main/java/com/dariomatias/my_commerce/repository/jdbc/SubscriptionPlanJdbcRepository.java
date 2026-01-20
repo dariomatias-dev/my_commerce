@@ -34,6 +34,7 @@ public class SubscriptionPlanJdbcRepository implements SubscriptionPlanContract 
         plan.setPrice(rs.getBigDecimal("price"));
         plan.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         plan.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+
         return plan;
     };
 
@@ -63,6 +64,7 @@ public class SubscriptionPlanJdbcRepository implements SubscriptionPlanContract 
         plan.setId(id);
         plan.getAudit().setCreatedAt(now);
         plan.getAudit().setUpdatedAt(now);
+
         return plan;
     }
 
@@ -91,6 +93,7 @@ public class SubscriptionPlanJdbcRepository implements SubscriptionPlanContract 
     public Optional<SubscriptionPlan> findById(UUID id) {
         String sql = "SELECT * FROM subscription_plans WHERE id = :id";
         List<SubscriptionPlan> list = jdbc.query(sql, new MapSqlParameterSource("id", id), mapper);
+
         return list.stream().findFirst();
     }
 
@@ -133,6 +136,7 @@ public class SubscriptionPlanJdbcRepository implements SubscriptionPlanContract 
 
         jdbc.update(sql, params);
         plan.getAudit().setUpdatedAt(now);
+
         return plan;
     }
 

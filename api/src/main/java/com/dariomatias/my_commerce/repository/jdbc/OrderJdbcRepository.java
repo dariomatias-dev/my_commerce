@@ -58,6 +58,7 @@ public class OrderJdbcRepository implements OrderContract {
         store.setName(rs.getString("name"));
         store.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         store.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+
         return store;
     };
 
@@ -436,10 +437,10 @@ public class OrderJdbcRepository implements OrderContract {
     @Override
     public BigDecimal sumTotalRevenueByStatus(Status status) {
         String sql = """
-        SELECT COALESCE(SUM(o.total_amount), 0)
-        FROM orders o
-        WHERE o.status = :status
-    """;
+            SELECT COALESCE(SUM(o.total_amount), 0)
+            FROM orders o
+            WHERE o.status = :status
+        """;
 
         return jdbc.queryForObject(
                 sql,

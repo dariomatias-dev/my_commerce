@@ -24,13 +24,13 @@ public class ProductImageJpaRepository implements ProductImageContract {
     }
 
     @Override
-    public List<ProductImage> findAllByProduct(UUID productId) {
-        return repository.findAllByProduct_IdOrderByPositionAsc(productId);
+    public ProductImage save(ProductImage image) {
+        return repository.save(image);
     }
 
     @Override
-    public ProductImage save(ProductImage image) {
-        return repository.save(image);
+    public List<ProductImage> findAllByProduct(UUID productId) {
+        return repository.findAllByProduct_IdOrderByPositionAsc(productId);
     }
 
     @Override

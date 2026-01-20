@@ -42,6 +42,7 @@ public class ProductJdbcRepository implements ProductContract {
         p.setActive(rs.getBoolean("active"));
         p.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         p.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+
         return p;
     };
 
@@ -149,14 +150,14 @@ public class ProductJdbcRepository implements ProductContract {
         }
 
         String sql = """
-        SELECT *
-        FROM products
-        WHERE store_id = :storeId
-          AND id IN (:ids)
-          AND deleted_at IS NULL
-        ORDER BY created_at DESC
-        OFFSET :offset LIMIT :limit
-    """;
+            SELECT *
+            FROM products
+            WHERE store_id = :storeId
+              AND id IN (:ids)
+              AND deleted_at IS NULL
+            ORDER BY created_at DESC
+            OFFSET :offset LIMIT :limit
+        """;
 
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("storeId", storeId);
@@ -167,12 +168,12 @@ public class ProductJdbcRepository implements ProductContract {
         List<Product> content = jdbc.query(sql, params, mapper);
 
         String countSql = """
-        SELECT COUNT(*)
-        FROM products
-        WHERE store_id = :storeId
-          AND id IN (:ids)
-          AND deleted_at IS NULL
-    """;
+            SELECT COUNT(*)
+            FROM products
+            WHERE store_id = :storeId
+              AND id IN (:ids)
+              AND deleted_at IS NULL
+        """;
 
         long total = jdbc.queryForObject(countSql, params, Long.class);
 
@@ -201,6 +202,7 @@ public class ProductJdbcRepository implements ProductContract {
         String sql = "SELECT * FROM products WHERE id = :id AND deleted_at IS NULL";
 
         List<Product> list = jdbc.query(sql, new MapSqlParameterSource("id", id), mapper);
+
         return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
     }
 
@@ -236,12 +238,12 @@ public class ProductJdbcRepository implements ProductContract {
     @Override
     public long countByStoreIdAndActiveTrue(UUID storeId) {
         String sql = """
-        SELECT COUNT(*)
-        FROM products
-        WHERE store_id = :store_id
-          AND active = TRUE
-          AND deleted_at IS NULL
-    """;
+            SELECT COUNT(*)
+            FROM products
+            WHERE store_id = :store_id
+              AND active = TRUE
+              AND deleted_at IS NULL
+        """;
 
         return jdbc.queryForObject(
                 sql,
@@ -279,6 +281,7 @@ public class ProductJdbcRepository implements ProductContract {
                 .addValue("updated_at", now));
 
         product.getAudit().setUpdatedAt(now);
+
         return product;
     }
 

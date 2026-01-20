@@ -41,6 +41,7 @@ public class UserJdbcRepository implements UserContract {
         if (rs.getTimestamp("deleted_at") != null) {
             u.setDeletedAt(rs.getTimestamp("deleted_at").toLocalDateTime());
         }
+
         return u;
     };
 
@@ -108,7 +109,7 @@ public class UserJdbcRepository implements UserContract {
             }
         }
 
-        sql.append(" ORDER BY name ASC OFFSET :offset LIMIT :limit");
+        sql.append(" ORDER BY created_at ASC OFFSET :offset LIMIT :limit");
         params.addValue("offset", pageable.getOffset());
         params.addValue("limit", pageable.getPageSize());
 
@@ -122,6 +123,7 @@ public class UserJdbcRepository implements UserContract {
     public Optional<User> findById(UUID id) {
         String sql = "SELECT * FROM users WHERE id = :id";
         List<User> list = jdbc.query(sql, new MapSqlParameterSource("id", id), mapper);
+
         return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
     }
 
@@ -129,12 +131,14 @@ public class UserJdbcRepository implements UserContract {
     public Optional<User> findByEmail(String email) {
         String sql = "SELECT * FROM users WHERE email = :email";
         List<User> list = jdbc.query(sql, new MapSqlParameterSource("email", email), mapper);
+
         return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
     }
 
     @Override
     public long countByEnabledTrueAndDeletedAtIsNull() {
         String sql = "SELECT COUNT(*) FROM users WHERE enabled = TRUE AND deleted_at IS NULL";
+
         return jdbc.queryForObject(sql, new MapSqlParameterSource(), Long.class);
     }
 
