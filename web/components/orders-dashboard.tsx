@@ -88,7 +88,7 @@ export const OrdersDashboard = ({
     <>
       <DashboardPageHeader
         title="MEUS PEDIDOS"
-        subtitle="Rastreio e gestão centralizada de transações"
+        subtitle="Rastreio e gestão centralizada de pedidos"
         backPath={backHref}
         label="Histórico de Pedidos"
         actions={

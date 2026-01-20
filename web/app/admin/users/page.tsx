@@ -148,7 +148,7 @@ const UserManagementPage = () => {
             onChange={(e) => setNameInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="PESQUISAR NOME (ENTER)..."
-            className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-slate-50 pr-6 pl-12 text-[10px] font-black uppercase tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:bg-white"
+            className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-white pr-6 pl-12 text-[10px] font-black tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:bg-white"
           />
         </div>
 
@@ -164,7 +164,7 @@ const UserManagementPage = () => {
             onChange={(e) => setEmailInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="PESQUISAR E-MAIL (ENTER)..."
-            className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-slate-50 pr-6 pl-12 text-[10px] font-black uppercase tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:bg-white"
+            className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-white pr-6 pl-12 text-[10px] font-black tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:bg-white"
           />
         </div>
 

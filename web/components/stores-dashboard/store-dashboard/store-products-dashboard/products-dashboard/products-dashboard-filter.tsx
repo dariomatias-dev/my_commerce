@@ -37,7 +37,7 @@ export const ProductsDashboardFilter = ({
 
   const updateField = <K extends keyof LocalFilters>(
     field: K,
-    value: LocalFilters[K]
+    value: LocalFilters[K],
   ) => {
     const updated = { ...localFilters, [field]: value };
 
@@ -83,7 +83,7 @@ export const ProductsDashboardFilter = ({
           subtitle="Nível Crítico"
           isActive={!!localFilters.lowStockThreshold}
           onClick={() => {
-            const val = localFilters.lowStockThreshold ? undefined : 5;
+            const val = localFilters.lowStockThreshold ? undefined : 10;
             const updated: LocalFilters = {
               ...localFilters,
               lowStockThreshold: val,
