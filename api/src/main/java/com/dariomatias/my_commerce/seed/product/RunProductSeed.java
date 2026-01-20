@@ -14,7 +14,7 @@ public class RunProductSeed {
         ApplicationContext context = app.run(args);
 
         ProductSeed productSeed = context.getBean(ProductSeed.class);
-        productSeed.createProducts();
+        productSeed.run();
 
         System.exit(0);
     }

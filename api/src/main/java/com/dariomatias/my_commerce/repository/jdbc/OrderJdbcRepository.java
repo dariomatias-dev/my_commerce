@@ -343,7 +343,7 @@ public class OrderJdbcRepository implements OrderContract {
     public long countByStoreIdAndStatus(UUID storeId, Status status) {
         String sql = """
             SELECT COUNT(*)
-            FROM orders
+            FROM "orders"
             WHERE store_id = :storeId
               AND status = :status
         """;
@@ -352,7 +352,7 @@ public class OrderJdbcRepository implements OrderContract {
                 sql,
                 new MapSqlParameterSource()
                         .addValue("storeId", storeId)
-                        .addValue("status", status),
+                        .addValue("status", status.name()),
                 Long.class
         );
     }

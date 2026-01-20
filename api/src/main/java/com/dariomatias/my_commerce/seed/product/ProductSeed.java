@@ -2,6 +2,7 @@ package com.dariomatias.my_commerce.seed.product;
 
 import com.dariomatias.my_commerce.model.*;
 import com.dariomatias.my_commerce.repository.CategoryRepository;
+import com.dariomatias.my_commerce.repository.ProductImageRepository;
 import com.dariomatias.my_commerce.repository.ProductRepository;
 import com.dariomatias.my_commerce.repository.StoreRepository;
 import com.dariomatias.my_commerce.repository.contract.ProductImageContract;
@@ -29,14 +30,14 @@ public class ProductSeed implements Seed {
     private final ProductRepository productRepository;
     private final StoreRepository storeRepository;
     private final CategoryRepository categoryRepository;
-    private final ProductImageContract productImageRepository;
+    private final ProductImageRepository productImageRepository;
     private final MinioService minioService;
 
     public ProductSeed(
             ProductRepository productRepository,
             StoreRepository storeRepository,
             CategoryRepository categoryRepository,
-            ProductImageContract productImageRepository,
+            ProductImageRepository productImageRepository,
             MinioService minioService
     ) {
         this.productRepository = productRepository;
@@ -69,7 +70,7 @@ public class ProductSeed implements Seed {
 
                 for (int i = 0; i < productsPerCategory; i++) {
                     String name = "Produto " + productIndex;
-                    String slug = SlugUtil.generateSlug(name + "-" + productIndex);
+                    String slug = SlugUtil.generateSlug(name);
 
                     boolean active;
                     LocalDateTime deletedAt = null;

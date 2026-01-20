@@ -36,7 +36,8 @@ public class UserJdbcRepository implements UserContract {
         u.setEmail(rs.getString("email"));
         u.setPassword(rs.getString("password"));
         u.setRole(UserRole.valueOf(rs.getString("role")));
-        u.setEnabled(rs.getBoolean("enabled"));
+        Boolean enabled = rs.getObject("enabled", Boolean.class);
+        u.setEnabled(Boolean.TRUE.equals(enabled));
         u.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         if (rs.getTimestamp("deleted_at") != null) {
             u.setDeletedAt(rs.getTimestamp("deleted_at").toLocalDateTime());
