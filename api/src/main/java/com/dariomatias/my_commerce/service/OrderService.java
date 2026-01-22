@@ -61,6 +61,13 @@ public class OrderService {
     }
 
     public Order create(User user, OrderRequestDTO request) {
+        if (request.getItems() == null || request.getItems().isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "O pedido deve conter ao menos um item"
+            );
+        }
+        
         User authenticatedUser = getAuthenticatedUser(user);
         UserAddress userAddress = getUserAddressOrThrow(request.getAddressId(), authenticatedUser);
 
