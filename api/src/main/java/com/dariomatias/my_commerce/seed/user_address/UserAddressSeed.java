@@ -9,6 +9,8 @@ import jakarta.transaction.Transactional;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -16,6 +18,8 @@ import java.util.Random;
 
 @Component
 public class UserAddressSeed implements Seed {
+
+    private static final Logger log = LoggerFactory.getLogger(UserAddressSeed.class);
 
     private final UserRepository userRepository;
     private final UserAddressRepository userAddressRepository;
@@ -60,7 +64,9 @@ public class UserAddressSeed implements Seed {
     @Override
     @Transactional
     public void run() {
+        log.info("USER_ADDRESS_SEED | Iniciando criação de endereços");
         createAddresses();
+        log.info("USER_ADDRESS_SEED | Finalizada criação de endereços");
     }
 
     public void createAddresses() {
@@ -70,10 +76,13 @@ public class UserAddressSeed implements Seed {
             if (!userAddressRepository
                     .findAllByUser_IdAndDeletedAtIsNull(user.getId())
                     .isEmpty()) {
+                log.info("USER_ADDRESS_SEED | Usuário já possui endereços: {}", user.getEmail());
+
                 continue;
             }
 
             int addressCount = 1 + random.nextInt(3);
+            log.info("USER_ADDRESS_SEED | Criando {} endereços para o usuário: {}", addressCount, user.getEmail());
 
             for (int i = 1; i <= addressCount; i++) {
                 CityMock city = CITIES.get(random.nextInt(CITIES.size()));
@@ -91,6 +100,15 @@ public class UserAddressSeed implements Seed {
                 address.setLocation(mockPoint(city.lon(), city.lat()));
 
                 userAddressRepository.save(address);
+
+                log.info(
+                        "USER_ADDRESS_SEED | Endereço criado: Usuário: {} | Label: {} | Rua: {} | Número: {} | Cidade: {}",
+                        user.getEmail(),
+                        address.getLabel(),
+                        address.getStreet(),
+                        address.getNumber(),
+                        address.getCity()
+                );
             }
         }
     }
