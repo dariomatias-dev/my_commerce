@@ -15,4 +15,6 @@ import java.util.UUID;
 public interface CategoryRepository extends JpaRepository<Category, UUID>, JpaSpecificationExecutor<Category> {
 
     List<Category> findAllByStore(Store store);
+
+    boolean existsByStoreAndName(Store store, String name);
 }

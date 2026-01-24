@@ -38,8 +38,15 @@ public class CategorySeed implements Seed {
             int categoriesPerStore = 2 + (categoryIndex % 4);
 
             for (int i = 0; i < categoriesPerStore; i++) {
+                String categoryName = "Categoria " + categoryIndex;
+
+                if (categoryRepository.existsByStoreAndName(store, categoryName)) {
+                    categoryIndex++;
+                    continue;
+                }
+
                 Category category = new Category();
-                category.setName("Categoria " + categoryIndex);
+                category.setName(categoryName);
                 category.setStore(store);
 
                 categoryRepository.save(category);
