@@ -4,8 +4,11 @@ import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.UserRepository;
 import com.dariomatias.my_commerce.seed.Seed;
+import com.dariomatias.my_commerce.seed.store.StoreSeed;
 import com.dariomatias.my_commerce.util.RandomUtil;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +16,8 @@ import java.util.List;
 
 @Component
 public class UserSeed implements Seed {
+
+    private static final Logger log = LoggerFactory.getLogger(StoreSeed.class);
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -39,7 +44,11 @@ public class UserSeed implements Seed {
 
         for (int i = 1; i <= 30; i++) {
             String email = "user" + i + "@gmail.com";
-            if (userRepository.existsByEmail(email)) continue;
+            if (userRepository.existsByEmail(email)) {
+                log.warn("USER_SEED | Email já existente: {}", email);
+
+                continue;
+            }
 
             UserRole role = roles.get((i - 1) % roles.size());
 
