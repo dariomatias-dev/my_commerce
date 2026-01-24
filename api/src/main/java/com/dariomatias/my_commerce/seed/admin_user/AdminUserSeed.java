@@ -6,6 +6,8 @@ import com.dariomatias.my_commerce.repository.UserRepository;
 import com.dariomatias.my_commerce.seed.Seed;
 import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +15,8 @@ import java.util.Optional;
 
 @Component
 public class AdminUserSeed implements Seed {
+
+    private static final Logger log = LoggerFactory.getLogger(AdminUserSeed.class);
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -34,6 +38,7 @@ public class AdminUserSeed implements Seed {
         String adminPassword = dotenv.get("ADMIN_PASSWORD");
 
         if (adminPassword == null) {
+            log.error("USER_SEED | Variável ADMIN_PASSWORD não configurada no .env");
             throw new RuntimeException("Variável ADMIN_PASSWORD não configurada no .env");
         }
 
@@ -41,7 +46,7 @@ public class AdminUserSeed implements Seed {
 
         Optional<User> existingAdmin = userRepository.findByEmail(adminEmail);
         if (existingAdmin.isPresent()) {
-            System.out.println("Usuário administrativo já existe: " + adminEmail);
+            log.info("USER_SEED | Usuário administrativo já existe: {}", adminEmail);
             return;
         }
 
@@ -54,6 +59,6 @@ public class AdminUserSeed implements Seed {
 
         userRepository.save(admin);
 
-        System.out.println("Usuário administrativo criado com sucesso: " + adminEmail);
+        log.info("USER_SEED | Usuário administrativo criado com sucesso: {}", adminEmail);
     }
 }
