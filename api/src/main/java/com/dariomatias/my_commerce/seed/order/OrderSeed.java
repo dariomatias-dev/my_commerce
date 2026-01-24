@@ -74,37 +74,38 @@ public class OrderSeed implements Seed {
 
                 UserAddress userAddress = addresses.get(random.nextInt(addresses.size()));
 
+                List<OrderItem> items = new ArrayList<>();
+                int itemsCount = 1 + random.nextInt(4);
+
+                for (int j = 0; j < itemsCount; j++) {
+                    Product product = storeProducts.get(random.nextInt(storeProducts.size()));
+
+                    OrderItem item = new OrderItem();
+                    item.setProduct(product);
+                    item.setQuantity(1 + random.nextInt(3));
+                    item.setPrice(product.getPrice());
+
+                    items.add(item);
+                }
+
+                if (items.isEmpty()) continue;
+
                 Order order = new Order();
                 order.setUser(user);
                 order.setStore(store);
                 order.setPaymentMethod(randomPaymentMethod());
                 order.setFreightType(randomFreightType());
                 order.setStatus(randomStatus());
-                order.setItems(new ArrayList<>());
+                order.setItems(items);
+
+                items.forEach(item -> item.setOrder(order));
 
                 OrderAddress snapshot = snapshotAddress(userAddress);
                 order.setAddress(snapshot);
 
-                BigDecimal itemsAmount = BigDecimal.ZERO;
-                int itemsCount = 1 + random.nextInt(4);
-
-                for (int j = 0; j < itemsCount; j++) {
-                    Product product =
-                            storeProducts.get(random.nextInt(storeProducts.size()));
-
-                    OrderItem item = new OrderItem();
-                    item.setOrder(order);
-                    item.setProduct(product);
-                    item.setQuantity(1 + random.nextInt(3));
-                    item.setPrice(product.getPrice());
-
-                    itemsAmount = itemsAmount.add(
-                            product.getPrice()
-                                    .multiply(BigDecimal.valueOf(item.getQuantity()))
-                    );
-
-                    order.getItems().add(item);
-                }
+                BigDecimal itemsAmount = items.stream()
+                        .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                 var freight = freightService.calculateFreight(userAddress.getId());
 
