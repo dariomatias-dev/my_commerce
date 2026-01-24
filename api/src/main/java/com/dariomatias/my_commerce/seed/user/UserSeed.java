@@ -55,7 +55,11 @@ public class UserSeed implements Seed {
                 user.delete();
                 user.setDeletedAt(result.getDeletedAt());
             } else {
-                user.setEnabled(i % 7 != 0);
+                user.setEnabled(
+                        role == UserRole.ADMIN
+                                || role == UserRole.SUBSCRIBER
+                                || i % 7 != 0
+                );
             }
 
             userRepository.save(user);
