@@ -14,7 +14,7 @@ public class RunOrderSeed {
         ApplicationContext context = app.run(args);
 
         OrderSeed orderSeed = context.getBean(OrderSeed.class);
-        orderSeed.createOrders();
+        orderSeed.run();
 
         System.exit(0);
     }

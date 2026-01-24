@@ -14,7 +14,7 @@ public class RunAdminUserSeed {
         ApplicationContext context = app.run(args);
 
         AdminUserSeed adminUserSeed = context.getBean(AdminUserSeed.class);
-        adminUserSeed.createAdminUser();
+        adminUserSeed.run();
 
         System.exit(0);
     }

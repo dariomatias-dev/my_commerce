@@ -14,7 +14,7 @@ public class RunUserAddressSeed {
         ApplicationContext context = app.run(args);
 
         UserAddressSeed userAddressSeed = context.getBean(UserAddressSeed.class);
-        userAddressSeed.createAddresses();
+        userAddressSeed.run();
 
         System.exit(0);
     }

@@ -14,7 +14,7 @@ public class RunUserSeed {
         ApplicationContext context = app.run(args);
 
         UserSeed userSeed = context.getBean(UserSeed.class);
-        userSeed.createUsers();
+        userSeed.run();
 
         System.exit(0);
     }

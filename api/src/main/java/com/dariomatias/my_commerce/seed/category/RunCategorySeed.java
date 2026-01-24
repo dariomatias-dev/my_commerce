@@ -14,7 +14,7 @@ public class RunCategorySeed {
         ApplicationContext context = app.run(args);
 
         CategorySeed categorySeed = context.getBean(CategorySeed.class);
-        categorySeed.createCategories();
+        categorySeed.run();
 
         System.exit(0);
     }

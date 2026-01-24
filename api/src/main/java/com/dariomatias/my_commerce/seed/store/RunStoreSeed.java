@@ -14,7 +14,7 @@ public class RunStoreSeed {
         ApplicationContext context = app.run(args);
 
         StoreSeed storeSeed = context.getBean(StoreSeed.class);
-        storeSeed.createStores();
+        storeSeed.run();
 
         System.exit(0);
     }

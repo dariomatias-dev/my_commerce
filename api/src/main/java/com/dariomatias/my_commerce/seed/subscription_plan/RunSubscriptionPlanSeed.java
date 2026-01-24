@@ -14,7 +14,7 @@ public class RunSubscriptionPlanSeed {
         ApplicationContext context = app.run(args);
 
         SubscriptionPlanSeed subscriptionPlanSeed = context.getBean(SubscriptionPlanSeed.class);
-        subscriptionPlanSeed.createPlans();
+        subscriptionPlanSeed.run();
 
         System.exit(0);
     }
