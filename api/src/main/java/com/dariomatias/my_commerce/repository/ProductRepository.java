@@ -26,6 +26,8 @@ public interface ProductRepository
 
     List<Product> findAllByStore_IdAndDeletedAtIsNull(UUID storeId);
 
+    boolean existsBySlug(String slug);
+
     long countByStore_User_IdAndActiveTrueAndDeletedAtIsNull(UUID userId);
 
     long countByStore_IdAndActiveTrue(UUID storeId);

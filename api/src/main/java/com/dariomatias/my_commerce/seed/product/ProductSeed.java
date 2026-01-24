@@ -5,12 +5,13 @@ import com.dariomatias.my_commerce.repository.CategoryRepository;
 import com.dariomatias.my_commerce.repository.ProductImageRepository;
 import com.dariomatias.my_commerce.repository.ProductRepository;
 import com.dariomatias.my_commerce.repository.StoreRepository;
-import com.dariomatias.my_commerce.repository.contract.ProductImageContract;
 import com.dariomatias.my_commerce.seed.Seed;
 import com.dariomatias.my_commerce.service.MinioService;
 import com.dariomatias.my_commerce.util.RandomUtil;
 import com.dariomatias.my_commerce.util.SlugUtil;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
@@ -25,6 +26,7 @@ import java.util.UUID;
 @Component
 public class ProductSeed implements Seed {
 
+    private static final Logger log = LoggerFactory.getLogger(ProductSeed.class);
     private static final String BUCKET_NAME = "stores";
 
     private final ProductRepository productRepository;
@@ -50,18 +52,28 @@ public class ProductSeed implements Seed {
     @Override
     @Transactional
     public void run() {
+        log.info("PRODUCT_SEED | Iniciando criação de produtos");
         createProducts();
+        log.info("PRODUCT_SEED | Finalizada criação de produtos");
     }
 
     public void createProducts() {
         List<Store> stores = storeRepository.findAll();
-        if (stores.isEmpty()) return;
+
+        if (stores.isEmpty()) {
+            log.warn("PRODUCT_SEED | Nenhuma loja encontrada, seed ignorado");
+            return;
+        }
 
         int productIndex = 1;
 
         for (Store store : stores) {
             List<Category> categories = categoryRepository.findAllByStore(store);
-            if (categories.isEmpty()) continue;
+
+            if (categories.isEmpty()) {
+                log.warn("PRODUCT_SEED | Loja sem categorias: {}", store.getName());
+                continue;
+            }
 
             boolean storeDeleted = store.getDeletedAt() != null;
 
@@ -70,10 +82,17 @@ public class ProductSeed implements Seed {
 
                 for (int i = 0; i < productsPerCategory; i++) {
                     String name = "Produto " + productIndex;
-                    String slug = SlugUtil.generateSlug(name);
+                    String baseSlug = SlugUtil.generateSlug(name);
+                    String slug = baseSlug;
+                    int slugIndex = 1;
+
+                    while (productRepository.existsBySlug(slug)) {
+                        slug = baseSlug + "-" + slugIndex;
+                        slugIndex++;
+                    }
 
                     boolean active;
-                    LocalDateTime deletedAt = null;
+                    LocalDateTime deletedAt;
 
                     if (storeDeleted) {
                         active = false;
@@ -98,6 +117,14 @@ public class ProductSeed implements Seed {
                     productRepository.save(product);
                     createProductImage(store.getSlug(), product, productIndex);
 
+                    log.info(
+                            "PRODUCT_SEED | Produto criado: {} | Slug: {} | Loja: {} | Categoria: {}",
+                            product.getName(),
+                            product.getSlug(),
+                            store.getName(),
+                            category.getName()
+                    );
+
                     productIndex++;
                 }
             }
@@ -117,6 +144,12 @@ public class ProductSeed implements Seed {
         image.setPosition(0);
 
         productImageRepository.save(image);
+
+        log.info(
+                "PRODUCT_SEED | Imagem criada para o produto: {} | Path: {}",
+                product.getName(),
+                objectName
+        );
     }
 
     private byte[] generateProductImage(String text) {
