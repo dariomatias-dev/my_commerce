@@ -4,6 +4,8 @@ import com.dariomatias.my_commerce.model.SubscriptionPlan;
 import com.dariomatias.my_commerce.repository.SubscriptionPlanRepository;
 import com.dariomatias.my_commerce.seed.Seed;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -11,6 +13,8 @@ import java.util.List;
 
 @Component
 public class SubscriptionPlanSeed implements Seed {
+
+    private static final Logger log = LoggerFactory.getLogger(SubscriptionPlanSeed.class);
 
     private final SubscriptionPlanRepository repository;
 
@@ -21,7 +25,9 @@ public class SubscriptionPlanSeed implements Seed {
     @Override
     @Transactional
     public void run() {
+        log.info("SUBSCRIPTION_PLAN_SEED | Iniciando criação de planos de assinatura");
         createPlans();
+        log.info("SUBSCRIPTION_PLAN_SEED | Finalizada criação de planos de assinatura");
     }
 
     public void createPlans() {
@@ -73,6 +79,16 @@ public class SubscriptionPlanSeed implements Seed {
         for (SubscriptionPlan plan : plans) {
             if (!repository.existsByName(plan.getName())) {
                 repository.save(plan);
+
+                log.info(
+                        "SUBSCRIPTION_PLAN_SEED | Plano criado: {} | Preço: {} | Lojas: {} | Produtos: {}",
+                        plan.getName(),
+                        plan.getPrice(),
+                        plan.getMaxStores(),
+                        plan.getMaxProducts()
+                );
+            } else {
+                log.info("SUBSCRIPTION_PLAN_SEED | Plano já existente: {}", plan.getName());
             }
         }
     }
