@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SeedRunner implements CommandLineRunner {
 
+    private final DatabaseReset databaseReset;
+
     private final AdminUserSeed adminUserSeed;
     private final UserSeed userSeed;
     private final SubscriptionPlanSeed subscriptionPlanSeed;
@@ -31,6 +33,8 @@ public class SeedRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        databaseReset.reset();
+
         adminUserSeed.run();
         userSeed.run();
         subscriptionPlanSeed.run();
