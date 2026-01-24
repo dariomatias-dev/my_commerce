@@ -62,18 +62,16 @@ public class OrderService {
 
     public Order create(User user, OrderRequestDTO request) {
         if (request.getItems() == null || request.getItems().isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "O pedido deve conter ao menos um item"
-            );
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O pedido deve conter ao menos um item");
         }
-        
+
         User authenticatedUser = getAuthenticatedUser(user);
         UserAddress userAddress = getUserAddressOrThrow(request.getAddressId(), authenticatedUser);
+        Store store = getStoreOrThrow(request.getStoreId());
 
         Order order = new Order();
-        order.setStore(getStoreOrThrow(request.getStoreId()));
         order.setUser(authenticatedUser);
+        order.setStore(store);
 
         OrderAddress orderAddress = new OrderAddress();
         orderAddress.setLabel(userAddress.getLabel());
@@ -149,10 +147,7 @@ public class OrderService {
     public OrderDetailsResponseDTO getById(UUID orderId, User user) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Pedido não encontrado"
-                        )
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado")
                 );
 
         validateOrderAccess(order, user);
@@ -171,19 +166,22 @@ public class OrderService {
     private Store getStoreOrThrow(UUID storeId) {
         return storeRepository.findById(storeId)
                 .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada")
+                );
     }
 
     private User getAuthenticatedUser(User user) {
         return userRepository.findById(user.getId())
                 .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não autenticado"));
+                        new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não autenticado")
+                );
     }
 
     private Product getProductOrThrow(UUID productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado")
+                );
     }
 
     private UserAddress getUserAddressOrThrow(UUID addressId, User user) {
@@ -191,7 +189,8 @@ public class OrderService {
                 .filter(address -> !address.isDeleted())
                 .filter(address -> address.getUserId().equals(user.getId()))
                 .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.BAD_REQUEST, "Endereço inválido"));
+                        new ResponseStatusException(HttpStatus.BAD_REQUEST, "Endereço inválido")
+                );
     }
 
 
@@ -200,10 +199,7 @@ public class OrderService {
         boolean isOwner = order.getUser().getId().equals(authenticatedUser.getId());
 
         if (!isAdmin && !isOwner) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "Você não tem permissão para acessar este pedido"
-            );
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você não tem permissão para acessar este pedido");
         }
     }
 }

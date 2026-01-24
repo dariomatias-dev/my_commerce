@@ -110,7 +110,7 @@ public class UserJdbcRepository implements UserContract {
             }
         }
 
-        sql.append(" ORDER BY created_at ASC OFFSET :offset LIMIT :limit");
+        sql.append(" ORDER BY created_at DESC OFFSET :offset LIMIT :limit");
         params.addValue("offset", pageable.getOffset());
         params.addValue("limit", pageable.getPageSize());
 
