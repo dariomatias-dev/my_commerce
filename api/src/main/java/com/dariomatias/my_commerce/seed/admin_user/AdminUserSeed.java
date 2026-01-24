@@ -31,14 +31,17 @@ public class AdminUserSeed implements Seed {
     @Override
     @Transactional
     public void run() {
+        log.info("ADMIN_USER_SEED | Iniciando seed do usuário administrador");
         createAdminUser();
+        log.info("ADMIN_USER_SEED | Finalizado seed do usuário administrador");
     }
 
     public void createAdminUser() {
         String adminPassword = dotenv.get("ADMIN_PASSWORD");
 
         if (adminPassword == null) {
-            log.error("USER_SEED | Variável ADMIN_PASSWORD não configurada no .env");
+            log.error("ADMIN_USER_SEED | Variável ADMIN_PASSWORD não configurada no .env");
+
             throw new RuntimeException("Variável ADMIN_PASSWORD não configurada no .env");
         }
 
@@ -46,7 +49,8 @@ public class AdminUserSeed implements Seed {
 
         Optional<User> existingAdmin = userRepository.findByEmail(adminEmail);
         if (existingAdmin.isPresent()) {
-            log.info("USER_SEED | Usuário administrativo já existe: {}", adminEmail);
+            log.warn("ADMIN_USER_SEED | Usuário administrativo já existe: {}", adminEmail);
+
             return;
         }
 
@@ -59,6 +63,6 @@ public class AdminUserSeed implements Seed {
 
         userRepository.save(admin);
 
-        log.info("USER_SEED | Usuário administrativo criado com sucesso: {}", adminEmail);
+        log.info("ADMIN_USER_SEED | Usuário administrativo criado com sucesso: {}", adminEmail);
     }
 }
