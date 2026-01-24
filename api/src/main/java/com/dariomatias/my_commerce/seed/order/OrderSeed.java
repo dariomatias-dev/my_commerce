@@ -8,6 +8,8 @@ import com.dariomatias.my_commerce.repository.*;
 import com.dariomatias.my_commerce.seed.Seed;
 import com.dariomatias.my_commerce.service.FreightService;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -17,6 +19,8 @@ import java.util.Random;
 
 @Component
 public class OrderSeed implements Seed {
+
+    private static final Logger log = LoggerFactory.getLogger(OrderSeed.class);
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
@@ -46,7 +50,9 @@ public class OrderSeed implements Seed {
     @Override
     @Transactional
     public void run() {
+        log.info("ORDER_SEED | Iniciando criação de pedidos");
         createOrders();
+        log.info("ORDER_SEED | Finalizada criação de pedidos");
     }
 
     @Transactional
@@ -54,15 +60,29 @@ public class OrderSeed implements Seed {
         List<User> users = userRepository.findAll();
         List<Store> stores = storeRepository.findAll();
 
-        if (users.isEmpty() || stores.isEmpty()) return;
+        if (users.isEmpty() || stores.isEmpty()) {
+            log.warn("ORDER_SEED | Usuários ou lojas não encontrados, seed ignorado");
+
+            return;
+        }
 
         for (User user : users) {
             List<UserAddress> addresses =
                     userAddressRepository.findAllByUser_IdAndDeletedAtIsNull(user.getId());
 
-            if (addresses.isEmpty()) continue;
+            if (addresses.isEmpty()) {
+                log.warn("ORDER_SEED | Usuário sem endereços: {}", user.getEmail());
+
+                continue;
+            }
 
             int ordersPerUser = 1 + random.nextInt(12);
+
+            log.info(
+                    "ORDER_SEED | Criando {} pedidos para o usuário: {}",
+                    ordersPerUser,
+                    user.getEmail()
+            );
 
             for (int i = 0; i < ordersPerUser; i++) {
                 Store store = stores.get(random.nextInt(stores.size()));
@@ -70,7 +90,14 @@ public class OrderSeed implements Seed {
                 List<Product> storeProducts =
                         productRepository.findAllByStore_IdAndDeletedAtIsNull(store.getId());
 
-                if (storeProducts.isEmpty()) continue;
+                if (storeProducts.isEmpty()) {
+                    log.warn(
+                            "ORDER_SEED | Loja Removida: {}",
+                            store.getName()
+                    );
+
+                    continue;
+                }
 
                 UserAddress userAddress = addresses.get(random.nextInt(addresses.size()));
 
@@ -109,21 +136,30 @@ public class OrderSeed implements Seed {
 
                 var freight = freightService.calculateFreight(userAddress.getId());
 
-                if (order.getFreightType() == FreightType.ECONOMICAL) {
-                    order.setFreightAmount(freight.getEconomical().getValue());
-                } else {
-                    order.setFreightAmount(freight.getExpress().getValue());
-                }
+                BigDecimal freightAmount = order.getFreightType() == FreightType.ECONOMICAL
+                        ? freight.getEconomical().getValue()
+                        : freight.getExpress().getValue();
 
-                order.setTotalAmount(itemsAmount.add(order.getFreightAmount()));
+                order.setFreightAmount(freightAmount);
+
+                order.setTotalAmount(itemsAmount.add(freightAmount));
 
                 orderRepository.save(order);
+
+                log.info(
+                        "ORDER_SEED | Pedido criado | Usuário: {} | Loja: {} | Total: {} | Status: {}",
+                        user.getEmail(),
+                        store.getName(),
+                        order.getTotalAmount(),
+                        order.getStatus()
+                );
             }
         }
     }
 
     private OrderAddress snapshotAddress(UserAddress address) {
         OrderAddress snapshot = new OrderAddress();
+
         snapshot.setLabel(address.getLabel());
         snapshot.setStreet(address.getStreet());
         snapshot.setNumber(address.getNumber());
@@ -133,11 +169,13 @@ public class OrderSeed implements Seed {
         snapshot.setState(address.getState());
         snapshot.setZip(address.getZip());
         snapshot.setLocation(address.getLocation());
+
         return snapshot;
     }
 
     private PaymentMethod randomPaymentMethod() {
         PaymentMethod[] values = PaymentMethod.values();
+
         return values[random.nextInt(values.length)];
     }
 
@@ -155,6 +193,7 @@ public class OrderSeed implements Seed {
         if (roll < 40) return Status.PENDING;
         if (roll < 60) return Status.CONFIRMED;
         if (roll < 80) return Status.PROCESSING;
+
         return Status.COMPLETED;
     }
 }
