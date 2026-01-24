@@ -1,5 +1,6 @@
 package com.dariomatias.my_commerce.seed.subscription;
 
+import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.Subscription;
 import com.dariomatias.my_commerce.model.SubscriptionPlan;
 import com.dariomatias.my_commerce.model.User;
@@ -48,32 +49,58 @@ public class SubscriptionSeed implements Seed {
 
         if (users.isEmpty() || plans.isEmpty()) {
             log.warn("SUBSCRIPTION_SEED | Usuários ou planos não encontrados, seed ignorado");
-            
             return;
         }
 
         int subscriptionIndex = 1;
 
-        for (int i = 0; i < users.size(); i++) {
-            User user = users.get(i);
-            SubscriptionPlan plan = plans.get(i % plans.size());
+        for (User user : users) {
 
-            Subscription subscription = new Subscription();
-            subscription.setUser(user);
-            subscription.setPlan(plan);
-            subscription.setStartDate(LocalDateTime.now());
-            subscription.setEndDate(LocalDateTime.now().plusMonths(1));
-            subscription.setIsActive(true);
+            if (user.getRole() == UserRole.ADMIN) {
+                log.info("SUBSCRIPTION_SEED | Ignorando ADMIN: {}", user.getEmail());
+                continue;
+            }
 
-            subscriptionRepository.save(subscription);
+            List<Subscription> activeSubs = subscriptionRepository.findAllByUser_IdAndIsActiveTrue(user.getId());
+            for (Subscription sub : activeSubs) {
+                sub.setIsActive(false);
+                subscriptionRepository.save(sub);
+                log.info(
+                        "SUBSCRIPTION_SEED | Assinatura antiga desativada: Usuário: {} | Plano: {} | Fim: {}",
+                        user.getEmail(),
+                        sub.getPlan().getName(),
+                        sub.getEndDate()
+                );
+            }
 
-            log.info(
-                    "SUBSCRIPTION_SEED | Assinatura criada: Usuário: {} | Plano: {} | Data Início: {} | Data Fim: {}",
-                    user.getEmail(),
-                    plan.getName(),
-                    subscription.getStartDate(),
-                    subscription.getEndDate()
-            );
+            int subscriptionsToCreate = 1 + (int) (Math.random() * 5); // 1 a 5 assinaturas
+
+            for (int i = 0; i < subscriptionsToCreate; i++) {
+                SubscriptionPlan plan = plans.get((subscriptionIndex + i) % plans.size());
+
+                Subscription subscription = new Subscription();
+                subscription.setUser(user);
+                subscription.setPlan(plan);
+                subscription.setStartDate(LocalDateTime.now().plusDays(i));
+                subscription.setEndDate(subscription.getStartDate().plusMonths(1));
+
+                if (user.getRole() == UserRole.SUBSCRIBER) {
+                    subscription.setIsActive(i == subscriptionsToCreate - 1);
+                } else {
+                    subscription.setIsActive(false);
+                }
+
+                subscriptionRepository.save(subscription);
+
+                log.info(
+                        "SUBSCRIPTION_SEED | Assinatura criada: Usuário: {} | Plano: {} | Ativa: {} | Início: {} | Fim: {}",
+                        user.getEmail(),
+                        plan.getName(),
+                        subscription.getIsActive(),
+                        subscription.getStartDate(),
+                        subscription.getEndDate()
+                );
+            }
 
             subscriptionIndex++;
         }
