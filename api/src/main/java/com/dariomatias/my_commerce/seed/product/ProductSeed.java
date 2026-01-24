@@ -82,13 +82,14 @@ public class ProductSeed implements Seed {
 
                 for (int i = 0; i < productsPerCategory; i++) {
                     String name = "Produto " + productIndex;
-                    String baseSlug = SlugUtil.generateSlug(name);
-                    String slug = baseSlug;
-                    int slugIndex = 1;
+                    String slug = SlugUtil.generateSlug(name);
 
-                    while (productRepository.existsBySlug(slug)) {
-                        slug = baseSlug + "-" + slugIndex;
-                        slugIndex++;
+                    if (productRepository.existsBySlug(slug)) {
+                        log.info("STORE_SEED | Slug já existente: {}", slug);
+
+                        productIndex++;
+
+                        continue;
                     }
 
                     boolean active;
