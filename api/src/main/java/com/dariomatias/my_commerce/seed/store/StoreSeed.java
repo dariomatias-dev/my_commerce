@@ -17,9 +17,13 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class StoreSeed implements Seed {
+
+    private static final Logger log = LoggerFactory.getLogger(StoreSeed.class);
 
     private static final String BUCKET_NAME = "stores";
 
@@ -57,7 +61,10 @@ public class StoreSeed implements Seed {
 
             for (int i = 0; i < storesPerUser; i++) {
                 String slug = "loja-" + storeIndex;
-                if (storeRepository.existsBySlugAndDeletedAtIsNull(slug)) {
+
+                if (storeRepository.existsBySlug(slug)) {
+                    log.warn("STORE_SEED | Slug já existente: {}", slug);
+
                     storeIndex++;
                     continue;
                 }
@@ -91,6 +98,7 @@ public class StoreSeed implements Seed {
             }
         }
     }
+
 
     private byte[] generateLogoImage(String text) {
         BufferedImage image = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);

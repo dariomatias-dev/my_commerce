@@ -14,5 +14,7 @@ public interface StoreRepository extends JpaRepository<Store, UUID>, JpaSpecific
 
     boolean existsBySlugAndDeletedAtIsNull(String slug);
 
+    boolean existsBySlug(String slug);
+
     long countByIsActiveTrueAndDeletedAtIsNull();
 }
