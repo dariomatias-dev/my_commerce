@@ -1,8 +1,12 @@
 <div align="center">
-<img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=java&logoColor=white" alt="Java">
-<img src="https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white" alt="Spring Boot">
-<img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
-<img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
+  <img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=java&logoColor=white" alt="Java">
+  <img src="https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white" alt="Spring Boot">
+  <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/PL_pgSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white" alt="PL/pgSQL">
+  <img src="https://img.shields.io/badge/Liquibase-005CA9?style=for-the-badge&logo=liquibase&logoColor=white" alt="Liquibase">
+  <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" alt="Redis">
+  <img src="https://img.shields.io/badge/MinIO-005A9C?style=for-the-badge&logo=minio&logoColor=white" alt="MinIO">
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
 </div>
 <br>
 
@@ -23,13 +27,14 @@
 
 - [Sobre o Projeto](#sobre-o-projeto)
 - [Funcionalidades](#funcionalidades)
-- [Rotas da API](#rotas-da-api)
 - [Contruído com](#contruído-com)
+- [Liquibase e Versionamento de Banco de Dados](#liquibase-e-versionamento-de-banco-de-dados)
 - [Como Começar](#como-começar)
   - [Pré-requisitos](#pré-requisitos)
   - [Instalação](#instalação)
   - [Configuração do Banco de Dados com Docker](#configuração-do-banco-de-dados-com-docker)
   - [Rodando o Projeto](#rodando-o-projeto)
+  - [Documentação da API (Swagger)](#documentação-da-api-swagger)
   - [Populando o Banco de Dados](#populando-o-banco-de-dados)
   - [Uso de Repositórios JDBC](#uso-de-repositórios-jdbc)
 - [Licença](#licença)
@@ -54,22 +59,22 @@ As principais funcionalidades expostas por esta API incluem:
 - **Relatórios e Métricas**: Geração de dados para dashboards e relatórios gerenciais sobre vendas, engajamento, assinantes ativos e produtos populares.
 - **Moderação de Conteúdo**: Ferramentas para administradores moderarem lojas e produtos.
 
-## Rotas da API
-
-Para consultar todos os endpoints da API, incluindo **Autenticação, Usuários, Lojas, Produtos, Pedidos e Relatórios**, veja a documentação das rotas:
-
-- **Documentação de Rotas da API**: [`api-routes.md`](../docs/api-routes/README.md)
-
-Essa documentação contém informações detalhadas sobre cada endpoint, incluindo objetivo, parâmetros de entrada, exemplos de request/response e códigos de status retornados.
-
-## Contruído com
+## Construído com
 
 Este projeto foi desenvolvido utilizando as seguintes tecnologias e bibliotecas:
 
 - **[Java](https://www.java.com/)** – Linguagem de programação amplamente usada para desenvolvimento de sistemas robustos e de alta performance.
-- **[Spring Boot](https://spring.io/projects/spring-boot/)** – Framework Java para desenvolvimento rápido de APIs RESTful robustas, escaláveis, seguras e de fácil manutenção.
-- **[PostgreSQL](https://www.postgresql.org/)** – Banco de dados relacional poderoso, de código aberto e confiável, utilizado para armazenamento de dados da aplicação.
-- **[Docker](https://www.docker.com/)** – Plataforma de conteinerização para empacotar a aplicação e suas dependências, garantindo ambientes padronizados e deploy simplificado.
+- **[Spring Boot](https://spring.io/projects/spring-boot/)** – Framework Java para desenvolvimento de APIs robustas, escaláveis, seguras e de fácil manutenção.
+- **[PostgreSQL](https://www.postgresql.org/)** – Banco de dados relacional poderoso e confiável para armazenamento de dados.
+- **[PL/pgSQL](https://www.postgresql.org/docs/current/plpgsql.html)** – Linguagem procedural do PostgreSQL para criar funções, triggers e lógica no banco de dados.
+- **[Liquibase](https://www.liquibase.org/)** – Ferramenta para versionamento e gerenciamento de mudanças no banco de dados.
+- **[Redis](https://redis.io/)** – Banco de dados em memória, ultra-rápido, usado para caching, filas e armazenamento temporário.
+- **[MinIO](https://min.io/)** – Sistema de armazenamento de objetos compatível com S3, ideal para arquivos e mídias.
+- **[Docker](https://www.docker.com/)** – Plataforma de conteinerização para padronização de ambientes e deploy simplificado.
+
+## Liquibase e Versionamento de Banco de Dados
+
+O projeto utiliza **Liquibase** para gerenciar e versionar alterações no banco de dados PostgreSQL. Todas as mudanças, incluindo criação de tabelas, funções e dados iniciais, são organizadas em arquivos de changelog que são executados de forma ordenada pelo Spring Boot. Isso garante consistência, rastreabilidade e facilidade de manutenção do esquema do banco em diferentes ambientes.
 
 ## Como Começar
 
@@ -256,6 +261,13 @@ docker compose up -d --force-recreate
 
    A aplicação estará disponível em `http://localhost:8080` (porta padrão do Spring Boot, a menos que configurado de outra forma).
 
+### Documentação da API (Swagger)
+
+A API fornece documentação interativa via **Swagger**, permitindo testar endpoints diretamente no navegador.
+
+- **URL da documentação:** `http://localhost:8080/swagger-ui.html` ou `http://localhost:8080/swagger-ui/index.html`
+- Permite visualizar todos os endpoints disponíveis, parâmetros, tipos de retorno e exemplos de requisições e respostas.
+
 ### Populando o Banco de Dados
 
 O projeto inclui **scripts de seed** para popular automaticamente o banco de dados com dados iniciais de desenvolvimento e teste.
@@ -299,7 +311,7 @@ O arquivo `Run<ClassName>Seed.java` é responsável por chamar a seed correspond
    ./mvnw exec:java -Dexec.mainClass="com.dariomatias.my_commerce.seed.user.RunUserSeed"
    ```
 
-### Uso de Repositórios JDBC
+### Repositórios
 
 O projeto oferece suporte tanto a **JPA** quanto a **JDBC** para acessar o banco de dados. Por padrão, a aplicação utiliza **JPA**, mas é possível alternar para JDBC.
 
@@ -313,23 +325,21 @@ Para utilizar os repositórios baseados em JDBC:
 api/src/main/resources/application.properties
 ```
 
-2. Localize a propriedade `app.useJdbc` e altere o valor para `true`:
+2. Localize a propriedade `app.persistence` e altere o valor para `jdbc`:
 
 ```properties
-app.useJdbc=true
+app.persistence=jdbc
 ```
-
-**Nota:** Quando `app.useJdbc` está definido como `false`, a aplicação utiliza os repositórios JPA como padrão. Ao definir como `true`, a aplicação passa a utilizar os repositórios implementados com JDBC.
 
 #### Como os Repositórios Funcionam
 
-- **JPA**: Utiliza o `Spring Data JPA` e mapeamento de entidades com `@Entity` para persistência automática.
-- **JDBC**: Utiliza consultas SQL diretas com `JdbcTemplate` para acessar os dados, garantindo maior controle sobre as queries e potencialmente melhor performance em algumas operações.
+- **JPA**: Utiliza o `Spring Data JPA` e mapeamento de entidades com `@Entity`.
+- **JDBC**: Utiliza consultas SQL diretas com `JdbcTemplate` para acessar os dados, garantindo maior controle sobre as consultas e potencialmente melhor performance em algumas operações.
 
 #### Considerações
 
 - Certifique-se de que todas as tabelas e colunas estejam devidamente configuradas no PostgreSQL, pois os repositórios JDBC dependem da estrutura exata do banco.
-- Ao alternar entre JPA e JDBC, não é necessário alterar a lógica do serviço ou dos controllers, pois a aplicação seleciona automaticamente a implementação com base na propriedade `app.useJdbc`.
+- Ao alternar entre JPA e JDBC, não é necessário alterar a lógica dos controllers ou services, pois a aplicação seleciona automaticamente a implementação com base na propriedade `app.persistence`.
 
 ## Licença
 
