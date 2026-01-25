@@ -4,6 +4,12 @@ import com.dariomatias.my_commerce.dto.ApiResult;
 import com.dariomatias.my_commerce.dto.audit_log.AuditLogFilterDTO;
 import com.dariomatias.my_commerce.model.AuditLog;
 import com.dariomatias.my_commerce.service.AuditLogService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +21,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/audit-logs")
+@Tag(
+        name = "Audit Logs",
+        description = "Endpoints for auditing and tracking system actions"
+)
 public class AuditLogController {
 
     private final AuditLogService service;
@@ -23,6 +33,19 @@ public class AuditLogController {
         this.service = service;
     }
 
+    @Operation(
+            summary = "List audit logs",
+            description = "Returns a paginated list of audit logs based on filter criteria. Admin access only."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Audit logs retrieved successfully",
+                    content = @Content(schema = @Schema(implementation = AuditLog.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "Invalid filter parameters"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResult<Page<AuditLog>>> getAll(
@@ -39,10 +62,26 @@ public class AuditLogController {
         Page<AuditLog> logs = service.getLogs(filters, pageable);
 
         return ResponseEntity.ok(
-                ApiResult.success("Logs obtidos com sucesso.", logs)
+                ApiResult.success(
+                        "Audit logs retrieved successfully.",
+                        logs
+                )
         );
     }
 
+    @Operation(
+            summary = "Get audit log by ID",
+            description = "Returns the details of a specific audit log entry. Admin access only."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Audit log retrieved successfully",
+                    content = @Content(schema = @Schema(implementation = AuditLog.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Audit log not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResult<AuditLog>> getById(
@@ -51,7 +90,10 @@ public class AuditLogController {
         AuditLog log = service.getById(id);
 
         return ResponseEntity.ok(
-                ApiResult.success("Log obtido com sucesso.", log)
+                ApiResult.success(
+                        "Audit log retrieved successfully.",
+                        log
+                )
         );
     }
 }
