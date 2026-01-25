@@ -1,0 +1,21 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.21.xsd">
+
+    <include file="/db/changelog/changes/000-extensions.xml"/>
+    <include file="/db/changelog/changes/001-users.xml"/>
+    <include file="/db/changelog/changes/002-subscription-plans.xml"/>
+    <include file="/db/changelog/changes/003-stores.xml"/>
+    <include file="/db/changelog/changes/004-categories.xml"/>
+    <include file="/db/changelog/changes/005-products.xml"/>
+    <include file="/db/changelog/changes/006-product-images.xml"/>
+    <include file="/db/changelog/changes/007-user-addresses.xml"/>
+    <include file="/db/changelog/changes/008-order-addresses.xml"/>
+    <include file="/db/changelog/changes/009-orders.xml"/>
+    <include file="/db/changelog/changes/010-order-items.xml"/>
+    <include file="/db/changelog/changes/011-subscriptions.xml"/>
+    <include file="/db/changelog/changes/012-add-item-to-order-function.xml"/>
+
+</databaseChangeLog>

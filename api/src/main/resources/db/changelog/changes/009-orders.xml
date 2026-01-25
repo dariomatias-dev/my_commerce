@@ -1,0 +1,73 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.21.xsd">
+
+    <changeSet id="009-create-orders" author="dariomatias">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="orders"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="orders">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="store_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="address_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="payment_method" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="freight_type" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="freight_amount" type="numeric(12,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_amount" type="numeric(12,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="deleted_at" type="timestamp"/>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="orders"
+                baseColumnNames="user_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_orders_user"/>
+
+        <addForeignKeyConstraint
+                baseTableName="orders"
+                baseColumnNames="store_id"
+                referencedTableName="stores"
+                referencedColumnNames="id"
+                constraintName="fk_orders_store"/>
+
+        <addForeignKeyConstraint
+                baseTableName="orders"
+                baseColumnNames="address_id"
+                referencedTableName="order_addresses"
+                referencedColumnNames="id"
+                constraintName="fk_orders_address"/>
+    </changeSet>
+
+</databaseChangeLog>

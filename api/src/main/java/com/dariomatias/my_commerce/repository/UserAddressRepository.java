@@ -12,10 +12,10 @@ public interface UserAddressRepository extends JpaRepository<UserAddress, UUID> 
 
     List<UserAddress> findAllByUser_IdAndDeletedAtIsNull(UUID userId);
 
-    @Query(value = "SELECT ST_DistanceSphere(ST_MakePoint(:lon1, :lat1), location) " +
+    @Query(value = "SELECT ST_DistanceSphere(ST_MakePoint(:lon, :lat), location) " +
             "FROM user_addresses " +
             "WHERE id = :id", nativeQuery = true)
     Double findDistanceFromPoint(@Param("id") UUID id,
-                                 @Param("lat1") double lat1,
-                                 @Param("lon1") double lon1);
+                                 @Param("lat") double lat,
+                                 @Param("lon") double lon);
 }
