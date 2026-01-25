@@ -1,6 +1,6 @@
 package com.dariomatias.my_commerce.controller;
 
-import com.dariomatias.my_commerce.dto.ApiResponse;
+import com.dariomatias.my_commerce.dto.ApiResult;
 import com.dariomatias.my_commerce.dto.analytics.TotalRevenueResponseDTO;
 import com.dariomatias.my_commerce.dto.analytics.UniqueCustomersResponseDTO;
 import com.dariomatias.my_commerce.model.User;
@@ -25,51 +25,51 @@ public class AnalyticsController {
 
     @GetMapping("/me/stats/unique-customers")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<UniqueCustomersResponseDTO>> getUniqueCustomers(
+    public ResponseEntity<ApiResult<UniqueCustomersResponseDTO>> getUniqueCustomers(
             @AuthenticationPrincipal User user
     ) {
         return ResponseEntity.ok(
-                ApiResponse.success("Clientes únicos", service.getUniqueCustomers(user.getId()))
+                ApiResult.success("Clientes únicos", service.getUniqueCustomers(user.getId()))
         );
     }
 
     @GetMapping("/me/stats/total-revenue")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<TotalRevenueResponseDTO>> getTotalRevenue(
+    public ResponseEntity<ApiResult<TotalRevenueResponseDTO>> getTotalRevenue(
             @AuthenticationPrincipal User user
     ) {
         return ResponseEntity.ok(
-                ApiResponse.success("Receita total", service.getTotalRevenue(user.getId()))
+                ApiResult.success("Receita total", service.getTotalRevenue(user.getId()))
         );
     }
 
     @GetMapping("/store/{storeId}/stats/unique-customers")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<UniqueCustomersResponseDTO>> getUniqueCustomersByStore(
+    public ResponseEntity<ApiResult<UniqueCustomersResponseDTO>> getUniqueCustomersByStore(
             @PathVariable UUID storeId
     ) {
         return ResponseEntity.ok(
-                ApiResponse.success("Clientes únicos da loja", service.getUniqueCustomersByStore(storeId))
+                ApiResult.success("Clientes únicos da loja", service.getUniqueCustomersByStore(storeId))
         );
     }
 
     @GetMapping("/store/{storeId}/stats/total-revenue")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<TotalRevenueResponseDTO>> getTotalRevenueByStore(
+    public ResponseEntity<ApiResult<TotalRevenueResponseDTO>> getTotalRevenueByStore(
             @PathVariable UUID storeId
     ) {
         return ResponseEntity.ok(
-                ApiResponse.success("Receita total da loja",service.getTotalRevenueByStore(storeId))
+                ApiResult.success("Receita total da loja",service.getTotalRevenueByStore(storeId))
         );
     }
 
     @GetMapping("/total-revenue")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<TotalRevenueResponseDTO>> getTotalRevenue() {
+    public ResponseEntity<ApiResult<TotalRevenueResponseDTO>> getTotalRevenue() {
         BigDecimal totalRevenue = service.getTotalRevenue();
 
         return ResponseEntity.ok(
-                ApiResponse.success("Receita total geral", new TotalRevenueResponseDTO(totalRevenue))
+                ApiResult.success("Receita total geral", new TotalRevenueResponseDTO(totalRevenue))
         );
     }
 }

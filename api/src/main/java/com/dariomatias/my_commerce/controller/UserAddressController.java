@@ -1,6 +1,6 @@
 package com.dariomatias.my_commerce.controller;
 
-import com.dariomatias.my_commerce.dto.ApiResponse;
+import com.dariomatias.my_commerce.dto.ApiResult;
 import com.dariomatias.my_commerce.dto.address.UserAddressRequestDTO;
 import com.dariomatias.my_commerce.dto.address.UserAddressResponseDTO;
 import com.dariomatias.my_commerce.model.User;
@@ -23,30 +23,30 @@ public class UserAddressController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<UserAddressResponseDTO>> create(
+    public ResponseEntity<ApiResult<UserAddressResponseDTO>> create(
             @AuthenticationPrincipal User user,
             @RequestBody UserAddressRequestDTO request
     ) {
         UserAddressResponseDTO userAddress = service.create(user, request);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Endereço criado com sucesso.", userAddress)
+                ApiResult.success("Endereço criado com sucesso.", userAddress)
         );
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<UserAddressResponseDTO>>> getAll(
+    public ResponseEntity<ApiResult<List<UserAddressResponseDTO>>> getAll(
             @AuthenticationPrincipal User user
     ) {
         List<UserAddressResponseDTO> userAddresses = service.getAllByUser(user);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Endereços obtidos com sucesso.", userAddresses)
+                ApiResult.success("Endereços obtidos com sucesso.", userAddresses)
         );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserAddressResponseDTO>> update(
+    public ResponseEntity<ApiResult<UserAddressResponseDTO>> update(
             @AuthenticationPrincipal User user,
             @PathVariable UUID id,
             @RequestBody UserAddressRequestDTO request
@@ -54,19 +54,19 @@ public class UserAddressController {
         UserAddressResponseDTO userAddress = service.update(user, id, request);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Endereço atualizado com sucesso.", userAddress)
+                ApiResult.success("Endereço atualizado com sucesso.", userAddress)
         );
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> delete(
+    public ResponseEntity<ApiResult<Void>> delete(
             @AuthenticationPrincipal User user,
             @PathVariable UUID id
     ) {
         service.delete(user, id);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Endereço excluído com sucesso.", null)
+                ApiResult.success("Endereço excluído com sucesso.", null)
         );
     }
 }

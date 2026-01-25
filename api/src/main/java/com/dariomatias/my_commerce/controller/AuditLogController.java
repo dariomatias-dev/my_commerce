@@ -1,6 +1,6 @@
 package com.dariomatias.my_commerce.controller;
 
-import com.dariomatias.my_commerce.dto.ApiResponse;
+import com.dariomatias.my_commerce.dto.ApiResult;
 import com.dariomatias.my_commerce.dto.audit_log.AuditLogFilterDTO;
 import com.dariomatias.my_commerce.model.AuditLog;
 import com.dariomatias.my_commerce.service.AuditLogService;
@@ -25,7 +25,7 @@ public class AuditLogController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Page<AuditLog>>> getAll(
+    public ResponseEntity<ApiResult<Page<AuditLog>>> getAll(
             @Valid AuditLogFilterDTO filters,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -39,19 +39,19 @@ public class AuditLogController {
         Page<AuditLog> logs = service.getLogs(filters, pageable);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Logs obtidos com sucesso.", logs)
+                ApiResult.success("Logs obtidos com sucesso.", logs)
         );
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<AuditLog>> getById(
+    public ResponseEntity<ApiResult<AuditLog>> getById(
             @PathVariable String id
     ) {
         AuditLog log = service.getById(id);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Log obtido com sucesso.", log)
+                ApiResult.success("Log obtido com sucesso.", log)
         );
     }
 }

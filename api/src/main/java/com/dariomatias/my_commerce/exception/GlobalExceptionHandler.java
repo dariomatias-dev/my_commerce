@@ -1,6 +1,6 @@
 package com.dariomatias.my_commerce.exception;
 
-import com.dariomatias.my_commerce.dto.ApiResponse;
+import com.dariomatias.my_commerce.dto.ApiResult;
 import com.dariomatias.my_commerce.dto.FieldError;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -19,29 +19,29 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(AccessDeniedException ex) {
-        ApiResponse<Void> response = ApiResponse.error(403, "Acesso negado: você não possui permissão para acessar este recurso");
+    public ResponseEntity<ApiResult<Void>> handleAccessDeniedException(AccessDeniedException ex) {
+        ApiResult<Void> response = ApiResult.error(403, "Acesso negado: você não possui permissão para acessar este recurso");
         return ResponseEntity.status(403).body(response);
     }
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ApiResponse<String> handleResponseStatusException(ResponseStatusException ex) {
-        return ApiResponse.error(ex.getStatusCode().value(), ex.getReason());
+    public ApiResult<String> handleResponseStatusException(ResponseStatusException ex) {
+        return ApiResult.error(ex.getStatusCode().value(), ex.getReason());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ApiResponse<?> handleValidationException(MethodArgumentNotValidException ex) {
+    public ApiResult<?> handleValidationException(MethodArgumentNotValidException ex) {
         List<FieldError> fieldErrors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(error -> new FieldError(error.getField(), error.getDefaultMessage()))
                 .collect(Collectors.toList());
 
-        return ApiResponse.error(400, "Erro de validação", fieldErrors);
+        return ApiResult.error(400, "Erro de validação", fieldErrors);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ApiResponse<String> handleJsonParseError(HttpMessageNotReadableException ex) {
+    public ApiResult<String> handleJsonParseError(HttpMessageNotReadableException ex) {
         String message = ex.getMostSpecificCause().getMessage();
 
         if (message != null && message.contains("not one of the values accepted for Enum class")) {
@@ -50,22 +50,22 @@ public class GlobalExceptionHandler {
 
             if (matcher.find()) {
                 String allowedValues = matcher.group(1);
-                return ApiResponse.error(400, "Valor inválido para um método de pagamento. Valores permitidos: " + allowedValues);
+                return ApiResult.error(400, "Valor inválido para um método de pagamento. Valores permitidos: " + allowedValues);
             }
 
-            return ApiResponse.error(400, "Valor inválido para um campo enum.");
+            return ApiResult.error(400, "Valor inválido para um campo enum.");
         }
 
-        return ApiResponse.error(400, "Erro ao interpretar o corpo da requisição: verifique os dados enviados.");
+        return ApiResult.error(400, "Erro ao interpretar o corpo da requisição: verifique os dados enviados.");
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ApiResponse<String> handleRuntimeException(RuntimeException ex) {
-        return ApiResponse.error(400, ex.getMessage());
+    public ApiResult<String> handleRuntimeException(RuntimeException ex) {
+        return ApiResult.error(400, ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
-    public ApiResponse<String> handleException(Exception ex) {
-        return ApiResponse.error(500, "Ocorreu um erro interno: " + ex.getMessage());
+    public ApiResult<String> handleException(Exception ex) {
+        return ApiResult.error(500, "Ocorreu um erro interno: " + ex.getMessage());
     }
 }

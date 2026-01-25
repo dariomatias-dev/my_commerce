@@ -1,6 +1,6 @@
 package com.dariomatias.my_commerce.controller;
 
-import com.dariomatias.my_commerce.dto.ApiResponse;
+import com.dariomatias.my_commerce.dto.ApiResult;
 import com.dariomatias.my_commerce.dto.subscription_plan.SubscriptionPlanRequestDTO;
 import com.dariomatias.my_commerce.dto.subscription_plan.SubscriptionPlanResponseDTO;
 import com.dariomatias.my_commerce.model.SubscriptionPlan;
@@ -27,18 +27,18 @@ public class SubscriptionPlanController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<SubscriptionPlanResponseDTO>> create(
+    public ResponseEntity<ApiResult<SubscriptionPlanResponseDTO>> create(
             @RequestBody SubscriptionPlanRequestDTO request
     ) {
         SubscriptionPlan subscriptionPlan = service.create(request);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Plano criado com sucesso", SubscriptionPlanResponseDTO.from(subscriptionPlan))
+                ApiResult.success("Plano criado com sucesso", SubscriptionPlanResponseDTO.from(subscriptionPlan))
         );
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<SubscriptionPlanResponseDTO>>> getAll(
+    public ResponseEntity<ApiResult<Page<SubscriptionPlanResponseDTO>>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
@@ -52,43 +52,43 @@ public class SubscriptionPlanController {
                 .map(SubscriptionPlanResponseDTO::from);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Planos obtidos com sucesso", subscriptionPlans)
+                ApiResult.success("Planos obtidos com sucesso", subscriptionPlans)
         );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<SubscriptionPlanResponseDTO>> getById(
+    public ResponseEntity<ApiResult<SubscriptionPlanResponseDTO>> getById(
             @PathVariable UUID id
     ) {
         SubscriptionPlan subscriptionPlan = service.getById(id);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Plano obtido com sucesso", SubscriptionPlanResponseDTO.from(subscriptionPlan))
+                ApiResult.success("Plano obtido com sucesso", SubscriptionPlanResponseDTO.from(subscriptionPlan))
         );
     }
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<SubscriptionPlanResponseDTO>> update(
+    public ResponseEntity<ApiResult<SubscriptionPlanResponseDTO>> update(
             @PathVariable UUID id,
             @RequestBody SubscriptionPlanRequestDTO request
     ) {
         SubscriptionPlan subscriptionPlan = service.update(id, request);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Plano atualizado com sucesso", SubscriptionPlanResponseDTO.from(subscriptionPlan))
+                ApiResult.success("Plano atualizado com sucesso", SubscriptionPlanResponseDTO.from(subscriptionPlan))
         );
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Void>> delete(
+    public ResponseEntity<ApiResult<Void>> delete(
             @PathVariable UUID id
     ) {
         service.delete(id);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Plano excluído com sucesso", null)
+                ApiResult.success("Plano excluído com sucesso", null)
         );
     }
 }

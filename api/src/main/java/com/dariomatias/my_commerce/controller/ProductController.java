@@ -1,6 +1,6 @@
 package com.dariomatias.my_commerce.controller;
 
-import com.dariomatias.my_commerce.dto.ApiResponse;
+import com.dariomatias.my_commerce.dto.ApiResult;
 import com.dariomatias.my_commerce.dto.product.ProductFilterDTO;
 import com.dariomatias.my_commerce.dto.product.ProductIdsRequestDTO;
 import com.dariomatias.my_commerce.dto.product.ProductRequestDTO;
@@ -32,7 +32,7 @@ public class ProductController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<ProductResponseDTO>> create(
+    public ResponseEntity<ApiResult<ProductResponseDTO>> create(
             @AuthenticationPrincipal User user,
             @RequestPart("data") ProductRequestDTO request,
             @RequestPart(value = "images") MultipartFile[] images
@@ -40,12 +40,12 @@ public class ProductController {
         Product product = service.create(user, request, images);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Produto criado com sucesso", ProductResponseDTO.from(product))
+                ApiResult.success("Produto criado com sucesso", ProductResponseDTO.from(product))
         );
     }
 
     @GetMapping("")
-    public ResponseEntity<ApiResponse<Page<ProductResponseDTO>>> getAll(
+    public ResponseEntity<ApiResult<Page<ProductResponseDTO>>> getAll(
             @AuthenticationPrincipal User user,
             ProductFilterDTO filter,
             @RequestParam(defaultValue = "0") int page,
@@ -62,12 +62,12 @@ public class ProductController {
                 .map(ProductResponseDTO::from);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Produtos da loja obtidos com sucesso", products)
+                ApiResult.success("Produtos da loja obtidos com sucesso", products)
         );
     }
 
     @PostMapping("/store/products-by-ids")
-    public ResponseEntity<ApiResponse<Page<ProductResponseDTO>>> getByIds(
+    public ResponseEntity<ApiResult<Page<ProductResponseDTO>>> getByIds(
             @RequestBody ProductIdsRequestDTO request,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -83,57 +83,57 @@ public class ProductController {
                 .map(ProductResponseDTO::from);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Produtos obtidos com sucesso", products)
+                ApiResult.success("Produtos obtidos com sucesso", products)
         );
     }
 
     @GetMapping("/store/{storeSlug}/product/{productSlug}")
-    public ResponseEntity<ApiResponse<ProductResponseDTO>> getBySlug(
+    public ResponseEntity<ApiResult<ProductResponseDTO>> getBySlug(
             @PathVariable String storeSlug,
             @PathVariable String productSlug
     ) {
         Product product = service.getByStoreSlugAndProductSlug(storeSlug, productSlug);
 
-        return ResponseEntity.ok(ApiResponse.success("Produto obtido com sucesso", ProductResponseDTO.from(product)));
+        return ResponseEntity.ok(ApiResult.success("Produto obtido com sucesso", ProductResponseDTO.from(product)));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<ProductResponseDTO>> getById(
+    public ResponseEntity<ApiResult<ProductResponseDTO>> getById(
             @AuthenticationPrincipal User user,
             @PathVariable UUID id
     ) {
         Product product = service.getById(user, id);
 
-        return ResponseEntity.ok(ApiResponse.success("Produto obtido com sucesso", ProductResponseDTO.from(product)));
+        return ResponseEntity.ok(ApiResult.success("Produto obtido com sucesso", ProductResponseDTO.from(product)));
     }
 
     @GetMapping("/stores/stats/active-products")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<Long>> getUserActiveProductsCount(
+    public ResponseEntity<ApiResult<Long>> getUserActiveProductsCount(
             @AuthenticationPrincipal User user
     ) {
         long count = service.getUserActiveProductsCount(user);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Quantidade total de produtos ativos", count)
+                ApiResult.success("Quantidade total de produtos ativos", count)
         );
     }
 
     @GetMapping("/store/{storeId}/stats/active-products")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<Long>> getActiveProductsCount(
+    public ResponseEntity<ApiResult<Long>> getActiveProductsCount(
             @PathVariable UUID storeId
     ) {
         long count = service.getActiveProductsCount(storeId);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Quantidade de produtos ativos", count)
+                ApiResult.success("Quantidade de produtos ativos", count)
         );
     }
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<ProductResponseDTO>> update(
+    public ResponseEntity<ApiResult<ProductResponseDTO>> update(
             @AuthenticationPrincipal User user,
             @PathVariable UUID id,
             @RequestPart(value = "data", required = false) ProductRequestDTO request,
@@ -142,18 +142,18 @@ public class ProductController {
         Product product = service.update(user, id, request, images);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Produto atualizado com sucesso", ProductResponseDTO.from(product))
+                ApiResult.success("Produto atualizado com sucesso", ProductResponseDTO.from(product))
         );
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<Void>> delete(
+    public ResponseEntity<ApiResult<Void>> delete(
             @AuthenticationPrincipal User user,
             @PathVariable UUID id
     ) {
         service.delete(user, id);
 
-        return ResponseEntity.ok(ApiResponse.success("Produto excluído com sucesso", null));
+        return ResponseEntity.ok(ApiResult.success("Produto excluído com sucesso", null));
     }
 }

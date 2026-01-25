@@ -1,6 +1,6 @@
 package com.dariomatias.my_commerce.security;
 
-import com.dariomatias.my_commerce.dto.ApiResponse;
+import com.dariomatias.my_commerce.dto.ApiResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,7 +22,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        ApiResponse<String> apiResponse = ApiResponse.error(401, "Token inválido ou não fornecido");
+        ApiResult<String> apiResponse = ApiResult.error(401, "Token inválido ou não fornecido");
 
         response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
     }

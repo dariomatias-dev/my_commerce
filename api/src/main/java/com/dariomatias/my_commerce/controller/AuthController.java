@@ -1,6 +1,6 @@
 package com.dariomatias.my_commerce.controller;
 
-import com.dariomatias.my_commerce.dto.ApiResponse;
+import com.dariomatias.my_commerce.dto.ApiResult;
 import com.dariomatias.my_commerce.dto.LoginRequest;
 import com.dariomatias.my_commerce.dto.RecoverPasswordRequest;
 import com.dariomatias.my_commerce.dto.ResendVerificationEmailRequest;
@@ -31,18 +31,18 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<RefreshTokenResponse>> login(
+    public ResponseEntity<ApiResult<RefreshTokenResponse>> login(
             @Valid @RequestBody LoginRequest request
     ) {
         RefreshTokenResponse tokens = authService.login(request);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Login realizado com sucesso", tokens)
+                ApiResult.success("Login realizado com sucesso", tokens)
         );
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<UserResponse>> signup(
+    public ResponseEntity<ApiResult<UserResponse>> signup(
             @Valid @RequestBody SignupRequest request
     ) {
         UserResponse user = authService.register(request);
@@ -50,63 +50,63 @@ public class AuthController {
         return ResponseEntity
                 .status(201)
                 .body(
-                        ApiResponse.success(201, "Usuário cadastrado com sucesso. Verifique seu e-mail", user)
+                        ApiResult.success(201, "Usuário cadastrado com sucesso. Verifique seu e-mail", user)
                 );
     }
 
     @PostMapping("/verify-email")
-    public ResponseEntity<ApiResponse<String>> verifyEmail(
+    public ResponseEntity<ApiResult<String>> verifyEmail(
             @Valid @RequestBody VerifyEmailRequest request
     ) {
         authService.verifyEmail(request.getToken());
 
         return ResponseEntity.ok(
-                ApiResponse.success("E-mail verificado com sucesso", null)
+                ApiResult.success("E-mail verificado com sucesso", null)
         );
     }
 
     @PostMapping("/resend-verification-email")
-    public ResponseEntity<ApiResponse<String>> resendVerificationEmail(
+    public ResponseEntity<ApiResult<String>> resendVerificationEmail(
             @Valid @RequestBody ResendVerificationEmailRequest request
     ) {
         authService.resendVerificationEmail(request.getEmail());
 
         return ResponseEntity.ok(
-                ApiResponse.success("E-mail de verificação reenviado com sucesso", null)
+                ApiResult.success("E-mail de verificação reenviado com sucesso", null)
         );
     }
 
     @PostMapping("/recover-password")
-    public ResponseEntity<ApiResponse<String>> recoverPassword(
+    public ResponseEntity<ApiResult<String>> recoverPassword(
             @Valid @RequestBody RecoverPasswordRequest request
     ) {
         authService.recoverPassword(request.getEmail());
 
         return ResponseEntity.ok(
-                ApiResponse.success("E-mail de recuperação de senha enviado com sucesso", null)
+                ApiResult.success("E-mail de recuperação de senha enviado com sucesso", null)
         );
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<ApiResponse<String>> resetPassword(
+    public ResponseEntity<ApiResult<String>> resetPassword(
             @Valid @RequestBody ResetPasswordRequest request
     ) {
         authService.resetPassword(request);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Senha redefinida com sucesso", null)
+                ApiResult.success("Senha redefinida com sucesso", null)
         );
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<ApiResponse<RefreshTokenResponse>> refreshToken(
+    public ResponseEntity<ApiResult<RefreshTokenResponse>> refreshToken(
             @Valid @RequestBody RefreshTokenRequest request
     ) {
         RefreshTokenResponse tokens =
                 authService.refreshToken(request.getRefreshToken());
 
         return ResponseEntity.ok(
-                ApiResponse.success("Tokens atualizados com sucesso", tokens)
+                ApiResult.success("Tokens atualizados com sucesso", tokens)
         );
     }
 }

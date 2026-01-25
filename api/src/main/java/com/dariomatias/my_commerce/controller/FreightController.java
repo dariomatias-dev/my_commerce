@@ -1,6 +1,6 @@
 package com.dariomatias.my_commerce.controller;
 
-import com.dariomatias.my_commerce.dto.ApiResponse;
+import com.dariomatias.my_commerce.dto.ApiResult;
 import com.dariomatias.my_commerce.dto.freight.FreightResponseDTO;
 import com.dariomatias.my_commerce.service.FreightService;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +22,13 @@ public class FreightController {
     }
 
     @GetMapping("/{userAddressId}")
-    public ResponseEntity<ApiResponse<FreightResponseDTO>> calculateFreight(
+    public ResponseEntity<ApiResult<FreightResponseDTO>> calculateFreight(
             @PathVariable UUID userAddressId
     ) {
         FreightResponseDTO freight = freightService.calculateFreight(userAddressId);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Frete calculado com sucesso", freight)
+                ApiResult.success("Frete calculado com sucesso", freight)
         );
     }
 }

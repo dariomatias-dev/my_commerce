@@ -1,5 +1,6 @@
 package com.dariomatias.my_commerce.controller;
 
+import com.dariomatias.my_commerce.dto.ApiResult;
 import com.dariomatias.my_commerce.dto.PasswordUpdateRequest;
 import com.dariomatias.my_commerce.dto.user.AdminUserResponse;
 import com.dariomatias.my_commerce.dto.user.UserFilterDTO;
@@ -39,7 +40,7 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "Users retrieved successfully")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<com.dariomatias.my_commerce.dto.ApiResponse<Page<AdminUserResponse>>> getAll(
+    public ResponseEntity<ApiResult<Page<AdminUserResponse>>> getAll(
             UserFilterDTO filter,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -55,7 +56,7 @@ public class UserController {
                 .map(AdminUserResponse::from);
 
         return ResponseEntity.ok(
-                com.dariomatias.my_commerce.dto.ApiResponse.success(
+                ApiResult.success(
                         "Users retrieved successfully.",
                         users
                 )
@@ -69,14 +70,14 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "User retrieved successfully")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
-    public ResponseEntity<com.dariomatias.my_commerce.dto.ApiResponse<AdminUserResponse>> getUserById(
+    public ResponseEntity<ApiResult<AdminUserResponse>> getUserById(
             @AuthenticationPrincipal User authenticatedUser,
             @PathVariable UUID id
     ) {
         User user = userService.getById(authenticatedUser, id);
 
         return ResponseEntity.ok(
-                com.dariomatias.my_commerce.dto.ApiResponse.success(
+                ApiResult.success(
                         "User retrieved successfully.",
                         AdminUserResponse.from(user)
                 )
@@ -90,7 +91,7 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "User updated successfully")
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}")
-    public ResponseEntity<com.dariomatias.my_commerce.dto.ApiResponse<AdminUserResponse>> updateUser(
+    public ResponseEntity<ApiResult<AdminUserResponse>> updateUser(
             @AuthenticationPrincipal User authenticatedUser,
             @PathVariable UUID id,
             @RequestBody UserRequest updatedUser
@@ -98,7 +99,7 @@ public class UserController {
         User user = userService.update(authenticatedUser, id, updatedUser);
 
         return ResponseEntity.ok(
-                com.dariomatias.my_commerce.dto.ApiResponse.success(
+                ApiResult.success(
                         "User updated successfully.",
                         AdminUserResponse.from(user)
                 )
@@ -112,14 +113,14 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "User deleted successfully")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<com.dariomatias.my_commerce.dto.ApiResponse<Void>> deleteUser(
+    public ResponseEntity<ApiResult<Void>> deleteUser(
             @AuthenticationPrincipal User authenticatedUser,
             @PathVariable UUID id
     ) {
         userService.delete(authenticatedUser, id);
 
         return ResponseEntity.ok(
-                com.dariomatias.my_commerce.dto.ApiResponse.success(
+                ApiResult.success(
                         "User deleted successfully.",
                         null
                 )
@@ -132,13 +133,13 @@ public class UserController {
     )
     @ApiResponse(responseCode = "200", description = "User retrieved successfully")
     @GetMapping("/me")
-    public ResponseEntity<com.dariomatias.my_commerce.dto.ApiResponse<UserResponse>> getCurrentUser(
+    public ResponseEntity<ApiResult<UserResponse>> getCurrentUser(
             @AuthenticationPrincipal User authenticatedUser
     ) {
         User currentUser = userService.getById(authenticatedUser, authenticatedUser.getId());
 
         return ResponseEntity.ok(
-                com.dariomatias.my_commerce.dto.ApiResponse.success(
+                ApiResult.success(
                         "User retrieved successfully.",
                         UserResponse.from(currentUser)
                 )
@@ -152,11 +153,11 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "Active users count retrieved successfully")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/stats/active-users")
-    public ResponseEntity<com.dariomatias.my_commerce.dto.ApiResponse<Long>> getActiveUsersCount() {
+    public ResponseEntity<ApiResult<Long>> getActiveUsersCount() {
         long activeUsers = userService.getActiveUsersCount();
 
         return ResponseEntity.ok(
-                com.dariomatias.my_commerce.dto.ApiResponse.success(
+                ApiResult.success(
                         "Active users count retrieved successfully.",
                         activeUsers
                 )
@@ -169,7 +170,7 @@ public class UserController {
     )
     @ApiResponse(responseCode = "200", description = "User updated successfully")
     @PatchMapping("/me")
-    public ResponseEntity<com.dariomatias.my_commerce.dto.ApiResponse<UserResponse>> updateCurrentUser(
+    public ResponseEntity<ApiResult<UserResponse>> updateCurrentUser(
             @AuthenticationPrincipal User authenticatedUser,
             @RequestBody UserRequest updatedUser
     ) {
@@ -180,7 +181,7 @@ public class UserController {
         );
 
         return ResponseEntity.ok(
-                com.dariomatias.my_commerce.dto.ApiResponse.success(
+                ApiResult.success(
                         "User updated successfully.",
                         UserResponse.from(updated)
                 )
@@ -193,7 +194,7 @@ public class UserController {
     )
     @ApiResponse(responseCode = "200", description = "Password updated successfully")
     @PostMapping("/me/change-password")
-    public ResponseEntity<com.dariomatias.my_commerce.dto.ApiResponse<Void>> changePassword(
+    public ResponseEntity<ApiResult<Void>> changePassword(
             @AuthenticationPrincipal User authenticatedUser,
             @RequestBody PasswordUpdateRequest request
     ) {
@@ -204,7 +205,7 @@ public class UserController {
         );
 
         return ResponseEntity.ok(
-                com.dariomatias.my_commerce.dto.ApiResponse.success(
+                ApiResult.success(
                         "Password updated successfully.",
                         null
                 )
@@ -217,13 +218,13 @@ public class UserController {
     )
     @ApiResponse(responseCode = "200", description = "User deleted successfully")
     @DeleteMapping("/me")
-    public ResponseEntity<com.dariomatias.my_commerce.dto.ApiResponse<Void>> deleteCurrentUser(
+    public ResponseEntity<ApiResult<Void>> deleteCurrentUser(
             @AuthenticationPrincipal User authenticatedUser
     ) {
         userService.delete(authenticatedUser, authenticatedUser.getId());
 
         return ResponseEntity.ok(
-                com.dariomatias.my_commerce.dto.ApiResponse.success(
+                ApiResult.success(
                         "User deleted successfully.",
                         null
                 )

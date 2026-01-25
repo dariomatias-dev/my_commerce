@@ -1,6 +1,6 @@
 package com.dariomatias.my_commerce.controller;
 
-import com.dariomatias.my_commerce.dto.ApiResponse;
+import com.dariomatias.my_commerce.dto.ApiResult;
 import com.dariomatias.my_commerce.dto.stores.StoreFilterDTO;
 import com.dariomatias.my_commerce.dto.stores.StoreRequestDTO;
 import com.dariomatias.my_commerce.dto.stores.StoreResponseDTO;
@@ -31,7 +31,7 @@ public class StoreController {
 
     @PostMapping
     @PreAuthorize("hasRole('SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<StoreResponseDTO>> create(
+    public ResponseEntity<ApiResult<StoreResponseDTO>> create(
             @AuthenticationPrincipal User user,
             @RequestPart(value = "data") StoreRequestDTO request,
             @RequestPart(value = "logo") MultipartFile logo,
@@ -40,13 +40,13 @@ public class StoreController {
         Store store = service.create(user, request, logo, banner);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Loja criada com sucesso", StoreResponseDTO.from(store))
+                ApiResult.success("Loja criada com sucesso", StoreResponseDTO.from(store))
         );
     }
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Page<StoreResponseDTO>>> getAllByUser(
+    public ResponseEntity<ApiResult<Page<StoreResponseDTO>>> getAllByUser(
             @AuthenticationPrincipal User user,
             StoreFilterDTO filter,
             @RequestParam(defaultValue = "0") int page,
@@ -63,13 +63,13 @@ public class StoreController {
                 .map(StoreResponseDTO::from);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Lojas do usuário obtidas com sucesso", stores)
+                ApiResult.success("Lojas do usuário obtidas com sucesso", stores)
         );
     }
 
     @GetMapping("/me")
     @PreAuthorize("hasRole('SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<Page<StoreResponseDTO>>> getMyStores(
+    public ResponseEntity<ApiResult<Page<StoreResponseDTO>>> getMyStores(
             @AuthenticationPrincipal User user,
             StoreFilterDTO filter,
             @RequestParam(defaultValue = "0") int page,
@@ -88,47 +88,47 @@ public class StoreController {
                 .map(StoreResponseDTO::from);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Lojas do usuário obtidas com sucesso", stores)
+                ApiResult.success("Lojas do usuário obtidas com sucesso", stores)
         );
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<StoreResponseDTO>> getById(
+    public ResponseEntity<ApiResult<StoreResponseDTO>> getById(
             @AuthenticationPrincipal User user,
             @PathVariable UUID id
     ) {
         Store store = service.getById(id, user);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Loja obtida com sucesso", StoreResponseDTO.from(store))
+                ApiResult.success("Loja obtida com sucesso", StoreResponseDTO.from(store))
         );
     }
 
     @GetMapping("/slug/{slug}")
-    public ResponseEntity<ApiResponse<StoreResponseDTO>> getBySlug(
+    public ResponseEntity<ApiResult<StoreResponseDTO>> getBySlug(
             @PathVariable String slug
     ) {
         Store store = service.getBySlug(slug);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Loja obtida com sucesso", StoreResponseDTO.from(store))
+                ApiResult.success("Loja obtida com sucesso", StoreResponseDTO.from(store))
         );
     }
 
     @GetMapping("/active/count")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Long>> getActiveStoresCount() {
+    public ResponseEntity<ApiResult<Long>> getActiveStoresCount() {
         long count = service.getActiveStoresCount();
 
         return ResponseEntity.ok(
-                ApiResponse.success("Quantidade de lojas ativas", count)
+                ApiResult.success("Quantidade de lojas ativas", count)
         );
     }
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<StoreResponseDTO>> update(
+    public ResponseEntity<ApiResult<StoreResponseDTO>> update(
             @AuthenticationPrincipal User user,
             @PathVariable UUID id,
             @RequestPart(value = "data", required = false) StoreRequestDTO request,
@@ -138,20 +138,20 @@ public class StoreController {
         Store store = service.update(id, request, user, logo, banner);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Loja atualizada com sucesso", StoreResponseDTO.from(store))
+                ApiResult.success("Loja atualizada com sucesso", StoreResponseDTO.from(store))
         );
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<Void>> delete(
+    public ResponseEntity<ApiResult<Void>> delete(
             @AuthenticationPrincipal User user,
             @PathVariable UUID id
     ) {
         service.delete(id, user);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Loja excluída com sucesso", null)
+                ApiResult.success("Loja excluída com sucesso", null)
         );
     }
 }

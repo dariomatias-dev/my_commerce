@@ -1,6 +1,6 @@
 package com.dariomatias.my_commerce.security;
 
-import com.dariomatias.my_commerce.dto.ApiResponse;
+import com.dariomatias.my_commerce.dto.ApiResult;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.UserRepository;
 import com.dariomatias.my_commerce.service.JwtService;
@@ -51,7 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.getWriter().write(
                             objectMapper.writeValueAsString(
-                                    ApiResponse.error(401, "Token inválido ou usuário deletado")
+                                    ApiResult.error(401, "Token inválido ou usuário deletado")
                             )
                     );
                     return;

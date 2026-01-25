@@ -1,6 +1,6 @@
 package com.dariomatias.my_commerce.controller;
 
-import com.dariomatias.my_commerce.dto.ApiResponse;
+import com.dariomatias.my_commerce.dto.ApiResult;
 import com.dariomatias.my_commerce.dto.subscription.SubscriptionRequestDTO;
 import com.dariomatias.my_commerce.dto.subscription.SubscriptionResponseDTO;
 import com.dariomatias.my_commerce.model.Subscription;
@@ -28,20 +28,20 @@ public class SubscriptionController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> create(
+    public ResponseEntity<ApiResult<SubscriptionResponseDTO>> create(
             @AuthenticationPrincipal User user,
             @RequestBody SubscriptionRequestDTO request
     ) {
         Subscription subscription = service.create(user, request);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Assinatura criada com sucesso", SubscriptionResponseDTO.from(subscription))
+                ApiResult.success("Assinatura criada com sucesso", SubscriptionResponseDTO.from(subscription))
         );
     }
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Page<SubscriptionResponseDTO>>> getAll(
+    public ResponseEntity<ApiResult<Page<SubscriptionResponseDTO>>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
@@ -55,13 +55,13 @@ public class SubscriptionController {
                 .map(SubscriptionResponseDTO::from);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Assinaturas obtidas com sucesso", subscriptions)
+                ApiResult.success("Assinaturas obtidas com sucesso", subscriptions)
         );
     }
 
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Page<SubscriptionResponseDTO>>> getAllByUser(
+    public ResponseEntity<ApiResult<Page<SubscriptionResponseDTO>>> getAllByUser(
             @PathVariable UUID userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -76,12 +76,12 @@ public class SubscriptionController {
                 .map(SubscriptionResponseDTO::from);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Assinaturas do usuário obtidas com sucesso", subscriptions)
+                ApiResult.success("Assinaturas do usuário obtidas com sucesso", subscriptions)
         );
     }
 
     @GetMapping("/user/me")
-    public ResponseEntity<ApiResponse<Page<SubscriptionResponseDTO>>> getAllByMe(
+    public ResponseEntity<ApiResult<Page<SubscriptionResponseDTO>>> getAllByMe(
             @AuthenticationPrincipal User user,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -96,56 +96,56 @@ public class SubscriptionController {
                 .map(SubscriptionResponseDTO::from);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Assinaturas do usuário obtidas com sucesso", subscriptions)
+                ApiResult.success("Assinaturas do usuário obtidas com sucesso", subscriptions)
         );
     }
 
     @GetMapping("/me/active")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> getActiveByMe(
+    public ResponseEntity<ApiResult<SubscriptionResponseDTO>> getActiveByMe(
             @AuthenticationPrincipal User user
     ) {
         Subscription subscription = service.getActiveByUser(user.getId());
 
         return ResponseEntity.ok(
-                ApiResponse.success("Assinatura ativa obtida com sucesso", SubscriptionResponseDTO.from(subscription))
+                ApiResult.success("Assinatura ativa obtida com sucesso", SubscriptionResponseDTO.from(subscription))
         );
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> getById(
+    public ResponseEntity<ApiResult<SubscriptionResponseDTO>> getById(
             @PathVariable UUID id
     ) {
         Subscription subscription = service.getById(id);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Assinatura obtida com sucesso", SubscriptionResponseDTO.from(subscription))
+                ApiResult.success("Assinatura obtida com sucesso", SubscriptionResponseDTO.from(subscription))
         );
     }
 
     @PatchMapping("/change-plan")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> changePlan(
+    public ResponseEntity<ApiResult<SubscriptionResponseDTO>> changePlan(
             @AuthenticationPrincipal User user,
             @RequestBody SubscriptionRequestDTO request
     ) {
         Subscription subscription = service.changePlan(user, request);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Plano alterado com sucesso", SubscriptionResponseDTO.from(subscription))
+                ApiResult.success("Plano alterado com sucesso", SubscriptionResponseDTO.from(subscription))
         );
     }
 
     @PatchMapping("/cancel")
     @PreAuthorize("hasRole('SUBSCRIBER')")
-    public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> cancelActive(
+    public ResponseEntity<ApiResult<SubscriptionResponseDTO>> cancelActive(
             @AuthenticationPrincipal User user
     ) {
         Subscription subscription = service.cancelActiveSubscription(user);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Assinatura cancelada com sucesso", SubscriptionResponseDTO.from(subscription))
+                ApiResult.success("Assinatura cancelada com sucesso", SubscriptionResponseDTO.from(subscription))
         );
     }
 }
