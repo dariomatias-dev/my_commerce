@@ -27,12 +27,10 @@ Uma solução SaaS completa e escalável para pequenos empreendedores criarem e 
 ## Sumário
 
 - [Sobre o Projeto](#sobre-o-projeto)
+- [Documentação do Backend](#documentação-do-backend)
 - [Documentações do Sistema](#documentações-do-sistema)
-- [Público-Alvo](#público-alvo)
-- [Funcionalidades](#funcionalidades)
 - [Contruído com](#contruído-com)
 - [Controle de Acesso](#controle-de-acesso)
-- [Perfis de Usuários do Sistema](#perfis-de-usuários-do-sistema)
 - [Como Começar](#como-começar)
 - [Licença](#licença)
 - [Autor](#autor)
@@ -44,6 +42,12 @@ O Sistema SaaS de Lojas Virtuais é uma plataforma desenvolvida para capacitar p
 A plataforma visa simplificar a criação de uma loja virtual para quem não possui conhecimentos técnicos avançados, permitindo que qualquer assinante crie e gerencie sua própria loja com facilidade.
 
 Este projeto está sendo desenvolvido como parte das disciplinas: Desenvolvimento de Aplicações Web II (DAW II), Banco de Dados II (BD II) e Análise e Projeto de Sistemas (APS).
+
+## Documentação do Backend
+
+O **Backend** do Sistema SaaS de Lojas Virtuais possui documentação detalhada que explica a arquitetura, modelos de dados, autenticação, regras de negócio e integração com os módulos frontend e mobile.
+
+A documentação é acessível via Swagger/OpenAPI, permitindo explorar a API, testar chamadas e compreender o fluxo do sistema de forma prática e clara.
 
 ## Documentações do Sistema
 
@@ -59,83 +63,7 @@ Para facilitar a navegação e consulta, utilize os links abaixo:
 
 **Observação:** Antes de iniciar o Frontend ou Mobile, certifique-se de que o **Backend** esteja rodando corretamente e que o banco de dados PostgreSQL esteja ativo (via Docker), para garantir que todos os módulos funcionem de forma integrada.
 
-## Público-Alvo
-
-Nosso público-alvo são pequenos empreendedores, autônomos e negócios locais que buscam uma solução descomplicada para:
-
-- Criar sua própria loja online.
-- Gerenciar produtos e vendas de forma intuitiva.
-- Personalizar a aparência da sua loja sem código.
-- Obter insights sobre o desempenho do seu negócio.
-- Expandir suas vendas para o ambiente digital de maneira acessível.
-
-### Planos de Assinatura
-
-Oferecemos planos de assinatura flexíveis para atender às diversas necessidades dos nossos clientes:
-
-- Gratuito (Starter)
-
-  - 1 loja limitada.
-  - Até 20 produtos.
-  - Layout simples.
-  - Estatísticas básicas.
-
-- Pro
-
-  - Até 3 lojas.
-  - Produtos ilimitados.
-  - Layouts personalizados.
-  - Estatísticas avançadas.
-  - Suporte básico.
-
-- Business
-  - Lojas ilimitadas.
-  - Produtos ilimitados.
-  - Personalização completa.
-  - Relatórios detalhados e exportáveis.
-  - Recursos extras (cupons, promoções, avaliações).
-  - Suporte prioritário.
-
-## Funcionalidades
-
-- Para o Assinante (Usuário / Proprietário da Loja)
-
-  - Autenticação: Cadastro e login seguro (e-mail e senha).
-  - Gestão de Assinatura: Escolha e validação do plano de assinatura.
-  - Dashboard Personalizado:
-    - Criar novas lojas.
-    - Editar lojas existentes.
-    - Gerenciar produtos e categorias.
-    - Personalizar layout da loja (cores, fontes, banners).
-    - Visualizar estatísticas de vendas e engajamento.
-    - Histórico de vendas e transações.
-    - Controle de envio e logística (endereços, frete, prazos).
-    - Notificações por e-mail ou push sobre vendas e estoque baixo.
-
-- Para a Loja (Criada pelo Assinante)
-
-  - Configuração Básica: Definição de nome, banner e logotipo.
-  - Engajamento: Mensagens de boas-vindas e promoções.
-  - Personalização Visual: Cores, fontes e layout.
-  - Gestão de Produtos Completa:
-  - Nome, descrição, preço, estoque, status (disponível/indisponível), imagens.
-
-- Para o Cliente Final
-
-  - Navegação: Navegar por lojas e produtos.
-  - Pesquisa e Filtros: Filtrar produtos por categorias.
-  - Favoritos: Favoritar produtos.
-  - Pedidos: Histórico de pedidos.
-  - Notificações: Notificações de promoções, novidades e reposição de estoque.
-
-- Para o Admin / Sistema
-  - Gestão de Usuários e Assinaturas: Controle total sobre usuários e seus planos.
-  - Moderação de Conteúdo: Moderação de lojas e produtos para garantir a qualidade.
-  - Relatórios Gerenciais: Geração de relatórios gerais sobre uso do sistema e métricas dos assinantes.
-  - Painel de Métricas em Tempo Real: Assinantes ativos, vendas, produtos populares.
-  - Configuração Flexível: Configuração de planos e preços diretamente pelo painel.
-
-## Contruído com
+## Construído com
 
 ### Frontend Web
 
@@ -149,11 +77,15 @@ Oferecemos planos de assinatura flexíveis para atender às diversas necessidade
 - **[Java](https://www.java.com/)** – Linguagem de programação amplamente usada para desenvolvimento de sistemas robustos e de alta performance.
 - **[Spring Boot](https://spring.io/projects/spring-boot/)** – Framework Java para desenvolvimento de APIs robustas, escaláveis, seguras e de fácil manutenção.
 - **[PostgreSQL](https://www.postgresql.org/)** – Banco de dados relacional poderoso e confiável para armazenamento de dados.
+- **[PL/pgSQL](https://www.postgresql.org/docs/current/plpgsql.html)** – Linguagem procedural do PostgreSQL para criar funções, triggers e lógica no banco de dados.
+- **[Liquibase](https://www.liquibase.org/)** – Ferramenta para versionamento e gerenciamento de mudanças no banco de dados.
+- **[Redis](https://redis.io/)** – Banco de dados em memória, ultra-rápido, usado para caching, filas e armazenamento temporário.
+- **[MinIO](https://min.io/)** – Sistema de armazenamento de objetos compatível com S3, ideal para arquivos e mídias.
 - **[Docker](https://www.docker.com/)** – Plataforma de conteinerização para padronização de ambientes e deploy simplificado.
 
 ### Mobile
 
-- **[Flutter](https://flutter.dev/)** – A UI toolkit by Google for building beautiful, natively compiled applications for mobile, web, and desktop from a single codebase.
+- **[Flutter](https://flutter.dev/)** – UI toolkit by Google for building beautiful, natively compiled applications for mobile, web, and desktop from a single codebase.
 - **[Dart](https://dart.dev/)** – The programming language used for Flutter, optimized for building fast apps on any platform.
 
 ## Controle de Acesso
@@ -163,52 +95,6 @@ O sistema implementa um controle de acesso baseado em perfis para garantir a seg
 - **User**: Perfil para clientes finais que interagem com as lojas.
 - **Subscriber**: Usuários com assinatura ativa, que são proprietários das lojas e gerenciam seus negócios.
 - **Admin**: Administrador do sistema, com controle total sobre usuários, assinaturas, lojas e conteúdo.
-
-## Perfis de Usuários do Sistema
-
-A plataforma opera com diferentes perfis de usuários, cada um definido por responsabilidades, permissões e níveis específicos de acesso. A seguir, são apresentados os papéis existentes.
-
-### Usuário (Visitante)
-
-Indivíduo que acessa a plataforma sem possuir uma assinatura.  
-Seu acesso é limitado às seguintes ações:
-
-- Navegar por produtos e categorias.
-- Visualizar lojas disponíveis.
-- Navegar pelo catálogo de produtos.
-
-Não possui permissão para realizar compras, criar lojas ou acessar funcionalidades administrativas.
-
-### Cliente Final
-
-Usuário que acessa uma loja com a finalidade de realizar compras.  
-Pode executar ações como:
-
-- Adicionar itens aos favoritos.
-- Realizar pedidos e acompanhar o status das compras.
-- Consultar o histórico de pedidos.
-
-### Assinante (Proprietário de Loja)
-
-Usuário que possui um plano de assinatura ativo.  
-É responsável pela administração completa de suas lojas, incluindo:
-
-- Criação e configuração de lojas.
-- Personalização de layout, cores e elementos visuais.
-- Gestão de produtos, categorias e estoque.
-- Acompanhamento de estatísticas de desempenho e vendas.
-- Administração de pedidos e informações logísticas.
-
-### Administrador
-
-Responsável pela gestão integral da plataforma.  
-Seu papel abrange:
-
-- Administração de usuários, assinaturas e permissões.
-- Gerenciamento de planos, configurações e políticas internas.
-- Moderação de lojas, produtos e conteúdos publicados.
-- Acompanhamento de métricas gerais e atividades do sistema.
-- Execução de processos de manutenção, auditoria e controle operacional.
 
 ## Como Começar
 
