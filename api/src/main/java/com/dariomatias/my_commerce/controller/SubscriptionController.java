@@ -6,6 +6,10 @@ import com.dariomatias.my_commerce.dto.subscription.SubscriptionResponseDTO;
 import com.dariomatias.my_commerce.model.Subscription;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.service.SubscriptionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +23,10 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/subscriptions")
+@Tag(
+        name = "Subscriptions",
+        description = "Endpoints for managing subscriptions"
+)
 public class SubscriptionController {
 
     private final SubscriptionService service;
@@ -27,11 +35,17 @@ public class SubscriptionController {
         this.service = service;
     }
 
+    @Operation(summary = "Create subscription", description = "Creates a new subscription for the authenticated user")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Subscription created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data")
+    })
     @PostMapping
     public ResponseEntity<ApiResult<SubscriptionResponseDTO>> create(
             @AuthenticationPrincipal User user,
             @RequestBody SubscriptionRequestDTO request
     ) {
+
         Subscription subscription = service.create(user, request);
 
         return ResponseEntity.ok(
@@ -39,12 +53,18 @@ public class SubscriptionController {
         );
     }
 
+    @Operation(summary = "List all subscriptions", description = "Returns a paginated list of all subscriptions. Admin access only")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Subscriptions retrieved successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied")
+    })
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResult<Page<SubscriptionResponseDTO>>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
+
         Pageable pageable = PageRequest.of(
                 page,
                 size,
@@ -59,6 +79,11 @@ public class SubscriptionController {
         );
     }
 
+    @Operation(summary = "List subscriptions by user", description = "Returns a paginated list of subscriptions for a specific user. Admin access only")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User subscriptions retrieved successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied")
+    })
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResult<Page<SubscriptionResponseDTO>>> getAllByUser(
@@ -66,6 +91,7 @@ public class SubscriptionController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
+
         Pageable pageable = PageRequest.of(
                 page,
                 size,
@@ -80,12 +106,17 @@ public class SubscriptionController {
         );
     }
 
+    @Operation(summary = "List my subscriptions", description = "Returns a paginated list of subscriptions for the authenticated user")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User subscriptions retrieved successfully")
+    })
     @GetMapping("/user/me")
     public ResponseEntity<ApiResult<Page<SubscriptionResponseDTO>>> getAllByMe(
             @AuthenticationPrincipal User user,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
+
         Pageable pageable = PageRequest.of(
                 page,
                 size,
@@ -100,11 +131,17 @@ public class SubscriptionController {
         );
     }
 
+    @Operation(summary = "Get active subscription for me", description = "Returns the currently active subscription for the authenticated user")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Active subscription retrieved successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied")
+    })
     @GetMapping("/me/active")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResult<SubscriptionResponseDTO>> getActiveByMe(
             @AuthenticationPrincipal User user
     ) {
+
         Subscription subscription = service.getActiveByUser(user.getId());
 
         return ResponseEntity.ok(
@@ -112,11 +149,18 @@ public class SubscriptionController {
         );
     }
 
+    @Operation(summary = "Get subscription by ID", description = "Returns subscription details by its identifier")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Subscription retrieved successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied"),
+            @ApiResponse(responseCode = "404", description = "Subscription not found")
+    })
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResult<SubscriptionResponseDTO>> getById(
             @PathVariable UUID id
     ) {
+
         Subscription subscription = service.getById(id);
 
         return ResponseEntity.ok(
@@ -124,12 +168,19 @@ public class SubscriptionController {
         );
     }
 
+    @Operation(summary = "Change subscription plan", description = "Allows the authenticated user to change their subscription plan")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Subscription plan changed successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data")
+    })
     @PatchMapping("/change-plan")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResult<SubscriptionResponseDTO>> changePlan(
             @AuthenticationPrincipal User user,
             @RequestBody SubscriptionRequestDTO request
     ) {
+
         Subscription subscription = service.changePlan(user, request);
 
         return ResponseEntity.ok(
@@ -137,11 +188,17 @@ public class SubscriptionController {
         );
     }
 
+    @Operation(summary = "Cancel active subscription", description = "Cancels the currently active subscription for the authenticated user")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Subscription cancelled successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied")
+    })
     @PatchMapping("/cancel")
     @PreAuthorize("hasRole('SUBSCRIBER')")
     public ResponseEntity<ApiResult<SubscriptionResponseDTO>> cancelActive(
             @AuthenticationPrincipal User user
     ) {
+
         Subscription subscription = service.cancelActiveSubscription(user);
 
         return ResponseEntity.ok(
