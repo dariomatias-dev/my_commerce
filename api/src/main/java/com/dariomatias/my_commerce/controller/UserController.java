@@ -1,6 +1,5 @@
 package com.dariomatias.my_commerce.controller;
 
-import com.dariomatias.my_commerce.dto.ApiResponse;
 import com.dariomatias.my_commerce.dto.PasswordUpdateRequest;
 import com.dariomatias.my_commerce.dto.user.AdminUserResponse;
 import com.dariomatias.my_commerce.dto.user.UserFilterDTO;
@@ -8,6 +7,9 @@ import com.dariomatias.my_commerce.dto.user.UserRequest;
 import com.dariomatias.my_commerce.dto.user.UserResponse;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "Users", description = "Operations related to user management")
 public class UserController {
 
     private final UserService userService;
@@ -29,9 +32,14 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping
+    @Operation(
+            summary = "List all users",
+            description = "Returns a paginated list of users with optional filters. Admin access only."
+    )
+    @ApiResponse(responseCode = "200", description = "Users retrieved successfully")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Page<AdminUserResponse>>> getAll(
+    @GetMapping
+    public ResponseEntity<com.dariomatias.my_commerce.dto.ApiResponse<Page<AdminUserResponse>>> getAll(
             UserFilterDTO filter,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -47,26 +55,42 @@ public class UserController {
                 .map(AdminUserResponse::from);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Usuários obtidos com sucesso.", users)
+                com.dariomatias.my_commerce.dto.ApiResponse.success(
+                        "Users retrieved successfully.",
+                        users
+                )
         );
     }
 
-    @GetMapping("/{id}")
+    @Operation(
+            summary = "Get user by ID",
+            description = "Returns a specific user by ID. Admin access only."
+    )
+    @ApiResponse(responseCode = "200", description = "User retrieved successfully")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<AdminUserResponse>> getUserById(
+    @GetMapping("/{id}")
+    public ResponseEntity<com.dariomatias.my_commerce.dto.ApiResponse<AdminUserResponse>> getUserById(
             @AuthenticationPrincipal User authenticatedUser,
             @PathVariable UUID id
     ) {
         User user = userService.getById(authenticatedUser, id);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Usuário obtido com sucesso.", AdminUserResponse.from(user))
+                com.dariomatias.my_commerce.dto.ApiResponse.success(
+                        "User retrieved successfully.",
+                        AdminUserResponse.from(user)
+                )
         );
     }
 
-    @PatchMapping("/{id}")
+    @Operation(
+            summary = "Update user by ID",
+            description = "Updates an existing user. Admin access only."
+    )
+    @ApiResponse(responseCode = "200", description = "User updated successfully")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<AdminUserResponse>> updateUser(
+    @PatchMapping("/{id}")
+    public ResponseEntity<com.dariomatias.my_commerce.dto.ApiResponse<AdminUserResponse>> updateUser(
             @AuthenticationPrincipal User authenticatedUser,
             @PathVariable UUID id,
             @RequestBody UserRequest updatedUser
@@ -74,76 +98,135 @@ public class UserController {
         User user = userService.update(authenticatedUser, id, updatedUser);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Usuário atualizado com sucesso.", AdminUserResponse.from(user))
+                com.dariomatias.my_commerce.dto.ApiResponse.success(
+                        "User updated successfully.",
+                        AdminUserResponse.from(user)
+                )
         );
     }
 
-    @DeleteMapping("/{id}")
+    @Operation(
+            summary = "Delete user by ID",
+            description = "Deletes a user by ID. Admin access only."
+    )
+    @ApiResponse(responseCode = "200", description = "User deleted successfully")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Void>> deleteUser(
+    @DeleteMapping("/{id}")
+    public ResponseEntity<com.dariomatias.my_commerce.dto.ApiResponse<Void>> deleteUser(
             @AuthenticationPrincipal User authenticatedUser,
             @PathVariable UUID id
     ) {
         userService.delete(authenticatedUser, id);
 
         return ResponseEntity.ok(
-                ApiResponse.success("Usuário excluído com sucesso", null)
+                com.dariomatias.my_commerce.dto.ApiResponse.success(
+                        "User deleted successfully.",
+                        null
+                )
         );
     }
 
+    @Operation(
+            summary = "Get current authenticated user",
+            description = "Returns the data of the currently authenticated user."
+    )
+    @ApiResponse(responseCode = "200", description = "User retrieved successfully")
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser(
+    public ResponseEntity<com.dariomatias.my_commerce.dto.ApiResponse<UserResponse>> getCurrentUser(
             @AuthenticationPrincipal User authenticatedUser
     ) {
         User currentUser = userService.getById(authenticatedUser, authenticatedUser.getId());
 
         return ResponseEntity.ok(
-                ApiResponse.success("Usuário obtido com sucesso.", UserResponse.from(currentUser))
+                com.dariomatias.my_commerce.dto.ApiResponse.success(
+                        "User retrieved successfully.",
+                        UserResponse.from(currentUser)
+                )
         );
     }
 
-    @GetMapping("/stats/active-users")
+    @Operation(
+            summary = "Get active users count",
+            description = "Returns the number of active users. Admin access only."
+    )
+    @ApiResponse(responseCode = "200", description = "Active users count retrieved successfully")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Long>> getActiveUsersCount() {
+    @GetMapping("/stats/active-users")
+    public ResponseEntity<com.dariomatias.my_commerce.dto.ApiResponse<Long>> getActiveUsersCount() {
         long activeUsers = userService.getActiveUsersCount();
 
         return ResponseEntity.ok(
-                ApiResponse.success("Quantidade de usuários ativos", activeUsers)
+                com.dariomatias.my_commerce.dto.ApiResponse.success(
+                        "Active users count retrieved successfully.",
+                        activeUsers
+                )
         );
     }
 
+    @Operation(
+            summary = "Update current user",
+            description = "Updates the currently authenticated user."
+    )
+    @ApiResponse(responseCode = "200", description = "User updated successfully")
     @PatchMapping("/me")
-    public ResponseEntity<ApiResponse<UserResponse>> updateCurrentUser(
+    public ResponseEntity<com.dariomatias.my_commerce.dto.ApiResponse<UserResponse>> updateCurrentUser(
             @AuthenticationPrincipal User authenticatedUser,
             @RequestBody UserRequest updatedUser
     ) {
-        User updated = userService.update(authenticatedUser, authenticatedUser.getId(), updatedUser);
+        User updated = userService.update(
+                authenticatedUser,
+                authenticatedUser.getId(),
+                updatedUser
+        );
 
         return ResponseEntity.ok(
-                ApiResponse.success("Usuário atualizado com sucesso.", UserResponse.from(updated))
+                com.dariomatias.my_commerce.dto.ApiResponse.success(
+                        "User updated successfully.",
+                        UserResponse.from(updated)
+                )
         );
     }
 
+    @Operation(
+            summary = "Change current user password",
+            description = "Changes the password of the currently authenticated user."
+    )
+    @ApiResponse(responseCode = "200", description = "Password updated successfully")
     @PostMapping("/me/change-password")
-    public ResponseEntity<ApiResponse<Void>> changePassword(
+    public ResponseEntity<com.dariomatias.my_commerce.dto.ApiResponse<Void>> changePassword(
             @AuthenticationPrincipal User authenticatedUser,
             @RequestBody PasswordUpdateRequest request
     ) {
-        userService.changePassword(authenticatedUser, authenticatedUser.getId(), request);
+        userService.changePassword(
+                authenticatedUser,
+                authenticatedUser.getId(),
+                request
+        );
 
         return ResponseEntity.ok(
-                ApiResponse.success("Senha atualizada com sucesso", null)
+                com.dariomatias.my_commerce.dto.ApiResponse.success(
+                        "Password updated successfully.",
+                        null
+                )
         );
     }
 
+    @Operation(
+            summary = "Delete current user",
+            description = "Deletes the currently authenticated user."
+    )
+    @ApiResponse(responseCode = "200", description = "User deleted successfully")
     @DeleteMapping("/me")
-    public ResponseEntity<ApiResponse<Void>> deleteCurrentUser(
+    public ResponseEntity<com.dariomatias.my_commerce.dto.ApiResponse<Void>> deleteCurrentUser(
             @AuthenticationPrincipal User authenticatedUser
     ) {
         userService.delete(authenticatedUser, authenticatedUser.getId());
 
         return ResponseEntity.ok(
-                ApiResponse.success("Usuário excluído com sucesso", null)
+                com.dariomatias.my_commerce.dto.ApiResponse.success(
+                        "User deleted successfully.",
+                        null
+                )
         );
     }
 }
