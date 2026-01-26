@@ -114,7 +114,7 @@ O banco de dados PostgreSQL é configurado e executado através do Docker Compos
 
 1. **Crie um arquivo `.env`**
 
-   Acesse o arquivo `.env-example` e remova `-example`.
+   Acesse o arquivo `.env.example` e remova `.example`.
    Altere os valores conforme necessário.
 
 2. Inicie o Contêiner do Banco de Dados

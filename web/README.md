@@ -105,7 +105,7 @@ pnpm install
 
 ### Variáveis de Ambiente
 
-Crie um arquivo `.env` na raiz do diretório `web` baseando-se no arquivo `.env_example`.
+Crie um arquivo `.env` na raiz do diretório `web` baseando-se no arquivo `.env.example`.
 
 ### Rodando o Projeto
 
