@@ -67,10 +67,13 @@ Para facilitar a navegação e consulta, utilize os links abaixo:
 
 ### Frontend Web
 
-- **[TypeScript](https://www.typescriptlang.org/)** – Superset do JavaScript que adiciona tipagem estática opcional e recursos avançados para facilitar o desenvolvimento e a manutenção de aplicações escaláveis.
-- **[Next.js (TypeScript)](https://nextjs.org/)** – Framework moderno e otimizado para desenvolvimento web rápido e escalável.
-- **[TailwindCSS](https://tailwindcss.com/)** – Framework CSS utilitário para estilização ágil e responsiva.
-- **[Shadcn/UI](https://ui.shadcn.com/)** – Componentes UI prontos e personalizáveis para interfaces de usuário elegantes.
+- **[TypeScript](https://www.typescriptlang.org/)** – Superset do JavaScript que adiciona tipagem estática opcional, aumentando a segurança, previsibilidade e manutenibilidade do código.
+- **[Next.js (TypeScript)](https://nextjs.org/)** – Framework React moderno com foco em performance, SEO, renderização híbrida (SSR/SSG) e roteamento avançado.
+- **[Tailwind CSS](https://tailwindcss.com/)** – Framework CSS utilitário para estilização ágil, responsiva e altamente customizável.
+- **[Shadcn/UI](https://ui.shadcn.com/)** – Conjunto de componentes acessíveis e personalizáveis para criação de interfaces modernas.
+- **[React Hook Form](https://react-hook-form.com/)** – Biblioteca performática para gerenciamento de formulários com validação simples e eficiente.
+- **[Zod](https://zod.dev/)** – Biblioteca de validação de esquemas com tipagem forte e validação em tempo de execução.
+- **[Lucide React](https://lucide.dev/)** – Biblioteca de ícones SVG leves, consistentes e facilmente customizáveis.
 
 ### Backend
 
