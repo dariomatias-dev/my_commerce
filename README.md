@@ -101,75 +101,117 @@ O sistema implementa um controle de acesso baseado em perfis para garantir a seg
 
 ## Como Começar
 
-Para ter uma cópia local funcionando, siga os seguintes passos:
+Para executar o projeto **my_commerce** localmente, siga os passos abaixo. O sistema é composto por **Backend (API)**, **Frontend Web** e **Aplicativo Mobile**, sendo possível executar cada parte de forma independente.
 
 ### Pré-requisitos
 
 Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
 
-- **Node.js** (para Frontend Web)
-- **pnpm** (gerenciador de pacotes para Frontend Web)
-- **Java Development Kit (JDK)** (para Backend)
-- **Maven** (para gerenciamento de dependências do Backend)
-- **Docker** (para conteinerização)
-- **Flutter SDK** (para Mobile)
+- **Node.js** (para o Frontend Web)
+- **pnpm** (gerenciador de pacotes do Frontend Web)
+- **Java Development Kit (JDK)** versão 17 ou superior (para o Backend)
+- **Maven** (gerenciamento de dependências do Backend)
+- **Docker** e **Docker Compose** (conteinerização dos serviços)
+- **Flutter SDK** (para o aplicativo Mobile)
 
 ### Instalação
 
-1. **Clonar o Repositório**
+#### 1. Clonar o Repositório
 
-   Execute o seguinte comando para clonar o repositório:
+Clone o repositório principal do projeto:
 
-   ```bash
-   git clone https://github.com/dariomatias-dev/my_commerce.git
+```bash
+git clone https://github.com/dariomatias-dev/my_commerce.git
 
-   cd my_commerce
-   ```
+cd my_commerce
+```
 
-2. **Configurar o Backend (Java + Spring Boot)**
+#### 2. Configurar e Rodar o Backend (Java + Spring Boot)
 
-   Navegue até o diretório `api` e siga as instruções para configurar o banco de dados (PostgreSQL) e rodar a aplicação Spring Boot.
+1. Acesse a pasta do backend:
 
-   ```bash
-   cd api
+```bash
+cd api
+```
 
-   ./mvnw clean install
-   ./mvnw spring-boot:run
-   ```
+2. Crie um arquivo `.env` com base no `.env.example`, ajustando as variáveis conforme necessário.
 
-3. **Configurar o Frontend Web (Next.js)**
+3. Suba os containers docker:
 
-   Navegue até o diretório `web` e instale as dependências.
+```bash
+docker compose up -d
+```
 
-   ```bash
-   cd web
+4. Execute a aplicação Spring Boot (via IntelliJ ou terminal):
 
-   pnpm install
-   ```
+```bash
+./mvnw clean install
 
-   Para rodar o servidor de desenvolvimento:
+./mvnw spring-boot:run
+```
 
-   ```bash
-   pnpm run dev
-   ```
+Durante a inicialização, o **Liquibase** será responsável por criar automaticamente extensões, tabelas, constraints e funções PL/pgSQL no banco de dados.
 
-   Abra `http://localhost:3000` em seu navegador para visualizar o resultado.
+Após esse processo, a API estará disponível e pronta para uso.
 
-4. **Configurar o Aplicativo Mobile (Flutter)**
+#### 3. Configurar e Rodar o Frontend Web (Next.js)
 
-   Navegue até o diretório `mobile` e obtenha as dependências.
+1. Acesse a pasta do frontend:
 
-   ```bash
-   cd mobile
+```bash
+cd web
+```
 
-   flutter pub get
-   ```
+2. Crie um arquivo `.env` com base no `.env.example`.
 
-   Para rodar o aplicativo em um emulador ou dispositivo conectado:
+3. Instale as dependências:
 
-   ```bash
-   flutter run
-   ```
+```bash
+pnpm install
+```
+
+4. Inicie o servidor de desenvolvimento:
+
+```bash
+pnpm run dev
+```
+
+A aplicação web estará disponível em:
+
+```
+http://localhost:3000
+```
+
+> **Observação:** O backend deve estar em execução para que o frontend funcione corretamente.
+
+#### 4. Configurar o Aplicativo Mobile (Flutter)
+
+1. Acesse a pasta do aplicativo mobile:
+
+```bash
+cd mobile
+```
+
+2. Instale as dependências do projeto:
+
+```bash
+flutter pub get
+```
+
+3. Execute o aplicativo em um emulador ou dispositivo conectado:
+
+```bash
+flutter run
+```
+
+#### 5. Populando o Banco de Dados (Opcional)
+
+O projeto conta com **seeds** para geração automática de dados de desenvolvimento e teste.
+Para gerar registros em todas as tabelas, acesse a pasta `seeds` no backend e execute a classe `RunAllSeeds`.
+
+</br>
+
+As documentações do **backend**, **frontend** e **mobile** estão disponíveis nos respectivos arquivos `README`, detalhando a estrutura dos projetos, tecnologias utilizadas, variáveis de ambiente e instruções complementares para facilitar a execução, entendimento e manutenção do sistema.
 
 ## Licença
 
