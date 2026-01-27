@@ -12,6 +12,8 @@ export const StoreCardActions = ({
   onDelete,
   basePath,
 }: StoreCardActionsProps) => {
+  const isDeleted = store.deletedAt !== null;
+
   return (
     <div className="mt-10 flex items-center gap-3">
       <Link
@@ -21,19 +23,23 @@ export const StoreCardActions = ({
         <Package size={14} /> Produtos
       </Link>
 
-      <Link
-        href={`${basePath}/stores/${store.slug}/edit`}
-        className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-100 text-slate-400 transition-colors hover:bg-slate-50 hover:text-indigo-600"
-      >
-        <Pencil size={16} />
-      </Link>
+      {!isDeleted && (
+        <>
+          <Link
+            href={`${basePath}/stores/${store.slug}/edit`}
+            className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-100 text-slate-400 transition-colors hover:bg-slate-50 hover:text-indigo-600"
+          >
+            <Pencil size={16} />
+          </Link>
 
-      <button
-        onClick={() => onDelete?.(store.id)}
-        className="flex h-12 w-12 items-center justify-center rounded-xl border border-red-50 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
-      >
-        <Trash2 size={16} />
-      </button>
+          <button
+            onClick={() => onDelete?.(store.id)}
+            className="flex h-12 w-12 items-center justify-center rounded-xl border border-red-50 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
+          >
+            <Trash2 size={16} />
+          </button>
+        </>
+      )}
     </div>
   );
 };
