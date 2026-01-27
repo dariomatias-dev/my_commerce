@@ -5,6 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -31,4 +34,14 @@ public interface ProductRepository
     long countByStore_User_IdAndActiveTrueAndDeletedAtIsNull(UUID userId);
 
     long countByStore_IdAndActiveTrue(UUID storeId);
+
+    @Modifying
+    @Query("""
+        update Product p
+           set p.deletedAt = CURRENT_TIMESTAMP,
+               p.active = false
+         where p.store.id = :storeId
+           and p.deletedAt is null
+    """)
+    void deleteByStoreId(@Param("storeId") UUID storeId);
 }

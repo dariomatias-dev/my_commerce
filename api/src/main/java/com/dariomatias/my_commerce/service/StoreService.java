@@ -6,6 +6,7 @@ import com.dariomatias.my_commerce.enums.StatusFilter;
 import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.User;
+import com.dariomatias.my_commerce.repository.contract.ProductContract;
 import com.dariomatias.my_commerce.repository.contract.StoreContract;
 import com.dariomatias.my_commerce.repository.contract.SubscriptionContract;
 import com.dariomatias.my_commerce.repository.contract.UserContract;
@@ -25,6 +26,7 @@ import java.util.UUID;
 public class StoreService {
 
     private final StoreContract storeRepository;
+    private final ProductContract productRepository;
     private final SubscriptionContract subscriptionRepository;
     private final UserContract userRepository;
     private final MinioService minioService;
@@ -33,11 +35,13 @@ public class StoreService {
 
     public StoreService(
             StoreContract storeRepository,
+            ProductContract productRepository,
             SubscriptionContract subscriptionRepository,
             UserContract userRepository,
             MinioService minioService
     ) {
         this.storeRepository = storeRepository;
+        this.productRepository = productRepository;
         this.subscriptionRepository = subscriptionRepository;
         this.userRepository = userRepository;
         this.minioService = minioService;
@@ -167,11 +171,10 @@ public class StoreService {
         Store store = getStoreById(id);
         checkAccess(user, store.getUserId());
 
-        String folder = store.getSlug() + "/";
-
+        productRepository.deleteByStoreId(store.getId());
         storeRepository.delete(store);
 
-        minioService.deleteFolder(BUCKET_NAME, folder);
+        minioService.deleteFolder(BUCKET_NAME, store.getSlug() + "/");
     }
 
     private User getUserById(UUID id) {

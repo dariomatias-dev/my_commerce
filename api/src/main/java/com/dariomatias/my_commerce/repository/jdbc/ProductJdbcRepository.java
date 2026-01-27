@@ -326,6 +326,19 @@ public class ProductJdbcRepository implements ProductContract {
                 .addValue("deletedAt", LocalDateTime.now()));
     }
 
+    @Override
+    public void deleteByStoreId(UUID storeId) {
+        jdbc.update("""
+            UPDATE products
+            SET deleted_at = :deletedAt,
+                active = false
+            WHERE store_id = :storeId
+              AND deleted_at IS NULL
+        """, new MapSqlParameterSource()
+                    .addValue("storeId", storeId)
+                    .addValue("deletedAt", LocalDateTime.now()));
+    }
+
     private void loadProductImages(Product product) {
         String imageSql = """
             SELECT id, product_id, url, position

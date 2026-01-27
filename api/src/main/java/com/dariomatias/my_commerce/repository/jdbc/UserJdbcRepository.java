@@ -39,6 +39,7 @@ public class UserJdbcRepository implements UserContract {
         Boolean enabled = rs.getObject("enabled", Boolean.class);
         u.setEnabled(Boolean.TRUE.equals(enabled));
         u.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        u.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
         if (rs.getTimestamp("deleted_at") != null) {
             u.setDeletedAt(rs.getTimestamp("deleted_at").toLocalDateTime());
         }
@@ -170,8 +171,8 @@ public class UserJdbcRepository implements UserContract {
     public void delete(UUID id) {
         jdbc.update("""
             UPDATE users
-            SET deleted_at = :deletedAt,
-                enabled = false
+            SET enabled = false,
+                deleted_at = :deletedAt
             WHERE id = :id
         """, new MapSqlParameterSource()
                 .addValue("id", id)

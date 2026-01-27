@@ -30,4 +30,6 @@ public interface ProductContract {
     Product update(Product product);
 
     void delete(UUID id);
+
+    void deleteByStoreId(UUID storeId);
 }
