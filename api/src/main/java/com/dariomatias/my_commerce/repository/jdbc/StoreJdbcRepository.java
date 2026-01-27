@@ -77,9 +77,6 @@ public class StoreJdbcRepository implements StoreContract {
         StringBuilder countSql = new StringBuilder("SELECT COUNT(*) FROM stores WHERE 1=1");
         MapSqlParameterSource params = new MapSqlParameterSource();
 
-        sql.append(" AND deleted_at IS NULL");
-        countSql.append(" AND deleted_at IS NULL");
-
         if (filter.getUserId() != null) {
             sql.append(" AND user_id = :userId");
             countSql.append(" AND user_id = :userId");
@@ -87,12 +84,16 @@ public class StoreJdbcRepository implements StoreContract {
         }
 
         if (filter.getStatus() != null) {
-            if (filter.getStatus() == StatusFilter.DELETED) {
-                sql.append(" AND deleted_at IS NOT NULL");
-                countSql.append(" AND deleted_at IS NOT NULL");
-            } else if (filter.getStatus() == StatusFilter.ACTIVE) {
-                sql.append(" AND deleted_at IS NULL");
-                countSql.append(" AND deleted_at IS NULL");
+            switch (filter.getStatus()) {
+                case ACTIVE -> {
+                    sql.append(" AND deleted_at IS NULL");
+                    countSql.append(" AND deleted_at IS NULL");
+                }
+                case DELETED -> {
+                    sql.append(" AND deleted_at IS NOT NULL");
+                    countSql.append(" AND deleted_at IS NOT NULL");
+                }
+                case ALL -> {}
             }
         }
 
@@ -187,6 +188,7 @@ public class StoreJdbcRepository implements StoreContract {
                 .addValue("updated_at", now));
 
         store.getAudit().setUpdatedAt(now);
+
         return store;
     }
 
@@ -195,8 +197,7 @@ public class StoreJdbcRepository implements StoreContract {
         String sql = """
             UPDATE stores
             SET is_active = false,
-                deleted_at = :deleted_at,
-                updated_at = :updated_at
+                deleted_at = :deleted_at
             WHERE id = :id
         """;
 
@@ -204,7 +205,6 @@ public class StoreJdbcRepository implements StoreContract {
 
         jdbc.update(sql, new MapSqlParameterSource()
                 .addValue("id", store.getId())
-                .addValue("deleted_at", now)
-                .addValue("updated_at", now));
+                .addValue("deleted_at", now));
     }
 }

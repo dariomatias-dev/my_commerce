@@ -155,7 +155,7 @@ public class StoreService {
 
     public void delete(UUID id, User user) {
         Store store = getStoreById(id);
-        checkAccess(user, store.getUser().getId());
+        checkAccess(user, store.getUserId());
 
         String folder = store.getSlug() + "/";
 
