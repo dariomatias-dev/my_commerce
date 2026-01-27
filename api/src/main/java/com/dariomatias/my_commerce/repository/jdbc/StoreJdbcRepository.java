@@ -111,7 +111,7 @@ public class StoreJdbcRepository implements StoreContract {
     public Optional<Store> findById(UUID id) {
         String sql = """
             SELECT * FROM stores
-            WHERE id = :id AND deleted_at IS NULL
+            WHERE id = :id
         """;
 
         List<Store> list = jdbc.query(sql,
@@ -125,7 +125,7 @@ public class StoreJdbcRepository implements StoreContract {
     public Optional<Store> findBySlug(String slug) {
         String sql = """
             SELECT * FROM stores
-            WHERE slug = :slug AND deleted_at IS NULL
+            WHERE slug = :slug
         """;
 
         List<Store> list = jdbc.query(sql,

@@ -158,10 +158,11 @@ public class StoreController {
     })
     @GetMapping("/slug/{slug}")
     public ResponseEntity<ApiResult<StoreResponseDTO>> getBySlug(
+            @AuthenticationPrincipal User user,
             @PathVariable String slug
     ) {
 
-        Store store = service.getBySlug(slug);
+        Store store = service.getBySlug(slug, user);
 
         return ResponseEntity.ok(
                 ApiResult.success(

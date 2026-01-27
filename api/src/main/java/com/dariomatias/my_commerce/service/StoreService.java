@@ -104,11 +104,21 @@ public class StoreService {
         return store;
     }
 
-    public Store getBySlug(String slug) {
-        return storeRepository.findBySlug(slug)
+    public Store getBySlug(String slug, User authenticatedUser) {
+        Store store = storeRepository.findBySlug(slug)
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada")
                 );
+
+        if (store.isDeleted()) {
+            if (authenticatedUser.getRole() == UserRole.ADMIN) {
+                return store;
+            }
+
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada");
+        }
+
+        return store;
     }
 
     public long getActiveStoresCount() {
