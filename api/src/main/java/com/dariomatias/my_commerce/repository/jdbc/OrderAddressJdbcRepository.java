@@ -36,6 +36,7 @@ public class OrderAddressJdbcRepository implements OrderAddressContract {
 
     private OrderAddress mapAddress(ResultSet rs, int rowNum) throws SQLException {
         OrderAddress orderAddress = new OrderAddress();
+
         orderAddress.setId(UUID.fromString(rs.getString("id")));
         orderAddress.setLabel(rs.getString("label"));
         orderAddress.setStreet(rs.getString("street"));

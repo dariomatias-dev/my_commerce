@@ -31,6 +31,7 @@ public class OrderItemJdbcRepository implements OrderItemContract {
 
     private OrderItem map(ResultSet rs, int row) throws SQLException {
         OrderItem item = new OrderItem();
+
         item.setId(UUID.fromString(rs.getString("id")));
         item.setQuantity(rs.getInt("quantity"));
         item.setPrice(rs.getBigDecimal("price"));

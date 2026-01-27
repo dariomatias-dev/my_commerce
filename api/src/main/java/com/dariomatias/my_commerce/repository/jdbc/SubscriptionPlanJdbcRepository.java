@@ -26,6 +26,7 @@ public class SubscriptionPlanJdbcRepository implements SubscriptionPlanContract 
 
     private final RowMapper<SubscriptionPlan> mapper = (rs, rowNum) -> {
         SubscriptionPlan plan = new SubscriptionPlan();
+
         plan.setId(UUID.fromString(rs.getString("id")));
         plan.setName(rs.getString("name"));
         plan.setMaxStores(rs.getInt("max_stores"));

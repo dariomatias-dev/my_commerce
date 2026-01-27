@@ -37,6 +37,7 @@ public class UserAddressJdbcRepository implements UserAddressContract {
 
     private UserAddress mapAddress(ResultSet rs, int rowNum) throws SQLException {
         UserAddress address = new UserAddress();
+
         address.setId(UUID.fromString(rs.getString("id")));
         address.setLabel(rs.getString("label"));
         address.setStreet(rs.getString("street"));

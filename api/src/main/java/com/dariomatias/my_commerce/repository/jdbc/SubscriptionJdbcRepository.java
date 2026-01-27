@@ -26,6 +26,7 @@ public class SubscriptionJdbcRepository implements SubscriptionContract {
 
     private final RowMapper<Subscription> mapper = (rs, rowNum) -> {
         Subscription s = new Subscription();
+
         s.setId(UUID.fromString(rs.getString("id")));
         s.setUserId(UUID.fromString(rs.getString("user_id")));
         s.setPlanId(UUID.fromString(rs.getString("plan_id")));

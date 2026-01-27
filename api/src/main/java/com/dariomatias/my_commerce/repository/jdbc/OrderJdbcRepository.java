@@ -32,6 +32,7 @@ public class OrderJdbcRepository implements OrderContract {
 
     private final RowMapper<Order> mapper = (rs, rowNum) -> {
         Order order = new Order();
+
         order.setId(UUID.fromString(rs.getString("id")));
         order.setTotalAmount(rs.getBigDecimal("total_amount"));
         order.setStatus(Status.valueOf(rs.getString("status")));

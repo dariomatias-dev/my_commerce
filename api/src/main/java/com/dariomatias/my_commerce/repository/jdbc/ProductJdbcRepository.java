@@ -31,20 +31,24 @@ public class ProductJdbcRepository implements ProductContract {
     }
 
     private final RowMapper<Product> mapper = (rs, rowNum) -> {
-        Product p = new Product();
-        p.setId(UUID.fromString(rs.getString("id")));
-        p.setStoreId(UUID.fromString(rs.getString("store_id")));
-        p.setCategoryId(UUID.fromString(rs.getString("category_id")));
-        p.setName(rs.getString("name"));
-        p.setSlug(rs.getString("slug"));
-        p.setDescription(rs.getString("description"));
-        p.setPrice(rs.getBigDecimal("price"));
-        p.setStock(rs.getInt("stock"));
-        p.setActive(rs.getBoolean("active"));
-        p.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-        p.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+        Product product = new Product();
 
-        return p;
+        product.setId(UUID.fromString(rs.getString("id")));
+        product.setStoreId(UUID.fromString(rs.getString("store_id")));
+        product.setCategoryId(UUID.fromString(rs.getString("category_id")));
+        product.setName(rs.getString("name"));
+        product.setSlug(rs.getString("slug"));
+        product.setDescription(rs.getString("description"));
+        product.setPrice(rs.getBigDecimal("price"));
+        product.setStock(rs.getInt("stock"));
+        product.setActive(rs.getBoolean("active"));
+        product.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        product.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+        if (rs.getTimestamp("deleted_at") != null) {
+            product.setDeletedAt(rs.getTimestamp("deleted_at").toLocalDateTime());
+        }
+
+        return product;
     };
 
     @Override

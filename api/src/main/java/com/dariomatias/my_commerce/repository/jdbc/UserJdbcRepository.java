@@ -30,21 +30,22 @@ public class UserJdbcRepository implements UserContract {
     }
 
     private final RowMapper<User> mapper = (rs, rowNum) -> {
-        User u = new User();
-        u.setId(UUID.fromString(rs.getString("id")));
-        u.setName(rs.getString("name"));
-        u.setEmail(rs.getString("email"));
-        u.setPassword(rs.getString("password"));
-        u.setRole(UserRole.valueOf(rs.getString("role")));
+        User user = new User();
+
+        user.setId(UUID.fromString(rs.getString("id")));
+        user.setName(rs.getString("name"));
+        user.setEmail(rs.getString("email"));
+        user.setPassword(rs.getString("password"));
+        user.setRole(UserRole.valueOf(rs.getString("role")));
         Boolean enabled = rs.getObject("enabled", Boolean.class);
-        u.setEnabled(Boolean.TRUE.equals(enabled));
-        u.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-        u.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+        user.setEnabled(Boolean.TRUE.equals(enabled));
+        user.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        user.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
         if (rs.getTimestamp("deleted_at") != null) {
-            u.setDeletedAt(rs.getTimestamp("deleted_at").toLocalDateTime());
+            user.setDeletedAt(rs.getTimestamp("deleted_at").toLocalDateTime());
         }
 
-        return u;
+        return user;
     };
 
     @Override

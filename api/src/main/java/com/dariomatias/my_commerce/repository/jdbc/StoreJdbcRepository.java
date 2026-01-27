@@ -32,12 +32,11 @@ public class StoreJdbcRepository implements StoreContract {
         store.setDescription(rs.getString("description"));
         store.setThemeColor(rs.getString("theme_color"));
         store.setIsActive(rs.getBoolean("is_active"));
-        store.setDeletedAt(rs.getTimestamp("deleted_at") != null
-                ? rs.getTimestamp("deleted_at").toLocalDateTime()
-                : null);
-
         store.getAudit().setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         store.getAudit().setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+        if (rs.getTimestamp("deleted_at") != null) {
+            store.setDeletedAt(rs.getTimestamp("deleted_at").toLocalDateTime());
+        }
 
         return store;
     };

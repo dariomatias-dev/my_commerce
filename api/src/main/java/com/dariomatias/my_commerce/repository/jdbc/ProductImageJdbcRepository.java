@@ -24,6 +24,7 @@ public class ProductImageJdbcRepository implements ProductImageContract {
 
     private final RowMapper<ProductImage> mapper = (rs, rowNum) -> {
         ProductImage image = new ProductImage();
+
         image.setId(UUID.fromString(rs.getString("id")));
         image.setProductId(UUID.fromString(rs.getString("product_id")));
         image.setUrl(rs.getString("url"));

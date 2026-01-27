@@ -29,6 +29,7 @@ public class CategoryJdbcRepository implements CategoryContract {
 
     private Category mapCategory(ResultSet rs) throws SQLException {
         Category category = new Category();
+
         category.setId(UUID.fromString(rs.getString("id")));
         category.setName(rs.getString("name"));
         category.setStoreId(UUID.fromString(rs.getString("store_id")));
