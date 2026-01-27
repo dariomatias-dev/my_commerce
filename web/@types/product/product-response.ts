@@ -11,6 +11,7 @@ export interface ProductResponse {
   images: ProductImage[];
   createdAt: string;
   updatedAt: string;
+  deletedAt: string;
 }
 
 export interface ProductImage {

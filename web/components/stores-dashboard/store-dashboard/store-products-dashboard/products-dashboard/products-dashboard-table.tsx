@@ -131,21 +131,23 @@ export const ProductsDashboardTable = ({
 
                   <td className="py-6 pr-10 text-right">
                     <div className="flex justify-end gap-2">
-                      {product.active && (
-                        <Link
-                          href={`${basePath}/products/${product.slug}/edit`}
-                          className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-slate-100 bg-white text-slate-400 hover:text-indigo-600"
-                        >
-                          <Edit3 size={18} />
-                        </Link>
-                      )}
+                      {product.deletedAt === null && (
+                        <>
+                          <Link
+                            href={`${basePath}/products/${product.slug}/edit`}
+                            className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-slate-100 bg-white text-slate-400 hover:text-indigo-600"
+                          >
+                            <Edit3 size={18} />
+                          </Link>
 
-                      <button
-                        onClick={() => handleOpenFirstConfirm(product)}
-                        className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-slate-100 bg-white text-slate-400 hover:text-red-500"
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                          <button
+                            onClick={() => handleOpenFirstConfirm(product)}
+                            className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-slate-100 bg-white text-slate-400 hover:text-red-500"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>
