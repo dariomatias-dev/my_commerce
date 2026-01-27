@@ -4,7 +4,10 @@ import com.dariomatias.my_commerce.dto.PasswordUpdateRequest;
 import com.dariomatias.my_commerce.dto.user.UserFilterDTO;
 import com.dariomatias.my_commerce.dto.user.UserRequest;
 import com.dariomatias.my_commerce.enums.UserRole;
+import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.User;
+import com.dariomatias.my_commerce.repository.contract.ProductContract;
+import com.dariomatias.my_commerce.repository.contract.StoreContract;
 import com.dariomatias.my_commerce.repository.contract.UserContract;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -15,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -22,20 +26,29 @@ import java.util.UUID;
 public class UserService {
 
     private final UserContract userRepository;
+    private final StoreContract storeRepository;
+    private final ProductContract productRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private final PasswordEncoder passwordEncoder;
+    private final MinioService minioService;
 
     private static final String EMAIL_VERIFICATION_PREFIX = "email_verification:";
     private static final String PASSWORD_RECOVERY_PREFIX = "password_recovery:";
 
     public UserService(
             UserContract userRepository,
+            StoreContract storeRepository,
+            ProductContract productRepository,
             RedisTemplate<String, Object> redisTemplate,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            MinioService minioService
     ) {
         this.userRepository = userRepository;
+        this.storeRepository = storeRepository;
+        this.productRepository = productRepository;
         this.redisTemplate = redisTemplate;
         this.passwordEncoder = passwordEncoder;
+        this.minioService = minioService;
     }
 
     public Page<User> getAll(UserFilterDTO filter, Pageable pageable) {
@@ -76,8 +89,15 @@ public class UserService {
     public void delete(User authenticatedUser, UUID id) {
         User user = getUserOrThrow(authenticatedUser, id);
 
-        user.delete();
+        List<Store> stores = storeRepository.findAllByUserId(id);
+        for (Store store : stores) {
+            minioService.deleteFolder("stores", store.getSlug() + "/");
+            productRepository.deleteByStoreId(store.getId());
+        }
 
+        storeRepository.deleteByUserId(id);
+
+        user.delete();
         invalidateUserTokens(id);
 
         userRepository.update(user);

@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,6 +50,11 @@ public class StoreJpaRepository implements StoreContract {
     }
 
     @Override
+    public List<Store> findAllByUserId(UUID userId) {
+        return repository.findAllByUser_Id(userId);
+    }
+
+    @Override
     public Optional<Store> findById(UUID id) {
         return repository.findById(id);
     }
@@ -79,5 +85,10 @@ public class StoreJpaRepository implements StoreContract {
         store.setDeletedAt(LocalDateTime.now());
 
         update(store);
+    }
+
+    @Override
+    public void deleteByUserId(UUID userId) {
+        repository.deleteByUserId(userId);
     }
 }

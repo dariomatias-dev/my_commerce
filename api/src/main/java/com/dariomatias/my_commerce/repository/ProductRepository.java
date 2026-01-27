@@ -18,7 +18,12 @@ import java.util.UUID;
 public interface ProductRepository
         extends JpaRepository<Product, UUID>,
         JpaSpecificationExecutor<Product> {
-    Page<Product> findAllByStore_IdAndIdInAndDeletedAtIsNull(UUID storeId, List<UUID> ids, Pageable pageable);
+
+    Page<Product> findAllByStore_IdAndIdInAndDeletedAtIsNull(
+            UUID storeId,
+            List<UUID> ids,
+            Pageable pageable
+    );
 
     Optional<Product> findByStore_SlugAndSlugAndDeletedAtIsNull(
             String storeSlug,

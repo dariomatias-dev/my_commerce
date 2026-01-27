@@ -108,6 +108,13 @@ public class StoreJdbcRepository implements StoreContract {
     }
 
     @Override
+    public List<Store> findAllByUserId(UUID userId) {
+        String sql = "SELECT * FROM stores WHERE user_id = :userId AND deleted_at IS NULL";
+
+        return jdbc.query(sql, new MapSqlParameterSource("userId", userId), mapper);
+    }
+
+    @Override
     public Optional<Store> findById(UUID id) {
         String sql = """
             SELECT * FROM stores
@@ -206,5 +213,18 @@ public class StoreJdbcRepository implements StoreContract {
         jdbc.update(sql, new MapSqlParameterSource()
                 .addValue("id", store.getId())
                 .addValue("deleted_at", now));
+    }
+
+    @Override
+    public void deleteByUserId(UUID userId) {
+            jdbc.update("""
+            UPDATE stores
+            SET is_active = false,
+                deleted_at = :deletedAt
+            WHERE user_id = :userId
+              AND deleted_at IS NULL
+        """, new MapSqlParameterSource()
+                    .addValue("userId", userId)
+                    .addValue("deletedAt", LocalDateTime.now()));
     }
 }
