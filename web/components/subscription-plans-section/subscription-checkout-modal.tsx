@@ -14,8 +14,9 @@ import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { SubscriptionPlanResponse } from "@/@types/subscription-plan/subscription-plan-response";
-import { useSubscription } from "@/services/hooks/use-subscription";
 import { useAuthContext } from "@/contexts/auth-context";
+import { useSubscription } from "@/services/hooks/use-subscription";
+import { AuthRequiredDialog } from "./auth-required-dialog";
 
 interface SubscriptionCheckoutModalProps {
   isOpen: boolean;
@@ -36,14 +37,15 @@ export const SubscriptionCheckoutModal = ({
     getMyActiveSubscription,
   } = useSubscription();
 
-  const { refreshUser } = useAuthContext();
+  const { refreshUser, isAuthenticated } = useAuthContext();
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [activePlanId, setActivePlanId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showAuthAlert, setShowAuthAlert] = useState(false);
 
   const checkActiveSubscription = useCallback(async () => {
-    if (!isOpen) return;
+    if (!isOpen || !isAuthenticated) return;
 
     try {
       const activeSub = await getMyActiveSubscription();
@@ -52,14 +54,26 @@ export const SubscriptionCheckoutModal = ({
     } catch {
       setActivePlanId(null);
     }
-  }, [isOpen, getMyActiveSubscription]);
+  }, [isOpen, getMyActiveSubscription, isAuthenticated]);
 
   useEffect(() => {
     checkActiveSubscription();
   }, [checkActiveSubscription]);
 
+  useEffect(() => {
+    if (!isOpen) {
+      setShowAuthAlert(false);
+    }
+  }, [isOpen]);
+
   const handleConfirmSubscription = async () => {
     if (!plan) return;
+
+    if (!isAuthenticated) {
+      setShowAuthAlert(true);
+
+      return;
+    }
 
     try {
       setIsProcessing(true);
@@ -89,6 +103,15 @@ export const SubscriptionCheckoutModal = ({
   };
 
   if (!isOpen || !plan) return null;
+
+  if (showAuthAlert) {
+    return (
+      <AuthRequiredDialog
+        isOpen={showAuthAlert}
+        onClose={() => setShowAuthAlert(false)}
+      />
+    );
+  }
 
   const isUpgrade = activePlanId && activePlanId !== plan.id;
 
