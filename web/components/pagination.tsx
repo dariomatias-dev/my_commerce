@@ -1,6 +1,11 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  LucideIcon,
+  MoreHorizontal,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -10,6 +15,30 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
   className?: string;
 }
+
+interface NavButtonProps {
+  onClick: () => void;
+  disabled: boolean;
+  icon: LucideIcon;
+}
+
+const NavButton = ({ onClick, disabled, icon: Icon }: NavButtonProps) => (
+  <button
+    onClick={onClick}
+    disabled={disabled}
+    className={cn(
+      "flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl",
+      "border border-slate-200 bg-white text-slate-600 shadow-sm",
+      "transition-all duration-200",
+      "hover:border-indigo-600 hover:text-indigo-600",
+      "active:opacity-80",
+      "cursor-pointer disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 disabled:text-slate-400",
+      "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600",
+    )}
+  >
+    <Icon size={20} />
+  </button>
+);
 
 export const Pagination = ({
   currentPage,
@@ -24,19 +53,16 @@ export const Pagination = ({
 
     if (totalPages <= 6) {
       for (let i = 0; i < totalPages; i++) pages.push(i);
-
       return pages;
     }
 
     if (currentPage < 3) {
       for (let i = 0; i < 4; i++) pages.push(i);
-
       pages.push("ellipsis-end");
       pages.push(totalPages - 1);
     } else if (currentPage > totalPages - 4) {
       pages.push(0);
       pages.push("ellipsis-start");
-
       for (let i = totalPages - 4; i < totalPages; i++) pages.push(i);
     } else {
       pages.push(0);
@@ -58,21 +84,11 @@ export const Pagination = ({
         className,
       )}
     >
-      <button
+      <NavButton
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 0}
-        className={cn(
-          "flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl",
-          "border border-slate-200 bg-white text-slate-600 shadow-sm",
-          "transition-all duration-200",
-          "hover:border-indigo-600 hover:text-indigo-600",
-          "active:opacity-80",
-          "cursor-pointer disabled:cursor-not-allowed disabled:opacity-20",
-          "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600",
-        )}
-      >
-        <ChevronLeft size={20} />
-      </button>
+        icon={ChevronLeft}
+      />
 
       <div className="flex items-center gap-2 sm:gap-3">
         {getPages().map((page, index) => {
@@ -108,21 +124,11 @@ export const Pagination = ({
         })}
       </div>
 
-      <button
+      <NavButton
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages - 1}
-        className={cn(
-          "flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl",
-          "border border-slate-200 bg-white text-slate-600 shadow-sm",
-          "transition-all duration-200",
-          "hover:border-indigo-600 hover:text-indigo-600",
-          "active:opacity-80",
-          "cursor-pointer disabled:cursor-not-allowed disabled:opacity-20",
-          "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600",
-        )}
-      >
-        <ChevronRight size={20} />
-      </button>
+        icon={ChevronRight}
+      />
     </div>
   );
 };
