@@ -96,7 +96,7 @@ export const Pagination = ({
             return (
               <div
                 key={`ellipsis-${index}`}
-                className="flex h-12 w-8 sm:h-14 sm:w-10 items-center justify-center text-slate-300"
+                className="hidden md:flex h-12 w-8 sm:h-14 sm:w-10 items-center justify-center text-slate-300"
               >
                 <MoreHorizontal size={20} />
               </div>
@@ -105,20 +105,29 @@ export const Pagination = ({
 
           const isActive = currentPage === page;
 
+          const isVisibleMobile =
+            isActive ||
+            (currentPage === 0 && page <= 2) ||
+            (currentPage === totalPages - 1 && page >= totalPages - 3) ||
+            Math.abs(currentPage - Number(page)) <= 1;
+
           return (
             <button
               key={page}
-              onClick={() => onPageChange(page)}
+              onClick={() => onPageChange(Number(page))}
               className={cn(
-                "h-12 w-12 sm:h-14 sm:w-14 rounded-2xl text-[10px] sm:text-[11px] font-black",
-                "transition-all duration-200 cursor-pointer",
+                "flex items-center justify-center h-12 w-12 sm:h-14 sm:w-14 rounded-2xl text-[10px] sm:text-[11px] font-black",
+                "transition-all duration-200 cursor-pointer border",
                 "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600",
                 isActive
-                  ? "bg-slate-950 text-white shadow-xl scale-110 z-10"
-                  : "bg-white border border-slate-200 text-slate-400 hover:border-indigo-600 hover:text-indigo-600",
+                  ? "bg-slate-950 text-white border-slate-950 shadow-xl scale-110 z-10 flex"
+                  : cn(
+                      "bg-white border-slate-200 text-slate-400 hover:border-indigo-600 hover:text-indigo-600",
+                      isVisibleMobile ? "flex" : "hidden md:flex",
+                    ),
               )}
             >
-              {String(page + 1).padStart(2, "0")}
+              {String(Number(page) + 1).padStart(2, "0")}
             </button>
           );
         })}
