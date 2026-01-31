@@ -1,6 +1,6 @@
 "use client";
 
-import { Filter, Search, Users } from "lucide-react";
+import { Filter, Search, Users, UserX } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
@@ -135,49 +135,48 @@ const UserManagementPage = () => {
         }
       />
 
-      <div className="mb-12 flex flex-col gap-4 lg:flex-row lg:items-end">
-        <div className="group relative flex-1">
-          <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-indigo-600"
-            size={16}
-          />
+      <div className="mb-10 flex flex-col gap-4 lg:flex-row lg:items-center">
+        <div className="flex flex-1 flex-col gap-4 md:flex-row">
+          <div className="group relative flex-1">
+            <Search
+              className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-indigo-500"
+              size={18}
+            />
+            <input
+              type="text"
+              value={nameInput}
+              onChange={(e) => setNameInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="BUSCAR POR NOME..."
+              className="h-14 w-full rounded-2xl border border-slate-200 bg-white pr-6 pl-12 text-[11px] font-bold tracking-widest text-slate-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5"
+            />
+          </div>
 
-          <input
-            type="text"
-            value={nameInput}
-            onChange={(e) => setNameInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="PESQUISAR NOME (ENTER)..."
-            className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-white pr-6 pl-12 text-[10px] font-black tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:bg-white"
-          />
+          <div className="group relative flex-1">
+            <Search
+              className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-indigo-500"
+              size={18}
+            />
+            <input
+              type="text"
+              value={emailInput}
+              onChange={(e) => setEmailInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="BUSCAR POR E-MAIL..."
+              className="h-14 w-full rounded-2xl border border-slate-200 bg-white pr-6 pl-12 text-[11px] font-bold tracking-widest text-slate-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5"
+            />
+          </div>
         </div>
 
-        <div className="group relative flex-1">
-          <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-indigo-600"
-            size={16}
-          />
-
-          <input
-            type="text"
-            value={emailInput}
-            onChange={(e) => setEmailInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="PESQUISAR E-MAIL (ENTER)..."
-            className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-white pr-6 pl-12 text-[10px] font-black tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600 focus:bg-white"
-          />
-        </div>
-
-        <div className="flex flex-col gap-4 sm:flex-row lg:w-auto">
+        <div className="flex flex-wrap gap-4">
           <Dropdown
             icon={Filter}
             options={roleOptions}
             value={roleFilter}
             onChange={handleRoleChange}
             placeholder="Filtrar Cargo"
-            className="w-full lg:w-64"
+            className="w-full sm:w-60"
           />
-
           <StatusDropdownFilter
             value={statusFilter}
             onChange={handleStatusChange}
@@ -185,16 +184,19 @@ const UserManagementPage = () => {
         </div>
       </div>
 
-      <div className="space-y-10">
+      <div className="space-y-8">
         <div className="grid grid-cols-1 gap-4">
           {users.length > 0 ? (
             users.map((u) => (
               <UserCard key={u.id} user={u} onDeleteSuccess={fetchUsers} />
             ))
           ) : (
-            <div className="rounded-[2rem] border-2 border-dashed border-slate-100 py-20 text-center">
-              <p className="text-[10px] font-black italic uppercase tracking-widest text-slate-300">
-                Nenhum usuário localizado com estes critérios
+            <div className="flex flex-col items-center justify-center rounded-[2.5rem] border-2 border-dashed border-slate-200 bg-slate-50/50 py-24 text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white shadow-sm">
+                <UserX className="text-slate-300" size={32} />
+              </div>
+              <p className="max-w-xs text-[11px] font-bold uppercase leading-relaxed tracking-[0.2em] text-slate-400">
+                Nenhum usuário localizado com os critérios selecionados
               </p>
             </div>
           )}
