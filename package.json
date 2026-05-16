@@ -1,0 +1,19 @@
+{
+  "name": "my-commerce",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "start": "pnpm --filter web start",
+    "lint": "pnpm --filter web lint",
+    "api:docker": "docker compose -f api/docker-compose.yml up -d",
+    "api:docker:down": "docker compose -f api/docker-compose.yml down",
+    "api:build": "cd api && ./mvnw clean install -DskipTests",
+    "api:start": "cd api && ./mvnw spring-boot:run",
+    "demo": "pnpm api:docker && concurrently -n api,web -c blue,green \"pnpm api:start\" \"pnpm dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
