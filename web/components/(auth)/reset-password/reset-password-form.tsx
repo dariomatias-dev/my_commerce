@@ -8,10 +8,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { ApiError } from "@/@types/api";
 import { ActionButton } from "@/components/buttons/action-button";
 import { PasswordField } from "@/components/password-field";
-import { useAuth } from "@/services/hooks/use-auth";
+import { resetPassword } from "@/app/actions/auth";
 import { resetPasswordSchema } from "@/schemas/reset-password.schema";
 
 type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
@@ -19,8 +18,6 @@ type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 export const ResetPasswordForm = () => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token") || "";
-  const { resetPassword } = useAuth();
-
   const [isReset, setIsReset] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -44,34 +41,28 @@ export const ResetPasswordForm = () => {
       return;
     }
 
-    try {
-      setIsLoading(true);
-      setApiError(null);
+    setIsLoading(true);
+    setApiError(null);
 
-      await resetPassword({
-        token,
-        newPassword: data.password,
-      });
+    const result = await resetPassword({ token, newPassword: data.password });
 
-      setIsReset(true);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.errors && error.errors.length > 0) {
-          error.errors.forEach((fError) => {
-            setError(fError.field as keyof ResetPasswordValues, {
-              type: "server",
-              message: fError.error,
-            });
+    setIsLoading(false);
+
+    if (!result.success) {
+      if (result.errors?.length) {
+        result.errors.forEach((fError) => {
+          setError(fError.field as keyof ResetPasswordValues, {
+            type: "server",
+            message: fError.error,
           });
-        } else {
-          setApiError(error.message);
-        }
+        });
       } else {
-        setApiError("Erro ao atualizar senha. Tente novamente.");
+        setApiError(result.error);
       }
-    } finally {
-      setIsLoading(false);
+      return;
     }
+
+    setIsReset(true);
   };
 
   if (isReset) {

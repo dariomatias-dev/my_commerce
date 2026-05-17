@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import Cookies from "js-cookie";
 import { Mail } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -9,19 +8,16 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { ApiError } from "@/@types/api";
 import { ActionButton } from "@/components/buttons/action-button";
 import { PasswordField } from "@/components/password-field";
 import { useAuthContext } from "@/contexts/auth-context";
 import { loginSchema } from "@/schemas/login.schema";
-import { useAuth } from "@/services/hooks/use-auth";
+import { login } from "@/app/actions/auth";
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export const LoginForm = () => {
   const router = useRouter();
-
-  const { login } = useAuth();
 
   const { user, refreshUser } = useAuthContext();
 
@@ -39,41 +35,25 @@ export const LoginForm = () => {
   });
 
   const onSubmit = async (data: LoginFormValues) => {
-    try {
-      setIsLoading(true);
-      setGlobalError(null);
+    setIsLoading(true);
+    setGlobalError(null);
 
-      const response = await login(data);
+    const result = await login(data);
 
-      Cookies.set("token", response.accessToken, {
-        expires: 1,
-        secure: true,
-        sameSite: "strict",
-      });
-      Cookies.set("refreshToken", response.refreshToken, {
-        expires: 7,
-        secure: true,
-        sameSite: "strict",
-      });
+    setIsLoading(false);
 
-      await refreshUser();
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.errors) {
-          error.errors.forEach((err) => {
-            setError(err.field as keyof LoginFormValues, {
-              message: err.error,
-            });
-          });
-        } else {
-          setGlobalError(error.message);
-        }
+    if (!result.success) {
+      if (result.errors?.length) {
+        result.errors.forEach((err) => {
+          setError(err.field as keyof LoginFormValues, { message: err.error });
+        });
       } else {
-        setGlobalError("Ocorreu um erro inesperado. Tente novamente.");
+        setGlobalError(result.error);
       }
-    } finally {
-      setIsLoading(false);
+      return;
     }
+
+    await refreshUser();
   };
 
   useEffect(() => {

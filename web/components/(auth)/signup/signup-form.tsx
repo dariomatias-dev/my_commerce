@@ -7,10 +7,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { ApiError } from "@/@types/api";
 import { ActionButton } from "@/components/buttons/action-button";
 import { PasswordField } from "@/components/password-field";
-import { useAuth } from "@/services/hooks/use-auth";
+import { signup, resendVerificationEmail } from "@/app/actions/auth";
 import { signupSchema } from "@/schemas/signup.schema";
 
 type SignupFormValues = z.infer<typeof signupSchema>;
@@ -20,7 +19,6 @@ interface SignupFormProps {
 }
 
 export const SignupForm = ({ onSuccess }: SignupFormProps) => {
-  const { signup, resendVerificationEmail } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isResending, setIsResending] = useState(false);
@@ -47,60 +45,49 @@ export const SignupForm = ({ onSuccess }: SignupFormProps) => {
   });
 
   const onSubmit = async (data: SignupFormValues) => {
-    try {
-      setIsLoading(true);
-      setApiError(null);
+    setIsLoading(true);
+    setApiError(null);
 
-      await signup({
-        name: data.name,
-        email: data.email,
-        password: data.password,
-      });
+    const result = await signup({
+      name: data.name,
+      email: data.email,
+      password: data.password,
+    });
 
-      setRegisteredEmail(data.email);
-      setIsSuccess(true);
-      onSuccess();
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.errors && error.errors.length > 0) {
-          error.errors.forEach((fError) => {
-            setError(fError.field as keyof SignupFormValues, {
-              type: "server",
-              message: fError.error,
-            });
+    setIsLoading(false);
+
+    if (!result.success) {
+      if (result.errors?.length) {
+        result.errors.forEach((fError) => {
+          setError(fError.field as keyof SignupFormValues, {
+            type: "server",
+            message: fError.error,
           });
-        } else {
-          setApiError(error.message);
-        }
+        });
       } else {
-        setApiError("Erro ao criar conta. Tente novamente.");
+        setApiError(result.error);
       }
-    } finally {
-      setIsLoading(false);
+      return;
     }
+
+    setRegisteredEmail(data.email);
+    setIsSuccess(true);
+    onSuccess();
   };
 
   const handleResend = async () => {
-    try {
-      setIsResending(true);
-      setResendFeedback(null);
+    setIsResending(true);
+    setResendFeedback(null);
 
-      await resendVerificationEmail({ email: registeredEmail });
+    const result = await resendVerificationEmail({ email: registeredEmail });
 
-      setResendFeedback({
-        message: "E-mail reenviado com sucesso!",
-        type: "success",
-      });
-    } catch (error) {
-      const message =
-        error instanceof ApiError ? error.message : "Erro ao reenviar e-mail.";
-      setResendFeedback({
-        message: message,
-        type: "error",
-      });
-    } finally {
-      setIsResending(false);
-    }
+    setIsResending(false);
+
+    setResendFeedback(
+      result.success
+        ? { message: "E-mail reenviado com sucesso!", type: "success" }
+        : { message: result.error, type: "error" },
+    );
   };
 
   if (isSuccess) {

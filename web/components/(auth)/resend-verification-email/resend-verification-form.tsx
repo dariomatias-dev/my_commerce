@@ -7,9 +7,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { ApiError } from "@/@types/api";
 import { ActionButton } from "@/components/buttons/action-button";
-import { useAuth } from "@/services/hooks/use-auth";
+import { resendVerificationEmail } from "@/app/actions/auth";
 
 const resendSchema = z.object({
   email: z.email("Insira um e-mail válido"),
@@ -18,7 +17,6 @@ const resendSchema = z.object({
 type ResendFormValues = z.infer<typeof resendSchema>;
 
 export const ResendVerificationForm = () => {
-  const { resendVerificationEmail } = useAuth();
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -35,29 +33,28 @@ export const ResendVerificationForm = () => {
   });
 
   const onSubmit = async (data: ResendFormValues) => {
-    try {
-      setIsLoading(true);
-      setApiError(null);
-      await resendVerificationEmail({ email: data.email });
-      setLastEmail(data.email);
-      setIsSuccess(true);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.errors && error.errors.length > 0) {
-          error.errors.forEach((fError) => {
-            setError(fError.field as keyof ResendFormValues, {
-              message: fError.error,
-            });
+    setIsLoading(true);
+    setApiError(null);
+
+    const result = await resendVerificationEmail({ email: data.email });
+
+    setIsLoading(false);
+
+    if (!result.success) {
+      if (result.errors?.length) {
+        result.errors.forEach((fError) => {
+          setError(fError.field as keyof ResendFormValues, {
+            message: fError.error,
           });
-        } else {
-          setApiError(error.message);
-        }
+        });
       } else {
-        setApiError("Erro ao solicitar reenvio. Tente novamente.");
+        setApiError(result.error);
       }
-    } finally {
-      setIsLoading(false);
+      return;
     }
+
+    setLastEmail(data.email);
+    setIsSuccess(true);
   };
 
   if (isSuccess) {

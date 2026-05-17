@@ -5,14 +5,11 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import { ApiError } from "@/@types/api";
-import { useAuth } from "@/services/hooks/use-auth";
+import { verifyEmail } from "@/app/actions/auth";
 
 export const EmailVerificationCard = () => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-  const { verifyEmail } = useAuth();
-
   const [status, setStatus] = useState<"loading" | "success" | "error">(
     "loading"
   );
@@ -30,26 +27,19 @@ export const EmailVerificationCard = () => {
         return;
       }
 
-      try {
-        await verifyEmail({ token });
+      const result = await verifyEmail({ token });
 
+      if (result.success) {
         setStatus("success");
-      } catch (error: unknown) {
+      } else {
         setStatus("error");
-
-        if (error instanceof ApiError) {
-          setErrorMessage(error.message);
-        } else if (error instanceof Error) {
-          setErrorMessage(error.message);
-        } else {
-          setErrorMessage("Ocorreu um erro inesperado na verificação.");
-        }
+        setErrorMessage(result.error);
       }
     };
 
     handleVerify();
     effectRan.current = true;
-  }, [token, verifyEmail]);
+  }, [token]);
 
   return (
     <div className="relative overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white p-8 text-center shadow-[0_30px_80px_-20px_rgba(0,0,0,0.08)] md:p-14">

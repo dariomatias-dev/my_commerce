@@ -6,15 +6,13 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { ApiError } from "@/@types/api";
 import { ActionButton } from "@/components/buttons/action-button";
-import { useAuth } from "@/services/hooks/use-auth";
+import { recoverPassword } from "@/app/actions/auth";
 import { recoverSchema } from "@/schemas/recover.schema";
 
 type RecoverFormValues = z.infer<typeof recoverSchema>;
 
 export const RecoverPasswordForm = () => {
-  const { recoverPassword } = useAuth();
   const [emailSent, setEmailSent] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -34,32 +32,29 @@ export const RecoverPasswordForm = () => {
   });
 
   const onSubmit = async (data: RecoverFormValues) => {
-    try {
-      setIsLoading(true);
-      setApiError(null);
+    setIsLoading(true);
+    setApiError(null);
 
-      await recoverPassword({ email: data.email });
+    const result = await recoverPassword({ email: data.email });
 
-      setSubmittedEmail(data.email);
-      setEmailSent(true);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.errors && error.errors.length > 0) {
-          error.errors.forEach((fError) => {
-            setError(fError.field as keyof RecoverFormValues, {
-              type: "server",
-              message: fError.error,
-            });
+    setIsLoading(false);
+
+    if (!result.success) {
+      if (result.errors?.length) {
+        result.errors.forEach((fError) => {
+          setError(fError.field as keyof RecoverFormValues, {
+            type: "server",
+            message: fError.error,
           });
-        } else {
-          setApiError(error.message);
-        }
+        });
       } else {
-        setApiError("Erro ao solicitar recuperação. Tente novamente.");
+        setApiError(result.error);
       }
-    } finally {
-      setIsLoading(false);
+      return;
     }
+
+    setSubmittedEmail(data.email);
+    setEmailSent(true);
   };
 
   const handleReset = () => {
