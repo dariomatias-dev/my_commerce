@@ -48,4 +48,20 @@ export const serverApi = {
       headers: { ...baseHeaders, ...(await getAuthHeaders()) },
     });
   },
+
+  async postFormData(path: string, formData: FormData) {
+    return fetch(`${getApiUrl()}${path}`, {
+      method: "POST",
+      headers: { ...(await getAuthHeaders()) },
+      body: formData,
+    });
+  },
+
+  async patchFormData(path: string, formData: FormData) {
+    return fetch(`${getApiUrl()}${path}`, {
+      method: "PATCH",
+      headers: { ...(await getAuthHeaders()) },
+      body: formData,
+    });
+  },
 };
