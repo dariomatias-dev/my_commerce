@@ -1,5 +1,6 @@
-import { AlertCircle, RefreshCcw } from "lucide-react";
 import Link from "next/link";
+
+import { AlertCircle, RefreshCcw } from "lucide-react";
 
 interface ErrorFeedbackProps {
   title: string;
@@ -24,27 +25,25 @@ export const ErrorFeedback = ({
         <AlertCircle size={48} />
       </div>
 
-      <h2 className="text-4xl font-black uppercase italic tracking-tighter text-slate-950">
+      <h2 className="text-4xl font-black tracking-tighter text-slate-950 uppercase italic">
         {title} <span className="text-red-500">{highlightedTitle}.</span>
       </h2>
 
       {errorMessage && (
-        <p className="mt-4 max-w-xs mx-auto text-sm text-slate-500 font-medium">
-          {errorMessage}
-        </p>
+        <p className="mx-auto mt-4 max-w-xs text-sm font-medium text-slate-500">{errorMessage}</p>
       )}
 
       <div className="mt-10 flex flex-col gap-4">
         <button
           onClick={onRetry}
-          className="flex items-center justify-center gap-3 rounded-2xl bg-slate-950 px-10 py-5 text-[10px] font-black uppercase tracking-widest text-white hover:bg-indigo-600 transition-all active:scale-95"
+          className="flex items-center justify-center gap-3 rounded-2xl bg-slate-950 px-10 py-5 text-[10px] font-black tracking-widest text-white uppercase transition-all hover:bg-indigo-600 active:scale-95"
         >
           <RefreshCcw size={16} /> REESTABELECER CONEXÃO
         </button>
 
         <Link
           href={backPath}
-          className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-colors"
+          className="text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors hover:text-slate-600"
         >
           {backLabel}
         </Link>

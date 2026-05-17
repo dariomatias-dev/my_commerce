@@ -1,5 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
+import { useRouter } from "next/navigation";
+
 import {
   AlertTriangle,
   Calendar,
@@ -9,26 +13,19 @@ import {
   X,
   XCircle,
 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 
 import { SubscriptionResponse } from "@/@types/subscription/subscription-response";
 import { cancelSubscription } from "@/app/actions/subscriptions";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { useAuthContext } from "@/contexts/auth-context";
-import {
-  getMyActiveSubscription,
-  getMySubscriptions,
-} from "@/services/subscriptions";
+import { getMyActiveSubscription, getMySubscriptions } from "@/services/subscriptions";
 
 export const SettingsSubscriptions = () => {
   const router = useRouter();
 
   const { refreshUser } = useAuthContext();
 
-  const [subscriptions, setSubscriptions] = useState<SubscriptionResponse[]>(
-    [],
-  );
+  const [subscriptions, setSubscriptions] = useState<SubscriptionResponse[]>([]);
   const [activeSub, setActiveSub] = useState<SubscriptionResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
@@ -54,10 +51,7 @@ export const SettingsSubscriptions = () => {
           setActiveSub(active);
         }
       } catch {
-        if (!ignore)
-          setErrorMessage(
-            "Não foi possível carregar os dados das assinaturas.",
-          );
+        if (!ignore) setErrorMessage("Não foi possível carregar os dados das assinaturas.");
       } finally {
         if (!ignore) setIsLoading(false);
       }
@@ -92,10 +86,10 @@ export const SettingsSubscriptions = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 gap-4">
+      <div className="flex flex-col items-center justify-center gap-4 py-20">
         <Loader2 className="h-10 w-10 animate-spin text-indigo-600" />
 
-        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+        <span className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
           Carregando assinaturas...
         </span>
       </div>
@@ -105,24 +99,20 @@ export const SettingsSubscriptions = () => {
   return (
     <div className="space-y-12">
       {errorMessage && (
-        <div className="relative flex items-center gap-4 rounded-2xl bg-red-50 p-6 pr-14 text-red-600 animate-in fade-in slide-in-from-top-2">
+        <div className="animate-in fade-in slide-in-from-top-2 relative flex items-center gap-4 rounded-2xl bg-red-50 p-6 pr-14 text-red-600">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-100">
             <AlertTriangle size={20} />
           </div>
 
           <div>
-            <p className="text-[11px] font-black uppercase tracking-widest">
-              Falha na Operação
-            </p>
+            <p className="text-[11px] font-black tracking-widest uppercase">Falha na Operação</p>
 
-            <p className="text-[10px] font-bold opacity-80 uppercase">
-              {errorMessage}
-            </p>
+            <p className="text-[10px] font-bold uppercase opacity-80">{errorMessage}</p>
           </div>
 
           <button
             onClick={() => setErrorMessage(null)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full p-2 hover:bg-red-200/50 transition-colors"
+            className="absolute top-1/2 right-4 -translate-y-1/2 rounded-full p-2 transition-colors hover:bg-red-200/50"
           >
             <X size={16} />
           </button>
@@ -131,12 +121,12 @@ export const SettingsSubscriptions = () => {
 
       <section>
         <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-950 italic">
+          <h3 className="text-[11px] font-black tracking-[0.2em] text-slate-950 uppercase italic">
             Assinatura Ativa
           </h3>
 
           {activeSub?.isActive && (
-            <span className="rounded-full bg-emerald-50 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-emerald-600">
+            <span className="rounded-full bg-emerald-50 px-3 py-1 text-[9px] font-black tracking-widest text-emerald-600 uppercase">
               Ativa e Protegida
             </span>
           )}
@@ -151,11 +141,11 @@ export const SettingsSubscriptions = () => {
                 </div>
 
                 <div>
-                  <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">
+                  <p className="text-[9px] font-black tracking-[0.2em] text-slate-400 uppercase">
                     ID: {activeSub.id}
                   </p>
 
-                  <h4 className="text-4xl font-black uppercase italic tracking-tighter text-slate-950">
+                  <h4 className="text-4xl font-black tracking-tighter text-slate-950 uppercase italic">
                     Assinatura
                   </h4>
                 </div>
@@ -163,7 +153,7 @@ export const SettingsSubscriptions = () => {
 
               <button
                 onClick={() => setIsCancelDialogOpen(true)}
-                className="flex items-center justify-center gap-2 rounded-xl border-2 border-red-50 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-red-500 transition-all hover:bg-red-50 hover:border-red-100 active:scale-95"
+                className="flex items-center justify-center gap-2 rounded-xl border-2 border-red-50 px-6 py-3 text-[10px] font-black tracking-widest text-red-500 uppercase transition-all hover:border-red-100 hover:bg-red-50 active:scale-95"
               >
                 <XCircle size={14} /> Cancelar Assinatura
               </button>
@@ -176,7 +166,7 @@ export const SettingsSubscriptions = () => {
                 </div>
 
                 <div>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                  <p className="text-[9px] font-black tracking-widest text-slate-400 uppercase">
                     Data de Início
                   </p>
 
@@ -192,7 +182,7 @@ export const SettingsSubscriptions = () => {
                 </div>
 
                 <div>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                  <p className="text-[9px] font-black tracking-widest text-slate-400 uppercase">
                     Próxima Renovação
                   </p>
 
@@ -207,13 +197,13 @@ export const SettingsSubscriptions = () => {
           </div>
         ) : (
           <div className="rounded-[2.5rem] border border-dashed border-slate-200 bg-slate-50/50 p-12 text-center">
-            <p className="mb-6 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 italic">
+            <p className="mb-6 text-[10px] font-black tracking-[0.3em] text-slate-400 uppercase italic">
               Nenhuma assinatura ativa vinculada à sua conta.
             </p>
 
             <button
               onClick={() => router.push("/#plans")}
-              className="rounded-xl bg-slate-950 px-8 py-4 text-[10px] font-black uppercase tracking-widest text-white transition-all hover:bg-indigo-600 active:scale-95"
+              className="rounded-xl bg-slate-950 px-8 py-4 text-[10px] font-black tracking-widest text-white uppercase transition-all hover:bg-indigo-600 active:scale-95"
             >
               Escolher um Plano
             </button>
@@ -222,24 +212,24 @@ export const SettingsSubscriptions = () => {
       </section>
 
       <section>
-        <h3 className="mb-6 text-[11px] font-black uppercase tracking-[0.2em] text-slate-950 italic">
+        <h3 className="mb-6 text-[11px] font-black tracking-[0.2em] text-slate-950 uppercase italic">
           Histórico de Faturamento
         </h3>
 
         <div className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
-              <thead className="bg-slate-50/50 border-b border-slate-100">
+              <thead className="border-b border-slate-100 bg-slate-50/50">
                 <tr>
-                  <th className="px-8 py-5 text-[9px] font-black uppercase tracking-widest text-slate-400">
+                  <th className="px-8 py-5 text-[9px] font-black tracking-widest text-slate-400 uppercase">
                     Data Inicial
                   </th>
 
-                  <th className="px-8 py-5 text-[9px] font-black uppercase tracking-widest text-slate-400">
+                  <th className="px-8 py-5 text-[9px] font-black tracking-widest text-slate-400 uppercase">
                     Expiração
                   </th>
 
-                  <th className="px-8 py-5 text-[9px] font-black uppercase tracking-widest text-slate-400">
+                  <th className="px-8 py-5 text-[9px] font-black tracking-widest text-slate-400 uppercase">
                     Status
                   </th>
                 </tr>
@@ -247,10 +237,7 @@ export const SettingsSubscriptions = () => {
 
               <tbody className="divide-y divide-slate-50">
                 {subscriptions.map((sub) => (
-                  <tr
-                    key={sub.id}
-                    className="group transition-colors hover:bg-slate-50/30"
-                  >
+                  <tr key={sub.id} className="group transition-colors hover:bg-slate-50/30">
                     <td className="px-8 py-5">
                       <span className="text-[11px] font-bold text-slate-600 uppercase">
                         {new Date(sub.startDate).toLocaleDateString("pt-BR")}
@@ -267,7 +254,7 @@ export const SettingsSubscriptions = () => {
 
                     <td className="px-8 py-5">
                       <span
-                        className={`text-[10px] font-black uppercase tracking-tighter ${
+                        className={`text-[10px] font-black tracking-tighter uppercase ${
                           sub.isActive ? "text-emerald-600" : "text-slate-300"
                         }`}
                       >
@@ -281,7 +268,7 @@ export const SettingsSubscriptions = () => {
                   <tr>
                     <td
                       colSpan={3}
-                      className="px-8 py-10 text-center text-[10px] font-black uppercase tracking-widest text-slate-300 italic"
+                      className="px-8 py-10 text-center text-[10px] font-black tracking-widest text-slate-300 uppercase italic"
                     >
                       Nenhum registro de faturamento encontrado.
                     </td>

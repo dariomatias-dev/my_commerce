@@ -1,7 +1,8 @@
 "use client";
 
-import { Package, Tag } from "lucide-react";
 import { ReactNode, useEffect, useState } from "react";
+
+import { Package, Tag } from "lucide-react";
 
 import { ApiError } from "@/@types/api";
 import { OrderResponse } from "@/@types/order/order-response";
@@ -10,14 +11,12 @@ import { ErrorFeedback } from "@/components/error-feedback";
 import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { Pagination } from "@/components/pagination";
+
 import { DashboardTotalBadge } from "./dashboard-total-badge";
 import { OrderCard } from "./orders/order-card";
 
 interface OrdersDashboardProps {
-  fetchFn: (
-    page: number,
-    size: number,
-  ) => Promise<PaginatedResponse<OrderResponse>>;
+  fetchFn: (page: number, size: number) => Promise<PaginatedResponse<OrderResponse>>;
   backHref?: string;
   emptyDescription: string;
   actions?: ReactNode;
@@ -57,9 +56,7 @@ export const OrdersDashboard = ({
           if (error instanceof ApiError) {
             setErrorMessage(error.message);
           } else {
-            setErrorMessage(
-              "Não foi possível carregar seu histórico de pedidos.",
-            );
+            setErrorMessage("Não foi possível carregar seu histórico de pedidos.");
           }
         }
       } finally {
@@ -108,11 +105,7 @@ export const OrdersDashboard = ({
           <div className="flex flex-col items-center gap-4 md:flex-row">
             {actions}
 
-            <DashboardTotalBadge
-              icon={Tag}
-              value={totalElements}
-              unit="Pedidos"
-            />
+            <DashboardTotalBadge icon={Tag} value={totalElements} unit="Pedidos" />
           </div>
         }
       />
@@ -123,11 +116,11 @@ export const OrdersDashboard = ({
             <Package size={48} />
           </div>
 
-          <h2 className="text-2xl font-black uppercase italic tracking-tighter text-slate-950">
+          <h2 className="text-2xl font-black tracking-tighter text-slate-950 uppercase italic">
             Nenhum pedido encontrado.
           </h2>
 
-          <p className="mt-4 max-w-xs text-xs font-bold uppercase tracking-widest text-slate-400 leading-relaxed">
+          <p className="mt-4 max-w-xs text-xs leading-relaxed font-bold tracking-widest text-slate-400 uppercase">
             {emptyDescription}
           </p>
         </div>

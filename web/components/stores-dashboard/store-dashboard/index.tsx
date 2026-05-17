@@ -1,9 +1,11 @@
 "use client";
 
-import { Eye, List, PackagePlus, Settings, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+
+import { Eye, List, PackagePlus, Settings, Trash2 } from "lucide-react";
 
 import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
@@ -159,7 +161,7 @@ export const StoreDashboard = ({
       <DashboardStoreStats storeId={store.id} isActive={store.isActive} />
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-        <div className="lg:col-span-8 space-y-10">
+        <div className="space-y-10 lg:col-span-8">
           <div className="rounded-[2.5rem] border border-slate-100 bg-white p-10 shadow-sm">
             <div className="mb-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
               <div className="flex items-center gap-3">
@@ -167,7 +169,7 @@ export const StoreDashboard = ({
                   <List size={24} />
                 </div>
 
-                <h2 className="text-2xl font-black uppercase italic tracking-tighter text-slate-950">
+                <h2 className="text-2xl font-black tracking-tighter text-slate-950 uppercase italic">
                   Catálogo de <span className="text-indigo-600">Produtos.</span>
                 </h2>
               </div>
@@ -191,10 +193,7 @@ export const StoreDashboard = ({
               </div>
             </div>
 
-            <ProductsDashboard
-              storeId={store.id}
-              basePath={`${basePath}/${storeSlug}`}
-            />
+            <ProductsDashboard storeId={store.id} basePath={`${basePath}/${storeSlug}`} />
           </div>
         </div>
 

@@ -90,9 +90,7 @@ export async function verifyEmail(data: VerifyEmailRequest): Promise<ActionResul
   return { success: true };
 }
 
-export async function resendVerificationEmail(
-  data: ResendEmailRequest,
-): Promise<ActionResult> {
+export async function resendVerificationEmail(data: ResendEmailRequest): Promise<ActionResult> {
   const res = await serverApi.post("/auth/resend-verification-email", data);
   const body = await parseJson(res);
 
@@ -107,9 +105,7 @@ export async function resendVerificationEmail(
   return { success: true };
 }
 
-export async function recoverPassword(
-  data: RecoverPasswordRequest,
-): Promise<ActionResult> {
+export async function recoverPassword(data: RecoverPasswordRequest): Promise<ActionResult> {
   const res = await serverApi.post("/auth/recover-password", data);
   const body = await parseJson(res);
 
@@ -124,9 +120,7 @@ export async function recoverPassword(
   return { success: true };
 }
 
-export async function resetPassword(
-  data: ResetPasswordRequest,
-): Promise<ActionResult> {
+export async function resetPassword(data: ResetPasswordRequest): Promise<ActionResult> {
   const res = await serverApi.post("/auth/reset-password", data);
   const body = await parseJson(res);
 
@@ -141,9 +135,7 @@ export async function resetPassword(
   return { success: true };
 }
 
-export async function refreshToken(
-  data: RefreshTokenRequest,
-): Promise<ActionResult> {
+export async function refreshToken(data: RefreshTokenRequest): Promise<ActionResult> {
   const res = await serverApi.post("/auth/refresh-token", data);
   const body = await parseJson(res);
 

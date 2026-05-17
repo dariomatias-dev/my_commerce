@@ -35,12 +35,12 @@ export const DashboardStatCard = ({
     return (
       <div className="flex min-h-45 flex-col items-center justify-center rounded-[2.5rem] border border-red-50 bg-red-50/30 p-8 text-center shadow-sm">
         <AlertCircle className="mb-2 text-red-500" size={24} />
-        <p className="text-[10px] font-black uppercase tracking-widest text-red-600">
+        <p className="text-[10px] font-black tracking-widest text-red-600 uppercase">
           {errorMessage}
         </p>
         <button
           onClick={onRetry}
-          className="mt-3 text-[10px] font-black uppercase tracking-widest text-red-700 underline underline-offset-4 transition-colors hover:text-red-900"
+          className="mt-3 text-[10px] font-black tracking-widest text-red-700 uppercase underline underline-offset-4 transition-colors hover:text-red-900"
         >
           Tentar novamente
         </button>
@@ -54,31 +54,33 @@ export const DashboardStatCard = ({
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-slate-950 transition-colors group-hover:bg-indigo-600 group-hover:text-white">
           <Icon size={24} />
         </div>
-        
+
         {sub ? (
-          <span className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-tighter ${
-            isActive 
-              ? "bg-emerald-50 text-emerald-600 animate-in fade-in" 
-              : "bg-slate-50 text-slate-400"
-          }`}>
+          <span
+            className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-black tracking-tighter uppercase ${
+              isActive
+                ? "animate-in fade-in bg-emerald-50 text-emerald-600"
+                : "bg-slate-50 text-slate-400"
+            }`}
+          >
             {isActive && <TrendingUp size={12} className="animate-pulse" />}
             {sub}
           </span>
         ) : (
           <div className="relative flex h-2 w-2">
-            <span className={`absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 ${isActive ? "animate-ping" : "hidden"}`} />
-            <span className={`relative inline-flex h-2 w-2 rounded-full ${isActive ? "bg-emerald-500" : "bg-slate-200"}`} />
+            <span
+              className={`absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 ${isActive ? "animate-ping" : "hidden"}`}
+            />
+            <span
+              className={`relative inline-flex h-2 w-2 rounded-full ${isActive ? "bg-emerald-500" : "bg-slate-200"}`}
+            />
           </div>
         )}
       </div>
 
-      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-        {label}
-      </p>
+      <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">{label}</p>
 
-      <h3 className="mt-1 text-3xl font-black tracking-tighter text-slate-950">
-        {value || "---"}
-      </h3>
+      <h3 className="mt-1 text-3xl font-black tracking-tighter text-slate-950">{value || "---"}</h3>
     </div>
   );
 };

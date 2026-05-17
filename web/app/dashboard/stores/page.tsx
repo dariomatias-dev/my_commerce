@@ -8,8 +8,7 @@ import { getMyStores } from "@/services/stores";
 
 const DashboardPage = () => {
   const fetchMyStores = useCallback(
-    (_filters: StoreFilter, page: number, size: number) =>
-      getMyStores(page, size),
+    (_filters: StoreFilter, page: number, size: number) => getMyStores(page, size),
     [],
   );
 

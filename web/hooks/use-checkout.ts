@@ -1,14 +1,12 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+
+import { useParams, useRouter } from "next/navigation";
 
 import { UserAddressResponse } from "@/@types/address/user-address-response";
 import { CartStorage } from "@/@types/cart-storage";
-import {
-  FreightOption,
-  FreightResponse,
-} from "@/@types/freight/freight-response";
+import { FreightOption, FreightResponse } from "@/@types/freight/freight-response";
 import { OrderRequest } from "@/@types/order/order-request";
 import { StoreResponse } from "@/@types/store/store-response";
 import { createAddress } from "@/app/actions/addresses";
@@ -30,36 +28,25 @@ export const useCheckout = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(
-    PaymentMethod.PIX,
-  );
-  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
-    null,
-  );
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(PaymentMethod.PIX);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
 
-  const [freightOptions, setFreightOptions] = useState<FreightResponse | null>(
-    null,
-  );
-  const [selectedFreight, setSelectedFreight] = useState<FreightOption | null>(
-    null,
-  );
+  const [freightOptions, setFreightOptions] = useState<FreightResponse | null>(null);
+  const [selectedFreight, setSelectedFreight] = useState<FreightOption | null>(null);
   const [isFreightLoading, setIsFreightLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const slug = params.slug as string;
 
-  const updateCartStorage = useCallback(
-    (storeId: string, updatedItems: Item[]) => {
-      const storageKey = `cart-${storeId}`;
-      const storageData = updatedItems.map((item) => ({
-        id: item.id,
-        quantity: item.quantity,
-      }));
-      localStorage.setItem(storageKey, JSON.stringify(storageData));
-      window.dispatchEvent(new Event("cart-updated"));
-    },
-    [],
-  );
+  const updateCartStorage = useCallback((storeId: string, updatedItems: Item[]) => {
+    const storageKey = `cart-${storeId}`;
+    const storageData = updatedItems.map((item) => ({
+      id: item.id,
+      quantity: item.quantity,
+    }));
+    localStorage.setItem(storageKey, JSON.stringify(storageData));
+    window.dispatchEvent(new Event("cart-updated"));
+  }, []);
 
   useEffect(() => {
     let ignore = false;
@@ -101,9 +88,7 @@ export const useCheckout = () => {
           name: product.name,
           price: product.price,
           image: product.images?.[0]?.url,
-          quantity:
-            storageCart.find((i: CartStorage) => i.id === product.id)
-              ?.quantity || 1,
+          quantity: storageCart.find((i: CartStorage) => i.id === product.id)?.quantity || 1,
         }));
 
         if (!ignore) setItems(mergedItems);
@@ -146,9 +131,7 @@ export const useCheckout = () => {
     if (!store) return;
 
     const updated = items.map((item) =>
-      item.id === id
-        ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-        : item,
+      item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item,
     );
 
     setItems(updated);
@@ -229,10 +212,7 @@ export const useCheckout = () => {
     router.push(`/store/${slug}/success?orderId=${result.data.id}`);
   };
 
-  const subtotal = items.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0,
-  );
+  const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const freightValue = selectedFreight?.value || 0;
   const total = subtotal + freightValue;
 

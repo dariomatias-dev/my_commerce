@@ -1,7 +1,8 @@
 "use client";
 
-import { ArrowRight, Globe, ShieldCheck, Zap } from "lucide-react";
 import Image from "next/image";
+
+import { ArrowRight, Globe, ShieldCheck, Zap } from "lucide-react";
 
 export const HeroSection = () => {
   return (
@@ -60,8 +61,7 @@ export const HeroSection = () => {
         </h1>
 
         <p className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed font-medium tracking-tight text-slate-500 md:text-xl">
-          A infraestrutura definitiva para o seu e-commerce.{" "}
-          <br className="hidden md:block" />
+          A infraestrutura definitiva para o seu e-commerce. <br className="hidden md:block" />
           Abandone a burocracia técnica e foque em{" "}
           <span className="font-bold text-slate-900 underline decoration-indigo-500/20 decoration-4 underline-offset-4">
             escalar seu lucro
@@ -74,10 +74,7 @@ export const HeroSection = () => {
             <div className="absolute -inset-1 rounded-full bg-linear-to-r from-indigo-600 to-violet-600 opacity-20 blur transition duration-500 group-hover:opacity-40"></div>
             <button className="relative flex items-center justify-center gap-3 rounded-full bg-slate-950 px-8 py-4 text-lg font-bold text-white shadow-xl transition-all hover:bg-indigo-600 active:scale-95">
               Criar Loja Grátis
-              <ArrowRight
-                size={20}
-                className="transition-transform group-hover:translate-x-1"
-              />
+              <ArrowRight size={20} className="transition-transform group-hover:translate-x-1" />
             </button>
           </div>
 
@@ -120,10 +117,7 @@ export const HeroSection = () => {
             { icon: <ShieldCheck size={16} />, label: "Segurança Bancária" },
             { icon: <Globe size={16} />, label: "Escala Global" },
           ].map((item, idx) => (
-            <div
-              key={idx}
-              className="group flex cursor-default items-center gap-2.5"
-            >
+            <div key={idx} className="group flex cursor-default items-center gap-2.5">
               <div className="text-indigo-600 transition-transform group-hover:scale-110">
                 {item.icon}
               </div>

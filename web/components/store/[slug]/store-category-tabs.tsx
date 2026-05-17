@@ -16,13 +16,13 @@ export const StoreCategoryTabs = ({
 }: StoreCategoryTabsProps) => {
   return (
     <ScrollArea className="w-full pb-4">
-      <div className="flex items-center gap-3 no-scrollbar cursor-grab active:cursor-grabbing px-2 overflow-y-hidden">
+      <div className="no-scrollbar flex cursor-grab items-center gap-3 overflow-y-hidden px-2 active:cursor-grabbing">
         <button
           onClick={() => onCategoryChange("all")}
-          className={`whitespace-nowrap rounded-2xl px-8 py-4 text-[11px] font-black tracking-[0.3em] uppercase transition-all border-2 ${
+          className={`rounded-2xl border-2 px-8 py-4 text-[11px] font-black tracking-[0.3em] whitespace-nowrap uppercase transition-all ${
             activeCategoryId === "all"
-              ? "bg-slate-950 text-white border-slate-950 shadow-xl scale-105"
-              : "bg-white text-slate-400 border-slate-100 hover:border-indigo-600 hover:text-slate-950"
+              ? "scale-105 border-slate-950 bg-slate-950 text-white shadow-xl"
+              : "border-slate-100 bg-white text-slate-400 hover:border-indigo-600 hover:text-slate-950"
           }`}
         >
           Todos os Produtos
@@ -32,10 +32,10 @@ export const StoreCategoryTabs = ({
           <button
             key={cat.id}
             onClick={() => onCategoryChange(cat.id)}
-            className={`whitespace-nowrap rounded-2xl px-8 py-4 text-[11px] font-black tracking-[0.3em] uppercase transition-all border-2 ${
+            className={`rounded-2xl border-2 px-8 py-4 text-[11px] font-black tracking-[0.3em] whitespace-nowrap uppercase transition-all ${
               activeCategoryId === cat.id
-                ? "bg-slate-950 text-white border-slate-950 shadow-xl scale-105"
-                : "bg-white text-slate-400 border-slate-100 hover:border-indigo-600 hover:text-slate-950"
+                ? "scale-105 border-slate-950 bg-slate-950 text-white shadow-xl"
+                : "border-slate-100 bg-white text-slate-400 hover:border-indigo-600 hover:text-slate-950"
             }`}
           >
             {cat.name}

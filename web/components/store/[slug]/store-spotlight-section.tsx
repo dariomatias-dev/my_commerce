@@ -1,7 +1,8 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
 import Image from "next/image";
+
+import { ArrowRight } from "lucide-react";
 
 import { ProductResponse } from "@/@types/product/product-response";
 
@@ -19,7 +20,7 @@ const Badge = ({ children, variant = "default" }: BadgeProps) => {
   };
   return (
     <div
-      className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-1.5 ${styles[variant]}`}
+      className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-[9px] font-black tracking-[0.2em] uppercase ${styles[variant]}`}
     >
       {children}
     </div>
@@ -30,12 +31,10 @@ interface StoreSpotlightSectionProps {
   product: ProductResponse;
 }
 
-export const StoreSpotlightSection = ({
-  product,
-}: StoreSpotlightSectionProps) => {
+export const StoreSpotlightSection = ({ product }: StoreSpotlightSectionProps) => {
   return (
     <section className="py-24">
-      <div className="relative overflow-hidden rounded-[4rem] bg-slate-50 border-2 border-slate-100 p-12 lg:p-24">
+      <div className="relative overflow-hidden rounded-[4rem] border-2 border-slate-100 bg-slate-50 p-12 lg:p-24">
         <div className="grid gap-20 lg:grid-cols-2 lg:items-center">
           <div className="relative aspect-square overflow-hidden rounded-[3.5rem] bg-white shadow-2xl ring-1 ring-slate-100">
             <Image
@@ -50,17 +49,17 @@ export const StoreSpotlightSection = ({
           <div className="space-y-12">
             <div>
               <Badge variant="hot">Produto em Destaque</Badge>
-              <h2 className="mt-8 text-7xl font-black tracking-tighter text-slate-950 uppercase italic leading-none">
+              <h2 className="mt-8 text-7xl leading-none font-black tracking-tighter text-slate-950 uppercase italic">
                 {product.name}
               </h2>
-              <p className="mt-10 text-2xl font-medium leading-relaxed text-slate-500 italic">
+              <p className="mt-10 text-2xl leading-relaxed font-medium text-slate-500 italic">
                 {product.description}
               </p>
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-8">
               <div className="flex flex-col">
-                <span className="text-xs font-black text-slate-400 uppercase tracking-widest">
+                <span className="text-xs font-black tracking-widest text-slate-400 uppercase">
                   Investimento
                 </span>
                 <span className="text-5xl font-black tracking-tighter text-slate-950 italic">
@@ -68,14 +67,11 @@ export const StoreSpotlightSection = ({
                 </span>
               </div>
 
-              <button className="group flex items-center gap-5 rounded-[2rem] bg-indigo-600 px-12 py-7 text-white shadow-2xl shadow-indigo-200 transition-all hover:bg-slate-950 active:scale-95 outline-none">
+              <button className="group flex items-center gap-5 rounded-[2rem] bg-indigo-600 px-12 py-7 text-white shadow-2xl shadow-indigo-200 transition-all outline-none hover:bg-slate-950 active:scale-95">
                 <span className="text-sm font-black tracking-[0.2em] uppercase">
                   Adicionar ao Carrinho
                 </span>
-                <ArrowRight
-                  size={22}
-                  className="transition-transform group-hover:translate-x-2"
-                />
+                <ArrowRight size={22} className="transition-transform group-hover:translate-x-2" />
               </button>
             </div>
           </div>

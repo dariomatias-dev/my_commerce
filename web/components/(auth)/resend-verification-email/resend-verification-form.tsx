@@ -1,14 +1,16 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle2, Mail, RefreshCw, Store } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+
+import Link from "next/link";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CheckCircle2, Mail, RefreshCw, Store } from "lucide-react";
 import * as z from "zod";
 
-import { ActionButton } from "@/components/buttons/action-button";
 import { resendVerificationEmail } from "@/app/actions/auth";
+import { ActionButton } from "@/components/buttons/action-button";
 
 const resendSchema = z.object({
   email: z.email("Insira um e-mail válido"),
@@ -141,12 +143,7 @@ export const ResendVerificationForm = () => {
           )}
         </div>
 
-        <ActionButton
-          variant="dark"
-          size="sm"
-          disabled={isLoading}
-          showArrow={!isLoading}
-        >
+        <ActionButton variant="dark" size="sm" disabled={isLoading} showArrow={!isLoading}>
           {isLoading ? (
             <span className="flex items-center gap-2">
               <RefreshCw size={14} className="animate-spin" /> PROCESSANDO...

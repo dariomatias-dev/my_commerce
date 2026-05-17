@@ -22,12 +22,12 @@ export const BooleanCardFilter = ({
     className={`flex items-center justify-between rounded-[2rem] border-2 px-8 py-5 transition-all ${
       isActive
         ? activeColorClass
-        : "border-slate-100 bg-white text-slate-400 hover:border-slate-200 shadow-sm"
+        : "border-slate-100 bg-white text-slate-400 shadow-sm hover:border-slate-200"
     }`}
   >
     <div className="flex items-center gap-4">
       <div
-        className={`p-2 rounded-xl ${
+        className={`rounded-xl p-2 ${
           isActive ? "bg-amber-500 text-white" : "bg-slate-50 text-slate-300"
         }`}
       >
@@ -35,18 +35,12 @@ export const BooleanCardFilter = ({
       </div>
 
       <div className="flex flex-col items-start text-left">
-        <span className="text-[10px] font-black uppercase tracking-widest">
-          {title}
-        </span>
+        <span className="text-[10px] font-black tracking-widest uppercase">{title}</span>
 
-        <span className="text-[9px] font-bold opacity-60 uppercase italic">
-          {subtitle}
-        </span>
+        <span className="text-[9px] font-bold uppercase italic opacity-60">{subtitle}</span>
       </div>
     </div>
 
-    {isActive && (
-      <div className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-    )}
+    {isActive && <div className="h-2 w-2 animate-pulse rounded-full bg-amber-500" />}
   </button>
 );

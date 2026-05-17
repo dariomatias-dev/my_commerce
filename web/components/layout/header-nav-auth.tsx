@@ -1,7 +1,9 @@
-import { LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 
+import { LayoutDashboard } from "lucide-react";
+
 import { useAuthContext } from "@/contexts/auth-context";
+
 import { UserProfileDropdown } from "../user-profile-dropdown";
 
 interface HeaderNavAuthProps {
@@ -9,10 +11,7 @@ interface HeaderNavAuthProps {
   onActionClick?: () => void;
 }
 
-export const HeaderNavAuth = ({
-  isMobile = false,
-  onActionClick,
-}: HeaderNavAuthProps) => {
+export const HeaderNavAuth = ({ isMobile = false, onActionClick }: HeaderNavAuthProps) => {
   const { isAuthenticated } = useAuthContext();
 
   if (isMobile) {

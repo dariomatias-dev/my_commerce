@@ -1,11 +1,11 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+import { useParams, useRouter } from "next/navigation";
 
 import { OrderDetailsResponse } from "@/@types/order/order-details-response";
 import { ProductResponse } from "@/@types/product/product-response";
-
 import { ErrorFeedback } from "@/components/error-feedback";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { OrderDetailsFinancialSummary } from "@/components/orders/[orderId]/order-details-financial-summary";
@@ -44,10 +44,7 @@ const OrderDetailsPage = () => {
 
         if (orderResponse.items && orderResponse.items.length > 0) {
           const productIds = orderResponse.items.map((item) => item.productId);
-          const productsResponse = await getProductsByIds(
-            orderResponse.store.id,
-            productIds,
-          );
+          const productsResponse = await getProductsByIds(orderResponse.store.id, productIds);
           const productsMap = (productsResponse.content || []).reduce(
             (acc, product) => {
               acc[product.id] = product;
@@ -59,8 +56,7 @@ const OrderDetailsPage = () => {
           if (!ignore) setProducts(productsMap);
         }
       } catch {
-        if (!ignore)
-          setErrorMessage("Não foi possível carregar os detalhes do pedido.");
+        if (!ignore) setErrorMessage("Não foi possível carregar os detalhes do pedido.");
       } finally {
         if (!ignore) setIsLoading(false);
       }
@@ -91,29 +87,25 @@ const OrderDetailsPage = () => {
   }
 
   const subtotal = order.totalAmount - order.freightAmount;
-  const freightLabel =
-    order.freightType === FreightType.ECONOMICAL ? "Econômico" : "Expresso";
+  const freightLabel = order.freightType === FreightType.ECONOMICAL ? "Econômico" : "Expresso";
 
   return (
     <>
       <div className="mx-auto max-w-400 px-6">
         <OrderDetailsPageHeader order={order} onBack={() => router.back()} />
 
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 animate-in fade-in slide-in-from-bottom-6 duration-1000">
-          <div className="lg:col-span-8 space-y-10">
+        <div className="animate-in fade-in slide-in-from-bottom-6 grid grid-cols-1 gap-10 duration-1000 lg:grid-cols-12">
+          <div className="space-y-10 lg:col-span-8">
             <OrderDetailsProducts items={order.items} products={products} />
 
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-              <OrderDetailsLogisticsInfo
-                type={order.freightType}
-                address={order.orderAddress}
-              />
+              <OrderDetailsLogisticsInfo type={order.freightType} address={order.orderAddress} />
 
               <OrderDetailsPaymentInfo method={order.paymentMethod} />
             </div>
           </div>
 
-          <aside className="lg:col-span-4 space-y-8">
+          <aside className="space-y-8 lg:col-span-4">
             <div className="sticky top-40 space-y-8">
               <OrderDetailsStoreInfo store={order.store} />
 
@@ -125,9 +117,8 @@ const OrderDetailsPage = () => {
               />
 
               <div className="rounded-[2rem] bg-indigo-50/50 p-6 text-center">
-                <p className="text-[10px] font-bold uppercase leading-relaxed text-indigo-600/70">
-                  Acompanhe o status do pedido para <br /> atualizações de
-                  logística.
+                <p className="text-[10px] leading-relaxed font-bold text-indigo-600/70 uppercase">
+                  Acompanhe o status do pedido para <br /> atualizações de logística.
                 </p>
               </div>
             </div>

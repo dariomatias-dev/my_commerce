@@ -9,6 +9,7 @@ import { Feedback } from "@/components/feedback";
 import { useFeedback } from "@/hooks/use-feedback";
 import { AddressFormValues } from "@/schemas/address.schema";
 import { getAllAddresses } from "@/services/addresses";
+
 import { SettingsAddressAddForm } from "./settings-address-add-form";
 import { SettingsAddressesList } from "./settings-addresses-list";
 
@@ -97,7 +98,7 @@ export const SettingsAddresses = () => {
           Meus Endereços
         </h2>
 
-        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+        <p className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
           Gestão de Logística e Localização
         </p>
       </div>
@@ -111,11 +112,7 @@ export const SettingsAddresses = () => {
       />
 
       {feedback && (
-        <Feedback
-          type={feedback.type}
-          message={feedback.message}
-          onClose={clearFeedback}
-        />
+        <Feedback type={feedback.type} message={feedback.message} onClose={clearFeedback} />
       )}
 
       <SettingsAddressAddForm onAdd={handleAddAddress} />

@@ -1,21 +1,20 @@
 "use client";
 
-import { Plus, Store } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { StoreResponse } from "@/@types/store/store-response";
+import Link from "next/link";
 
+import { Plus, Store } from "lucide-react";
+
+import { StoreResponse } from "@/@types/store/store-response";
+import { DashboardStatCard } from "@/components/dashboard-stat-card";
 import { DashboardActiveProductsStatCard } from "@/components/dashboard-stats/dashboard-active-products-stat-card";
 import { DashboardTotalRevenueStatCard } from "@/components/dashboard-stats/dashboard-total-revenue-stat-card";
 import { DashboardUniqueCustomersStatCard } from "@/components/dashboard-stats/dashboard-unique-customers-stat-card";
-
+import { ErrorFeedback } from "@/components/error-feedback";
 import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { StoresList } from "@/components/stores-list";
-
-import { DashboardStatCard } from "@/components/dashboard-stat-card";
-import { ErrorFeedback } from "@/components/error-feedback";
 import { getMyTotalRevenue, getUniqueCustomers } from "@/services/analytics";
 import { getUserActiveProductsCount } from "@/services/products";
 import { getMyStores } from "@/services/stores";
@@ -42,8 +41,7 @@ const DashboardPage = () => {
           setTotalStores(response.totalElements);
         }
       } catch {
-        if (!ignore)
-          setErrorMessage("Falha na sincronização dos dados do painel.");
+        if (!ignore) setErrorMessage("Falha na sincronização dos dados do painel.");
       } finally {
         if (!ignore) setIsLoading(false);
       }
@@ -82,7 +80,7 @@ const DashboardPage = () => {
         actions={
           <Link
             href="/dashboard/stores/new"
-            className="flex items-center gap-3 rounded-2xl bg-slate-950 px-8 py-5 text-[11px] font-black uppercase tracking-widest text-white transition-all hover:bg-indigo-600 hover:shadow-xl hover:shadow-indigo-100 active:scale-95"
+            className="flex items-center gap-3 rounded-2xl bg-slate-950 px-8 py-5 text-[11px] font-black tracking-widest text-white uppercase transition-all hover:bg-indigo-600 hover:shadow-xl hover:shadow-indigo-100 active:scale-95"
           >
             <Plus size={18} />
             Criar loja
@@ -111,14 +109,14 @@ const DashboardPage = () => {
         <div className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-1 w-8 rounded-full bg-indigo-600" />
-            <h2 className="text-2xl font-black uppercase italic tracking-tighter text-slate-950">
+            <h2 className="text-2xl font-black tracking-tighter text-slate-950 uppercase italic">
               Minhas <span className="text-indigo-600">Lojas</span>
             </h2>
           </div>
 
           <Link
             href="/dashboard/stores"
-            className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors"
+            className="text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors hover:text-indigo-600"
           >
             Ver todas as lojas
           </Link>

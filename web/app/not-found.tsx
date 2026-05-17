@@ -1,7 +1,8 @@
 "use client";
 
-import { Home, Search, Sparkles } from "lucide-react";
 import Link from "next/link";
+
+import { Home, Search, Sparkles } from "lucide-react";
 
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
@@ -36,8 +37,8 @@ const NotFoundPage = () => {
           </h2>
 
           <p className="mx-auto mb-12 max-w-xl text-lg leading-relaxed font-medium text-slate-500">
-            O destino que você está tentando acessar não existe ou foi movido
-            para uma nova coordenada em nossa infraestrutura.
+            O destino que você está tentando acessar não existe ou foi movido para uma nova
+            coordenada em nossa infraestrutura.
           </p>
 
           <div className="flex justify-center">
@@ -59,9 +60,7 @@ const NotFoundPage = () => {
                 <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
                   Diagnóstico
                 </p>
-                <p className="text-xs font-bold text-slate-900 italic">
-                  Verifique a URL digitada
-                </p>
+                <p className="text-xs font-bold text-slate-900 italic">Verifique a URL digitada</p>
               </div>
             </div>
 

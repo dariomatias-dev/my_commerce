@@ -1,7 +1,8 @@
 "use client";
 
-import { ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
+
+import { ArrowRight, Sparkles } from "lucide-react";
 
 export const CtaSection = () => {
   return (
@@ -28,8 +29,8 @@ export const CtaSection = () => {
           </h2>
 
           <p className="mx-auto mb-12 max-w-2xl text-lg leading-relaxed font-medium tracking-tight text-indigo-50 md:text-xl">
-            Abandone a indecisão. Junte-se a milhares de lojistas que escalaram
-            seus negócios com a infraestrutura do{" "}
+            Abandone a indecisão. Junte-se a milhares de lojistas que escalaram seus negócios com a
+            infraestrutura do{" "}
             <span className="font-black text-white italic underline decoration-slate-950 underline-offset-4">
               MyEcommerce
             </span>
@@ -75,17 +76,15 @@ export const CtaSection = () => {
           </Link>
 
           <div className="mt-16 flex flex-wrap justify-center gap-x-8 gap-y-4">
-            {["Sem taxas ocultas", "Sem cartão de crédito", "Suporte 24/7"].map(
-              (text, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <div className="h-1 w-1 rounded-full bg-indigo-300" />
+            {["Sem taxas ocultas", "Sem cartão de crédito", "Suporte 24/7"].map((text, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <div className="h-1 w-1 rounded-full bg-indigo-300" />
 
-                  <span className="text-[10px] font-black tracking-widest text-indigo-200 uppercase italic">
-                    {text}
-                  </span>
-                </div>
-              ),
-            )}
+                <span className="text-[10px] font-black tracking-widest text-indigo-200 uppercase italic">
+                  {text}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

@@ -7,15 +7,12 @@ interface AddressContentCardProps {
   isActive?: boolean;
 }
 
-export const AddressContentCard = ({
-  address,
-  isActive = false,
-}: AddressContentCardProps) => {
+export const AddressContentCard = ({ address, isActive = false }: AddressContentCardProps) => {
   return (
     <div className="flex flex-col space-y-1">
       <div className="flex items-center gap-3">
         <span
-          className={`rounded-lg px-2.5 py-1 text-[8px] font-black uppercase tracking-widest transition-colors ${
+          className={`rounded-lg px-2.5 py-1 text-[8px] font-black tracking-widest uppercase transition-colors ${
             isActive ? "bg-indigo-600 text-white" : "bg-slate-950 text-white"
           }`}
         >
@@ -23,16 +20,14 @@ export const AddressContentCard = ({
         </span>
       </div>
 
-      <h4 className="text-sm font-black uppercase italic tracking-tighter text-slate-950">
+      <h4 className="text-sm font-black tracking-tighter text-slate-950 uppercase italic">
         {address.street}, {address.number}
         {address.complement && (
-          <span className="ml-2 text-indigo-600 not-italic">
-            ({address.complement})
-          </span>
+          <span className="ml-2 text-indigo-600 not-italic">({address.complement})</span>
         )}
       </h4>
 
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-bold tracking-widest text-slate-400 uppercase">
         <span>{address.neighborhood}</span>
 
         <span className="h-1 w-1 rounded-full bg-slate-200" />

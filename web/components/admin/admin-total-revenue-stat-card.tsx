@@ -1,7 +1,8 @@
 "use client";
 
-import { DollarSign } from "lucide-react";
 import { useEffect, useState } from "react";
+
+import { DollarSign } from "lucide-react";
 
 import { DashboardStatCard } from "@/components/dashboard-stat-card";
 import { getTotalRevenue } from "@/services/analytics";

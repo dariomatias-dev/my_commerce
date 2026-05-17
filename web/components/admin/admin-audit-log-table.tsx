@@ -1,11 +1,14 @@
 "use client";
 
-import { ArrowRight, History } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useState } from "react";
+
+import Link from "next/link";
+
+import { ArrowRight, History } from "lucide-react";
 
 import { AuditLogResponse } from "@/@types/audit-log/audit-log-response";
 import { getLogs } from "@/services/audit-logs";
+
 import { AuditLogTable } from "../audit-log-table";
 
 export const AdminAuditLogTable = () => {
@@ -47,29 +50,27 @@ export const AdminAuditLogTable = () => {
             <History size={20} />
           </div>
 
-          <h2 className="text-2xl font-black uppercase italic tracking-tighter text-slate-950">
+          <h2 className="text-2xl font-black tracking-tighter text-slate-950 uppercase italic">
             Logs de <span className="text-indigo-600">Auditoria</span>
           </h2>
         </div>
 
         <Link
           href="admin/audit-logs"
-          className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-indigo-600 transition-colors hover:text-indigo-700"
+          className="flex items-center gap-2 text-[10px] font-black tracking-widest text-indigo-600 uppercase transition-colors hover:text-indigo-700"
         >
           Ver Tudo
           <ArrowRight size={12} />
         </Link>
       </div>
 
-      <div className="min-h-100 flex flex-col">
+      <div className="flex min-h-100 flex-col">
         {error ? (
-          <div className="flex flex-1 flex-col items-center justify-center p-12 text-center rounded-[2.5rem] border border-slate-100 bg-white">
-            <p className="mb-4 text-xs font-bold text-red-500 uppercase tracking-widest">
-              {error}
-            </p>
+          <div className="flex flex-1 flex-col items-center justify-center rounded-[2.5rem] border border-slate-100 bg-white p-12 text-center">
+            <p className="mb-4 text-xs font-bold tracking-widest text-red-500 uppercase">{error}</p>
             <button
               onClick={() => setRefreshKey((k) => k + 1)}
-              className="text-[10px] font-black uppercase underline tracking-widest text-slate-950"
+              className="text-[10px] font-black tracking-widest text-slate-950 uppercase underline"
             >
               Tentar novamente
             </button>

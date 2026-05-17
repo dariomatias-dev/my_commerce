@@ -77,7 +77,7 @@ export const ConfirmDialog = ({
           {!isLoading && (
             <button
               onClick={onClose}
-              className="flex h-10 w-10 items-center justify-center rounded-full text-slate-400 hover:bg-slate-50 hover:text-slate-950 transition-colors"
+              className="flex h-10 w-10 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-50 hover:text-slate-950"
             >
               <X size={20} />
             </button>
@@ -93,7 +93,7 @@ export const ConfirmDialog = ({
             <button
               onClick={onConfirm}
               disabled={isLoading}
-              className={`flex w-full items-center justify-center gap-3 rounded-2xl py-4 text-xs font-black tracking-[0.2em] text-white uppercase transition-all shadow-lg active:scale-95 disabled:opacity-50 ${config.button}`}
+              className={`flex w-full items-center justify-center gap-3 rounded-2xl py-4 text-xs font-black tracking-[0.2em] text-white uppercase shadow-lg transition-all active:scale-95 disabled:opacity-50 ${config.button}`}
             >
               {isLoading ? (
                 <>

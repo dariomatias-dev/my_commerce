@@ -1,7 +1,9 @@
 "use client";
 
-import { AuditLogResponse } from "@/@types/audit-log/audit-log-response";
 import { RefreshCcw } from "lucide-react";
+
+import { AuditLogResponse } from "@/@types/audit-log/audit-log-response";
+
 import { AuditLogTableItem } from "./audit-log-table-item";
 
 interface AuditLogTableProps {
@@ -11,24 +13,24 @@ interface AuditLogTableProps {
 
 export const AuditLogTable = ({ logs, isLoading }: AuditLogTableProps) => {
   return (
-    <div className="overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white shadow-sm flex-1 flex flex-col">
+    <div className="flex flex-1 flex-col overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead className="border-b border-slate-100 bg-slate-50">
             <tr>
-              <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">
+              <th className="px-8 py-5 text-[10px] font-black tracking-widest text-slate-400 uppercase">
                 Ação Realizada
               </th>
 
-              <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">
+              <th className="px-8 py-5 text-[10px] font-black tracking-widest text-slate-400 uppercase">
                 Usuário
               </th>
 
-              <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">
+              <th className="px-8 py-5 text-[10px] font-black tracking-widest text-slate-400 uppercase">
                 Status
               </th>
 
-              <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">
+              <th className="px-8 py-5 text-[10px] font-black tracking-widest text-slate-400 uppercase">
                 Data / Hora
               </th>
             </tr>
@@ -51,7 +53,7 @@ export const AuditLogTable = ({ logs, isLoading }: AuditLogTableProps) => {
           <div className="flex flex-col items-center gap-3">
             <RefreshCcw size={24} className="animate-spin text-indigo-600" />
 
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+            <span className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase">
               Sincronizando registros...
             </span>
           </div>
@@ -60,7 +62,7 @@ export const AuditLogTable = ({ logs, isLoading }: AuditLogTableProps) => {
 
       {!isLoading && logs.length === 0 && (
         <div className="flex flex-1 items-center justify-center p-12">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+          <span className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
             Nenhum registro encontrado
           </span>
         </div>

@@ -1,10 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, DollarSign, Type } from "lucide-react";
-import { useEffect, useState } from "react";
-
-import { useForm, useWatch } from "react-hook-form";
 
 import { CategoryResponse } from "@/@types/category/category-response";
 import { ProductResponse } from "@/@types/product/product-response";
@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { ProductFormValues, productSchema } from "@/schemas/product.schema";
 import { getAllCategories } from "@/services/categories";
 import { getStoreBySlug } from "@/services/stores";
+
 import { ProductFormCategorySelect } from "./product-form-category";
 import { ProductFormField } from "./product-form-field";
 import { ProductFormSection } from "./product-form-section";
@@ -21,11 +22,7 @@ import { ProductFormStatusToggleSection } from "./product-form-status-toggle-sec
 
 interface ProductFormProps {
   initialData?: ProductResponse;
-  onSubmit: (
-    data: ProductFormValues,
-    storeId: string,
-    removedImages?: string[],
-  ) => Promise<void>;
+  onSubmit: (data: ProductFormValues, storeId: string, removedImages?: string[]) => Promise<void>;
   isSubmitting: boolean;
   storeSlug: string;
 }
@@ -84,11 +81,7 @@ export const ProductForm = ({
 
         setStoreId(storeData.id);
 
-        const catData = await getAllCategories(
-          { storeId: storeData.id },
-          0,
-          100,
-        );
+        const catData = await getAllCategories({ storeId: storeData.id }, 0, 100);
 
         if (!ignore) setCategories(catData.content);
       } catch (error) {
@@ -129,30 +122,19 @@ export const ProductForm = ({
     <form
       onSubmit={handleSubmit(
         (data) =>
-          storeId &&
-          onSubmit(
-            data,
-            storeId,
-            removedImages.length > 0 ? removedImages : undefined,
-          ),
+          storeId && onSubmit(data, storeId, removedImages.length > 0 ? removedImages : undefined),
       )}
       className="space-y-8"
     >
       <ProductFormSection>
         <div className="grid gap-10">
-          <ProductFormField
-            label="Nome do Produto"
-            icon={Type}
-            error={errors.name?.message}
-          >
+          <ProductFormField label="Nome do Produto" icon={Type} error={errors.name?.message}>
             <input
               {...register("name")}
               placeholder="Ex: Alpha Pro Sneakers v2"
               className={cn(
-                "w-full rounded-2xl border-2 bg-slate-50 py-4 px-6 font-bold text-slate-900 outline-none transition-all focus:bg-white",
-                errors.name
-                  ? "border-red-500"
-                  : "border-slate-100 focus:border-indigo-600",
+                "w-full rounded-2xl border-2 bg-slate-50 px-6 py-4 font-bold text-slate-900 transition-all outline-none focus:bg-white",
+                errors.name ? "border-red-500" : "border-slate-100 focus:border-indigo-600",
               )}
             />
           </ProductFormField>
@@ -166,18 +148,13 @@ export const ProductForm = ({
             control={control}
           />
 
-          <ProductFormField
-            label="Descrição"
-            error={errors.description?.message}
-          >
+          <ProductFormField label="Descrição" error={errors.description?.message}>
             <textarea
               {...register("description")}
               rows={6}
               className={cn(
-                "w-full resize-none rounded-[2rem] border-2 bg-slate-50 py-4 px-6 font-bold text-slate-950 outline-none transition-all focus:bg-white",
-                errors.description
-                  ? "border-red-500"
-                  : "border-slate-100 focus:border-indigo-600",
+                "w-full resize-none rounded-[2rem] border-2 bg-slate-50 px-6 py-4 font-bold text-slate-950 transition-all outline-none focus:bg-white",
+                errors.description ? "border-red-500" : "border-slate-100 focus:border-indigo-600",
               )}
             />
           </ProductFormField>
@@ -199,7 +176,7 @@ export const ProductForm = ({
               {...register("price", { valueAsNumber: true })}
               type="number"
               step="0.01"
-              className="w-full rounded-2xl border-2 bg-slate-50 py-4 px-6 font-bold text-slate-950 border-slate-100 outline-none focus:bg-white focus:border-indigo-600"
+              className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-6 py-4 font-bold text-slate-950 outline-none focus:border-indigo-600 focus:bg-white"
             />
           </ProductFormField>
 
@@ -207,7 +184,7 @@ export const ProductForm = ({
             <input
               {...register("stock", { valueAsNumber: true })}
               type="number"
-              className="w-full rounded-2xl border-2 bg-slate-50 py-4 px-6 font-bold text-slate-950 border-slate-100 outline-none focus:bg-white focus:border-indigo-600"
+              className="w-full rounded-2xl border-2 border-slate-100 bg-slate-50 px-6 py-4 font-bold text-slate-950 outline-none focus:border-indigo-600 focus:bg-white"
             />
           </ProductFormField>
         </div>
@@ -218,15 +195,8 @@ export const ProductForm = ({
         onToggle={(value) => setValue("active", value)}
       />
 
-      <ActionButton
-        disabled={isSubmitting || isLoadingData}
-        showArrow={!isSubmitting}
-      >
-        {isSubmitting
-          ? "SINCRONIZANDO..."
-          : initialData
-            ? "ATUALIZAR DADOS"
-            : "FINALIZAR CADASTRO"}
+      <ActionButton disabled={isSubmitting || isLoadingData} showArrow={!isSubmitting}>
+        {isSubmitting ? "SINCRONIZANDO..." : initialData ? "ATUALIZAR DADOS" : "FINALIZAR CADASTRO"}
       </ActionButton>
     </form>
   );

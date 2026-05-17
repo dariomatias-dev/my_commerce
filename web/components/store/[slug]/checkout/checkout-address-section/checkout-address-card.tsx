@@ -26,7 +26,7 @@ export const CheckoutAddressCard = ({
   >
     <AddressContentCard address={address} isActive={isSelected} />
 
-    <div className="absolute right-6 top-6">
+    <div className="absolute top-6 right-6">
       {isSelected && <Check size={16} className="text-indigo-600" />}
     </div>
   </button>

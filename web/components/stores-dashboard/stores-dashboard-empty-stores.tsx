@@ -1,11 +1,12 @@
 "use client";
 
-import { PlusCircle, StoreIcon } from "lucide-react";
 import Link from "next/link";
+
+import { PlusCircle, StoreIcon } from "lucide-react";
 
 export const StoresDashboardEmptyStores = () => {
   return (
-    <div className="flex flex-col items-center justify-center gap-10 rounded-[3rem] border border-slate-200 bg-white p-20 text-center shadow-sm animate-in fade-in zoom-in-95 duration-500">
+    <div className="animate-in fade-in zoom-in-95 flex flex-col items-center justify-center gap-10 rounded-[3rem] border border-slate-200 bg-white p-20 text-center shadow-sm duration-500">
       <div className="flex h-24 w-24 items-center justify-center rounded-[2rem] bg-indigo-50 text-indigo-600">
         <StoreIcon size={48} />
       </div>
@@ -16,14 +17,14 @@ export const StoresDashboardEmptyStores = () => {
             Status: Sem Lojas
           </span>
 
-          <h2 className="text-5xl font-black tracking-tighter text-slate-950 uppercase italic leading-none">
+          <h2 className="text-5xl leading-none font-black tracking-tighter text-slate-950 uppercase italic">
             Nenhuma <span className="text-indigo-600">Loja Ativa.</span>
           </h2>
         </div>
 
         <p className="text-lg font-medium text-slate-500 italic">
-          O sistema não detectou nenhuma loja vinculada à sua conta. Crie a sua
-          primeira loja para começar.
+          O sistema não detectou nenhuma loja vinculada à sua conta. Crie a sua primeira loja para
+          começar.
         </p>
       </div>
 

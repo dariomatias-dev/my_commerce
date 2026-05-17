@@ -1,9 +1,11 @@
 "use client";
 
-import { Info, LocateFixed, Plus, RefreshCw, Tag } from "lucide-react";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 
+import { Info, LocateFixed, Plus, RefreshCw, Tag } from "lucide-react";
+
 import { AddressFormValues } from "@/schemas/address.schema";
+
 import { AddressFormInput } from "./address-form-input";
 
 interface AddressFormProps {
@@ -115,22 +117,22 @@ export const AddressForm = ({
               <Tag size={14} className="text-white" />
             </div>
 
-            <h4 className="text-[10px] font-black uppercase tracking-widest text-white">
+            <h4 className="text-[10px] font-black tracking-widest text-white uppercase">
               Posicionamento Geográfico
             </h4>
           </div>
 
           <div className="flex items-center gap-1.5 rounded-full bg-slate-900 px-2.5 py-1">
             <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-indigo-500" />
-            <span className="text-[8px] font-bold uppercase tracking-tighter text-indigo-400">
+            <span className="text-[8px] font-bold tracking-tighter text-indigo-400 uppercase">
               Sistema GPS Ativo
             </span>
           </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="relative rounded-xl bg-slate-900/50 p-3 border border-slate-800">
-            <label className="mb-1 block text-[8px] font-black uppercase tracking-widest text-slate-500">
+          <div className="relative rounded-xl border border-slate-800 bg-slate-900/50 p-3">
+            <label className="mb-1 block text-[8px] font-black tracking-widest text-slate-500 uppercase">
               Coordenada Latitude
             </label>
 
@@ -145,8 +147,8 @@ export const AddressForm = ({
             </div>
           </div>
 
-          <div className="relative rounded-xl bg-slate-900/50 p-3 border border-slate-800">
-            <label className="mb-1 block text-[8px] font-black uppercase tracking-widest text-slate-500">
+          <div className="relative rounded-xl border border-slate-800 bg-slate-900/50 p-3">
+            <label className="mb-1 block text-[8px] font-black tracking-widest text-slate-500 uppercase">
               Coordenada Longitude
             </label>
 
@@ -164,7 +166,7 @@ export const AddressForm = ({
 
         <div className="mt-4 border-t border-slate-800 pt-4">
           <div className="flex items-center justify-between">
-            <p className="flex items-center gap-1.5 text-[8px] font-bold uppercase text-slate-500">
+            <p className="flex items-center gap-1.5 text-[8px] font-bold text-slate-500 uppercase">
               <Info size={10} className="text-indigo-600" />
               Captura coordenadas via GPS do dispositivo.
             </p>
@@ -173,7 +175,7 @@ export const AddressForm = ({
               type="button"
               onClick={onGetCoordinates}
               disabled={isGeocoding}
-              className="flex h-9 items-center gap-2 rounded-lg bg-white px-4 text-[9px] font-black text-slate-950 transition-all hover:bg-indigo-600 hover:text-white disabled:opacity-50 uppercase"
+              className="flex h-9 items-center gap-2 rounded-lg bg-white px-4 text-[9px] font-black text-slate-950 uppercase transition-all hover:bg-indigo-600 hover:text-white disabled:opacity-50"
             >
               {isGeocoding ? (
                 <RefreshCw size={12} className="animate-spin" />
@@ -185,9 +187,7 @@ export const AddressForm = ({
           </div>
 
           {syncError && (
-            <p className="mt-2 text-[9px] font-bold text-red-400 uppercase">
-              {syncError}
-            </p>
+            <p className="mt-2 text-[9px] font-bold text-red-400 uppercase">{syncError}</p>
           )}
         </div>
       </div>
@@ -196,13 +196,9 @@ export const AddressForm = ({
         <button
           type="submit"
           disabled={isLoading}
-          className="flex items-center gap-2 rounded-xl bg-slate-950 px-8 py-4 text-[10px] font-black tracking-widest text-white shadow-xl transition-all hover:bg-indigo-600 active:scale-95 disabled:opacity-50 uppercase"
+          className="flex items-center gap-2 rounded-xl bg-slate-950 px-8 py-4 text-[10px] font-black tracking-widest text-white uppercase shadow-xl transition-all hover:bg-indigo-600 active:scale-95 disabled:opacity-50"
         >
-          {isLoading ? (
-            <RefreshCw size={16} className="animate-spin" />
-          ) : (
-            <Plus size={16} />
-          )}
+          {isLoading ? <RefreshCw size={16} className="animate-spin" /> : <Plus size={16} />}
           Finalizar Cadastro
         </button>
       </div>

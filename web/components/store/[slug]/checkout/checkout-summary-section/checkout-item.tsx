@@ -1,6 +1,7 @@
 import { Minus, Plus, Trash2 } from "lucide-react";
 
 import { ProductImage } from "@/components/product-image";
+
 import { Item } from "../../../../layout/store-header/store-cart/store-cart-item";
 
 interface CheckoutItemProps {
@@ -10,24 +11,19 @@ interface CheckoutItemProps {
   onRemove: (id: string) => void;
 }
 
-export const CheckoutItem = ({
-  item,
-  onIncrease,
-  onDecrease,
-  onRemove,
-}: CheckoutItemProps) => (
-  <div className="flex items-center gap-4 group">
-    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-slate-50 border border-slate-100">
+export const CheckoutItem = ({ item, onIncrease, onDecrease, onRemove }: CheckoutItemProps) => (
+  <div className="group flex items-center gap-4">
+    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-slate-100 bg-slate-50">
       <ProductImage
         imagePath={item.image}
         alt={item.name}
         fill
-        className="transition-transform duration-500 group-hover:scale-110 object-fill"
+        className="object-fill transition-transform duration-500 group-hover:scale-110"
       />
     </div>
 
-    <div className="flex-1 flex flex-col gap-1">
-      <h4 className="text-[11px] font-black uppercase italic leading-tight text-slate-950 line-clamp-1">
+    <div className="flex flex-1 flex-col gap-1">
+      <h4 className="line-clamp-1 text-[11px] leading-tight font-black text-slate-950 uppercase italic">
         {item.name}
       </h4>
 
@@ -38,12 +34,12 @@ export const CheckoutItem = ({
         })}
       </p>
 
-      <div className="flex items-center gap-3 mt-1">
-        <div className="flex items-center gap-1 rounded-lg border border-slate-100 p-0.5 bg-white">
+      <div className="mt-1 flex items-center gap-3">
+        <div className="flex items-center gap-1 rounded-lg border border-slate-100 bg-white p-0.5">
           <button
             onClick={() => onDecrease(item.id)}
             disabled={item.quantity <= 1}
-            className="flex h-6 w-6 items-center justify-center rounded-md hover:bg-slate-50 text-slate-500 transition-colors disabled:opacity-30"
+            className="flex h-6 w-6 items-center justify-center rounded-md text-slate-500 transition-colors hover:bg-slate-50 disabled:opacity-30"
           >
             <Minus size={12} />
           </button>
@@ -54,7 +50,7 @@ export const CheckoutItem = ({
 
           <button
             onClick={() => onIncrease(item.id)}
-            className="flex h-6 w-6 items-center justify-center rounded-md hover:bg-slate-50 text-slate-500 transition-colors"
+            className="flex h-6 w-6 items-center justify-center rounded-md text-slate-500 transition-colors hover:bg-slate-50"
           >
             <Plus size={12} />
           </button>
@@ -62,7 +58,7 @@ export const CheckoutItem = ({
 
         <button
           onClick={() => onRemove(item.id)}
-          className="text-slate-300 hover:text-red-500 transition-colors"
+          className="text-slate-300 transition-colors hover:text-red-500"
         >
           <Trash2 size={14} />
         </button>

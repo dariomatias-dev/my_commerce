@@ -1,7 +1,8 @@
 "use client";
 
-import { AlertTriangle, DollarSign } from "lucide-react";
 import { KeyboardEvent, useState } from "react";
+
+import { AlertTriangle, DollarSign } from "lucide-react";
 
 import { ProductFilters } from "@/@types/product/product-filters";
 import { BooleanCardFilter } from "@/components/filters/boolean-card-filter";
@@ -20,8 +21,7 @@ export const ProductsDashboardFilter = ({
   currentFilters,
   onApply,
 }: ProductsDashboardFilterProps) => {
-  const [localFilters, setLocalFilters] =
-    useState<LocalFilters>(currentFilters);
+  const [localFilters, setLocalFilters] = useState<LocalFilters>(currentFilters);
 
   const triggerApply = (updated: LocalFilters) => {
     onApply({ ...updated, name: updated.name || undefined });
@@ -35,10 +35,7 @@ export const ProductsDashboardFilter = ({
     if (["e", "E", "+", "-"].includes(e.key)) e.preventDefault();
   };
 
-  const updateField = <K extends keyof LocalFilters>(
-    field: K,
-    value: LocalFilters[K],
-  ) => {
+  const updateField = <K extends keyof LocalFilters>(field: K, value: LocalFilters[K]) => {
     const updated = { ...localFilters, [field]: value };
 
     setLocalFilters(updated);
@@ -106,9 +103,7 @@ export const ProductsDashboardFilter = ({
 
             handleKeyDown(e);
           }}
-          onChange={(val) =>
-            updateField("minPrice", val ? Number(val) : undefined)
-          }
+          onChange={(val) => updateField("minPrice", val ? Number(val) : undefined)}
           onClear={() => {
             const updated: LocalFilters = {
               ...localFilters,
@@ -132,9 +127,7 @@ export const ProductsDashboardFilter = ({
 
             handleKeyDown(e);
           }}
-          onChange={(val) =>
-            updateField("maxPrice", val ? Number(val) : undefined)
-          }
+          onChange={(val) => updateField("maxPrice", val ? Number(val) : undefined)}
           onClear={() => {
             const updated: LocalFilters = {
               ...localFilters,

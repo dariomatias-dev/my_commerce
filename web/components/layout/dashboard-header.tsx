@@ -1,5 +1,6 @@
-import { Store, Zap } from "lucide-react";
 import Link from "next/link";
+
+import { Store, Zap } from "lucide-react";
 
 import { UserProfileDropdown } from "../user-profile-dropdown";
 

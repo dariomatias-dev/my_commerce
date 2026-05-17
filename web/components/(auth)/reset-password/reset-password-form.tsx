@@ -1,16 +1,18 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight, CheckCircle2, Store } from "lucide-react";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowRight, CheckCircle2, Store } from "lucide-react";
 import * as z from "zod";
 
+import { resetPassword } from "@/app/actions/auth";
 import { ActionButton } from "@/components/buttons/action-button";
 import { PasswordField } from "@/components/password-field";
-import { resetPassword } from "@/app/actions/auth";
 import { resetPasswordSchema } from "@/schemas/reset-password.schema";
 
 type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
@@ -92,10 +94,7 @@ export const ResetPasswordForm = () => {
           className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-slate-950 px-10 py-4 text-xs font-black tracking-widest text-white shadow-2xl transition-all hover:bg-indigo-600 active:scale-95"
         >
           ACESSAR LOGIN
-          <ArrowRight
-            size={16}
-            className="transition-transform group-hover:translate-x-1"
-          />
+          <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
         </Link>
       </div>
     );

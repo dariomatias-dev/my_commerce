@@ -1,7 +1,8 @@
 "use client";
 
-import { LockKeyholeIcon } from "lucide-react";
 import { Suspense } from "react";
+
+import { LockKeyholeIcon } from "lucide-react";
 
 import { ResetPasswordForm } from "@/components/(auth)/reset-password/reset-password-form";
 import { Footer } from "@/components/layout/footer";

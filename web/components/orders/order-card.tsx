@@ -1,7 +1,8 @@
 "use client";
 
-import { Calendar, ChevronRight, Hash, ShoppingBag } from "lucide-react";
 import Link from "next/link";
+
+import { Calendar, ChevronRight, Hash, ShoppingBag } from "lucide-react";
 
 import { OrderResponse } from "@/@types/order/order-response";
 import { getOrderStatusConfig } from "@/utils/get-order-status-config";
@@ -27,14 +28,14 @@ export const OrderCard = ({ order }: OrderCardProps) => {
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
               <Hash size={14} className="text-slate-300" />
-              <span className="text-sm font-black uppercase tracking-tighter text-slate-950">
+              <span className="text-sm font-black tracking-tighter text-slate-950 uppercase">
                 ID: {order.id.split("-")[0]}
               </span>
             </div>
 
             <div className="flex items-center gap-2">
               <Calendar size={14} className="text-slate-300" />
-              <span className="text-[10px] leading-none font-bold uppercase tracking-widest text-slate-400">
+              <span className="text-[10px] leading-none font-bold tracking-widest text-slate-400 uppercase">
                 {new Date(order.createdAt).toLocaleDateString("pt-BR", {
                   day: "2-digit",
                   month: "long",
@@ -47,7 +48,7 @@ export const OrderCard = ({ order }: OrderCardProps) => {
 
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex flex-col items-end border-r border-slate-100 pr-6">
-            <span className="text-[9px] font-black uppercase tracking-widest text-slate-300">
+            <span className="text-[9px] font-black tracking-widest text-slate-300 uppercase">
               Itens
             </span>
             <span className="text-xl font-black text-slate-950">
@@ -58,7 +59,7 @@ export const OrderCard = ({ order }: OrderCardProps) => {
           <div
             className={`rounded-full px-5 py-2 transition-colors ${statusConfig.bg} ${statusConfig.color}`}
           >
-            <span className="text-[10px] font-black uppercase tracking-[0.2em]">
+            <span className="text-[10px] font-black tracking-[0.2em] uppercase">
               {statusConfig.label}
             </span>
           </div>

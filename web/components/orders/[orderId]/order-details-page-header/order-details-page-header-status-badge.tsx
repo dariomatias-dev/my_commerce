@@ -12,7 +12,7 @@ export const OrderDetailsPageHeaderStatusBadge = ({
 
   return (
     <div
-      className={`flex items-center gap-2 rounded-2xl ${config.bg} px-4 py-2 text-[10px] font-black uppercase tracking-widest ${config.color}`}
+      className={`flex items-center gap-2 rounded-2xl ${config.bg} px-4 py-2 text-[10px] font-black tracking-widest uppercase ${config.color}`}
     >
       <div className={`h-2 w-2 rounded-full ${config.dot}`} />
       {config.label}

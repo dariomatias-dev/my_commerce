@@ -4,9 +4,7 @@ import { StoreRequest } from "@/@types/store/store-request";
 import { StoreResponse } from "@/@types/store/store-response";
 import { serverApi } from "@/lib/server-api";
 
-type ActionSuccess<T = void> = T extends void
-  ? { success: true }
-  : { success: true; data: T };
+type ActionSuccess<T = void> = T extends void ? { success: true } : { success: true; data: T };
 
 type ActionFailure = { success: false; error: string };
 
@@ -26,10 +24,7 @@ export async function createStore(
   banner: File,
 ): Promise<ActionResult<StoreResponse>> {
   const formData = new FormData();
-  formData.append(
-    "data",
-    new Blob([JSON.stringify(data)], { type: "application/json" }),
-  );
+  formData.append("data", new Blob([JSON.stringify(data)], { type: "application/json" }));
   formData.append("logo", logo);
   formData.append("banner", banner);
 
@@ -51,10 +46,7 @@ export async function updateStore(
 ): Promise<ActionResult<StoreResponse>> {
   const formData = new FormData();
   if (data) {
-    formData.append(
-      "data",
-      new Blob([JSON.stringify(data)], { type: "application/json" }),
-    );
+    formData.append("data", new Blob([JSON.stringify(data)], { type: "application/json" }));
   }
   if (logo) formData.append("logo", logo);
   if (banner) formData.append("banner", banner);

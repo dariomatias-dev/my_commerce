@@ -1,9 +1,11 @@
 "use client";
 
-import { LayoutDashboard, Menu, ShieldCheck, Users, X } from "lucide-react";
+import { useEffect, useState } from "react";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+
+import { LayoutDashboard, Menu, ShieldCheck, Users, X } from "lucide-react";
 
 import { HeaderNavAuth } from "@/components/layout/header-nav-auth";
 
@@ -29,9 +31,7 @@ export const AdminHeader = () => {
     <header className="fixed inset-x-0 top-0 z-100">
       <nav
         className={`border-b transition-all duration-300 ${
-          scrolled
-            ? "border-slate-200 bg-white/90 backdrop-blur-md"
-            : "border-transparent bg-white"
+          scrolled ? "border-slate-200 bg-white/90 backdrop-blur-md" : "border-transparent bg-white"
         }`}
       >
         <div className="mx-auto flex h-20 max-w-400 items-center px-6">
@@ -64,9 +64,7 @@ export const AdminHeader = () => {
                     key={link.href}
                     href={link.href}
                     className={`group relative flex items-center gap-2 text-[10px] font-black tracking-widest uppercase transition-colors ${
-                      isActive
-                        ? "text-indigo-600"
-                        : "text-slate-500 hover:text-indigo-600"
+                      isActive ? "text-indigo-600" : "text-slate-500 hover:text-indigo-600"
                     }`}
                   >
                     {link.icon}
@@ -97,13 +95,13 @@ export const AdminHeader = () => {
         </div>
 
         {isMenuOpen && (
-          <div className="absolute inset-x-0 top-full h-screen bg-white p-6 shadow-2xl animate-in fade-in slide-in-from-top-4 lg:hidden">
-            <div className="flex flex-col gap-6 items-center">
+          <div className="animate-in fade-in slide-in-from-top-4 absolute inset-x-0 top-full h-screen bg-white p-6 shadow-2xl lg:hidden">
+            <div className="flex flex-col items-center gap-6">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-2xl font-black uppercase italic text-slate-950 flex items-center gap-3"
+                  className="flex items-center gap-3 text-2xl font-black text-slate-950 uppercase italic"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <span className="text-indigo-600">{link.icon}</span>
@@ -113,10 +111,7 @@ export const AdminHeader = () => {
 
               <hr className="w-full border-slate-100" />
 
-              <HeaderNavAuth
-                isMobile
-                onActionClick={() => setIsMenuOpen(false)}
-              />
+              <HeaderNavAuth isMobile onActionClick={() => setIsMenuOpen(false)} />
             </div>
           </div>
         )}

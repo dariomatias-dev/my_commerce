@@ -9,14 +9,14 @@ export const SettingsAdvancedSettings = () => {
     <section className="rounded-[2.5rem] border border-red-100 bg-red-50/30 p-8 md:p-12">
       <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
         <div className="flex items-center gap-5">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-red-600 shadow-sm border border-red-100">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-red-100 bg-white text-red-600 shadow-sm">
             <Trash2 size={28} />
           </div>
 
           <div>
             <div className="mb-1 flex items-center gap-2">
               <AlertTriangle size={12} className="text-red-500" />
-              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-red-500">
+              <span className="text-[9px] font-black tracking-[0.2em] text-red-500 uppercase">
                 Ação Irreversível
               </span>
             </div>
@@ -25,9 +25,9 @@ export const SettingsAdvancedSettings = () => {
               Encerrar <span className="text-red-600">Conta.</span>
             </h2>
 
-            <p className="mt-1 text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed max-w-sm">
-              Ao confirmar, todos os seus dados e históricos serão removidos
-              permanentemente de nossos servidores.
+            <p className="mt-1 max-w-sm text-[10px] leading-relaxed font-bold tracking-widest text-slate-400 uppercase">
+              Ao confirmar, todos os seus dados e históricos serão removidos permanentemente de
+              nossos servidores.
             </p>
           </div>
         </div>

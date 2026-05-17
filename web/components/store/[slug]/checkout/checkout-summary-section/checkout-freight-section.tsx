@@ -2,10 +2,7 @@
 
 import { RefreshCw, Timer, Truck } from "lucide-react";
 
-import {
-  FreightOption,
-  FreightResponse,
-} from "@/@types/freight/freight-response";
+import { FreightOption, FreightResponse } from "@/@types/freight/freight-response";
 
 interface CheckoutFreightSectionProps {
   options: FreightResponse | null;
@@ -23,18 +20,18 @@ export const CheckoutFreightSection = ({
   if (!options && !isLoading) return null;
 
   return (
-    <section className="rounded-[2.5rem] border-2 border-slate-100 bg-white p-8 md:p-10 transition-all hover:border-indigo-100">
+    <section className="rounded-[2.5rem] border-2 border-slate-100 bg-white p-8 transition-all hover:border-indigo-100 md:p-10">
       <div className="mb-8 flex items-center gap-4">
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
           <Truck size={24} />
         </div>
 
         <div>
-          <h2 className="text-xl font-black uppercase italic tracking-tighter text-slate-950">
+          <h2 className="text-xl font-black tracking-tighter text-slate-950 uppercase italic">
             Método de <span className="text-indigo-600">Envio.</span>
           </h2>
 
-          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+          <p className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
             Selecione a velocidade de entrega
           </p>
         </div>
@@ -59,10 +56,8 @@ export const CheckoutFreightSection = ({
               >
                 <div className="flex items-center justify-between">
                   <span
-                    className={`text-[10px] font-black uppercase tracking-widest ${
-                      selectedOption?.type === option?.type
-                        ? "text-indigo-600"
-                        : "text-slate-400"
+                    className={`text-[10px] font-black tracking-widest uppercase ${
+                      selectedOption?.type === option?.type ? "text-indigo-600" : "text-slate-400"
                     }`}
                   >
                     {option?.type === "ECONOMICAL" ? "Econômico" : "Expresso"}
@@ -71,17 +66,13 @@ export const CheckoutFreightSection = ({
                   <div className="flex items-center gap-1.5 text-slate-400">
                     <Timer size={12} />
 
-                    <span className="text-[10px] font-bold">
-                      {option?.estimatedDays} dias
-                    </span>
+                    <span className="text-[10px] font-bold">{option?.estimatedDays} dias</span>
                   </div>
                 </div>
 
                 <p className="mt-2 text-lg font-black text-slate-950">
                   {option?.value === 0 ? (
-                    <span className="text-emerald-500 italic uppercase">
-                      Grátis
-                    </span>
+                    <span className="text-emerald-500 uppercase italic">Grátis</span>
                   ) : (
                     option?.value.toLocaleString("pt-BR", {
                       style: "currency",

@@ -2,24 +2,19 @@ import { useEffect, useState } from "react";
 
 import { ProductResponse } from "@/@types/product/product-response";
 import { getAllProducts } from "@/services/products";
+
 import { ProductCard } from "./product-card";
 
 interface StoreStockHighlightsSectionProps {
   storeId: string;
 }
 
-export const StoreStockHighlightsSection = ({
-  storeId,
-}: StoreStockHighlightsSectionProps) => {
+export const StoreStockHighlightsSection = ({ storeId }: StoreStockHighlightsSectionProps) => {
   const [products, setProducts] = useState<ProductResponse[]>([]);
 
   useEffect(() => {
     const loadProducts = async () => {
-      const data = await getAllProducts(
-        { storeId, lowStockThreshold: 2 },
-        0,
-        2
-      );
+      const data = await getAllProducts({ storeId, lowStockThreshold: 2 }, 0, 2);
       setProducts(data.content);
     };
     loadProducts();
@@ -28,10 +23,10 @@ export const StoreStockHighlightsSection = ({
   if (products.length === 0) return null;
 
   return (
-    <section className="py-24 border-b border-slate-100">
+    <section className="border-b border-slate-100 py-24">
       <div className="grid gap-12 lg:grid-cols-2">
         <div className="rounded-[3.5rem] border-2 border-orange-100 bg-orange-50/20 p-12">
-          <h3 className="text-4xl font-black tracking-tighter text-orange-600 uppercase italic mb-12">
+          <h3 className="mb-12 text-4xl font-black tracking-tighter text-orange-600 uppercase italic">
             ÚLTIMAS <span className="text-slate-950">UNIDADES.</span>
           </h3>
 
@@ -43,7 +38,7 @@ export const StoreStockHighlightsSection = ({
         </div>
 
         <div className="rounded-[3.5rem] border-2 border-emerald-100 bg-emerald-50/20 p-12">
-          <h3 className="text-4xl font-black tracking-tighter text-emerald-600 uppercase italic mb-12">
+          <h3 className="mb-12 text-4xl font-black tracking-tighter text-emerald-600 uppercase italic">
             NOVIDADES <span className="text-slate-950">RECENTES.</span>
           </h3>
 

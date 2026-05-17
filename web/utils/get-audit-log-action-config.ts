@@ -12,8 +12,5 @@ const auditLogActionConfigs: Record<AuditLogAction, string> = {
 };
 
 export const getAuditLogActionConfigs = (action: string): string => {
-  return (
-    auditLogActionConfigs[action as AuditLogAction] ||
-    action.replace("_", " ").toUpperCase()
-  );
+  return auditLogActionConfigs[action as AuditLogAction] || action.replace("_", " ").toUpperCase();
 };

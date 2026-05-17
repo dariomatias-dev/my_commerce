@@ -1,18 +1,20 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Mail } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Mail } from "lucide-react";
 import * as z from "zod";
 
+import { login } from "@/app/actions/auth";
 import { ActionButton } from "@/components/buttons/action-button";
 import { PasswordField } from "@/components/password-field";
 import { useAuthContext } from "@/contexts/auth-context";
 import { loginSchema } from "@/schemas/login.schema";
-import { login } from "@/app/actions/auth";
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 

@@ -1,5 +1,6 @@
-import { Package, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
+
+import { Package, Pencil, Trash2 } from "lucide-react";
 
 import { StoreCardProps } from ".";
 
@@ -7,18 +8,14 @@ interface StoreCardActionsProps extends StoreCardProps {
   basePath: string;
 }
 
-export const StoreCardActions = ({
-  store,
-  onDelete,
-  basePath,
-}: StoreCardActionsProps) => {
+export const StoreCardActions = ({ store, onDelete, basePath }: StoreCardActionsProps) => {
   const isDeleted = store.deletedAt !== null;
 
   return (
     <div className="mt-10 flex items-center gap-3">
       <Link
         href={`${basePath}/stores/${store.slug}/products`}
-        className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-100 py-4 text-[10px] font-black uppercase tracking-widest text-slate-600 transition-colors hover:bg-slate-50"
+        className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-100 py-4 text-[10px] font-black tracking-widest text-slate-600 uppercase transition-colors hover:bg-slate-50"
       >
         <Package size={14} /> Produtos
       </Link>

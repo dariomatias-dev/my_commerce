@@ -1,8 +1,10 @@
 "use client";
 
-import { Save, UserCheck } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+import { useParams, useRouter } from "next/navigation";
+
+import { Save, UserCheck } from "lucide-react";
 
 import { ApiError } from "@/@types/api";
 import { updateUser } from "@/app/actions/users";
@@ -41,9 +43,7 @@ const AdminUserEditPage = () => {
           if (error instanceof ApiError) {
             setErrorMessage(error.message);
           } else {
-            setErrorMessage(
-              "Não foi possível carregar os dados do perfil do usuário.",
-            );
+            setErrorMessage("Não foi possível carregar os dados do perfil do usuário.");
           }
         }
       } finally {
@@ -116,7 +116,7 @@ const AdminUserEditPage = () => {
               </div>
 
               <div>
-                <h2 className="text-xl font-black italic tracking-tighter text-slate-950 uppercase">
+                <h2 className="text-xl font-black tracking-tighter text-slate-950 uppercase italic">
                   Dados Básicos
                 </h2>
                 <p className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
@@ -136,7 +136,7 @@ const AdminUserEditPage = () => {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-bold text-slate-950 transition-all focus:border-indigo-600 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-50"
+                  className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-bold text-slate-950 transition-all focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-50 focus:outline-none"
                   placeholder="Ex: João Silva"
                 />
               </div>
@@ -159,7 +159,7 @@ const AdminUserEditPage = () => {
               <button
                 type="submit"
                 disabled={isSaving}
-                className="flex min-w-70 w-full items-center justify-center gap-3 rounded-2xl bg-slate-950 px-10 py-5 text-[11px] font-black tracking-widest text-white shadow-xl transition-all hover:bg-indigo-600 disabled:opacity-50 active:scale-95 lg:w-fit uppercase"
+                className="flex w-full min-w-70 items-center justify-center gap-3 rounded-2xl bg-slate-950 px-10 py-5 text-[11px] font-black tracking-widest text-white uppercase shadow-xl transition-all hover:bg-indigo-600 active:scale-95 disabled:opacity-50 lg:w-fit"
               >
                 {isSaving ? (
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white" />
@@ -174,7 +174,7 @@ const AdminUserEditPage = () => {
           </div>
         </form>
 
-        <div className="mt-8 flex items-center justify-center gap-2 text-[9px] font-black italic tracking-widest text-slate-400 uppercase">
+        <div className="mt-8 flex items-center justify-center gap-2 text-[9px] font-black tracking-widest text-slate-400 uppercase italic">
           <span className="h-1 w-1 rounded-full bg-indigo-400" />
           As alterações serão sincronizadas globalmente
         </div>

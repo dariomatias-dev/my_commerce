@@ -1,9 +1,11 @@
 "use client";
 
-import { ImagePlus, X } from "lucide-react";
-import Image from "next/image";
 import { useMemo } from "react";
 import { Control, UseFormSetValue, useWatch } from "react-hook-form";
+
+import Image from "next/image";
+
+import { ImagePlus, X } from "lucide-react";
 
 import { ProductFormValues } from "@/schemas/product.schema";
 
@@ -52,7 +54,7 @@ export const ProductFormMediaGallery = ({
   };
 
   return (
-    <section className="rounded-[2.5rem] border-2 border-slate-200 bg-white p-8 md:p-12 shadow-sm">
+    <section className="rounded-[2.5rem] border-2 border-slate-200 bg-white p-8 shadow-sm md:p-12">
       <label className="mb-2 block text-[10px] font-black tracking-widest text-slate-400 uppercase">
         Galeria de Mídia
       </label>
@@ -61,7 +63,7 @@ export const ProductFormMediaGallery = ({
         Apenas imagens JPG, JPEG ou PNG
       </p>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
         {existingImages.map((img) => (
           <div
             key={img}
@@ -79,7 +81,7 @@ export const ProductFormMediaGallery = ({
             <button
               type="button"
               onClick={() => onRemoveExisting?.(img)}
-              className="absolute right-2 top-2 h-7 w-7 flex items-center justify-center rounded-lg bg-red-500 text-white opacity-0 transition-opacity group-hover:opacity-100"
+              className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-lg bg-red-500 text-white opacity-0 transition-opacity group-hover:opacity-100"
             >
               <X size={16} />
             </button>
@@ -95,19 +97,12 @@ export const ProductFormMediaGallery = ({
             key={url}
             className="group relative aspect-square overflow-hidden rounded-2xl border-2 border-slate-100"
           >
-            <Image
-              src={url}
-              alt="Preview"
-              fill
-              className="object-cover"
-              unoptimized
-              priority
-            />
+            <Image src={url} alt="Preview" fill className="object-cover" unoptimized priority />
 
             <button
               type="button"
               onClick={() => removeNewImage(index)}
-              className="absolute right-2 top-2 h-7 w-7 flex items-center justify-center rounded-lg bg-red-500 text-white opacity-0 transition-opacity group-hover:opacity-100"
+              className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-lg bg-red-500 text-white opacity-0 transition-opacity group-hover:opacity-100"
             >
               <X size={16} />
             </button>
@@ -136,9 +131,7 @@ export const ProductFormMediaGallery = ({
       </div>
 
       {error && (
-        <p className="mt-4 text-[10px] font-bold text-red-500 uppercase text-center">
-          {error}
-        </p>
+        <p className="mt-4 text-center text-[10px] font-bold text-red-500 uppercase">{error}</p>
       )}
     </section>
   );

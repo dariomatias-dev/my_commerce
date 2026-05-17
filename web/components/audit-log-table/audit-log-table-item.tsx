@@ -1,8 +1,9 @@
 "use client";
 
+import { Activity } from "lucide-react";
+
 import { AuditLogResponse } from "@/@types/audit-log/audit-log-response";
 import { getAuditLogResultConfig } from "@/utils/get-audit-log-result-config";
-import { Activity } from "lucide-react";
 
 interface AuditLogTableItemProps {
   log: AuditLogResponse;
@@ -14,9 +15,7 @@ export const AuditLogTableItem = ({ log }: AuditLogTableItemProps) => {
   return (
     <tr className="group transition-colors hover:bg-slate-50/50">
       <td className="px-8 py-5">
-        <span className="text-xs font-black uppercase italic text-slate-950">
-          {log.action}
-        </span>
+        <span className="text-xs font-black text-slate-950 uppercase italic">{log.action}</span>
       </td>
 
       <td className="px-8 py-5">
@@ -25,21 +24,17 @@ export const AuditLogTableItem = ({ log }: AuditLogTableItemProps) => {
             <Activity size={12} />
           </div>
 
-          <span className="text-[11px] font-bold text-slate-600">
-            {log.userId}
-          </span>
+          <span className="text-[11px] font-bold text-slate-600">{log.userId}</span>
         </div>
       </td>
 
       <td className="px-8 py-5">
-        <span
-          className={`text-[10px] font-black uppercase tracking-tighter ${status.color}`}
-        >
+        <span className={`text-[10px] font-black tracking-tighter uppercase ${status.color}`}>
           {status.label}
         </span>
       </td>
 
-      <td className="px-8 py-5 text-[11px] font-bold uppercase text-slate-500">
+      <td className="px-8 py-5 text-[11px] font-bold text-slate-500 uppercase">
         {new Date(log.timestamp).toLocaleString("pt-BR")}
       </td>
     </tr>

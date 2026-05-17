@@ -4,9 +4,7 @@ import { SubscriptionRequest } from "@/@types/subscription/subscription-request"
 import { SubscriptionResponse } from "@/@types/subscription/subscription-response";
 import { serverApi } from "@/lib/server-api";
 
-type ActionSuccess<T = void> = T extends void
-  ? { success: true }
-  : { success: true; data: T };
+type ActionSuccess<T = void> = T extends void ? { success: true } : { success: true; data: T };
 
 type ActionFailure = { success: false; error: string };
 

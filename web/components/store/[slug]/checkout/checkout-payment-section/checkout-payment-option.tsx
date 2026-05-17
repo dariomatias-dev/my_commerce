@@ -21,24 +21,18 @@ export const PaymentOption = ({
   return (
     <button
       onClick={() => onSelect(method)}
-      className={`flex items-center gap-4 rounded-2xl border-2 p-6 transition-all text-left ${
+      className={`flex items-center gap-4 rounded-2xl border-2 p-6 text-left transition-all ${
         isSelected
           ? "border-indigo-600 bg-indigo-50/30"
           : "border-slate-50 bg-slate-50 hover:border-slate-200"
       }`}
     >
-      <div className={isSelected ? "text-indigo-600" : "text-slate-400"}>
-        {icon}
-      </div>
+      <div className={isSelected ? "text-indigo-600" : "text-slate-400"}>{icon}</div>
 
       <div>
-        <p className="text-sm font-black uppercase italic leading-none text-slate-950">
-          {label}
-        </p>
+        <p className="text-sm leading-none font-black text-slate-950 uppercase italic">{label}</p>
 
-        <p className="mt-1 text-[10px] font-bold text-slate-400 uppercase">
-          {description}
-        </p>
+        <p className="mt-1 text-[10px] font-bold text-slate-400 uppercase">{description}</p>
       </div>
     </button>
   );

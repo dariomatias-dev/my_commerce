@@ -1,5 +1,6 @@
-import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
+
+import { ArrowUpRight } from "lucide-react";
 
 import { StoreResponse } from "@/@types/store/store-response";
 
@@ -20,7 +21,7 @@ export const StoreCardInfo = ({ store, basePath }: StoreCardInfoProps) => {
           />
 
           <span
-            className={`text-[10px] font-black uppercase tracking-widest ${
+            className={`text-[10px] font-black tracking-widest uppercase ${
               store.isActive ? "text-emerald-500" : "text-slate-400"
             }`}
           >
@@ -28,7 +29,7 @@ export const StoreCardInfo = ({ store, basePath }: StoreCardInfoProps) => {
           </span>
         </div>
 
-        <h3 className="text-3xl font-black uppercase italic tracking-tighter text-slate-950">
+        <h3 className="text-3xl font-black tracking-tighter text-slate-950 uppercase italic">
           {store.name}
         </h3>
 

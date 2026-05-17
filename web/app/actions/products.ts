@@ -2,12 +2,9 @@
 
 import { ProductRequest } from "@/@types/product/product-request";
 import { ProductResponse } from "@/@types/product/product-response";
-
 import { serverApi } from "@/lib/server-api";
 
-type ActionSuccess<T = void> = T extends void
-  ? { success: true }
-  : { success: true; data: T };
+type ActionSuccess<T = void> = T extends void ? { success: true } : { success: true; data: T };
 
 type ActionFailure = { success: false; error: string };
 
@@ -27,10 +24,7 @@ export async function createProduct(
 ): Promise<ActionResult<ProductResponse>> {
   const formData = new FormData();
 
-  formData.append(
-    "data",
-    new Blob([JSON.stringify(data)], { type: "application/json" }),
-  );
+  formData.append("data", new Blob([JSON.stringify(data)], { type: "application/json" }));
 
   images.forEach((img) => formData.append("images", img));
 

@@ -1,16 +1,15 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+import { ArrowLeft } from "lucide-react";
+
 import { StoreRequest } from "@/@types/store/store-request";
-import {
-  StoreForm,
-  StoreFormValues,
-} from "@/components/dashboard/store/store-form";
 import { createStore } from "@/app/actions/stores";
+import { StoreForm, StoreFormValues } from "@/components/dashboard/store/store-form";
 
 const NewStorePage = () => {
   const router = useRouter();
@@ -45,11 +44,11 @@ const NewStorePage = () => {
       <div className="mb-10 border-b border-slate-200 pb-8">
         <Link
           href="/dashboard"
-          className="mb-6 flex items-center gap-2 text-[10px] font-black tracking-widest text-slate-400 uppercase hover:text-indigo-600 transition-colors"
+          className="mb-6 flex items-center gap-2 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors hover:text-indigo-600"
         >
           <ArrowLeft size={14} /> Voltar ao Painel
         </Link>
-        <h1 className="text-5xl font-black tracking-tighter text-slate-950 uppercase italic leading-none">
+        <h1 className="text-5xl leading-none font-black tracking-tighter text-slate-950 uppercase italic">
           CRIAR NOVA <span className="text-indigo-600">LOJA.</span>
         </h1>
       </div>

@@ -1,7 +1,8 @@
 "use client";
 
-import { AlertCircle } from "lucide-react";
 import { useState } from "react";
+
+import { AlertCircle } from "lucide-react";
 
 import { StoreResponse } from "@/@types/store/store-response";
 import { deleteStore } from "@/app/actions/stores";
@@ -18,9 +19,7 @@ interface StoresListProps {
 export const StoresList = ({ stores, basePath, onRetry }: StoresListProps) => {
   const [isFirstConfirmOpen, setIsFirstConfirmOpen] = useState(false);
   const [isSecondConfirmOpen, setIsSecondConfirmOpen] = useState(false);
-  const [storeToDelete, setStoreToDelete] = useState<StoreResponse | null>(
-    null,
-  );
+  const [storeToDelete, setStoreToDelete] = useState<StoreResponse | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -70,10 +69,10 @@ export const StoresList = ({ stores, basePath, onRetry }: StoresListProps) => {
     <>
       <div className="flex flex-col gap-8">
         {actionError && (
-          <div className="flex items-center gap-3 rounded-2xl bg-red-50 p-4 border border-red-100 animate-in fade-in slide-in-from-top-2">
-            <AlertCircle className="text-red-500 shrink-0" size={18} />
+          <div className="animate-in fade-in slide-in-from-top-2 flex items-center gap-3 rounded-2xl border border-red-100 bg-red-50 p-4">
+            <AlertCircle className="shrink-0 text-red-500" size={18} />
 
-            <p className="text-[10px] font-black uppercase tracking-widest text-red-600">
+            <p className="text-[10px] font-black tracking-widest text-red-600 uppercase">
               {actionError}
             </p>
           </div>

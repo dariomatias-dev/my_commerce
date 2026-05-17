@@ -53,7 +53,7 @@ const PrivacyPolicyPage = () => {
     <>
       <Header />
 
-      <main className="relative min-h-screen bg-white font-sans text-slate-900 pt-12">
+      <main className="relative min-h-screen bg-white pt-12 font-sans text-slate-900">
         <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
           <div className="absolute top-0 right-0 h-150 w-150 rounded-full bg-indigo-50/50 blur-[120px]" />
           <div className="absolute bottom-0 left-0 h-125 w-125 rounded-full bg-slate-100/50 blur-[100px]" />
@@ -68,8 +68,7 @@ const PrivacyPolicyPage = () => {
                 </span>
               </div>
               <h1 className="text-6xl font-black tracking-tighter text-slate-950 uppercase italic md:text-8xl">
-                POLÍTICA DE <br />{" "}
-                <span className="text-indigo-600">PRIVACIDADE.</span>
+                POLÍTICA DE <br /> <span className="text-indigo-600">PRIVACIDADE.</span>
               </h1>
             </div>
             <div className="text-left lg:text-right">
@@ -88,9 +87,7 @@ const PrivacyPolicyPage = () => {
                 <h2 className="text-2xl font-black tracking-tighter text-slate-950 uppercase italic">
                   {clause.id}. {clause.title}
                 </h2>
-                <p className="text-lg leading-relaxed font-medium italic">
-                  {clause.text}
-                </p>
+                <p className="text-lg leading-relaxed font-medium italic">{clause.text}</p>
               </div>
             ))}
           </div>
@@ -102,9 +99,8 @@ const PrivacyPolicyPage = () => {
                   NOSSO <span className="text-indigo-500">COMPROMISSO.</span>
                 </h2>
                 <p className="mb-10 text-xl leading-relaxed text-slate-400 italic">
-                  A transparência é o core da nossa engenharia. Seus dados nunca
-                  serão vendidos ou compartilhados para fins de monetização de
-                  terceiros.
+                  A transparência é o core da nossa engenharia. Seus dados nunca serão vendidos ou
+                  compartilhados para fins de monetização de terceiros.
                 </p>
                 <div className="flex flex-wrap gap-4">
                   {[
@@ -127,10 +123,7 @@ const PrivacyPolicyPage = () => {
               <div className="flex justify-center lg:justify-end">
                 <div className="relative flex h-64 w-64 items-center justify-center rounded-full border border-white/10 bg-indigo-600/10 md:h-80 md:w-80">
                   <div className="absolute inset-0 animate-pulse rounded-full bg-indigo-500/20" />
-                  <ShieldCheck
-                    size={120}
-                    className="relative z-10 text-indigo-500"
-                  />
+                  <ShieldCheck size={120} className="relative z-10 text-indigo-500" />
                 </div>
               </div>
             </div>

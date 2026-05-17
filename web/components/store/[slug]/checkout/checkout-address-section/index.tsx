@@ -1,11 +1,13 @@
 "use client";
 
-import { MapPin, Plus, X } from "lucide-react";
 import { useState } from "react";
+
+import { MapPin, Plus, X } from "lucide-react";
 
 import { UserAddressResponse } from "@/@types/address/user-address-response";
 import { SettingsAddressAddForm } from "@/components/profile/profile-addresses/settings-address-add-form";
 import { AddressFormValues } from "@/schemas/address.schema";
+
 import { CheckoutAddressCard } from "./checkout-address-card";
 
 interface CheckoutAddressSectionProps {
@@ -34,7 +36,7 @@ export const CheckoutAddressSection = ({
   };
 
   return (
-    <section className="rounded-[2.5rem] border-2 border-slate-100 bg-white p-8 md:p-10 transition-all hover:border-indigo-100">
+    <section className="rounded-[2.5rem] border-2 border-slate-100 bg-white p-8 transition-all hover:border-indigo-100 md:p-10">
       <div className="mb-8 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
@@ -42,14 +44,12 @@ export const CheckoutAddressSection = ({
           </div>
 
           <div>
-            <h2 className="text-xl font-black uppercase italic tracking-tighter text-slate-950">
+            <h2 className="text-xl font-black tracking-tighter text-slate-950 uppercase italic">
               Onde <span className="text-indigo-600">Entregar?</span>
             </h2>
 
-            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-              {isAddingNew
-                ? "Cadastrar novo endereço"
-                : "Escolha um endereço salvo"}
+            <p className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+              {isAddingNew ? "Cadastrar novo endereço" : "Escolha um endereço salvo"}
             </p>
           </div>
         </div>
@@ -58,7 +58,7 @@ export const CheckoutAddressSection = ({
           onClick={() => setIsAddingNew(!isAddingNew)}
           className={`flex h-10 w-10 items-center justify-center rounded-xl transition-all ${
             isAddingNew
-              ? "bg-red-50 text-red-500 rotate-0"
+              ? "rotate-0 bg-red-50 text-red-500"
               : "bg-slate-50 text-slate-400 hover:bg-indigo-600 hover:text-white"
           }`}
         >
@@ -74,13 +74,13 @@ export const CheckoutAddressSection = ({
         <>
           {addresses.length === 0 ? (
             <div className="rounded-2xl border-2 border-dashed border-slate-100 p-8 text-center">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic mb-4">
+              <p className="mb-4 text-[10px] font-black tracking-widest text-slate-400 uppercase italic">
                 Nenhum endereço cadastrado.
               </p>
 
               <button
                 onClick={() => setIsAddingNew(true)}
-                className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:underline"
+                className="text-[10px] font-black tracking-widest text-indigo-600 uppercase hover:underline"
               >
                 + Adicionar meu primeiro endereço
               </button>

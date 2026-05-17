@@ -43,9 +43,7 @@ export const StandardPlanCard = ({
             R$ {plan.price}
           </span>
 
-          <span className="text-sm font-bold tracking-widest text-slate-400 uppercase">
-            /mês
-          </span>
+          <span className="text-sm font-bold tracking-widest text-slate-400 uppercase">/mês</span>
         </div>
       </div>
 
@@ -67,7 +65,7 @@ export const StandardPlanCard = ({
       <button
         onClick={onSelect}
         disabled={isLoading || isActive}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-slate-950 py-4 text-[10px] font-black tracking-widest text-slate-950 uppercase transition-all hover:bg-slate-950 hover:text-white active:scale-95 text-center disabled:opacity-50 disabled:pointer-events-none"
+        className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-slate-950 py-4 text-center text-[10px] font-black tracking-widest text-slate-950 uppercase transition-all hover:bg-slate-950 hover:text-white active:scale-95 disabled:pointer-events-none disabled:opacity-50"
       >
         {isLoading ? (
           <Loader2 size={16} className="animate-spin" />

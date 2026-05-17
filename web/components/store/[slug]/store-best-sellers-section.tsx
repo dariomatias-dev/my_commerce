@@ -1,17 +1,17 @@
-import { Flame } from "lucide-react";
 import { useEffect, useState } from "react";
-import { ProductCard } from "./product-card";
+
+import { Flame } from "lucide-react";
 
 import { ProductResponse } from "@/@types/product/product-response";
 import { getAllProducts } from "@/services/products";
+
+import { ProductCard } from "./product-card";
 
 interface StoreBestSellersSectionProps {
   storeId: string;
 }
 
-export const StoreBestSellersSection = ({
-  storeId,
-}: StoreBestSellersSectionProps) => {
+export const StoreBestSellersSection = ({ storeId }: StoreBestSellersSectionProps) => {
   const [products, setProducts] = useState<ProductResponse[]>([]);
 
   useEffect(() => {
@@ -25,15 +25,13 @@ export const StoreBestSellersSection = ({
   if (products.length === 0) return null;
 
   return (
-    <section className="py-24 border-b border-slate-100">
+    <section className="border-b border-slate-100 py-24">
       <div className="mb-16">
-        <div className="flex items-center gap-2 text-indigo-600 mb-4">
+        <div className="mb-4 flex items-center gap-2 text-indigo-600">
           <Flame size={20} fill="currentColor" />
-          <span className="text-[10px] font-black tracking-[0.4em] uppercase">
-            Destaques
-          </span>
+          <span className="text-[10px] font-black tracking-[0.4em] uppercase">Destaques</span>
         </div>
-        <h2 className="text-6xl font-black tracking-tighter text-slate-950 uppercase italic leading-none">
+        <h2 className="text-6xl leading-none font-black tracking-tighter text-slate-950 uppercase italic">
           MAIS <span className="text-indigo-600">VENDIDOS.</span>
         </h2>
       </div>

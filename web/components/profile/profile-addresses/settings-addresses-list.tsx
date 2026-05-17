@@ -3,6 +3,7 @@
 import { AlertCircle, Globe, RefreshCw } from "lucide-react";
 
 import { UserAddressResponse } from "@/@types/address/user-address-response";
+
 import { SettingsAddressCard } from "./settings-address-card";
 
 interface SettingsAddressesListProps {
@@ -22,16 +23,13 @@ export const SettingsAddressesList = ({
 }: SettingsAddressesListProps) => {
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 space-y-4">
+      <div className="flex flex-col items-center justify-center space-y-4 py-16">
         <div className="relative flex h-12 w-12 items-center justify-center">
-          <RefreshCw
-            className="absolute h-12 w-12 animate-spin text-indigo-100"
-            strokeWidth={1}
-          />
+          <RefreshCw className="absolute h-12 w-12 animate-spin text-indigo-100" strokeWidth={1} />
           <RefreshCw className="h-6 w-6 animate-spin text-indigo-600" />
         </div>
 
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] italic">
+        <p className="text-[10px] font-black tracking-[0.3em] text-slate-400 uppercase italic">
           Sincronizando clusters de dados...
         </p>
       </div>
@@ -46,17 +44,17 @@ export const SettingsAddressesList = ({
         </div>
 
         <div>
-          <h4 className="text-sm font-black uppercase italic tracking-tighter text-red-600">
+          <h4 className="text-sm font-black tracking-tighter text-red-600 uppercase italic">
             Falha na Comunicação
           </h4>
-          <p className="text-[10px] font-bold uppercase text-red-400 tracking-widest mt-1">
+          <p className="mt-1 text-[10px] font-bold tracking-widest text-red-400 uppercase">
             {error}
           </p>
         </div>
 
         <button
           onClick={onRetry}
-          className="rounded-xl bg-red-600 px-6 py-2.5 text-[10px] font-black uppercase tracking-widest text-white transition-all hover:bg-red-700 active:scale-95"
+          className="rounded-xl bg-red-600 px-6 py-2.5 text-[10px] font-black tracking-widest text-white uppercase transition-all hover:bg-red-700 active:scale-95"
         >
           Tentar Reconexão
         </button>
@@ -71,7 +69,7 @@ export const SettingsAddressesList = ({
           <Globe size={28} />
         </div>
 
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] italic max-w-50 leading-relaxed">
+        <p className="max-w-50 text-[10px] leading-relaxed font-black tracking-[0.2em] text-slate-400 uppercase italic">
           Nenhuma instância de localização mapeada nesta conta.
         </p>
       </div>

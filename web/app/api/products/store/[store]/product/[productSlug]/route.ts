@@ -7,9 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ store: string; productSlug: string }> },
 ) {
   const { store, productSlug } = await params;
-  const res = await serverApi.get(
-    `/products/store/${store}/product/${productSlug}`,
-  );
+  const res = await serverApi.get(`/products/store/${store}/product/${productSlug}`);
   const data = await res.json();
   return NextResponse.json(data, { status: res.status });
 }

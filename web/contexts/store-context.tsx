@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, ReactNode, useContext } from "react";
+import { ReactNode, createContext, useContext } from "react";
 
 import { StoreResponse } from "@/@types/store/store-response";
 
@@ -17,9 +17,7 @@ export const StoreProvider = ({
   children: ReactNode;
   store: StoreResponse;
 }) => {
-  return (
-    <StoreContext.Provider value={{ store }}>{children}</StoreContext.Provider>
-  );
+  return <StoreContext.Provider value={{ store }}>{children}</StoreContext.Provider>;
 };
 
 export const useStoreContext = () => {

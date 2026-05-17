@@ -4,9 +4,7 @@ import { OrderRequest } from "@/@types/order/order-request";
 import { OrderResponse } from "@/@types/order/order-response";
 import { serverApi } from "@/lib/server-api";
 
-type ActionSuccess<T = void> = T extends void
-  ? { success: true }
-  : { success: true; data: T };
+type ActionSuccess<T = void> = T extends void ? { success: true } : { success: true; data: T };
 
 type ActionFailure = { success: false; error: string };
 
@@ -20,9 +18,7 @@ async function parseJson(res: Response) {
   }
 }
 
-export async function createOrder(
-  data: OrderRequest,
-): Promise<ActionResult<OrderResponse>> {
+export async function createOrder(data: OrderRequest): Promise<ActionResult<OrderResponse>> {
   const res = await serverApi.post("/orders", data);
   const body = await parseJson(res);
 

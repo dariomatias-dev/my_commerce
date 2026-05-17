@@ -1,13 +1,14 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle2, Mail, Store } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CheckCircle2, Mail, Store } from "lucide-react";
 import * as z from "zod";
 
-import { ActionButton } from "@/components/buttons/action-button";
 import { recoverPassword } from "@/app/actions/auth";
+import { ActionButton } from "@/components/buttons/action-button";
 import { recoverSchema } from "@/schemas/recover.schema";
 
 type RecoverFormValues = z.infer<typeof recoverSchema>;
@@ -108,8 +109,7 @@ export const RecoverPasswordForm = () => {
           RECUPERAR <span className="text-indigo-600">ACESSO.</span>
         </h1>
         <p className="text-sm leading-relaxed font-medium text-slate-500">
-          Insira seu e-mail abaixo e enviaremos as{" "}
-          <br className="hidden md:block" />
+          Insira seu e-mail abaixo e enviaremos as <br className="hidden md:block" />
           instruções para redefinir sua senha.
         </p>
       </div>
@@ -150,12 +150,7 @@ export const RecoverPasswordForm = () => {
           )}
         </div>
 
-        <ActionButton
-          variant="dark"
-          size="sm"
-          showArrow={!isLoading}
-          disabled={isLoading}
-        >
+        <ActionButton variant="dark" size="sm" showArrow={!isLoading} disabled={isLoading}>
           {isLoading ? "PROCESSANDO..." : "ENVIAR INSTRUÇÕES"}
         </ActionButton>
       </form>

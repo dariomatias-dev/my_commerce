@@ -1,8 +1,10 @@
 "use client";
 
-import { ArrowLeft, CheckCircle2, Sparkles, Store } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
+
+import Link from "next/link";
+
+import { ArrowLeft, CheckCircle2, Sparkles, Store } from "lucide-react";
 
 import { SignupForm } from "@/components/(auth)/signup/signup-form";
 
@@ -29,8 +31,7 @@ const SignupPage = () => {
 
         <div className="relative z-10">
           <h1 className="mb-8 text-6xl leading-none font-black tracking-tighter text-white italic xl:text-8xl">
-            SEU PRÓXIMO <br /> <span className="text-indigo-500">CAPÍTULO</span>{" "}
-            <br /> COMEÇA AQUI.
+            SEU PRÓXIMO <br /> <span className="text-indigo-500">CAPÍTULO</span> <br /> COMEÇA AQUI.
           </h1>
           <div className="max-w-md space-y-6">
             {[
@@ -38,10 +39,7 @@ const SignupPage = () => {
               "Sem taxas sobre faturamento",
               "Suporte especializado 24/7",
             ].map((text, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-3 font-medium text-slate-400 italic"
-              >
+              <div key={i} className="flex items-center gap-3 font-medium text-slate-400 italic">
                 <CheckCircle2 className="h-5 w-5 text-indigo-500" />
                 {text}
               </div>
@@ -64,10 +62,7 @@ const SignupPage = () => {
               MyEcommerce
             </span>
           </div>
-          <Link
-            href="/"
-            className="text-slate-400 transition-colors hover:text-slate-900"
-          >
+          <Link href="/" className="text-slate-400 transition-colors hover:text-slate-900">
             <ArrowLeft size={24} />
           </Link>
         </div>

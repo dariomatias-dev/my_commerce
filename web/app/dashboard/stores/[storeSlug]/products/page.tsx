@@ -8,10 +8,7 @@ const StoreProductsPage = () => {
   const { storeSlug } = useParams() as { storeSlug: string };
 
   return (
-    <StoreProductsDashboard
-      storeSlug={storeSlug}
-      basePath={`/dashboard/stores/${storeSlug}`}
-    />
+    <StoreProductsDashboard storeSlug={storeSlug} basePath={`/dashboard/stores/${storeSlug}`} />
   );
 };
 

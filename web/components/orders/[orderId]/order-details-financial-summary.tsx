@@ -15,13 +15,13 @@ export const OrderDetailsFinancialSummary = ({
 }: OrderDetailsFinancialSummaryProps) => {
   return (
     <div className="rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm">
-      <h2 className="mb-8 text-xl font-black uppercase italic tracking-tighter text-slate-950">
+      <h2 className="mb-8 text-xl font-black tracking-tighter text-slate-950 uppercase italic">
         Resumo de Valores
       </h2>
 
       <div className="space-y-4">
         <div className="flex justify-between">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+          <span className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
             Subtotal Produtos
           </span>
 
@@ -34,7 +34,7 @@ export const OrderDetailsFinancialSummary = ({
         </div>
 
         <div className="flex justify-between">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+          <span className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
             Frete ({freightType})
           </span>
 
@@ -50,7 +50,7 @@ export const OrderDetailsFinancialSummary = ({
 
         <div className="my-6 border-t border-dashed border-slate-100" />
         <div className="flex flex-col gap-1">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+          <span className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
             Valor Total Pago
           </span>
 
@@ -63,7 +63,7 @@ export const OrderDetailsFinancialSummary = ({
         </div>
       </div>
 
-      <button className="mt-10 flex w-full items-center justify-center gap-3 rounded-2xl bg-indigo-600 p-5 text-[11px] font-black uppercase tracking-[0.2em] text-white transition-all hover:bg-slate-950 hover:shadow-xl active:scale-95">
+      <button className="mt-10 flex w-full items-center justify-center gap-3 rounded-2xl bg-indigo-600 p-5 text-[11px] font-black tracking-[0.2em] text-white uppercase transition-all hover:bg-slate-950 hover:shadow-xl active:scale-95">
         Suporte ao Pedido <ArrowRight size={16} />
       </button>
     </div>

@@ -1,7 +1,8 @@
 "use client";
 
-import { Check, ChevronDown, LucideIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+
+import { Check, ChevronDown, LucideIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -38,10 +39,7 @@ export const Dropdown = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
@@ -59,27 +57,25 @@ export const Dropdown = ({
   return (
     <div className={cn("space-y-2", className)} ref={containerRef}>
       {label && (
-        <label className="ml-1 text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase flex items-center gap-2">
+        <label className="ml-1 flex items-center gap-2 text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase">
           {Icon && <Icon size={12} className="text-indigo-600" />}
           {label}
         </label>
       )}
 
-      <div className="relative group">
+      <div className="group relative">
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
           className={cn(
-            "w-full flex items-center justify-between rounded-2xl border-2 py-4.5 px-6 text-[11px] font-black uppercase italic tracking-wider outline-none transition-all duration-300 cursor-pointer",
+            "flex w-full cursor-pointer items-center justify-between rounded-2xl border-2 px-6 py-4.5 text-[11px] font-black tracking-wider uppercase italic transition-all duration-300 outline-none",
             isOpen
               ? "border-indigo-600 bg-white shadow-lg"
               : "border-slate-100 bg-white hover:border-slate-300",
             buttonClassName,
           )}
         >
-          <span
-            className={selectedOption ? "text-slate-950" : "text-slate-400"}
-          >
+          <span className={selectedOption ? "text-slate-950" : "text-slate-400"}>
             {selectedOption ? selectedOption.name : placeholder}
           </span>
 
@@ -93,7 +89,7 @@ export const Dropdown = ({
         </button>
 
         {isOpen && (
-          <div className="absolute top-full left-0 right-0 mt-3 z-50 overflow-hidden rounded-[2rem] border-2 border-slate-200 bg-white p-2 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+          <div className="animate-in fade-in zoom-in-95 absolute top-full right-0 left-0 z-50 mt-3 overflow-hidden rounded-[2rem] border-2 border-slate-200 bg-white p-2 shadow-2xl duration-200">
             <div className="max-h-60 overflow-y-auto pr-1">
               {options.length > 0 ? (
                 options.map((opt) => (
@@ -102,7 +98,7 @@ export const Dropdown = ({
                     type="button"
                     onClick={() => handleSelect(opt.id)}
                     className={cn(
-                      "w-full flex items-center justify-between rounded-xl px-5 py-4 text-[10px] font-black uppercase italic tracking-widest transition-all cursor-pointer",
+                      "flex w-full cursor-pointer items-center justify-between rounded-xl px-5 py-4 text-[10px] font-black tracking-widest uppercase italic transition-all",
                       value === opt.id
                         ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
                         : "text-slate-500 hover:bg-slate-50 hover:text-indigo-600",
@@ -121,7 +117,7 @@ export const Dropdown = ({
                 ))
               ) : (
                 <div className="py-10 text-center">
-                  <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-300 italic">
+                  <p className="text-[9px] font-black tracking-[0.3em] text-slate-300 uppercase italic">
                     Nenhum registro localizado
                   </p>
                 </div>
@@ -132,7 +128,7 @@ export const Dropdown = ({
 
         <div
           className={cn(
-            "absolute bottom-0 left-6 right-6 h-0.5 transition-all duration-500 scale-x-0 group-focus-within:scale-x-100 bg-indigo-600",
+            "absolute right-6 bottom-0 left-6 h-0.5 scale-x-0 bg-indigo-600 transition-all duration-500 group-focus-within:scale-x-100",
             isOpen ? "scale-x-100" : "",
           )}
         />

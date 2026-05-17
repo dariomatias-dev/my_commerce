@@ -1,8 +1,10 @@
 "use client";
 
-import { AlertCircle, Package, RefreshCcw, Store } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+import { useRouter } from "next/navigation";
+
+import { AlertCircle, Package, RefreshCcw, Store } from "lucide-react";
 
 import { StoreResponse } from "@/@types/store/store-response";
 import { DashboardTotalBadge } from "@/components/dashboard-total-badge";
@@ -31,10 +33,7 @@ const OrdersPage = () => {
 
         if (!ignore) setStores(response.content || []);
       } catch {
-        if (!ignore)
-          setErrorMessage(
-            "Não foi possível carregar seu histórico de compras.",
-          );
+        if (!ignore) setErrorMessage("Não foi possível carregar seu histórico de compras.");
       } finally {
         if (!ignore) setIsLoading(false);
       }
@@ -58,17 +57,17 @@ const OrdersPage = () => {
           <AlertCircle size={40} />
         </div>
 
-        <h2 className="text-4xl font-black uppercase italic tracking-tighter text-slate-950">
+        <h2 className="text-4xl font-black tracking-tighter text-slate-950 uppercase italic">
           Falha no <span className="text-red-500">Servidor</span>
         </h2>
 
-        <p className="mt-4 max-w-xs text-center text-xs font-bold uppercase tracking-widest text-slate-400 leading-relaxed">
+        <p className="mt-4 max-w-xs text-center text-xs leading-relaxed font-bold tracking-widest text-slate-400 uppercase">
           {errorMessage}
         </p>
 
         <button
           onClick={() => setRefreshKey((k) => k + 1)}
-          className="mt-10 flex items-center gap-3 rounded-2xl bg-slate-950 px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all hover:bg-indigo-600 active:scale-95"
+          className="mt-10 flex items-center gap-3 rounded-2xl bg-slate-950 px-10 py-5 text-[10px] font-black tracking-[0.2em] text-white uppercase transition-all hover:bg-indigo-600 active:scale-95"
         >
           <RefreshCcw size={16} />
           Tentar novamente
@@ -84,13 +83,7 @@ const OrdersPage = () => {
         subtitle="Selecione uma loja para gerenciar seu histórico"
         label="Dashboard de Compras"
         backPath="/orders"
-        actions={
-          <DashboardTotalBadge
-            icon={Store}
-            value={stores.length}
-            unit="Lojas"
-          />
-        }
+        actions={<DashboardTotalBadge icon={Store} value={stores.length} unit="Lojas" />}
       />
 
       {stores.length > 0 ? (
@@ -111,13 +104,12 @@ const OrdersPage = () => {
             <Package size={48} />
           </div>
 
-          <h2 className="text-2xl font-black uppercase italic tracking-tighter text-slate-950">
+          <h2 className="text-2xl font-black tracking-tighter text-slate-950 uppercase italic">
             Histórico Vazio.
           </h2>
 
-          <p className="mt-4 max-w-xs text-xs font-bold uppercase tracking-widest text-slate-400 leading-relaxed">
-            Você ainda não realizou pedidos. Explore nossas lojas e comece
-            agora.
+          <p className="mt-4 max-w-xs text-xs leading-relaxed font-bold tracking-widest text-slate-400 uppercase">
+            Você ainda não realizou pedidos. Explore nossas lojas e comece agora.
           </p>
         </div>
       )}

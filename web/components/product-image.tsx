@@ -1,6 +1,8 @@
-import { ImageIcon } from "lucide-react";
-import Image from "next/image";
 import { useState } from "react";
+
+import Image from "next/image";
+
+import { ImageIcon } from "lucide-react";
 
 interface ProductImageProps {
   imagePath?: string;
@@ -40,9 +42,7 @@ export const ProductImage = ({
 
   return (
     <div
-      className={`relative overflow-hidden ${
-        fill ? "h-full w-full" : "rounded-2xl"
-      } ${className}`}
+      className={`relative overflow-hidden ${fill ? "h-full w-full" : "rounded-2xl"} ${className}`}
       style={!fill ? { width: size, height: size } : undefined}
     >
       <Image

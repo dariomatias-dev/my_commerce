@@ -1,8 +1,10 @@
 "use client";
 
-import { AlertCircle, ArrowLeft, RefreshCcw, Store } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+import { useParams, useRouter } from "next/navigation";
+
+import { AlertCircle, ArrowLeft, RefreshCcw, Store } from "lucide-react";
 
 import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
@@ -62,10 +64,7 @@ const StoreLayout = ({ children }: StoreLayoutProps) => {
       <>
         <StoreHeader />
 
-        <LoadingIndicator
-          message="Carregando loja..."
-          className="min-h-[80vh]"
-        />
+        <LoadingIndicator message="Carregando loja..." className="min-h-[80vh]" />
 
         <Footer />
       </>
@@ -82,23 +81,19 @@ const StoreLayout = ({ children }: StoreLayoutProps) => {
             <Store size={48} />
           </div>
 
-          <h1 className="text-6xl font-black uppercase italic tracking-tighter text-slate-950 md:text-7xl">
+          <h1 className="text-6xl font-black tracking-tighter text-slate-950 uppercase italic md:text-7xl">
             Loja não <span className="text-indigo-600">Encontrada.</span>
           </h1>
 
-          <p className="mt-6 max-w-xs text-xs font-bold uppercase tracking-[0.2em] text-slate-400 leading-relaxed">
-            A loja que você procura não existe ou foi removido de nossa
-            plataforma.
+          <p className="mt-6 max-w-xs text-xs leading-relaxed font-bold tracking-[0.2em] text-slate-400 uppercase">
+            A loja que você procura não existe ou foi removido de nossa plataforma.
           </p>
 
           <button
             onClick={() => router.push("/")}
-            className="group mt-10 flex items-center gap-3 rounded-2xl bg-slate-950 px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] text-white transition-all hover:bg-indigo-600"
+            className="group mt-10 flex items-center gap-3 rounded-2xl bg-slate-950 px-10 py-5 text-[10px] font-black tracking-[0.3em] text-white uppercase transition-all hover:bg-indigo-600"
           >
-            <ArrowLeft
-              size={16}
-              className="transition-transform group-hover:-translate-x-2"
-            />
+            <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-2" />
             Voltar ao Início
           </button>
         </main>
@@ -118,17 +113,17 @@ const StoreLayout = ({ children }: StoreLayoutProps) => {
             <AlertCircle size={64} />
           </div>
 
-          <h2 className="text-4xl font-black uppercase italic tracking-tighter text-slate-950">
+          <h2 className="text-4xl font-black tracking-tighter text-slate-950 uppercase italic">
             Erro de <span className="text-red-500">Conexão</span>
           </h2>
 
-          <p className="mt-4 text-xs font-bold uppercase tracking-widest text-slate-400">
+          <p className="mt-4 text-xs font-bold tracking-widest text-slate-400 uppercase">
             Não foi possível carregar os dados da loja.
           </p>
 
           <button
             onClick={() => setRefreshKey((k) => k + 1)}
-            className="mt-8 flex items-center gap-2 rounded-xl bg-slate-100 px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-950 transition-colors hover:bg-slate-200"
+            className="mt-8 flex items-center gap-2 rounded-xl bg-slate-100 px-8 py-4 text-[10px] font-black tracking-widest text-slate-950 uppercase transition-colors hover:bg-slate-200"
           >
             <RefreshCcw size={14} />
             Tentar Novamente

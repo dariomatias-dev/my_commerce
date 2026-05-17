@@ -1,10 +1,12 @@
-import { AlertCircle, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+
+import { AlertCircle, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 
 import { CategoryResponse } from "@/@types/category/category-response";
 import { ProductResponse } from "@/@types/product/product-response";
 import { getAllCategories } from "@/services/categories";
 import { getAllProducts } from "@/services/products";
+
 import { ProductCard } from "./product-card";
 import { StoreCategoryTabs } from "./store-category-tabs";
 
@@ -57,8 +59,7 @@ export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
         const res = await getAllProducts(
           {
             storeId,
-            categoryId:
-              activeCategoryId === "all" ? undefined : activeCategoryId,
+            categoryId: activeCategoryId === "all" ? undefined : activeCategoryId,
           },
           currentPage,
           productsPerPage,
@@ -69,8 +70,7 @@ export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
           setTotalPages(res.totalPages);
         }
       } catch {
-        if (!ignore)
-          setError("Não foi possível carregar o catálogo de produtos.");
+        if (!ignore) setError("Não foi possível carregar o catálogo de produtos.");
       } finally {
         if (!ignore) setIsLoading(false);
       }
@@ -91,7 +91,7 @@ export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
   return (
     <section className="py-24" id="catalog">
       <div className="mb-20">
-        <h2 className="text-6xl font-black tracking-tighter text-slate-950 uppercase italic mb-10">
+        <h2 className="mb-10 text-6xl font-black tracking-tighter text-slate-950 uppercase italic">
           CATÁLOGO <span className="text-indigo-600">GERAL.</span>
         </h2>
 
@@ -111,7 +111,7 @@ export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
               Falha na Sincronização
             </h3>
 
-            <p className="text-sm font-medium text-slate-500 italic uppercase tracking-wider">
+            <p className="text-sm font-medium tracking-wider text-slate-500 uppercase italic">
               {error}
             </p>
           </div>
@@ -126,7 +126,7 @@ export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
       )}
 
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center py-40 gap-6">
+        <div className="flex flex-col items-center justify-center gap-6 py-40">
           <Loader2 className="h-12 w-12 animate-spin text-indigo-600" />
 
           <p className="text-[10px] font-black tracking-[0.5em] text-slate-400 uppercase italic">
@@ -134,12 +134,12 @@ export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
           </p>
         </div>
       ) : products.length === 0 && !error ? (
-        <div className="py-40 text-center animate-in fade-in zoom-in duration-500">
+        <div className="animate-in fade-in zoom-in py-40 text-center duration-500">
           <div className="inline-flex h-24 w-24 items-center justify-center rounded-full bg-slate-50 text-slate-200">
             <AlertCircle size={40} />
           </div>
 
-          <h3 className="mt-8 text-2xl font-black uppercase italic text-slate-300">
+          <h3 className="mt-8 text-2xl font-black text-slate-300 uppercase italic">
             Nenhum registro localizado
           </h3>
         </div>
@@ -157,7 +157,7 @@ export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
                 <button
                   onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
                   disabled={currentPage === 0}
-                  className="h-14 w-14 flex items-center justify-center rounded-2xl border-2 border-slate-100 transition-all hover:border-indigo-600 disabled:opacity-30 disabled:hover:border-slate-100"
+                  className="flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-slate-100 transition-all hover:border-indigo-600 disabled:opacity-30 disabled:hover:border-slate-100"
                 >
                   <ChevronLeft size={24} />
                 </button>
@@ -169,7 +169,7 @@ export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
                       onClick={() => setCurrentPage(i)}
                       className={`h-14 w-14 rounded-2xl text-sm font-black transition-all ${
                         currentPage === i
-                          ? "bg-slate-950 text-white scale-110 shadow-xl"
+                          ? "scale-110 bg-slate-950 text-white shadow-xl"
                           : "border-2 border-slate-100 text-slate-400 hover:border-indigo-600"
                       }`}
                     >
@@ -179,11 +179,9 @@ export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
                 </div>
 
                 <button
-                  onClick={() =>
-                    setCurrentPage((p) => Math.min(totalPages - 1, p + 1))
-                  }
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
                   disabled={currentPage === totalPages - 1}
-                  className="h-14 w-14 flex items-center justify-center rounded-2xl border-2 border-slate-100 transition-all hover:border-indigo-600 disabled:opacity-30 disabled:hover:border-slate-100"
+                  className="flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-slate-100 transition-all hover:border-indigo-600 disabled:opacity-30 disabled:hover:border-slate-100"
                 >
                   <ChevronRight size={24} />
                 </button>

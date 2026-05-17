@@ -9,10 +9,7 @@ interface OrderDetailsProductsProps {
   products: Record<string, ProductResponse>;
 }
 
-export const OrderDetailsProducts = ({
-  items,
-  products,
-}: OrderDetailsProductsProps) => {
+export const OrderDetailsProducts = ({ items, products }: OrderDetailsProductsProps) => {
   return (
     <div className="rounded-[2.5rem] border border-slate-100 bg-white p-10 shadow-sm">
       <div className="mb-8 flex items-center gap-3">
@@ -20,7 +17,7 @@ export const OrderDetailsProducts = ({
           <ShoppingBag size={24} />
         </div>
 
-        <h2 className="text-2xl font-black uppercase italic tracking-tighter text-slate-950">
+        <h2 className="text-2xl font-black tracking-tighter text-slate-950 uppercase italic">
           Produtos <span className="text-indigo-600">Adquiridos</span>
         </h2>
       </div>
@@ -43,11 +40,11 @@ export const OrderDetailsProducts = ({
                 />
 
                 <div>
-                  <span className="text-[9px] font-black uppercase tracking-widest text-indigo-600">
+                  <span className="text-[9px] font-black tracking-widest text-indigo-600 uppercase">
                     SKU: {item.productId.split("-")[0]}
                   </span>
 
-                  <h3 className="text-lg font-black uppercase italic tracking-tighter text-slate-950">
+                  <h3 className="text-lg font-black tracking-tighter text-slate-950 uppercase italic">
                     {product?.name || "Carregando..."}
                   </h3>
 
@@ -62,7 +59,7 @@ export const OrderDetailsProducts = ({
               </div>
 
               <div className="text-left sm:text-right">
-                <p className="text-[9px] font-black uppercase tracking-widest text-slate-300">
+                <p className="text-[9px] font-black tracking-widest text-slate-300 uppercase">
                   Subtotal
                 </p>
 

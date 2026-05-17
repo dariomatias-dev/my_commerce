@@ -1,10 +1,13 @@
 "use client";
 
-import { Menu, Store, X } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import Link from "next/link";
+
+import { Menu, Store, X } from "lucide-react";
+
 import { NAV_ITEMS } from "@/constants/nav-items";
+
 import { HeaderNavAuth } from "./header-nav-auth";
 
 export const Header = () => {
@@ -81,13 +84,13 @@ export const Header = () => {
         </div>
 
         {isMenuOpen && (
-          <div className="absolute inset-x-0 top-full h-screen bg-white p-6 shadow-2xl animate-in fade-in slide-in-from-top-4 lg:hidden">
-            <div className="flex flex-col gap-6 items-center">
+          <div className="animate-in fade-in slide-in-from-top-4 absolute inset-x-0 top-full h-screen bg-white p-6 shadow-2xl lg:hidden">
+            <div className="flex flex-col items-center gap-6">
               {NAV_ITEMS.map((item) => (
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="text-2xl font-black uppercase italic text-slate-950"
+                  className="text-2xl font-black text-slate-950 uppercase italic"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.label}
@@ -96,10 +99,7 @@ export const Header = () => {
 
               <hr className="w-full border-slate-100" />
 
-              <HeaderNavAuth
-                isMobile
-                onActionClick={() => setIsMenuOpen(false)}
-              />
+              <HeaderNavAuth isMobile onActionClick={() => setIsMenuOpen(false)} />
             </div>
           </div>
         )}

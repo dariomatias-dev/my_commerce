@@ -10,16 +10,14 @@ export const getAllOrders = (page = 0, size = 10) =>
   });
 
 export const getOrdersByUserId = (userId: string, page = 0, size = 10) =>
-  internalApiClient.get<PaginatedResponse<OrderResponse>>(
-    `/api/orders/user/${userId}`,
-    { params: { page, size } },
-  );
+  internalApiClient.get<PaginatedResponse<OrderResponse>>(`/api/orders/user/${userId}`, {
+    params: { page, size },
+  });
 
 export const getOrdersByStoreId = (storeId: string, page = 0, size = 10) =>
-  internalApiClient.get<PaginatedResponse<OrderResponse>>(
-    `/api/orders/store/${storeId}`,
-    { params: { page, size } },
-  );
+  internalApiClient.get<PaginatedResponse<OrderResponse>>(`/api/orders/store/${storeId}`, {
+    params: { page, size },
+  });
 
 export const getMyOrders = (page = 0, size = 10) =>
   internalApiClient.get<PaginatedResponse<OrderResponse>>("/api/orders/me", {
@@ -27,21 +25,17 @@ export const getMyOrders = (page = 0, size = 10) =>
   });
 
 export const getMyOrderStores = (page = 0, size = 10) =>
-  internalApiClient.get<PaginatedResponse<StoreResponse>>(
-    "/api/orders/me/stores",
-    { params: { page, size } },
-  );
+  internalApiClient.get<PaginatedResponse<StoreResponse>>("/api/orders/me/stores", {
+    params: { page, size },
+  });
 
 export const getMyOrdersByStore = (storeId: string, page = 0, size = 10) =>
-  internalApiClient.get<PaginatedResponse<OrderResponse>>(
-    `/api/orders/me/store/${storeId}`,
-    { params: { page, size } },
-  );
+  internalApiClient.get<PaginatedResponse<OrderResponse>>(`/api/orders/me/store/${storeId}`, {
+    params: { page, size },
+  });
 
 export const getOrderById = (id: string) =>
   internalApiClient.get<OrderDetailsResponse>(`/api/orders/${id}`);
 
 export const getSuccessfulSalesCountByStoreId = (storeId: string) =>
-  internalApiClient.get<number>(
-    `/api/orders/store/${storeId}/stats/successful-sales`,
-  );
+  internalApiClient.get<number>(`/api/orders/store/${storeId}/stats/successful-sales`);

@@ -1,6 +1,7 @@
 "use client";
 
 import { StoreResponse } from "@/@types/store/store-response";
+
 import { StoreCardActions } from "./store-card-actions";
 import { StoreCardInfo } from "./store-card-info";
 

@@ -8,11 +8,7 @@ interface DashboardTotalBadgeProps {
   unit: string;
 }
 
-export const DashboardTotalBadge = ({
-  icon: Icon,
-  value,
-  unit,
-}: DashboardTotalBadgeProps) => {
+export const DashboardTotalBadge = ({ icon: Icon, value, unit }: DashboardTotalBadgeProps) => {
   return (
     <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-400">
@@ -20,7 +16,7 @@ export const DashboardTotalBadge = ({
       </div>
 
       <div className="pr-4">
-        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+        <p className="text-[9px] font-black tracking-widest text-slate-400 uppercase">
           Total Encontrado
         </p>
 

@@ -1,9 +1,10 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Tag, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, Tag, X } from "lucide-react";
 import * as z from "zod";
 
 import { CategoryResponse } from "@/@types/category/category-response";
@@ -90,13 +91,12 @@ export const CategoryFormDialog = ({
               <Tag size={20} />
             </div>
             <h2 className="text-xl font-black tracking-tighter text-slate-950 uppercase italic">
-              {isEditing ? "Editar" : "Nova"}{" "}
-              <span className="text-indigo-600">Categoria.</span>
+              {isEditing ? "Editar" : "Nova"} <span className="text-indigo-600">Categoria.</span>
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-slate-400 hover:bg-slate-50 hover:text-slate-950 transition-colors"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-50 hover:text-slate-950"
           >
             <X size={20} />
           </button>
@@ -121,7 +121,7 @@ export const CategoryFormDialog = ({
                 type="text"
                 placeholder="Ex: Sneakers de Performance"
                 disabled={isLoading}
-                className={`w-full rounded-2xl border-2 bg-slate-50 py-4 px-6 font-bold text-slate-950 outline-none transition-all focus:bg-white ${
+                className={`w-full rounded-2xl border-2 bg-slate-50 px-6 py-4 font-bold text-slate-950 transition-all outline-none focus:bg-white ${
                   errors.name
                     ? "border-red-500 focus:ring-4 focus:ring-red-500/5"
                     : "border-slate-100 focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/5"

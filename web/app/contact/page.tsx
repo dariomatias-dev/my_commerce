@@ -1,5 +1,7 @@
 "use client";
 
+import { useForm } from "react-hook-form";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ArrowRight,
@@ -11,7 +13,6 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
-import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 import { ActionButton } from "@/components/buttons/action-button";
@@ -22,9 +23,7 @@ const contactSchema = z.object({
   name: z.string().min(3, "Insira seu nome completo"),
   email: z.email("Insira um e-mail válido"),
   subject: z.string().min(5, "O assunto é muito curto"),
-  message: z
-    .string()
-    .min(10, "A mensagem deve conter pelo menos 10 caracteres"),
+  message: z.string().min(10, "A mensagem deve conter pelo menos 10 caracteres"),
 });
 
 type ContactFormValues = z.infer<typeof contactSchema>;
@@ -63,8 +62,7 @@ const ContactPage = () => {
                 </span>
               </div>
               <h1 className="text-6xl font-black tracking-tighter text-slate-950 uppercase italic md:text-8xl">
-                CENTRAL DE <br />{" "}
-                <span className="text-indigo-600">CONTATO.</span>
+                CENTRAL DE <br /> <span className="text-indigo-600">CONTATO.</span>
               </h1>
             </div>
             <div className="text-left lg:text-right">
@@ -182,9 +180,7 @@ const ContactPage = () => {
                       <p className="text-[10px] font-black tracking-widest text-slate-500 uppercase">
                         E-mail de Suporte
                       </p>
-                      <p className="text-lg font-bold italic">
-                        support@myecommerce.com
-                      </p>
+                      <p className="text-lg font-bold italic">support@myecommerce.com</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -195,9 +191,7 @@ const ContactPage = () => {
                       <p className="text-[10px] font-black tracking-widest text-slate-500 uppercase">
                         Chat em Tempo Real
                       </p>
-                      <p className="text-lg font-bold italic">
-                        Disponível no Dashboard
-                      </p>
+                      <p className="text-lg font-bold italic">Disponível no Dashboard</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -208,9 +202,7 @@ const ContactPage = () => {
                       <p className="text-[10px] font-black tracking-widest text-slate-500 uppercase">
                         Localização
                       </p>
-                      <p className="text-lg font-bold italic">
-                        Global HQ — São Paulo, BR
-                      </p>
+                      <p className="text-lg font-bold italic">Global HQ — São Paulo, BR</p>
                     </div>
                   </div>
                 </div>
@@ -221,24 +213,22 @@ const ContactPage = () => {
                   Recursos Rápidos
                 </h3>
                 <div className="space-y-4">
-                  {[
-                    "Perguntas Frequentes",
-                    "Política de Privacidade",
-                    "Termos de Uso",
-                  ].map((item, i) => (
-                    <button
-                      key={i}
-                      className="group flex w-full items-center justify-between border-b border-slate-50 pb-4 text-left transition-colors hover:border-indigo-100"
-                    >
-                      <span className="text-sm font-bold tracking-widest text-slate-500 uppercase group-hover:text-indigo-600">
-                        {item}
-                      </span>
-                      <ArrowRight
-                        size={16}
-                        className="text-slate-300 transition-transform group-hover:translate-x-1 group-hover:text-indigo-600"
-                      />
-                    </button>
-                  ))}
+                  {["Perguntas Frequentes", "Política de Privacidade", "Termos de Uso"].map(
+                    (item, i) => (
+                      <button
+                        key={i}
+                        className="group flex w-full items-center justify-between border-b border-slate-50 pb-4 text-left transition-colors hover:border-indigo-100"
+                      >
+                        <span className="text-sm font-bold tracking-widest text-slate-500 uppercase group-hover:text-indigo-600">
+                          {item}
+                        </span>
+                        <ArrowRight
+                          size={16}
+                          className="text-slate-300 transition-transform group-hover:translate-x-1 group-hover:text-indigo-600"
+                        />
+                      </button>
+                    ),
+                  )}
                 </div>
               </div>
             </div>
@@ -251,9 +241,8 @@ const ContactPage = () => {
                   NOSSO <span className="text-indigo-500">COMPROMISSO.</span>
                 </h2>
                 <p className="mb-10 text-xl leading-relaxed text-slate-400 italic">
-                  A transparência é o core da nossa engenharia. Suas
-                  solicitações são tratadas sob protocolos de alta prioridade
-                  para garantir a continuidade do seu negócio.
+                  A transparência é o core da nossa engenharia. Suas solicitações são tratadas sob
+                  protocolos de alta prioridade para garantir a continuidade do seu negócio.
                 </p>
                 <div className="flex flex-wrap gap-4">
                   {[
@@ -276,10 +265,7 @@ const ContactPage = () => {
               <div className="flex justify-center lg:justify-end">
                 <div className="relative flex h-64 w-64 items-center justify-center rounded-full border border-white/10 bg-indigo-600/10 md:h-80 md:w-80">
                   <div className="absolute inset-0 animate-pulse rounded-full bg-indigo-500/20" />
-                  <ShieldCheck
-                    size={120}
-                    className="relative z-10 text-indigo-500"
-                  />
+                  <ShieldCheck size={120} className="relative z-10 text-indigo-500" />
                 </div>
               </div>
             </div>

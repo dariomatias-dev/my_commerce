@@ -1,13 +1,15 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+
+import { ArrowLeft } from "lucide-react";
+
+import { createProduct } from "@/app/actions/products";
 import { ProductForm } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/products-dashboard/product/product-form";
 import { ProductFormValues } from "@/schemas/product.schema";
-import { createProduct } from "@/app/actions/products";
 
 const NewProductPage = () => {
   const { storeSlug } = useParams() as { storeSlug: string };
@@ -44,22 +46,18 @@ const NewProductPage = () => {
           <ArrowLeft size={14} /> Voltar
         </Link>
 
-        <h1 className="text-5xl font-black text-slate-950 uppercase italic mt-4">
+        <h1 className="mt-4 text-5xl font-black text-slate-950 uppercase italic">
           NOVO <span className="text-indigo-600">PRODUTO.</span>
         </h1>
       </div>
 
       {apiError && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-500 text-xs font-black uppercase text-center">
+        <div className="mb-6 border border-red-100 bg-red-50 p-4 text-center text-xs font-black text-red-500 uppercase">
           {apiError}
         </div>
       )}
 
-      <ProductForm
-        storeSlug={storeSlug}
-        onSubmit={handleSubmit}
-        isSubmitting={isSubmitting}
-      />
+      <ProductForm storeSlug={storeSlug} onSubmit={handleSubmit} isSubmitting={isSubmitting} />
     </>
   );
 };

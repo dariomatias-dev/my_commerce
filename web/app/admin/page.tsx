@@ -1,7 +1,8 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
+
+import { TrendingUp } from "lucide-react";
 
 import { AdminAuditLogTable } from "@/components/admin/admin-audit-log-table";
 import { AdminStoreStatsCard } from "@/components/admin/admin-store-stats-card";
@@ -31,8 +32,7 @@ const AdminDashboard = () => {
 
         if (!ignore) setTotalOrders(ordersRes.totalElements || 0);
       } catch {
-        if (!ignore)
-          setErrorMessage("Falha na sincronização dos dados estatísticos.");
+        if (!ignore) setErrorMessage("Falha na sincronização dos dados estatísticos.");
       } finally {
         if (!ignore) setIsLoading(false);
       }

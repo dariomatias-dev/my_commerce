@@ -14,8 +14,7 @@ import { getAllProducts } from "@/services/products";
 const StorePage = () => {
   const { store } = useStoreContext();
 
-  const [spotlightProduct, setSpotlightProduct] =
-    useState<ProductResponse | null>(null);
+  const [spotlightProduct, setSpotlightProduct] = useState<ProductResponse | null>(null);
   const [isProductsLoading, setIsProductsLoading] = useState(true);
 
   useEffect(() => {
@@ -43,7 +42,7 @@ const StorePage = () => {
   }, [store.id]);
 
   return (
-    <main className="mx-auto max-w-400 pt-32 px-8 pb-20">
+    <main className="mx-auto max-w-400 px-8 pt-32 pb-20">
       <StoreHero
         store={store}
         bannerUrl={`${process.env.NEXT_PUBLIC_API_URL}/files/stores/${store.slug}/banner.png`}

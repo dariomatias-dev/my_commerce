@@ -5,10 +5,7 @@ interface ProductDashboardErrorProps {
   onRetry: () => void;
 }
 
-export const ProductsDashboardError = ({
-  message,
-  onRetry,
-}: ProductDashboardErrorProps) => (
+export const ProductsDashboardError = ({ message, onRetry }: ProductDashboardErrorProps) => (
   <div className="flex min-h-100 flex-col items-center justify-center gap-6 rounded-[3rem] border border-red-100 bg-red-50/30 p-12 text-center">
     <AlertCircle size={48} className="text-red-500" />
 

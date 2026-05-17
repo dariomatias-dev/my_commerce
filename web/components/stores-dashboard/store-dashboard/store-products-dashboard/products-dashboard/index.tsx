@@ -10,6 +10,7 @@ import { LoadingIndicator } from "@/components/loading-indicator";
 import { Pagination } from "@/components/pagination";
 import { StatusFilter } from "@/enums/status-filter";
 import { getAllProducts } from "@/services/products";
+
 import { ProductsDashboardError } from "./products-dashboard-error";
 import { ProductsDashboardFilter } from "./products-dashboard-filter";
 import { ProductsDashboardTable } from "./products-dashboard-table";
@@ -19,10 +20,7 @@ interface ProductsDashboardProps {
   basePath: string;
 }
 
-export const ProductsDashboard = ({
-  storeId,
-  basePath,
-}: ProductsDashboardProps) => {
+export const ProductsDashboard = ({ storeId, basePath }: ProductsDashboardProps) => {
   const listTopRef = useRef<HTMLDivElement>(null);
 
   const [products, setProducts] = useState<ProductResponse[]>([]);
@@ -32,9 +30,7 @@ export const ProductsDashboard = ({
   const [totalPages, setTotalPages] = useState(0);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const [appliedFilters, setAppliedFilters] = useState<
-    Omit<ProductFilters, "storeId">
-  >({
+  const [appliedFilters, setAppliedFilters] = useState<Omit<ProductFilters, "storeId">>({
     status: StatusFilter.ALL,
     minPrice: undefined,
     maxPrice: undefined,
@@ -51,11 +47,7 @@ export const ProductsDashboard = ({
       setError(null);
 
       try {
-        const data = await getAllProducts(
-          { storeId, ...appliedFilters },
-          currentPage,
-          10,
-        );
+        const data = await getAllProducts({ storeId, ...appliedFilters }, currentPage, 10);
 
         if (!ignore) {
           setProducts(data.content || []);
@@ -105,36 +97,18 @@ export const ProductsDashboard = ({
   };
 
   if (error) {
-    return (
-      <ProductsDashboardError
-        message={error}
-        onRetry={() => setRefreshKey((k) => k + 1)}
-      />
-    );
+    return <ProductsDashboardError message={error} onRetry={() => setRefreshKey((k) => k + 1)} />;
   }
 
   return (
-    <div
-      ref={listTopRef}
-      className="animate-in fade-in duration-500 scroll-mt-32"
-    >
-      <ProductsDashboardFilter
-        onApply={handleApplyFilters}
-        currentFilters={appliedFilters}
-      />
+    <div ref={listTopRef} className="animate-in fade-in scroll-mt-32 duration-500">
+      <ProductsDashboardFilter onApply={handleApplyFilters} currentFilters={appliedFilters} />
 
       {isLoading ? (
-        <LoadingIndicator
-          message="Sincronizando inventário..."
-          className="min-h-64"
-        />
+        <LoadingIndicator message="Sincronizando inventário..." className="min-h-64" />
       ) : (
         <>
-          <ProductsDashboardTable
-            products={products}
-            basePath={basePath}
-            onDelete={onDelete}
-          />
+          <ProductsDashboardTable products={products} basePath={basePath} onDelete={onDelete} />
 
           <Pagination
             currentPage={currentPage}

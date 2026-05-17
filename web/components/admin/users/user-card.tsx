@@ -1,5 +1,9 @@
 "use client";
 
+import { useState } from "react";
+
+import { useRouter } from "next/navigation";
+
 import {
   Briefcase,
   Edit3,
@@ -11,8 +15,6 @@ import {
   User,
   UserCircle,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 import { AdminUserResponse } from "@/@types/user/admin-user-response";
 import { deleteUser } from "@/app/actions/users";
@@ -92,7 +94,7 @@ export const UserCard = ({ user, onDeleteSuccess }: UserCardProps) => {
 
             <div
               className={cn(
-                "absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full border-[3px] border-white",
+                "absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border-[3px] border-white",
                 user.enabled ? "bg-emerald-500" : "bg-slate-300",
               )}
             >
@@ -104,13 +106,13 @@ export const UserCard = ({ user, onDeleteSuccess }: UserCardProps) => {
 
           <div className="flex flex-col gap-1.5">
             <div className="flex flex-wrap items-center gap-3">
-              <h3 className="text-lg font-black uppercase italic tracking-tight text-slate-900">
+              <h3 className="text-lg font-black tracking-tight text-slate-900 uppercase italic">
                 {user.name}
               </h3>
 
               <span
                 className={cn(
-                  "rounded-full px-3 py-0.5 text-[9px] font-black uppercase tracking-widest",
+                  "rounded-full px-3 py-0.5 text-[9px] font-black tracking-widest uppercase",
                   user.deletedAt == null
                     ? "bg-emerald-50 text-emerald-600"
                     : "bg-rose-50 text-rose-500",
@@ -130,19 +132,11 @@ export const UserCard = ({ user, onDeleteSuccess }: UserCardProps) => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between border-t border-slate-50 pt-6 md:border-none md:pt-0 md:justify-end md:gap-4">
-          <div
-            className={cn(
-              "flex items-center gap-2 rounded-xl px-4 py-2",
-              style.bg,
-              style.text,
-            )}
-          >
+        <div className="flex items-center justify-between border-t border-slate-50 pt-6 md:justify-end md:gap-4 md:border-none md:pt-0">
+          <div className={cn("flex items-center gap-2 rounded-xl px-4 py-2", style.bg, style.text)}>
             <RoleIcon size={14} />
 
-            <span className="text-[10px] font-black uppercase tracking-widest">
-              {style.label}
-            </span>
+            <span className="text-[10px] font-black tracking-widest uppercase">{style.label}</span>
           </div>
 
           <div className="flex items-center gap-2">

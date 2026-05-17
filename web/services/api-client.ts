@@ -1,9 +1,4 @@
-import {
-  AxiosError,
-  AxiosInstance,
-  AxiosRequestConfig,
-  AxiosResponse,
-} from "axios";
+import { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
 import { ApiError, ApiResponse } from "@/@types/api";
 import { api, internalApi } from "@/lib/axios";
@@ -17,11 +12,7 @@ const createClient = (instance: AxiosInstance) => {
       const apiResponse = response.data;
 
       if (apiResponse.status === "error") {
-        throw new ApiError(
-          apiResponse.message,
-          apiResponse.code,
-          apiResponse.errors,
-        );
+        throw new ApiError(apiResponse.message, apiResponse.code, apiResponse.errors);
       }
 
       return apiResponse.data;

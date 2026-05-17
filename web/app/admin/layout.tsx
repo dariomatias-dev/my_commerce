@@ -12,7 +12,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
     <>
       <AdminHeader />
 
-      <main className="w-full min-h-screen bg-[#F4F7FA] font-sans text-slate-900">
+      <main className="min-h-screen w-full bg-[#F4F7FA] font-sans text-slate-900">
         <div className="mx-auto max-w-400 px-6 pt-32 pb-20">{children}</div>
       </main>
 

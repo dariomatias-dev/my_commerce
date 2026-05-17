@@ -1,15 +1,10 @@
 "use client";
 
-import {
-  ChevronDown,
-  Home,
-  LogOut,
-  Shield,
-  ShoppingBag,
-  User,
-} from "lucide-react";
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+
+import Link from "next/link";
+
+import { ChevronDown, Home, LogOut, Shield, ShoppingBag, User } from "lucide-react";
 
 import { useAuthContext } from "@/contexts/auth-context";
 
@@ -29,10 +24,7 @@ export const UserProfileDropdown = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };

@@ -1,11 +1,13 @@
 "use client";
 
-import { AlertTriangle, Loader2, RefreshCw, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
+
+import { AlertTriangle, Loader2, RefreshCw, Zap } from "lucide-react";
 
 import { SubscriptionPlanResponse } from "@/@types/subscription-plan/subscription-plan-response";
 import { getAllPlans } from "@/services/subscription-plans";
 import { getMyActiveSubscription } from "@/services/subscriptions";
+
 import { FeaturedPlanCard } from "./featured-plan-card";
 import { StandardPlanCard } from "./standard-plan-card";
 import { SubscriptionCheckoutModal } from "./subscription-checkout-modal";
@@ -14,13 +16,10 @@ export const SubscriptionPlansSection = () => {
   const [plans, setPlans] = useState<SubscriptionPlanResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [apiError, setApiError] = useState<string | null>(null);
-  const [activeSubscriptionId, setActiveSubscriptionId] = useState<
-    string | null
-  >(null);
+  const [activeSubscriptionId, setActiveSubscriptionId] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const [selectedPlan, setSelectedPlan] =
-    useState<SubscriptionPlanResponse | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlanResponse | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   useEffect(() => {
@@ -44,8 +43,7 @@ export const SubscriptionPlansSection = () => {
           if (!ignore) setActiveSubscriptionId(activeSubData.value.planId);
         }
       } catch {
-        if (!ignore)
-          setApiError("Não foi possível carregar os planos no momento.");
+        if (!ignore) setApiError("Não foi possível carregar os planos no momento.");
       } finally {
         if (!ignore) setIsLoading(false);
       }
@@ -66,10 +64,7 @@ export const SubscriptionPlansSection = () => {
   };
 
   return (
-    <section
-      id="plans"
-      className="relative overflow-hidden bg-white py-32 lg:py-48"
-    >
+    <section id="plans" className="relative overflow-hidden bg-white py-32 lg:py-48">
       <div className="pointer-events-none absolute inset-0 z-0">
         <div className="absolute top-[-10%] left-[-10%] h-125 w-125 rounded-full bg-indigo-50/50 blur-[120px]" />
         <div className="absolute right-[-10%] bottom-[-10%] h-100 w-100 rounded-full bg-slate-50/50 blur-[100px]" />
@@ -101,21 +96,21 @@ export const SubscriptionPlansSection = () => {
         </div>
 
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-4">
+          <div className="flex flex-col items-center justify-center gap-4 py-20">
             <Loader2 className="h-12 w-12 animate-spin text-indigo-600" />
             <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
               Sincronizando ofertas...
             </p>
           </div>
         ) : apiError ? (
-          <div className="flex flex-col items-center justify-center py-20 animate-in fade-in zoom-in-95 duration-500">
+          <div className="animate-in fade-in zoom-in-95 flex flex-col items-center justify-center py-20 duration-500">
             <div className="mb-6 rounded-2xl bg-red-50 p-4 text-red-500">
               <AlertTriangle size={40} />
             </div>
             <h3 className="mb-2 text-2xl font-black tracking-tighter text-slate-950 uppercase italic">
               Erro de Conexão.
             </h3>
-            <p className="mb-8 text-center text-sm font-medium text-slate-500 max-w-xs uppercase tracking-tight">
+            <p className="mb-8 max-w-xs text-center text-sm font-medium tracking-tight text-slate-500 uppercase">
               {apiError}
             </p>
             <button

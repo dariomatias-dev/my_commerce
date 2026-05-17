@@ -1,9 +1,10 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Mail, RefreshCw, User } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Mail, RefreshCw, User } from "lucide-react";
 import * as z from "zod";
 
 import { updateMe } from "@/app/actions/users";
@@ -57,7 +58,7 @@ export const SettingsInfoForm = () => {
         />
       )}
 
-      <section className="rounded-[2.5rem] border border-slate-200 bg-white p-8 md:p-12 shadow-sm">
+      <section className="rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-sm md:p-12">
         <div className="mb-10 flex items-center gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-indigo-600">
             <User size={24} />
@@ -68,7 +69,7 @@ export const SettingsInfoForm = () => {
               Informações Pessoais
             </h2>
 
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            <p className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
               Dados básicos da sua conta
             </p>
           </div>
@@ -83,7 +84,7 @@ export const SettingsInfoForm = () => {
 
               <input
                 {...form.register("name")}
-                className="w-full rounded-xl border border-slate-100 bg-slate-50 py-3.5 px-4 font-bold text-slate-950 outline-none focus:border-indigo-600 transition-all"
+                className="w-full rounded-xl border border-slate-100 bg-slate-50 px-4 py-3.5 font-bold text-slate-950 transition-all outline-none focus:border-indigo-600"
               />
 
               {form.formState.errors.name && (
@@ -100,14 +101,14 @@ export const SettingsInfoForm = () => {
 
               <div className="relative">
                 <Mail
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"
+                  className="absolute top-1/2 left-4 -translate-y-1/2 text-slate-300"
                   size={16}
                 />
 
                 <input
                   {...form.register("email")}
                   disabled
-                  className="w-full rounded-xl border border-slate-100 bg-slate-50 py-3.5 pl-11 pr-4 font-bold text-slate-400 outline-none cursor-not-allowed"
+                  className="w-full cursor-not-allowed rounded-xl border border-slate-100 bg-slate-50 py-3.5 pr-4 pl-11 font-bold text-slate-400 outline-none"
                 />
               </div>
             </div>
@@ -118,11 +119,7 @@ export const SettingsInfoForm = () => {
               disabled={isLoading}
               className="flex items-center gap-2 rounded-xl bg-slate-950 px-8 py-3 text-[10px] font-black tracking-widest text-white uppercase transition-all hover:bg-indigo-600 disabled:opacity-50"
             >
-              {isLoading ? (
-                <RefreshCw size={14} className="animate-spin" />
-              ) : (
-                "SALVAR ALTERAÇÕES"
-              )}
+              {isLoading ? <RefreshCw size={14} className="animate-spin" /> : "SALVAR ALTERAÇÕES"}
             </button>
           </div>
         </form>

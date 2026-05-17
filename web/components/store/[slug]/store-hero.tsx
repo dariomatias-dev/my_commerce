@@ -1,7 +1,8 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
 import Image from "next/image";
+
+import { ArrowRight } from "lucide-react";
 
 import { StoreResponse } from "@/@types/store/store-response";
 
@@ -37,24 +38,23 @@ export const StoreHero = ({ store, bannerUrl }: StoreHeroProps) => {
             </span>
           </div>
 
-          <h1 className="mt-8 text-7xl font-black leading-[0.85] tracking-tighter uppercase italic md:text-9xl max-w-4xl">
-            {store.name} <br />{" "}
-            <span className="text-indigo-600">COLEÇÃO.</span>
+          <h1 className="mt-8 max-w-4xl text-7xl leading-[0.85] font-black tracking-tighter uppercase italic md:text-9xl">
+            {store.name} <br /> <span className="text-indigo-600">COLEÇÃO.</span>
           </h1>
 
-          <p className="mt-10 max-w-xl text-xl font-medium leading-relaxed text-slate-300 italic line-clamp-3">
+          <p className="mt-10 line-clamp-3 max-w-xl text-xl leading-relaxed font-medium text-slate-300 italic">
             {store.description}
           </p>
 
           <div className="mt-14 flex flex-wrap gap-5">
             <button
               onClick={scrollToCatalog}
-              className="rounded-2xl bg-white px-12 py-6 text-xs font-black tracking-[0.3em] text-slate-950 uppercase transition-all hover:bg-indigo-600 hover:text-white active:scale-95 outline-none"
+              className="rounded-2xl bg-white px-12 py-6 text-xs font-black tracking-[0.3em] text-slate-950 uppercase transition-all outline-none hover:bg-indigo-600 hover:text-white active:scale-95"
             >
               Explorar Catálogo
             </button>
 
-            <button className="flex items-center gap-3 rounded-2xl border-2 border-white/20 bg-white/5 px-10 py-6 text-xs font-black tracking-[0.3em] uppercase backdrop-blur-md transition-all hover:bg-white/10 active:scale-95 outline-none">
+            <button className="flex items-center gap-3 rounded-2xl border-2 border-white/20 bg-white/5 px-10 py-6 text-xs font-black tracking-[0.3em] uppercase backdrop-blur-md transition-all outline-none hover:bg-white/10 active:scale-95">
               Ver Coleção <ArrowRight size={18} />
             </button>
           </div>

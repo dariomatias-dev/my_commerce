@@ -1,18 +1,18 @@
 "use client";
 
-import { Banknote } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { Banknote } from "lucide-react";
+
 import { ApiError } from "@/@types/api";
+
 import { DashboardStatCard } from "../dashboard-stat-card";
 
 interface DashboardTotalRevenueStatCardProps {
   request: () => Promise<{ total: number }>;
 }
 
-export const DashboardTotalRevenueStatCard = ({
-  request,
-}: DashboardTotalRevenueStatCardProps) => {
+export const DashboardTotalRevenueStatCard = ({ request }: DashboardTotalRevenueStatCardProps) => {
   const [revenue, setRevenue] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);

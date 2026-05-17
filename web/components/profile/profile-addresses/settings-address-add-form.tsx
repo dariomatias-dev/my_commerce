@@ -1,9 +1,10 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Plus } from "lucide-react";
 
 import { AddressForm } from "@/components/address-form";
 import { AddressFormValues, addressSchema } from "@/schemas/address.schema";
@@ -12,9 +13,7 @@ interface SettingsAddressAddFormProps {
   onAdd: (data: AddressFormValues) => Promise<void>;
 }
 
-export const SettingsAddressAddForm = ({
-  onAdd,
-}: SettingsAddressAddFormProps) => {
+export const SettingsAddressAddForm = ({ onAdd }: SettingsAddressAddFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
@@ -84,7 +83,7 @@ export const SettingsAddressAddForm = ({
           <Plus size={12} />
         </div>
 
-        <h3 className="text-[10px] font-black text-slate-950 uppercase tracking-widest">
+        <h3 className="text-[10px] font-black tracking-widest text-slate-950 uppercase">
           Novo Endereço de Entrega
         </h3>
       </div>

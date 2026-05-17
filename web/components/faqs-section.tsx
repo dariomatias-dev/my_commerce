@@ -1,7 +1,8 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
 import { useState } from "react";
+
+import { ChevronDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -49,15 +50,11 @@ export const FaqsSection = () => {
                 onClick={() => setOpenFaq(openFaq === i ? null : i)}
                 className="flex w-full items-center justify-between px-10 py-8 text-left transition-colors hover:bg-slate-50"
               >
-                <span className="text-lg font-black tracking-tight">
-                  {faq.q}
-                </span>
+                <span className="text-lg font-black tracking-tight">{faq.q}</span>
                 <ChevronDown
                   className={cn(
                     "transition-transform duration-300",
-                    openFaq === i
-                      ? "rotate-180 text-indigo-600"
-                      : "text-slate-300",
+                    openFaq === i ? "rotate-180 text-indigo-600" : "text-slate-300",
                   )}
                 />
               </button>

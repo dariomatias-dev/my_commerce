@@ -1,7 +1,8 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
 import { Suspense } from "react";
+
+import { Sparkles } from "lucide-react";
 
 import { EmailVerificationCard } from "@/components/(auth)/verify-email/email-verification-card";
 import { Footer } from "@/components/layout/footer";
@@ -23,9 +24,7 @@ const VerifyEmailPage = () => {
 
         <div className="relative z-10 w-full max-w-lg">
           <Suspense
-            fallback={
-              <div className="h-64 w-full animate-pulse rounded-[2.5rem] bg-slate-50" />
-            }
+            fallback={<div className="h-64 w-full animate-pulse rounded-[2.5rem] bg-slate-50" />}
           >
             <EmailVerificationCard />
           </Suspense>

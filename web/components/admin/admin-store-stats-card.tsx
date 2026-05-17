@@ -1,7 +1,8 @@
 "use client";
 
-import { Store } from "lucide-react";
 import { useEffect, useState } from "react";
+
+import { Store } from "lucide-react";
 
 import { ApiError } from "@/@types/api";
 import { DashboardStatCard } from "@/components/dashboard-stat-card";

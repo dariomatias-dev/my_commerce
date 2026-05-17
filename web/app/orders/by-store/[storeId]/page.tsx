@@ -1,7 +1,8 @@
 "use client";
 
-import { useParams } from "next/navigation";
 import { useCallback } from "react";
+
+import { useParams } from "next/navigation";
 
 import { OrdersDashboard } from "@/components/orders-dashboard";
 import { getMyOrdersByStore } from "@/services/orders";
@@ -11,7 +12,7 @@ const StoreOrdersPage = () => {
 
   const fetchOrders = useCallback(
     (page: number, size: number) => getMyOrdersByStore(storeId, page, size),
-    [storeId]
+    [storeId],
   );
 
   return (

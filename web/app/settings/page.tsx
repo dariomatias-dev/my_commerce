@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter, useSearchParams } from "next/navigation";
+
 import {
   ChevronRight,
   CreditCard,
@@ -11,9 +13,7 @@ import {
   ShieldCheck,
   User,
 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
 
-import { useAuthContext } from "@/contexts/auth-context";
 import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
@@ -22,13 +22,9 @@ import { SettingsAdvancedSettings } from "@/components/profile/settings-advanced
 import { SettingsInfoForm } from "@/components/profile/settings-info-form";
 import { SettingsSecurityForm } from "@/components/profile/settings-security-form";
 import { SettingsSubscriptions } from "@/components/profile/settings-subscriptions";
+import { useAuthContext } from "@/contexts/auth-context";
 
-type SettingsTab =
-  | "profile"
-  | "addresses"
-  | "subscriptions"
-  | "security"
-  | "advanced";
+type SettingsTab = "profile" | "addresses" | "subscriptions" | "security" | "advanced";
 
 const SettingsPage = () => {
   const router = useRouter();
@@ -50,7 +46,9 @@ const SettingsPage = () => {
   const tabs: { id: SettingsTab; label: string; icon: LucideIcon }[] = [
     { id: "profile", label: "Informações Pessoais", icon: User },
     { id: "addresses", label: "Meus Endereços", icon: MapPin },
-    ...(!isAdmin ? [{ id: "subscriptions" as SettingsTab, label: "Assinaturas", icon: CreditCard }] : []),
+    ...(!isAdmin
+      ? [{ id: "subscriptions" as SettingsTab, label: "Assinaturas", icon: CreditCard }]
+      : []),
     { id: "security", label: "Segurança & Senha", icon: Lock },
     { id: "advanced", label: "Configurações Avançadas", icon: Settings2 },
   ];
@@ -63,7 +61,7 @@ const SettingsPage = () => {
     <>
       <Header />
 
-      <main className="min-h-screen mx-auto max-w-400 px-6 pt-32 pb-12">
+      <main className="mx-auto min-h-screen max-w-400 px-6 pt-32 pb-12">
         <DashboardPageHeader
           title="Minhas Configurações"
           subtitle="Gerencie suas credenciais e segurança de acesso"
@@ -79,44 +77,37 @@ const SettingsPage = () => {
                   onClick={() => handleTabChange(tab.id)}
                   className={`flex w-full items-center justify-between rounded-xl px-5 py-4 transition-all ${
                     activeTab === tab.id
-                      ? "bg-slate-950 border border-slate-950 text-white shadow-xl shadow-slate-200"
-                      : "bg-white text-slate-500 border border-slate-100 hover:border-indigo-600/30 hover:text-slate-950"
+                      ? "border border-slate-950 bg-slate-950 text-white shadow-xl shadow-slate-200"
+                      : "border border-slate-100 bg-white text-slate-500 hover:border-indigo-600/30 hover:text-slate-950"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <tab.icon
-                      size={16}
-                      className={activeTab === tab.id ? "text-indigo-400" : ""}
-                    />
+                    <tab.icon size={16} className={activeTab === tab.id ? "text-indigo-400" : ""} />
                     <span className="text-[10px] font-black tracking-widest uppercase">
                       {tab.label}
                     </span>
                   </div>
                   <ChevronRight
                     size={14}
-                    className={
-                      activeTab === tab.id ? "opacity-100" : "opacity-0"
-                    }
+                    className={activeTab === tab.id ? "opacity-100" : "opacity-0"}
                   />
                 </button>
               ))}
             </nav>
 
             <div className="mt-6 rounded-2xl bg-indigo-600 p-5 text-white shadow-md shadow-indigo-100">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="mb-2 flex items-center gap-2">
                 <ShieldCheck size={18} />
-                <p className="text-[9px] font-black uppercase tracking-widest">
-                  Privacidade Ativa
-                </p>
+                <p className="text-[9px] font-black tracking-widest uppercase">Privacidade Ativa</p>
               </div>
-              <p className="text-[11px] font-medium leading-tight italic opacity-90">
+              <p className="text-[11px] leading-tight font-medium italic opacity-90">
                 Seus dados são protegidos por criptografia de ponta a ponta.
               </p>
             </div>
           </aside>
 
           <div className="lg:col-span-8">
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 md:p-8 shadow-sm transition-all animate-in fade-in slide-in-from-right-2">
+            <div className="animate-in fade-in slide-in-from-right-2 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-all md:p-8">
               {activeTab === "profile" && <SettingsInfoForm />}
               {activeTab === "addresses" && <SettingsAddresses />}
               {activeTab === "subscriptions" && <SettingsSubscriptions />}

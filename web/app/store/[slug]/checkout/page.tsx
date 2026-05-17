@@ -1,5 +1,7 @@
 "use client";
 
+import { useParams } from "next/navigation";
+
 import { ArrowLeft } from "lucide-react";
 
 import { ErrorFeedback } from "@/components/error-feedback";
@@ -9,7 +11,6 @@ import { CheckoutPaymentSection } from "@/components/store/[slug]/checkout/check
 import { CheckoutSummarySection } from "@/components/store/[slug]/checkout/checkout-summary-section";
 import { CheckoutFreightSection } from "@/components/store/[slug]/checkout/checkout-summary-section/checkout-freight-section";
 import { useCheckout } from "@/hooks/use-checkout";
-import { useParams } from "next/navigation";
 
 const CheckoutPage = () => {
   const { slug } = useParams() as {
@@ -59,16 +60,13 @@ const CheckoutPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F4F7FA] pb-20 pt-32">
+    <div className="min-h-screen bg-[#F4F7FA] pt-32 pb-20">
       <div className="mx-auto max-w-400 px-6">
         <button
           onClick={() => router.back()}
-          className="group mb-8 flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 transition-colors hover:text-indigo-600"
+          className="group mb-8 flex items-center gap-2 text-xs font-black tracking-widest text-slate-400 uppercase transition-colors hover:text-indigo-600"
         >
-          <ArrowLeft
-            size={16}
-            className="transition-transform group-hover:-translate-x-1"
-          />
+          <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-1" />
           Voltar para a loja
         </button>
 
@@ -89,7 +87,7 @@ const CheckoutPage = () => {
         </div>
 
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
-          <div className="lg:col-span-8 flex flex-col gap-8">
+          <div className="flex flex-col gap-8 lg:col-span-8">
             <CheckoutAddressSection
               addresses={addresses}
               selectedAddressId={selectedAddressId}
@@ -104,10 +102,7 @@ const CheckoutPage = () => {
               isLoading={isFreightLoading}
             />
 
-            <CheckoutPaymentSection
-              paymentMethod={paymentMethod}
-              onSelect={setPaymentMethod}
-            />
+            <CheckoutPaymentSection paymentMethod={paymentMethod} onSelect={setPaymentMethod} />
           </div>
 
           <div className="lg:col-span-4">

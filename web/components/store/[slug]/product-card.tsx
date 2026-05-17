@@ -19,7 +19,7 @@ const Badge = ({ children, variant = "default" }: BadgeProps) => {
   };
   return (
     <div
-      className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-1.5 ${styles[variant]}`}
+      className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-[9px] font-black tracking-[0.2em] uppercase ${styles[variant]}`}
     >
       {children}
     </div>
@@ -30,9 +30,7 @@ export const ProductCard = ({ product }: { product: ProductResponse }) => {
   const handleAddToCart = () => {
     const storageKey = `cart-${product.storeId}`;
     const stored = localStorage.getItem(storageKey);
-    const cart: { id: string; quantity: number }[] = stored
-      ? JSON.parse(stored)
-      : [];
+    const cart: { id: string; quantity: number }[] = stored ? JSON.parse(stored) : [];
 
     const existingIndex = cart.findIndex((i) => i.id === product.id);
     if (existingIndex > -1) {
@@ -46,13 +44,13 @@ export const ProductCard = ({ product }: { product: ProductResponse }) => {
   };
 
   return (
-    <div className="group relative flex flex-col rounded-[3rem] border-2 border-slate-100 bg-white p-5 transition-all hover:border-indigo-600 hover:shadow-2xl hover:shadow-indigo-500/10 focus-within:border-indigo-600 outline-none">
+    <div className="group relative flex flex-col rounded-[3rem] border-2 border-slate-100 bg-white p-5 transition-all outline-none focus-within:border-indigo-600 hover:border-indigo-600 hover:shadow-2xl hover:shadow-indigo-500/10">
       <div className="relative aspect-square overflow-hidden rounded-[2.5rem] bg-slate-50">
         <ProductImage
           imagePath={product.images?.[0]?.url}
           alt={product.name}
           fill
-          className=" transition-transform duration-700 group-hover:scale-110"
+          className="transition-transform duration-700 group-hover:scale-110"
         />
         <div className="absolute top-5 left-5 flex flex-col gap-2">
           {product.stock > 0 && product.stock <= 5 && (
@@ -68,18 +66,18 @@ export const ProductCard = ({ product }: { product: ProductResponse }) => {
         </div>
         <button
           onClick={handleAddToCart}
-          className="absolute bottom-5 right-5 h-14 w-14 flex items-center justify-center rounded-[1.5rem] bg-white/90 backdrop-blur-md shadow-xl text-slate-950 transition-all hover:bg-indigo-600 hover:text-white translate-y-24 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 border-2 border-transparent focus:border-indigo-600 outline-none cursor-pointer z-10"
+          className="absolute right-5 bottom-5 z-10 flex h-14 w-14 translate-y-24 cursor-pointer items-center justify-center rounded-[1.5rem] border-2 border-transparent bg-white/90 text-slate-950 opacity-0 shadow-xl backdrop-blur-md transition-all outline-none group-hover:translate-y-0 group-hover:opacity-100 hover:bg-indigo-600 hover:text-white focus:border-indigo-600"
         >
           <Plus size={28} />
         </button>
       </div>
 
       <div className="mt-7 px-2">
-        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300">
+        <span className="text-[10px] font-black tracking-[0.2em] text-slate-300 uppercase">
           ID: {product.slug.split("-")[0]}
         </span>
 
-        <h3 className="mt-1 text-2xl font-black tracking-tighter text-slate-950 uppercase italic leading-tight group-hover:text-indigo-600 transition-colors">
+        <h3 className="mt-1 text-2xl leading-tight font-black tracking-tighter text-slate-950 uppercase italic transition-colors group-hover:text-indigo-600">
           {product.name}
         </h3>
 

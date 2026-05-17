@@ -5,9 +5,7 @@ import { UserRequest } from "@/@types/user/user-request";
 import { UserResponse } from "@/@types/user/user-response";
 import { serverApi } from "@/lib/server-api";
 
-type ActionSuccess<T = void> = T extends void
-  ? { success: true }
-  : { success: true; data: T };
+type ActionSuccess<T = void> = T extends void ? { success: true } : { success: true; data: T };
 
 type ActionFailure = { success: false; error: string };
 
@@ -53,9 +51,7 @@ export async function deleteUser(id: string): Promise<ActionResult> {
   return { success: true };
 }
 
-export async function updateMe(
-  data: Partial<UserRequest>,
-): Promise<ActionResult<UserResponse>> {
+export async function updateMe(data: Partial<UserRequest>): Promise<ActionResult<UserResponse>> {
   const res = await serverApi.patch("/users/me", data);
   const body = await parseJson(res);
 
@@ -69,9 +65,7 @@ export async function updateMe(
   return { success: true, data: body.data as UserResponse };
 }
 
-export async function changePassword(
-  data: PasswordUpdateRequest,
-): Promise<ActionResult> {
+export async function changePassword(data: PasswordUpdateRequest): Promise<ActionResult> {
   const res = await serverApi.post("/users/me/change-password", data);
 
   if (!res.ok) {

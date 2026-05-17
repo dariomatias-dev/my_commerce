@@ -1,7 +1,8 @@
 "use client";
 
-import { Filter, Search } from "lucide-react";
 import { useEffect, useState } from "react";
+
+import { Filter, Search } from "lucide-react";
 
 import { AuditLogResponse } from "@/@types/audit-log/audit-log-response";
 import { AuditLogTable } from "@/components/audit-log-table";
@@ -52,8 +53,7 @@ const AdminAuditLogsPage = () => {
           setTotalPages(response.totalPages || 0);
         }
       } catch {
-        if (!ignore)
-          setErrorMessage("Falha ao sincronizar registros de auditoria.");
+        if (!ignore) setErrorMessage("Falha ao sincronizar registros de auditoria.");
       } finally {
         if (!ignore) setIsLoading(false);
       }
@@ -109,7 +109,7 @@ const AdminAuditLogsPage = () => {
       <div className="mb-12 flex flex-col gap-4 lg:flex-row lg:items-end">
         <div className="group relative flex-1">
           <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-indigo-600"
+            className="absolute top-1/2 left-4 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-indigo-600"
             size={16}
           />
 
@@ -119,7 +119,7 @@ const AdminAuditLogsPage = () => {
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit()}
             placeholder="PESQUISAR POR IDENTIFICADOR DE USUÁRIO (ID)..."
-            className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-white pr-6 pl-12 text-[10px] font-black uppercase tracking-widest text-slate-950 outline-none transition-all focus:border-indigo-600"
+            className="h-14.5 w-full rounded-2xl border-2 border-slate-100 bg-white pr-6 pl-12 text-[10px] font-black tracking-widest text-slate-950 uppercase transition-all outline-none focus:border-indigo-600"
           />
         </div>
 

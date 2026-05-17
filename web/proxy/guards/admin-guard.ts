@@ -7,7 +7,7 @@ interface JwtPayload {
   role: UserRole;
   iat?: number;
   exp?: number;
-};
+}
 
 export const adminGuard = (request: NextRequest): NextResponse | null => {
   const token = request.cookies.get("token")?.value;
@@ -25,9 +25,7 @@ export const adminGuard = (request: NextRequest): NextResponse | null => {
   let payload: JwtPayload;
 
   try {
-    payload = JSON.parse(
-      Buffer.from(parts[1], "base64").toString("utf-8")
-    ) as JwtPayload;
+    payload = JSON.parse(Buffer.from(parts[1], "base64").toString("utf-8")) as JwtPayload;
   } catch {
     return NextResponse.redirect(new URL("/login", request.url));
   }

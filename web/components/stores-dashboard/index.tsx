@@ -1,7 +1,8 @@
 "use client";
 
-import { Store } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+
+import { Store } from "lucide-react";
 
 import { ApiError } from "@/@types/api";
 import { PaginatedResponse } from "@/@types/paginated-response";
@@ -9,6 +10,7 @@ import { StoreFilter } from "@/@types/store/store-filter";
 import { StoreResponse } from "@/@types/store/store-response";
 import { Pagination } from "@/components/pagination";
 import { StatusFilter } from "@/enums/status-filter";
+
 import { DashboardTotalBadge } from "../dashboard-total-badge";
 import { StatusDropdownFilter } from "../filters/status-dropdown-filter";
 import { StoresList } from "../stores-list";
@@ -103,19 +105,14 @@ export const StoresDashboard = ({
     setCurrentPage(0);
   };
 
-  if (
-    stores.length === 0 &&
-    !error &&
-    !isLoading &&
-    statusFilter === StatusFilter.ALL
-  ) {
+  if (stores.length === 0 && !error && !isLoading && statusFilter === StatusFilter.ALL) {
     return <StoresDashboardEmptyStores />;
   }
 
   return (
     <div
       ref={listTopRef}
-      className="animate-in fade-in slide-in-from-bottom-4 duration-700 scroll-mt-32"
+      className="animate-in fade-in slide-in-from-bottom-4 scroll-mt-32 duration-700"
     >
       <div className="mb-12">
         <StoresDashboardPageHeader
@@ -125,13 +122,7 @@ export const StoresDashboard = ({
           subtitle={headerSubtitle}
           showCreateButton={canCreate}
           backPath={backPath}
-          actions={
-            <DashboardTotalBadge
-              icon={Store}
-              value={totalElements}
-              unit="Lojas"
-            />
-          }
+          actions={<DashboardTotalBadge icon={Store} value={totalElements} unit="Lojas" />}
         />
       </div>
 
@@ -153,7 +144,7 @@ export const StoresDashboard = ({
         />
       ) : (
         <div className="rounded-[3rem] border-2 border-dashed border-slate-100 py-32 text-center">
-          <p className="text-xs font-black uppercase italic tracking-widest text-slate-300">
+          <p className="text-xs font-black tracking-widest text-slate-300 uppercase italic">
             Nenhuma loja localizada para os critérios selecionados
           </p>
         </div>

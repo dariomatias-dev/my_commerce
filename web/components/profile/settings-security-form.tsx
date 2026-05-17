@@ -1,9 +1,10 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { KeyRound, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { KeyRound, RefreshCw } from "lucide-react";
 import * as z from "zod";
 
 import { changePassword } from "@/app/actions/users";
@@ -67,7 +68,7 @@ export const SettingsSecurityForm = () => {
         />
       )}
 
-      <section className="rounded-[2.5rem] border border-slate-200 bg-white p-8 md:p-12 shadow-sm">
+      <section className="rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-sm md:p-12">
         <div className="mb-10 flex items-center gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-indigo-600">
             <KeyRound size={24} />
@@ -78,7 +79,7 @@ export const SettingsSecurityForm = () => {
               Segurança
             </h2>
 
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            <p className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
               Atualizar senha de acesso
             </p>
           </div>
@@ -125,11 +126,7 @@ export const SettingsSecurityForm = () => {
               disabled={isLoading}
               className="flex items-center gap-2 rounded-xl bg-slate-950 px-8 py-3 text-[10px] font-black tracking-widest text-white uppercase transition-all hover:bg-indigo-600 disabled:opacity-50"
             >
-              {isLoading ? (
-                <RefreshCw size={14} className="animate-spin" />
-              ) : (
-                "ATUALIZAR SENHA"
-              )}
+              {isLoading ? <RefreshCw size={14} className="animate-spin" /> : "ATUALIZAR SENHA"}
             </button>
           </div>
         </form>

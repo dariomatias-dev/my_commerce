@@ -18,7 +18,7 @@ export const CategoriesDashboardCard = ({
   <div className="group relative rounded-[2rem] border border-slate-200 bg-white p-5 transition-all hover:border-indigo-600 hover:shadow-lg">
     <div className="flex items-center justify-between gap-4">
       <div className="flex items-center gap-3 overflow-hidden">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-indigo-600 transition-all group-hover:bg-indigo-600 group-hover:text-white">
           <Tag size={18} />
         </div>
 
@@ -32,13 +32,13 @@ export const CategoriesDashboardCard = ({
       <div className="flex gap-1.5">
         <button
           onClick={() => onEdit(category)}
-          className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-100 text-slate-400 hover:border-indigo-600 hover:text-indigo-600 transition-all"
+          className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-100 text-slate-400 transition-all hover:border-indigo-600 hover:text-indigo-600"
         >
           <Edit3 size={14} />
         </button>
         <button
           onClick={() => onDelete(category)}
-          className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-100 text-slate-400 hover:border-red-500 hover:text-red-500 transition-all"
+          className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-100 text-slate-400 transition-all hover:border-red-500 hover:text-red-500"
         >
           <Trash2 size={14} />
         </button>

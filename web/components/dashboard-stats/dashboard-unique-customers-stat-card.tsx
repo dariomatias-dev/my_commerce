@@ -1,9 +1,11 @@
 "use client";
 
-import { Users } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { Users } from "lucide-react";
+
 import { ApiError } from "@/@types/api";
+
 import { DashboardStatCard } from "../dashboard-stat-card";
 
 interface DashboardUniqueCustomersStatCardProps {

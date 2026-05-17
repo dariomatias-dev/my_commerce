@@ -1,7 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+import { useRouter } from "next/navigation";
 
 import { ApiError } from "@/@types/api";
 import { ProductRequest } from "@/@types/product/product-request";
@@ -28,9 +29,7 @@ export const ProductEditForm = ({
 }: ProductEditFormProps) => {
   const router = useRouter();
 
-  const [product, setProduct] = useState<ProductResponse | undefined>(
-    undefined,
-  );
+  const [product, setProduct] = useState<ProductResponse | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -84,12 +83,7 @@ export const ProductEditForm = ({
       active: values.active,
     };
 
-    const result = await updateProduct(
-      product.id,
-      data,
-      values.images,
-      removedImages,
-    );
+    const result = await updateProduct(product.id, data, values.images, removedImages);
 
     setIsSubmitting(false);
 
@@ -116,8 +110,8 @@ export const ProductEditForm = ({
       />
 
       {apiError && (
-        <div className="mb-8 animate-in fade-in slide-in-from-top-2 rounded-2xl border border-red-100 bg-red-50 p-6 text-center">
-          <p className="text-[10px] font-black uppercase tracking-widest text-red-500">
+        <div className="animate-in fade-in slide-in-from-top-2 mb-8 rounded-2xl border border-red-100 bg-red-50 p-6 text-center">
+          <p className="text-[10px] font-black tracking-widest text-red-500 uppercase">
             {apiError}
           </p>
         </div>

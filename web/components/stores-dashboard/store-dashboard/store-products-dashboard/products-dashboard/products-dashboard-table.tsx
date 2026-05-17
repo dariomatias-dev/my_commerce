@@ -1,8 +1,10 @@
 "use client";
 
-import { Edit3, Trash2 } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
+
+import Link from "next/link";
+
+import { Edit3, Trash2 } from "lucide-react";
 
 import { ProductResponse } from "@/@types/product/product-response";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
@@ -22,8 +24,7 @@ export const ProductsDashboardTable = ({
 }: ProductsDashboardTableProps) => {
   const [isFirstConfirmOpen, setIsFirstConfirmOpen] = useState(false);
   const [isSecondConfirmOpen, setIsSecondConfirmOpen] = useState(false);
-  const [productToDelete, setProductToDelete] =
-    useState<ProductResponse | null>(null);
+  const [productToDelete, setProductToDelete] = useState<ProductResponse | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleOpenFirstConfirm = (product: ProductResponse) => {
@@ -80,23 +81,17 @@ export const ProductsDashboardTable = ({
 
             <tbody className="divide-y divide-slate-50">
               {products.map((product) => (
-                <tr
-                  key={product.id}
-                  className="group hover:bg-indigo-50/20 transition-colors"
-                >
+                <tr key={product.id} className="group transition-colors hover:bg-indigo-50/20">
                   <td className="py-6 pl-10">
                     <div className="flex items-center gap-5">
-                      <ProductImage
-                        imagePath={product.images?.[0]?.url}
-                        alt={product.name}
-                      />
+                      <ProductImage imagePath={product.images?.[0]?.url} alt={product.name} />
 
                       <div>
-                        <p className="text-sm font-black text-slate-950 italic tracking-tight">
+                        <p className="text-sm font-black tracking-tight text-slate-950 italic">
                           {product.name}
                         </p>
 
-                        <p className="text-[10px] font-bold text-slate-400 tracking-widest">
+                        <p className="text-[10px] font-bold tracking-widest text-slate-400">
                           {product.slug}
                         </p>
                       </div>
@@ -157,7 +152,7 @@ export const ProductsDashboardTable = ({
                 <tr>
                   <td
                     colSpan={5}
-                    className="py-24 text-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 italic"
+                    className="py-24 text-center text-[10px] font-black tracking-[0.3em] text-slate-300 uppercase italic"
                   >
                     Nenhum registro localizado.
                   </td>

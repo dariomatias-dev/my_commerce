@@ -3,14 +3,10 @@ import { UniqueCustomersResponse } from "@/@types/analytics/unique-customers-res
 import { internalApiClient } from "@/services/api-client";
 
 export const getUniqueCustomers = () =>
-  internalApiClient.get<UniqueCustomersResponse>(
-    "/api/analytics/me/stats/unique-customers",
-  );
+  internalApiClient.get<UniqueCustomersResponse>("/api/analytics/me/stats/unique-customers");
 
 export const getMyTotalRevenue = () =>
-  internalApiClient.get<TotalRevenueResponse>(
-    "/api/analytics/me/stats/total-revenue",
-  );
+  internalApiClient.get<TotalRevenueResponse>("/api/analytics/me/stats/total-revenue");
 
 export const getUniqueCustomersByStoreId = (storeId: string) =>
   internalApiClient.get<UniqueCustomersResponse>(

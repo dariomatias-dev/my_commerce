@@ -4,6 +4,7 @@ import { CheckCircle2, Loader2, Truck } from "lucide-react";
 
 import { ActionButton } from "@/components/buttons/action-button";
 import { Item } from "@/components/layout/store-header/store-cart/store-cart-item";
+
 import { CheckoutItem } from "./checkout-item";
 
 interface CheckoutSummarySectionProps {
@@ -33,7 +34,7 @@ export const CheckoutSummarySection = ({
     <div className="sticky top-10 flex flex-col gap-6">
       <div className="rounded-[2.5rem] border-2 border-slate-100 bg-white p-8 shadow-2xl shadow-slate-200/50">
         <div className="mb-8 flex items-center justify-between">
-          <h2 className="text-xl font-black uppercase italic tracking-tighter text-slate-950">
+          <h2 className="text-xl font-black tracking-tighter text-slate-950 uppercase italic">
             Resumo
           </h2>
 
@@ -42,7 +43,7 @@ export const CheckoutSummarySection = ({
           </div>
         </div>
 
-        <div className="mb-8 flex flex-col gap-8 max-h-[35vh] overflow-y-auto pr-2 custom-scrollbar">
+        <div className="custom-scrollbar mb-8 flex max-h-[35vh] flex-col gap-8 overflow-y-auto pr-2">
           {items.map((item) => (
             <CheckoutItem
               key={item.id}
@@ -56,7 +57,7 @@ export const CheckoutSummarySection = ({
 
         <div className="flex flex-col gap-3 border-t border-slate-50 pt-6">
           <div className="flex justify-between">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            <span className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
               Subtotal
             </span>
 
@@ -69,7 +70,7 @@ export const CheckoutSummarySection = ({
           </div>
 
           <div className="flex justify-between">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
+            <span className="flex items-center gap-2 text-[10px] font-black tracking-widest text-slate-400 uppercase">
               <Truck size={12} /> Frete
             </span>
 
@@ -88,7 +89,7 @@ export const CheckoutSummarySection = ({
           </div>
 
           <div className="mt-4 flex items-end justify-between border-t border-slate-100 pt-6">
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">
+            <span className="mb-1 text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase">
               Total Final
             </span>
 
@@ -102,22 +103,14 @@ export const CheckoutSummarySection = ({
         </div>
 
         <div className="mt-8">
-          <ActionButton
-            onClick={onFinish}
-            disabled={isSubmitting || items.length === 0}
-            showArrow
-          >
-            {isSubmitting ? (
-              <Loader2 className="animate-spin" size={24} />
-            ) : (
-              "Finalizar Pedido"
-            )}
+          <ActionButton onClick={onFinish} disabled={isSubmitting || items.length === 0} showArrow>
+            {isSubmitting ? <Loader2 className="animate-spin" size={24} /> : "Finalizar Pedido"}
           </ActionButton>
         </div>
 
         <div className="mt-6 flex items-center justify-center gap-2 opacity-30">
           <CheckCircle2 size={14} className="text-emerald-500" />
-          <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+          <span className="text-[9px] font-black tracking-widest text-slate-400 uppercase">
             Compra 100% Criptografada
           </span>
         </div>

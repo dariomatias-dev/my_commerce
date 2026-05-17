@@ -1,7 +1,4 @@
-import {
-  getTotalRevenueByStoreId,
-  getUniqueCustomersByStoreId,
-} from "@/services/analytics";
+import { getTotalRevenueByStoreId, getUniqueCustomersByStoreId } from "@/services/analytics";
 import { getSuccessfulSalesCountByStoreId } from "@/services/orders";
 import { getActiveProductsCount } from "@/services/products";
 
@@ -18,21 +15,13 @@ interface DashboardStoreStatsProps {
 export const DashboardStoreStats = ({ storeId }: DashboardStoreStatsProps) => {
   return (
     <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-      <DashboardSuccessfulSalesStatCard
-        request={() => getSuccessfulSalesCountByStoreId(storeId)}
-      />
+      <DashboardSuccessfulSalesStatCard request={() => getSuccessfulSalesCountByStoreId(storeId)} />
 
-      <DashboardActiveProductsStatCard
-        request={() => getActiveProductsCount(storeId)}
-      />
+      <DashboardActiveProductsStatCard request={() => getActiveProductsCount(storeId)} />
 
-      <DashboardUniqueCustomersStatCard
-        request={() => getUniqueCustomersByStoreId(storeId)}
-      />
+      <DashboardUniqueCustomersStatCard request={() => getUniqueCustomersByStoreId(storeId)} />
 
-      <DashboardTotalRevenueStatCard
-        request={() => getTotalRevenueByStoreId(storeId)}
-      />
+      <DashboardTotalRevenueStatCard request={() => getTotalRevenueByStoreId(storeId)} />
     </div>
   );
 };

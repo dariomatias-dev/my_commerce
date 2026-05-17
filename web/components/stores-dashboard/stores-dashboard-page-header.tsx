@@ -1,8 +1,10 @@
 "use client";
 
-import { Plus } from "lucide-react";
-import Link from "next/link";
 import { ReactNode } from "react";
+
+import Link from "next/link";
+
+import { Plus } from "lucide-react";
 
 import { DashboardPageHeader } from "../layout/dashboard-page-header";
 
@@ -25,9 +27,7 @@ export const StoresDashboardPageHeader = ({
   backPath,
   actions,
 }: StoresDashboardPageHeaderProps) => {
-  const paginationText = `Página ${currentPage + 1} de ${
-    totalPages || 1
-  } — ${subtitle}`;
+  const paginationText = `Página ${currentPage + 1} de ${totalPages || 1} — ${subtitle}`;
 
   return (
     <DashboardPageHeader

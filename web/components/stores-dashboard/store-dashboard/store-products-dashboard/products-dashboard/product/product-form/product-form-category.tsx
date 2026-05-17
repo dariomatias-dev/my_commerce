@@ -1,14 +1,8 @@
 "use client";
 
+import { Control, FieldValues, Path, PathValue, UseFormSetValue, useWatch } from "react-hook-form";
+
 import { Layers } from "lucide-react";
-import {
-  Control,
-  FieldValues,
-  Path,
-  PathValue,
-  UseFormSetValue,
-  useWatch,
-} from "react-hook-form";
 
 import { CategoryResponse } from "@/@types/category/category-response";
 import { Dropdown } from "@/components/dropdown";
@@ -48,15 +42,13 @@ export const ProductFormCategorySelect = <T extends FieldValues>({
         options={categories}
         value={selectedValue}
         onChange={handleSelect}
-        placeholder={
-          isLoading ? "Sincronizando Database..." : "— Selecionar Categoria —"
-        }
+        placeholder={isLoading ? "Sincronizando Database..." : "— Selecionar Categoria —"}
         className={error ? "border-red-500/50" : ""}
         buttonClassName="bg-slate-50 focus:bg-white"
       />
 
       {error && (
-        <p className="ml-1 text-[9px] font-black text-red-500 uppercase tracking-widest animate-in fade-in slide-in-from-left-1">
+        <p className="animate-in fade-in slide-in-from-left-1 ml-1 text-[9px] font-black tracking-widest text-red-500 uppercase">
           {error}
         </p>
       )}

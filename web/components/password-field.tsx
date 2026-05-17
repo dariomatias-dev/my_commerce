@@ -1,7 +1,8 @@
 "use client";
 
+import { InputHTMLAttributes, forwardRef, useState } from "react";
+
 import { Eye, EyeOff, Lock } from "lucide-react";
-import { forwardRef, InputHTMLAttributes, useState } from "react";
 
 interface PasswordFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;

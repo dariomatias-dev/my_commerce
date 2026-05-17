@@ -1,7 +1,8 @@
 "use client";
 
-import { Filter, Search, Users, UserX } from "lucide-react";
 import { useEffect, useState } from "react";
+
+import { Filter, Search, UserX, Users } from "lucide-react";
 
 import { ApiError } from "@/@types/api";
 import { AdminUserResponse } from "@/@types/user/admin-user-response";
@@ -82,14 +83,7 @@ const UserManagementPage = () => {
     return () => {
       ignore = true;
     };
-  }, [
-    currentPage,
-    searchName,
-    searchEmail,
-    roleFilter,
-    statusFilter,
-    refreshKey,
-  ]);
+  }, [currentPage, searchName, searchEmail, roleFilter, statusFilter, refreshKey]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -135,20 +129,14 @@ const UserManagementPage = () => {
         } — Controle de acessos e governança de contas`}
         label="USUÁRIOS"
         backPath="/admin"
-        actions={
-          <DashboardTotalBadge
-            icon={Users}
-            value={totalElements}
-            unit="Contas"
-          />
-        }
+        actions={<DashboardTotalBadge icon={Users} value={totalElements} unit="Contas" />}
       />
 
       <div className="mb-10 flex flex-col gap-4 lg:flex-row lg:items-center">
         <div className="flex flex-1 flex-col gap-4 md:flex-row">
           <div className="group relative flex-1">
             <Search
-              className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-indigo-500"
+              className="absolute top-1/2 left-5 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-indigo-500"
               size={18}
             />
             <input
@@ -157,13 +145,13 @@ const UserManagementPage = () => {
               onChange={(e) => setNameInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="BUSCAR POR NOME..."
-              className="h-14 w-full rounded-2xl border border-slate-200 bg-white pr-6 pl-12 text-[11px] font-bold tracking-widest text-slate-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5"
+              className="h-14 w-full rounded-2xl border border-slate-200 bg-white pr-6 pl-12 text-[11px] font-bold tracking-widest text-slate-900 transition-all outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5"
             />
           </div>
 
           <div className="group relative flex-1">
             <Search
-              className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-indigo-500"
+              className="absolute top-1/2 left-5 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-indigo-500"
               size={18}
             />
             <input
@@ -172,7 +160,7 @@ const UserManagementPage = () => {
               onChange={(e) => setEmailInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="BUSCAR POR E-MAIL..."
-              className="h-14 w-full rounded-2xl border border-slate-200 bg-white pr-6 pl-12 text-[11px] font-bold tracking-widest text-slate-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5"
+              className="h-14 w-full rounded-2xl border border-slate-200 bg-white pr-6 pl-12 text-[11px] font-bold tracking-widest text-slate-900 transition-all outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5"
             />
           </div>
         </div>
@@ -186,10 +174,7 @@ const UserManagementPage = () => {
             placeholder="Filtrar Cargo"
             className="w-full sm:w-60"
           />
-          <StatusDropdownFilter
-            value={statusFilter}
-            onChange={handleStatusChange}
-          />
+          <StatusDropdownFilter value={statusFilter} onChange={handleStatusChange} />
         </div>
       </div>
 
@@ -197,18 +182,14 @@ const UserManagementPage = () => {
         <div className="grid grid-cols-1 gap-4">
           {users.length > 0 ? (
             users.map((u) => (
-              <UserCard
-                key={u.id}
-                user={u}
-                onDeleteSuccess={() => setRefreshKey((k) => k + 1)}
-              />
+              <UserCard key={u.id} user={u} onDeleteSuccess={() => setRefreshKey((k) => k + 1)} />
             ))
           ) : (
             <div className="flex flex-col items-center justify-center rounded-[2.5rem] border-2 border-dashed border-slate-200 bg-slate-50/50 py-24 text-center">
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white shadow-sm">
                 <UserX className="text-slate-300" size={32} />
               </div>
-              <p className="max-w-xs text-[11px] font-bold uppercase leading-relaxed tracking-[0.2em] text-slate-400">
+              <p className="max-w-xs text-[11px] leading-relaxed font-bold tracking-[0.2em] text-slate-400 uppercase">
                 Nenhum usuário localizado com os critérios selecionados
               </p>
             </div>

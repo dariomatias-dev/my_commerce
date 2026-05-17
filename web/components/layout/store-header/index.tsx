@@ -1,12 +1,15 @@
 "use client";
 
-import { Menu, Store, X } from "lucide-react";
+import { useEffect, useState } from "react";
+
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+
+import { Menu, Store, X } from "lucide-react";
 
 import { StoreResponse } from "@/@types/store/store-response";
 import { HeaderNavAuth } from "@/components/layout/header-nav-auth";
+
 import { StoreCart } from "./store-cart";
 
 interface StoreHeaderProps {
@@ -41,7 +44,7 @@ export const StoreHeader = ({ store }: StoreHeaderProps) => {
               className="group flex items-center gap-2.5"
             >
               <div className="relative">
-                <div className="relative h-9 w-9 overflow-hidden rounded-xl bg-slate-950 shadow-lg transition-transform group-hover:rotate-12 flex items-center justify-center">
+                <div className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl bg-slate-950 shadow-lg transition-transform group-hover:rotate-12">
                   {store ? (
                     <Image
                       src={`${process.env.NEXT_PUBLIC_API_URL}/files/stores/${store.slug}/logo.png`}
@@ -94,7 +97,7 @@ export const StoreHeader = ({ store }: StoreHeaderProps) => {
 
           <div className="ml-auto flex items-center gap-3">
             <div className="hidden items-center gap-3 lg:flex">
-              <div className="flex items-center gap-3 border-r border-slate-100 pr-6 mr-3">
+              <div className="mr-3 flex items-center gap-3 border-r border-slate-100 pr-6">
                 {store && <StoreCart store={store} />}
               </div>
               <HeaderNavAuth />
@@ -110,11 +113,9 @@ export const StoreHeader = ({ store }: StoreHeaderProps) => {
         </div>
 
         {isMenuOpen && (
-          <div className="absolute inset-x-0 top-full h-screen bg-white p-6 shadow-2xl animate-in fade-in slide-in-from-top-4 lg:hidden">
-            <div className="flex flex-col gap-6 items-center">
-              <div className="flex items-center">
-                {store && <StoreCart store={store} />}
-              </div>
+          <div className="animate-in fade-in slide-in-from-top-4 absolute inset-x-0 top-full h-screen bg-white p-6 shadow-2xl lg:hidden">
+            <div className="flex flex-col items-center gap-6">
+              <div className="flex items-center">{store && <StoreCart store={store} />}</div>
 
               <hr className="w-full border-slate-100" />
 
@@ -123,7 +124,7 @@ export const StoreHeader = ({ store }: StoreHeaderProps) => {
                   <Link
                     key={item}
                     href={`/store/${store.slug}`}
-                    className="text-2xl font-black uppercase italic text-slate-950"
+                    className="text-2xl font-black text-slate-950 uppercase italic"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {item}
@@ -132,10 +133,7 @@ export const StoreHeader = ({ store }: StoreHeaderProps) => {
 
               <hr className="w-full border-slate-100" />
 
-              <HeaderNavAuth
-                isMobile
-                onActionClick={() => setIsMenuOpen(false)}
-              />
+              <HeaderNavAuth isMobile onActionClick={() => setIsMenuOpen(false)} />
             </div>
           </div>
         )}

@@ -1,16 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+import { useRouter } from "next/navigation";
 
 import { ApiError } from "@/@types/api";
 import { StoreRequest } from "@/@types/store/store-request";
 import { StoreResponse } from "@/@types/store/store-response";
 import { updateStore } from "@/app/actions/stores";
-import {
-  StoreForm,
-  StoreFormValues,
-} from "@/components/dashboard/store/store-form";
+import { StoreForm, StoreFormValues } from "@/components/dashboard/store/store-form";
 import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { getStoreBySlug } from "@/services/stores";
@@ -21,11 +19,7 @@ interface EditStoreFormProps {
   successPath: string;
 }
 
-export const EditStoreForm = ({
-  storeSlug,
-  backPath,
-  successPath,
-}: EditStoreFormProps) => {
+export const EditStoreForm = ({ storeSlug, backPath, successPath }: EditStoreFormProps) => {
   const router = useRouter();
 
   const [store, setStore] = useState<StoreResponse | undefined>(undefined);
@@ -76,12 +70,7 @@ export const EditStoreForm = ({
       isActive: values.isActive,
     };
 
-    const result = await updateStore(
-      store.id,
-      data,
-      values.logo?.[0],
-      values.banner?.[0],
-    );
+    const result = await updateStore(store.id, data, values.logo?.[0], values.banner?.[0]);
 
     if (!result.success) {
       setApiError(result.error);
@@ -107,19 +96,15 @@ export const EditStoreForm = ({
       />
 
       {apiError && (
-        <div className="mb-8 animate-in fade-in slide-in-from-top-2 rounded-2xl border border-red-100 bg-red-50 p-6 text-center">
-          <p className="text-[10px] font-black uppercase tracking-widest text-red-500">
+        <div className="animate-in fade-in slide-in-from-top-2 mb-8 rounded-2xl border border-red-100 bg-red-50 p-6 text-center">
+          <p className="text-[10px] font-black tracking-widest text-red-500 uppercase">
             {apiError}
           </p>
         </div>
       )}
 
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <StoreForm
-          initialData={store}
-          onSubmit={onSubmit}
-          isLoading={isSubmitting}
-        />
+        <StoreForm initialData={store} onSubmit={onSubmit} isLoading={isSubmitting} />
       </div>
     </>
   );

@@ -1,11 +1,6 @@
-import {
-  Globe,
-  Search,
-  Smartphone,
-  TrendingUp,
-  Zap,
-  ZapIcon,
-} from "lucide-react";
+import Image from "next/image";
+
+import { Globe, Search, Smartphone, TrendingUp, Zap, ZapIcon } from "lucide-react";
 
 import { CtaSection } from "@/components/cta-section";
 import { FaqsSection } from "@/components/faqs-section";
@@ -13,7 +8,6 @@ import { HeroSection } from "@/components/hero-section.";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { SubscriptionPlansSection } from "@/components/subscription-plans-section";
-import Image from "next/image";
 
 const Home = () => {
   return (
@@ -74,12 +68,8 @@ const Home = () => {
                       {item.i}
                     </div>
                     <div>
-                      <h4 className="text-xl font-black tracking-tight">
-                        {item.t}
-                      </h4>
-                      <p className="mt-2 leading-relaxed font-medium text-slate-500">
-                        {item.d}
-                      </p>
+                      <h4 className="text-xl font-black tracking-tight">{item.t}</h4>
+                      <p className="mt-2 leading-relaxed font-medium text-slate-500">{item.d}</p>
                     </div>
                   </div>
                 ))}
@@ -98,9 +88,7 @@ const Home = () => {
                       <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
                         Conversão
                       </p>
-                      <p className="text-xl font-black text-slate-900">
-                        +24.8%
-                      </p>
+                      <p className="text-xl font-black text-slate-900">+24.8%</p>
                     </div>
                   </div>
                 </div>
@@ -143,20 +131,18 @@ const Home = () => {
                 <span className="text-violet-600">Topo.</span>
               </h2>
               <p className="mb-10 text-2xl leading-relaxed font-medium tracking-tight text-slate-500">
-                Sua loja nasce otimizada. Não apenas para pessoas, mas para os
-                algoritmos. Apareça onde seus clientes buscam.
+                Sua loja nasce otimizada. Não apenas para pessoas, mas para os algoritmos. Apareça
+                onde seus clientes buscam.
               </p>
               <div className="flex flex-wrap gap-4">
-                {["Google Shopping", "Instagram Ads", "TikTok XML"].map(
-                  (tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full border border-slate-100 bg-white px-6 py-3 text-xs font-black tracking-widest text-slate-400 uppercase"
-                    >
-                      {tag}
-                    </span>
-                  )
-                )}
+                {["Google Shopping", "Instagram Ads", "TikTok XML"].map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full border border-slate-100 bg-white px-6 py-3 text-xs font-black tracking-widest text-slate-400 uppercase"
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
@@ -169,8 +155,8 @@ const Home = () => {
             Onde seus clientes estão.
           </h2>
           <p className="mx-auto mb-20 max-w-2xl text-xl leading-relaxed font-medium text-slate-500">
-            Sincronize sua loja com os maiores marketplaces e redes sociais do
-            mundo. Venda no Instagram, Google e TikTok em um clique.
+            Sincronize sua loja com os maiores marketplaces e redes sociais do mundo. Venda no
+            Instagram, Google e TikTok em um clique.
           </p>
           <div className="flex flex-wrap justify-center gap-8">
             {[

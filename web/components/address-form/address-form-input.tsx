@@ -2,8 +2,7 @@
 
 import { UseFormRegisterReturn } from "react-hook-form";
 
-interface AddressFormInputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+interface AddressFormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   register: UseFormRegisterReturn;
   error?: string;
@@ -26,16 +25,12 @@ export const AddressFormInput = ({
       <input
         {...register}
         {...props}
-        className={`w-full rounded-xl border border-slate-100 bg-white py-3 px-4 font-bold text-slate-950 outline-none focus:border-indigo-600 text-sm transition-all ${
+        className={`w-full rounded-xl border border-slate-100 bg-white px-4 py-3 text-sm font-bold text-slate-950 transition-all outline-none focus:border-indigo-600 ${
           error ? "border-red-500" : ""
         }`}
       />
 
-      {error && (
-        <span className="ml-1 text-[8px] font-bold text-red-500 uppercase">
-          {error}
-        </span>
-      )}
+      {error && <span className="ml-1 text-[8px] font-bold text-red-500 uppercase">{error}</span>}
     </div>
   );
 };

@@ -1,22 +1,22 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ImagePlus, Layout, Palette, Store, UploadCloud } from "lucide-react";
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ImagePlus, Layout, Palette, Store, UploadCloud } from "lucide-react";
 import * as z from "zod";
 
 import { StoreResponse } from "@/@types/store/store-response";
 import { ActionButton } from "@/components/buttons/action-button";
+
 import { StoreFileUploadField } from "./store-file-upload-field";
 import { StoreFormSection } from "./store-form-section";
 
 const storeSchema = z.object({
   name: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
   description: z.string().min(10, "A descrição deve ser mais detalhada"),
-  themeColor: z
-    .string()
-    .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Cor inválida"),
+  themeColor: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Cor inválida"),
   isActive: z.boolean(),
   logo: z.any().optional(),
   banner: z.any().optional(),
@@ -30,11 +30,7 @@ interface StoreFormProps {
   isLoading: boolean;
 }
 
-export const StoreForm = ({
-  initialData,
-  onSubmit,
-  isLoading,
-}: StoreFormProps) => {
+export const StoreForm = ({ initialData, onSubmit, isLoading }: StoreFormProps) => {
   const {
     control,
     register,
@@ -55,21 +51,16 @@ export const StoreForm = ({
     ? `${process.env.NEXT_PUBLIC_API_URL}/files/stores/${initialData.slug}`
     : null;
 
-  const [existingLogo] = useState<string | null>(
-    () => (baseUrl ? `${baseUrl}/logo.png` : null),
-  );
-  const [existingBanner] = useState<string | null>(
-    () => (baseUrl ? `${baseUrl}/banner.png` : null),
+  const [existingLogo] = useState<string | null>(() => (baseUrl ? `${baseUrl}/logo.png` : null));
+  const [existingBanner] = useState<string | null>(() =>
+    baseUrl ? `${baseUrl}/banner.png` : null,
   );
 
   const logoFile = useWatch({ control, name: "logo" });
   const bannerFile = useWatch({ control, name: "banner" });
   const themeColor = useWatch({ control, name: "themeColor" });
 
-  const handleFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    field: "logo" | "banner"
-  ) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: "logo" | "banner") => {
     const files = e.target.files;
     if (files && files.length > 0) {
       setValue(field, files, { shouldValidate: true });
@@ -77,10 +68,7 @@ export const StoreForm = ({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="grid grid-cols-1 gap-8 lg:grid-cols-12"
-    >
+    <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 gap-8 lg:grid-cols-12">
       <div className="space-y-8 lg:col-span-8">
         <StoreFormSection title="Dados da Instância" icon={Store}>
           <div className="space-y-6">
@@ -94,9 +82,7 @@ export const StoreForm = ({
                 className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 font-bold transition-all focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-600/5 focus:outline-none"
               />
               {errors.name && (
-                <p className="ml-1 text-[10px] font-bold text-red-500">
-                  {errors.name.message}
-                </p>
+                <p className="ml-1 text-[10px] font-bold text-red-500">{errors.name.message}</p>
               )}
             </div>
 
@@ -163,7 +149,7 @@ export const StoreForm = ({
                   {...register("themeColor")}
                   className="h-14 w-14 cursor-pointer rounded-xl border-none bg-transparent"
                 />
-                <div className="flex-1 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 font-mono text-xs font-bold uppercase text-slate-600">
+                <div className="flex-1 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 font-mono text-xs font-bold text-slate-600 uppercase">
                   {themeColor}
                 </div>
               </div>
@@ -174,12 +160,8 @@ export const StoreForm = ({
                 Status Ativo
               </span>
               <label className="relative inline-flex cursor-pointer items-center">
-                <input
-                  type="checkbox"
-                  {...register("isActive")}
-                  className="peer sr-only"
-                />
-                <div className="h-6 w-11 rounded-full bg-slate-300 transition-all after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-indigo-600 peer-checked:after:translate-x-full" />
+                <input type="checkbox" {...register("isActive")} className="peer sr-only" />
+                <div className="h-6 w-11 rounded-full bg-slate-300 transition-all peer-checked:bg-indigo-600 after:absolute after:top-0.5 after:left-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full" />
               </label>
             </div>
           </div>
@@ -187,11 +169,7 @@ export const StoreForm = ({
 
         <div className="space-y-4">
           <ActionButton disabled={isLoading} showArrow={!isLoading}>
-            {isLoading
-              ? "SINCRONIZANDO..."
-              : initialData
-              ? "ATUALIZAR LOJA"
-              : "CRIAR LOJA"}
+            {isLoading ? "SINCRONIZANDO..." : initialData ? "ATUALIZAR LOJA" : "CRIAR LOJA"}
           </ActionButton>
         </div>
       </aside>

@@ -8,12 +8,7 @@ export const getAllProducts = (filters: ProductFilters, page = 0, size = 10) =>
     params: { ...filters, page, size },
   });
 
-export const getProductsByIds = (
-  storeId: string,
-  productIds: string[],
-  page = 0,
-  size = 10,
-) =>
+export const getProductsByIds = (storeId: string, productIds: string[], page = 0, size = 10) =>
   internalApiClient.post<PaginatedResponse<ProductResponse>>(
     "/api/products/by-ids",
     { storeId, productIds },
@@ -21,9 +16,7 @@ export const getProductsByIds = (
   );
 
 export const getProductBySlug = (storeSlug: string, productSlug: string) =>
-  internalApiClient.get<ProductResponse>(
-    `/api/products/store/${storeSlug}/product/${productSlug}`,
-  );
+  internalApiClient.get<ProductResponse>(`/api/products/store/${storeSlug}/product/${productSlug}`);
 
 export const getProductById = (id: string) =>
   internalApiClient.get<ProductResponse>(`/api/products/${id}`);
@@ -32,6 +25,4 @@ export const getUserActiveProductsCount = () =>
   internalApiClient.get<number>("/api/products/stores/stats/active-products");
 
 export const getActiveProductsCount = (storeId: string) =>
-  internalApiClient.get<number>(
-    `/api/products/store/${storeId}/stats/active-products`,
-  );
+  internalApiClient.get<number>(`/api/products/store/${storeId}/stats/active-products`);

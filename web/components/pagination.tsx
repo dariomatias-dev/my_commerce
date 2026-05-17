@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  ChevronLeft,
-  ChevronRight,
-  LucideIcon,
-  MoreHorizontal,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, LucideIcon, MoreHorizontal } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -27,12 +22,12 @@ const NavButton = ({ onClick, disabled, icon: Icon }: NavButtonProps) => (
     onClick={onClick}
     disabled={disabled}
     className={cn(
-      "flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl",
+      "flex h-12 w-12 items-center justify-center rounded-2xl sm:h-14 sm:w-14",
       "border border-slate-200 bg-white text-slate-600 shadow-sm",
       "transition-all duration-200",
       "hover:border-indigo-600 hover:text-indigo-600",
       "active:opacity-80",
-      "cursor-pointer disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 disabled:text-slate-400",
+      "cursor-pointer disabled:cursor-not-allowed disabled:text-slate-400 disabled:opacity-40 disabled:hover:border-slate-200",
       "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600",
     )}
   >
@@ -78,12 +73,7 @@ export const Pagination = ({
   };
 
   return (
-    <div
-      className={cn(
-        "mt-12 flex items-center justify-center gap-2 sm:gap-4",
-        className,
-      )}
-    >
+    <div className={cn("mt-12 flex items-center justify-center gap-2 sm:gap-4", className)}>
       <NavButton
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 0}
@@ -96,7 +86,7 @@ export const Pagination = ({
             return (
               <div
                 key={`ellipsis-${index}`}
-                className="hidden md:flex h-12 w-8 sm:h-14 sm:w-10 items-center justify-center text-slate-300"
+                className="hidden h-12 w-8 items-center justify-center text-slate-300 sm:h-14 sm:w-10 md:flex"
               >
                 <MoreHorizontal size={20} />
               </div>
@@ -116,13 +106,13 @@ export const Pagination = ({
               key={page}
               onClick={() => onPageChange(Number(page))}
               className={cn(
-                "flex items-center justify-center h-12 w-12 sm:h-14 sm:w-14 rounded-2xl text-[10px] sm:text-[11px] font-black",
-                "transition-all duration-200 cursor-pointer border",
+                "flex h-12 w-12 items-center justify-center rounded-2xl text-[10px] font-black sm:h-14 sm:w-14 sm:text-[11px]",
+                "cursor-pointer border transition-all duration-200",
                 "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600",
                 isActive
-                  ? "bg-slate-950 text-white border-slate-950 shadow-xl scale-110 z-10 flex"
+                  ? "z-10 flex scale-110 border-slate-950 bg-slate-950 text-white shadow-xl"
                   : cn(
-                      "bg-white border-slate-200 text-slate-400 hover:border-indigo-600 hover:text-indigo-600",
+                      "border-slate-200 bg-white text-slate-400 hover:border-indigo-600 hover:text-indigo-600",
                       isVisibleMobile ? "flex" : "hidden md:flex",
                     ),
               )}

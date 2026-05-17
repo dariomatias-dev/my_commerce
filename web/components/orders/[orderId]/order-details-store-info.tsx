@@ -6,9 +6,7 @@ interface OrderDetailsStoreInfoProps {
   store: StoreResponse;
 }
 
-export const OrderDetailsStoreInfo = ({
-  store,
-}: OrderDetailsStoreInfoProps) => {
+export const OrderDetailsStoreInfo = ({ store }: OrderDetailsStoreInfoProps) => {
   return (
     <div className="rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm">
       <div className="mb-6 flex items-center gap-4">
@@ -19,10 +17,10 @@ export const OrderDetailsStoreInfo = ({
           <Store size={24} />
         </div>
         <div>
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+          <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
             Unidade Comercial
           </p>
-          <h3 className="text-lg font-black uppercase italic tracking-tighter text-slate-950">
+          <h3 className="text-lg font-black tracking-tighter text-slate-950 uppercase italic">
             {store.name}
           </h3>
         </div>
@@ -34,7 +32,7 @@ export const OrderDetailsStoreInfo = ({
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
             Status
           </span>
           <span

@@ -1,7 +1,8 @@
 "use client";
 
-import { AlertTriangle, X } from "lucide-react";
 import { useEffect, useState } from "react";
+
+import { AlertTriangle, X } from "lucide-react";
 
 interface DeleteConfirmationDialogProps {
   isOpen: boolean;
@@ -46,39 +47,35 @@ export const DeleteConfirmationDialog = ({
   };
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-md rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-2xl animate-in zoom-in-95 duration-200">
-        <div className="flex items-start justify-between mb-6">
+    <div className="animate-in fade-in fixed inset-0 z-100 flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm duration-200">
+      <div className="animate-in zoom-in-95 w-full max-w-md rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-2xl duration-200">
+        <div className="mb-6 flex items-start justify-between">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-600">
             <AlertTriangle size={24} />
           </div>
 
           <button
             onClick={onClose}
-            className="rounded-xl p-2 text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-colors"
+            className="rounded-xl p-2 text-slate-400 transition-colors hover:bg-slate-50 hover:text-slate-600"
           >
             <X size={20} />
           </button>
         </div>
 
-        <div className="space-y-2 mb-8">
+        <div className="mb-8 space-y-2">
           <h3 className="text-xl font-black tracking-tight text-slate-950 uppercase italic">
             {title}
           </h3>
-          <p className="text-sm font-medium leading-relaxed text-slate-500">
-            {description}
-          </p>
+          <p className="text-sm leading-relaxed font-medium text-slate-500">{description}</p>
         </div>
 
-        <div className="space-y-4 mb-8">
-          <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100">
-            <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase mb-1">
+        <div className="mb-8 space-y-4">
+          <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+            <p className="mb-1 text-[10px] font-black tracking-widest text-slate-400 uppercase">
               Digite o nome para confirmar:
             </p>
 
-            <p className="text-xs font-bold text-slate-900 select-none">
-              {confirmationName}
-            </p>
+            <p className="text-xs font-bold text-slate-900 select-none">{confirmationName}</p>
           </div>
 
           <input
@@ -86,7 +83,7 @@ export const DeleteConfirmationDialog = ({
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Escreva o nome exatamente como acima"
-            className="w-full rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-bold text-slate-950 outline-none transition-all focus:border-red-500 focus:ring-4 focus:ring-red-500/5"
+            className="w-full rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-bold text-slate-950 transition-all outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/5"
           />
         </div>
 
@@ -94,7 +91,7 @@ export const DeleteConfirmationDialog = ({
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="rounded-2xl px-6 py-4 text-[10px] font-black tracking-widest text-slate-400 uppercase hover:bg-slate-50 transition-colors disabled:opacity-50"
+            className="rounded-2xl px-6 py-4 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors hover:bg-slate-50 disabled:opacity-50"
           >
             Cancelar
           </button>
@@ -102,7 +99,7 @@ export const DeleteConfirmationDialog = ({
           <button
             onClick={handleConfirm}
             disabled={!isMatch || isLoading}
-            className="rounded-2xl bg-red-600 px-6 py-4 text-[10px] font-black tracking-widest text-white uppercase shadow-lg shadow-red-600/20 transition-all hover:bg-red-700 active:scale-95 disabled:grayscale disabled:opacity-50 disabled:active:scale-100"
+            className="rounded-2xl bg-red-600 px-6 py-4 text-[10px] font-black tracking-widest text-white uppercase shadow-lg shadow-red-600/20 transition-all hover:bg-red-700 active:scale-95 disabled:opacity-50 disabled:grayscale disabled:active:scale-100"
           >
             {isLoading ? "REMOVENDO..." : "REMOVER AGORA"}
           </button>

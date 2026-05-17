@@ -1,14 +1,8 @@
 "use client";
 
+import { ReactNode, createContext, useCallback, useContext, useEffect, useState } from "react";
+
 import Cookies from "js-cookie";
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
 
 import { SubscriptionResponse } from "@/@types/subscription/subscription-response";
 import { UserResponse } from "@/@types/user/user-response";
@@ -30,9 +24,7 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserResponse | null>(null);
-  const [subscription, setSubscription] = useState<SubscriptionResponse | null>(
-    null,
-  );
+  const [subscription, setSubscription] = useState<SubscriptionResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const logout = () => {

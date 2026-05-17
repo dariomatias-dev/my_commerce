@@ -1,18 +1,18 @@
 "use client";
 
-import { CheckCircle2, Loader2, Store, XCircle } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+
+import { CheckCircle2, Loader2, Store, XCircle } from "lucide-react";
 
 import { verifyEmail } from "@/app/actions/auth";
 
 export const EmailVerificationCard = () => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-  const [status, setStatus] = useState<"loading" | "success" | "error">(
-    "loading"
-  );
+  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [errorMessage, setErrorMessage] = useState("");
   const effectRan = useRef(false);
 

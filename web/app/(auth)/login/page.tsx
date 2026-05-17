@@ -1,10 +1,12 @@
 "use client";
 
+import { FaFacebookF, FaGoogle } from "react-icons/fa6";
+
+import Link from "next/link";
+
 import { ArrowLeft, ShieldCheck, Store } from "lucide-react";
-import Link from "next/link";;
 
 import { LoginForm } from "@/components/(auth)/login/login-form";
-import { FaFacebookF, FaGoogle } from "react-icons/fa6";
 
 const LoginPage = () => {
   return (
@@ -29,8 +31,7 @@ const LoginPage = () => {
             BEM-VINDO <br /> <span className="text-indigo-500">DE VOLTA.</span>
           </h1>
           <p className="max-w-sm text-xl leading-relaxed font-medium text-slate-400 italic">
-            Acesse seu painel e continue expandindo seu império digital hoje
-            mesmo.
+            Acesse seu painel e continue expandindo seu império digital hoje mesmo.
           </p>
         </div>
 

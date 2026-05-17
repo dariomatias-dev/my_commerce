@@ -17,8 +17,8 @@ export const Footer = () => {
             </div>
 
             <p className="leading-relaxed font-medium text-slate-400 italic">
-              Empoderando empreendedores a alcançarem a liberdade financeira
-              através do varejo digital.
+              Empoderando empreendedores a alcançarem a liberdade financeira através do varejo
+              digital.
             </p>
           </div>
 
@@ -30,28 +30,19 @@ export const Footer = () => {
 
               <ul className="space-y-6 text-[10px] font-black tracking-widest text-slate-400 uppercase">
                 <li>
-                  <a
-                    href="#"
-                    className="transition-colors hover:text-slate-950"
-                  >
+                  <a href="#" className="transition-colors hover:text-slate-950">
                     Sistema
                   </a>
                 </li>
 
                 <li>
-                  <a
-                    href="#"
-                    className="transition-colors hover:text-slate-950"
-                  >
+                  <a href="#" className="transition-colors hover:text-slate-950">
                     Marketplace
                   </a>
                 </li>
 
                 <li>
-                  <a
-                    href="#"
-                    className="transition-colors hover:text-slate-950"
-                  >
+                  <a href="#" className="transition-colors hover:text-slate-950">
                     Segurança
                   </a>
                 </li>
@@ -65,28 +56,19 @@ export const Footer = () => {
 
               <ul className="space-y-6 text-[10px] font-black tracking-widest text-slate-400 uppercase">
                 <li>
-                  <a
-                    href="#"
-                    className="transition-colors hover:text-slate-950"
-                  >
+                  <a href="#" className="transition-colors hover:text-slate-950">
                     Suporte
                   </a>
                 </li>
 
                 <li>
-                  <a
-                    href="#"
-                    className="transition-colors hover:text-slate-950"
-                  >
+                  <a href="#" className="transition-colors hover:text-slate-950">
                     Privacidade
                   </a>
                 </li>
 
                 <li>
-                  <a
-                    href="#"
-                    className="transition-colors hover:text-slate-950"
-                  >
+                  <a href="#" className="transition-colors hover:text-slate-950">
                     Contato
                   </a>
                 </li>
