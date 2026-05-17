@@ -18,23 +18,27 @@ import {
   createSubscription,
 } from "@/app/actions/subscriptions";
 import { useAuthContext } from "@/contexts/auth-context";
+import { cn } from "@/lib/utils";
 import { getMyActiveSubscription } from "@/services/subscriptions";
 import { AuthRequiredDialog } from "./auth-required-dialog";
 
 interface SubscriptionCheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
   plan: SubscriptionPlanResponse | null;
 }
 
 export const SubscriptionCheckoutModal = ({
   isOpen,
   onClose,
+  onSuccess,
   plan,
 }: SubscriptionCheckoutModalProps) => {
   const router = useRouter();
 
-  const { refreshUser, isAuthenticated } = useAuthContext();
+  const { refreshUser, isAuthenticated, user } = useAuthContext();
+  const isAdmin = user?.role === "ADMIN";
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [activePlanId, setActivePlanId] = useState<string | null>(null);
@@ -92,11 +96,9 @@ export const SubscriptionCheckoutModal = ({
       return;
     }
 
-    router.push("/dashboard");
     router.refresh();
-
     refreshUser();
-
+    onSuccess?.();
     handleClose();
   };
 
@@ -212,8 +214,11 @@ export const SubscriptionCheckoutModal = ({
 
           <button
             onClick={handleConfirmSubscription}
-            disabled={isProcessing}
-            className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-2xl bg-slate-950 py-5 text-xs font-black uppercase tracking-widest text-white transition-all hover:bg-indigo-600 active:scale-95 disabled:opacity-50"
+            disabled={isProcessing || isAdmin}
+            className={cn(
+              "group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-2xl bg-slate-950 py-5 text-xs font-black uppercase tracking-widest text-white transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer",
+              !(isProcessing || isAdmin) && "hover:bg-indigo-600 cursor-pointer",
+            )}
           >
             {isProcessing ? (
               <Loader2 size={18} className="animate-spin" />

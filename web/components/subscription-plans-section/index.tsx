@@ -163,6 +163,7 @@ export const SubscriptionPlansSection = () => {
           setIsCheckoutOpen(false);
           setSelectedPlan(null);
         }}
+        onSuccess={() => setRefreshKey((k) => k + 1)}
         plan={selectedPlan}
       />
     </section>

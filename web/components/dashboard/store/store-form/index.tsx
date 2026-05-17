@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ImagePlus, Layout, Palette, Store, UploadCloud } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import * as z from "zod";
 
@@ -40,20 +40,27 @@ export const StoreForm = ({
     register,
     handleSubmit,
     setValue,
-    reset,
     formState: { errors },
   } = useForm<StoreFormValues>({
     resolver: zodResolver(storeSchema),
     defaultValues: {
-      name: "",
-      description: "",
-      themeColor: "#6366f1",
-      isActive: true,
+      name: initialData?.name ?? "",
+      description: initialData?.description ?? "",
+      themeColor: initialData?.themeColor ?? "#6366f1",
+      isActive: initialData?.isActive ?? true,
     },
   });
 
-  const [existingLogo, setExistingLogo] = useState<string | null>(null);
-  const [existingBanner, setExistingBanner] = useState<string | null>(null);
+  const baseUrl = initialData
+    ? `${process.env.NEXT_PUBLIC_API_URL}/files/stores/${initialData.slug}`
+    : null;
+
+  const [existingLogo] = useState<string | null>(
+    () => (baseUrl ? `${baseUrl}/logo.png` : null),
+  );
+  const [existingBanner] = useState<string | null>(
+    () => (baseUrl ? `${baseUrl}/banner.png` : null),
+  );
 
   const logoFile = useWatch({ control, name: "logo" });
   const bannerFile = useWatch({ control, name: "banner" });
@@ -68,25 +75,6 @@ export const StoreForm = ({
       setValue(field, files, { shouldValidate: true });
     }
   };
-
-  useEffect(() => {
-    const initializeFormData = () => {
-      if (initialData) {
-        reset({
-          name: initialData.name,
-          description: initialData.description,
-          themeColor: initialData.themeColor,
-          isActive: initialData.isActive,
-        });
-
-        const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/files/stores/${initialData.slug}`;
-        setExistingLogo(`${baseUrl}/logo.png`);
-        setExistingBanner(`${baseUrl}/banner.png`);
-      }
-    };
-
-    initializeFormData();
-  }, [initialData, reset]);
 
   return (
     <form

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
+import { useAuthContext } from "@/contexts/auth-context";
 import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
@@ -32,6 +33,8 @@ type SettingsTab =
 const SettingsPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user } = useAuthContext();
+  const isAdmin = user?.role === "ADMIN";
 
   const currentTab = searchParams.get("tab") as SettingsTab;
   const activeTab: SettingsTab = [
@@ -47,7 +50,7 @@ const SettingsPage = () => {
   const tabs: { id: SettingsTab; label: string; icon: LucideIcon }[] = [
     { id: "profile", label: "Informações Pessoais", icon: User },
     { id: "addresses", label: "Meus Endereços", icon: MapPin },
-    { id: "subscriptions", label: "Assinaturas", icon: CreditCard },
+    ...(!isAdmin ? [{ id: "subscriptions" as SettingsTab, label: "Assinaturas", icon: CreditCard }] : []),
     { id: "security", label: "Segurança & Senha", icon: Lock },
     { id: "advanced", label: "Configurações Avançadas", icon: Settings2 },
   ];

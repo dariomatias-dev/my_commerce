@@ -1,6 +1,6 @@
 "use client";
 
-import { Info, Plus, RefreshCw, Search, Tag } from "lucide-react";
+import { Info, LocateFixed, Plus, RefreshCw, Tag } from "lucide-react";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 
 import { AddressFormValues } from "@/schemas/address.schema";
@@ -13,6 +13,7 @@ interface AddressFormProps {
   onGetCoordinates: () => void;
   isGeocoding: boolean;
   isLoading: boolean;
+  syncError?: string | null;
 }
 
 export const AddressForm = ({
@@ -22,6 +23,7 @@ export const AddressForm = ({
   onGetCoordinates,
   isGeocoding,
   isLoading,
+  syncError,
 }: AddressFormProps) => {
   const handleCepFormat = (e: React.FormEvent<HTMLInputElement>) => {
     let value = e.currentTarget.value.replace(/\D/g, "");
@@ -160,25 +162,33 @@ export const AddressForm = ({
           </div>
         </div>
 
-        <div className="mt-4 flex items-center justify-between border-t border-slate-800 pt-4">
-          <p className="flex items-center gap-1.5 text-[8px] font-bold uppercase text-slate-500">
-            <Info size={10} className="text-indigo-600" />
-            Vincule as coordenadas para otimizar a logística de entrega.
-          </p>
+        <div className="mt-4 border-t border-slate-800 pt-4">
+          <div className="flex items-center justify-between">
+            <p className="flex items-center gap-1.5 text-[8px] font-bold uppercase text-slate-500">
+              <Info size={10} className="text-indigo-600" />
+              Captura coordenadas via GPS do dispositivo.
+            </p>
 
-          <button
-            type="button"
-            onClick={onGetCoordinates}
-            disabled={isGeocoding}
-            className="flex h-9 items-center gap-2 rounded-lg bg-white px-4 text-[9px] font-black text-slate-950 transition-all hover:bg-indigo-600 hover:text-white disabled:opacity-50 uppercase"
-          >
-            {isGeocoding ? (
-              <RefreshCw size={12} className="animate-spin" />
-            ) : (
-              <Search size={12} />
-            )}
-            Sincronizar Mapa
-          </button>
+            <button
+              type="button"
+              onClick={onGetCoordinates}
+              disabled={isGeocoding}
+              className="flex h-9 items-center gap-2 rounded-lg bg-white px-4 text-[9px] font-black text-slate-950 transition-all hover:bg-indigo-600 hover:text-white disabled:opacity-50 uppercase"
+            >
+              {isGeocoding ? (
+                <RefreshCw size={12} className="animate-spin" />
+              ) : (
+                <LocateFixed size={12} />
+              )}
+              Sincronizar GPS
+            </button>
+          </div>
+
+          {syncError && (
+            <p className="mt-2 text-[9px] font-bold text-red-400 uppercase">
+              {syncError}
+            </p>
+          )}
         </div>
       </div>
 

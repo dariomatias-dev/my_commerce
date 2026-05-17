@@ -10,8 +10,8 @@ const EditStorePage = () => {
   return (
     <EditStoreForm
       storeSlug={storeSlug}
-      backPath="/dashboard"
-      successPath="/dashboard"
+      backPath={`/dashboard/stores/${storeSlug}`}
+      successPath={`/dashboard/stores/${storeSlug}`}
     />
   );
 };

@@ -10,6 +10,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { SubscriptionResponse } from "@/@types/subscription/subscription-response";
 import { cancelSubscription } from "@/app/actions/subscriptions";
@@ -21,6 +22,8 @@ import {
 } from "@/services/subscriptions";
 
 export const SettingsSubscriptions = () => {
+  const router = useRouter();
+
   const { refreshUser } = useAuthContext();
 
   const [subscriptions, setSubscriptions] = useState<SubscriptionResponse[]>(
@@ -140,7 +143,7 @@ export const SettingsSubscriptions = () => {
         </div>
 
         {activeSub?.isActive ? (
-          <div className="group relative overflow-hidden rounded-[2.5rem] border-2 border-slate-950 bg-white p-8 shadow-2xl shadow-slate-100">
+          <div className="group relative overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-2xl shadow-slate-100">
             <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
               <div className="flex items-center gap-6">
                 <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-950 text-indigo-400">
@@ -208,7 +211,10 @@ export const SettingsSubscriptions = () => {
               Nenhuma assinatura ativa vinculada à sua conta.
             </p>
 
-            <button className="rounded-xl bg-slate-950 px-8 py-4 text-[10px] font-black uppercase tracking-widest text-white transition-all hover:bg-indigo-600 active:scale-95">
+            <button
+              onClick={() => router.push("/#plans")}
+              className="rounded-xl bg-slate-950 px-8 py-4 text-[10px] font-black uppercase tracking-widest text-white transition-all hover:bg-indigo-600 active:scale-95"
+            >
               Escolher um Plano
             </button>
           </div>
