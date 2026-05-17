@@ -4,11 +4,9 @@ import { Store } from "lucide-react";
 import Link from "next/link";
 
 import { OrdersDashboard } from "@/components/orders-dashboard";
-import { useOrder } from "@/services/hooks/use-order";
+import { getMyOrders } from "@/services/orders";
 
 const OrdersPage = () => {
-  const { getMyOrders } = useOrder();
-
   return (
     <OrdersDashboard
       fetchFn={getMyOrders}

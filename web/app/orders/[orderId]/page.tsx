@@ -3,7 +3,6 @@
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-import { ApiError } from "@/@types/api";
 import { OrderDetailsResponse } from "@/@types/order/order-details-response";
 import { ProductResponse } from "@/@types/product/product-response";
 
@@ -16,14 +15,12 @@ import { OrderDetailsPaymentInfo } from "@/components/orders/[orderId]/order-det
 import { OrderDetailsProducts } from "@/components/orders/[orderId]/order-details-products";
 import { OrderDetailsStoreInfo } from "@/components/orders/[orderId]/order-details-store-info";
 import { FreightType } from "@/enums/freight-type";
-import { useOrder } from "@/services/hooks/use-order";
+import { getOrderById } from "@/services/orders";
 import { getProductsByIds } from "@/services/products";
 
 const OrderDetailsPage = () => {
   const router = useRouter();
   const { orderId } = useParams() as { orderId: string };
-
-  const { getOrderById } = useOrder();
 
   const [order, setOrder] = useState<OrderDetailsResponse | null>(null);
   const [products, setProducts] = useState<Record<string, ProductResponse>>({});
@@ -54,16 +51,12 @@ const OrderDetailsPage = () => {
 
         setProducts(productsMap);
       }
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage("Não foi possível carregar os detalhes do pedido.");
-      }
+    } catch {
+      setErrorMessage("Não foi possível carregar os detalhes do pedido.");
     } finally {
       setIsLoading(false);
     }
-  }, [orderId, getOrderById]);
+  }, [orderId]);
 
   useEffect(() => {
     fetchOrderDetail();

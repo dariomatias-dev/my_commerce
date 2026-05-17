@@ -4,7 +4,6 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import { UserAddressResponse } from "@/@types/address/user-address-response";
-import { ApiError } from "@/@types/api";
 import { CartStorage } from "@/@types/cart-storage";
 import {
   FreightOption,
@@ -15,8 +14,8 @@ import { StoreResponse } from "@/@types/store/store-response";
 import { Item } from "@/components/layout/store-header/store-cart/store-cart-item";
 import { PaymentMethod } from "@/enums/payment-method";
 import { AddressFormValues } from "@/schemas/address.schema";
+import { createOrder } from "@/app/actions/orders";
 import { useFreight } from "@/services/hooks/use-freight";
-import { useOrder } from "@/services/hooks/use-order";
 import { getStoreBySlug } from "@/services/stores";
 import { getProductsByIds } from "@/services/products";
 import { getAllAddresses } from "@/services/addresses";
@@ -25,7 +24,6 @@ import { createAddress } from "@/app/actions/addresses";
 export const useCheckout = () => {
   const router = useRouter();
   const params = useParams();
-  const { createOrder } = useOrder();
   const { calculateFreight } = useFreight();
 
   const [store, setStore] = useState<StoreResponse | null>(null);
@@ -105,12 +103,8 @@ export const useCheckout = () => {
       }));
 
       setItems(mergedItems);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage("Erro ao carregar dados do checkout.");
-      }
+    } catch {
+      setErrorMessage("Erro ao carregar dados do checkout.");
     } finally {
       setIsLoading(false);
     }
@@ -202,33 +196,27 @@ export const useCheckout = () => {
     setIsSubmitting(true);
     setErrorMessage(null);
 
-    try {
-      const orderPayload: OrderRequest = {
-        storeId: store.id,
-        addressId: selectedAddressId,
-        paymentMethod,
-        freightType: selectedFreight.type,
-        items: items.map((item) => ({
-          productId: item.id,
-          quantity: item.quantity,
-        })),
-      };
-      const result = await createOrder(orderPayload);
+    const orderPayload: OrderRequest = {
+      storeId: store.id,
+      addressId: selectedAddressId,
+      paymentMethod,
+      freightType: selectedFreight.type,
+      items: items.map((item) => ({
+        productId: item.id,
+        quantity: item.quantity,
+      })),
+    };
+    const result = await createOrder(orderPayload);
 
-      localStorage.removeItem(`cart-${store.id}`);
-
-      window.dispatchEvent(new Event("cart-updated"));
-
-      router.push(`/store/${slug}/success?orderId=${result.id}`);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage("Erro ao processar pedido.");
-      }
-
+    if (!result.success) {
+      setErrorMessage(result.error);
       setIsSubmitting(false);
+      return;
     }
+
+    localStorage.removeItem(`cart-${store.id}`);
+    window.dispatchEvent(new Event("cart-updated"));
+    router.push(`/store/${slug}/success?orderId=${result.data.id}`);
   };
 
   const subtotal = items.reduce(

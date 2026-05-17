@@ -3,7 +3,6 @@
 import { TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
-import { ApiError } from "@/@types/api";
 import { AdminAuditLogTable } from "@/components/admin/admin-audit-log-table";
 import { AdminStoreStatsCard } from "@/components/admin/admin-store-stats-card";
 import { AdminTotalRevenueStatCard } from "@/components/admin/admin-total-revenue-stat-card";
@@ -12,10 +11,9 @@ import { DashboardStatCard } from "@/components/dashboard-stat-card";
 import { ErrorFeedback } from "@/components/error-feedback";
 import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
-import { useOrder } from "@/services/hooks/use-order";
+import { getAllOrders } from "@/services/orders";
 
 const AdminDashboard = () => {
-  const { getAllOrders } = useOrder();
 
   const [totalOrders, setTotalOrders] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -29,16 +27,12 @@ const AdminDashboard = () => {
       const ordersRes = await getAllOrders(0, 1);
 
       setTotalOrders(ordersRes.totalElements || 0);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage("Falha na sincronização dos dados estatísticos.");
-      }
+    } catch {
+      setErrorMessage("Falha na sincronização dos dados estatísticos.");
     } finally {
       setIsLoading(false);
     }
-  }, [getAllOrders]);
+  }, []);
 
   useEffect(() => {
     fetchDashboardStats();

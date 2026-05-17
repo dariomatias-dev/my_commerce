@@ -4,18 +4,15 @@ import { AlertCircle, Package, RefreshCcw, Store } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
 import { DashboardTotalBadge } from "@/components/dashboard-total-badge";
 import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { StoreCardInfo } from "@/components/store-card/store-card-info";
-import { useOrder } from "@/services/hooks/use-order";
+import { getMyOrderStores } from "@/services/orders";
 
 const OrdersPage = () => {
   const router = useRouter();
-
-  const { getMyOrderStores } = useOrder();
 
   const [stores, setStores] = useState<StoreResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -29,16 +26,12 @@ const OrdersPage = () => {
       const response = await getMyOrderStores();
 
       setStores(response.content || []);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage("Não foi possível carregar seu histórico de compras.");
-      }
+    } catch {
+      setErrorMessage("Não foi possível carregar seu histórico de compras.");
     } finally {
       setIsLoading(false);
     }
-  }, [getMyOrderStores]);
+  }, []);
 
   useEffect(() => {
     fetchStores();
