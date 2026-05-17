@@ -6,10 +6,9 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { ApiError } from "@/@types/api";
 import { CategoryResponse } from "@/@types/category/category-response";
+import { createCategory, updateCategory } from "@/app/actions/categories";
 import { ActionButton } from "@/components/buttons/action-button";
-import { useCategory } from "@/services/hooks/use-category";
 
 const categorySchema = z.object({
   name: z.string().min(2, "O nome deve ter pelo menos 2 caracteres"),
@@ -35,7 +34,6 @@ export const CategoryFormDialog = ({
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
-  const { createCategory, updateCategory } = useCategory();
   const isEditing = !!initialData;
 
   const {
@@ -58,37 +56,23 @@ export const CategoryFormDialog = ({
   }, [isOpen, initialData, reset]);
 
   const onSubmit = async (data: CategoryFormValues) => {
-    try {
-      setIsLoading(true);
-      setApiError(null);
+    setIsLoading(true);
+    setApiError(null);
 
-      if (isEditing && initialData) {
-        await updateCategory(initialData.id, {
-          name: data.name,
-          storeId: storeId,
-        });
-      } else {
-        await createCategory({
-          name: data.name,
-          storeId: storeId,
-        });
-      }
+    const result =
+      isEditing && initialData
+        ? await updateCategory(initialData.id, { name: data.name, storeId })
+        : await createCategory({ name: data.name, storeId });
 
-      onSuccess();
-      onClose();
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setApiError(error.message);
-      } else {
-        setApiError(
-          isEditing
-            ? "Erro ao atualizar categoria."
-            : "Erro ao registrar categoria."
-        );
-      }
-    } finally {
-      setIsLoading(false);
+    setIsLoading(false);
+
+    if (!result.success) {
+      setApiError(result.error);
+      return;
     }
+
+    onSuccess();
+    onClose();
   };
 
   if (!isOpen) return null;

@@ -1,10 +1,9 @@
 import { AlertCircle, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
-import { ApiError } from "@/@types/api";
 import { CategoryResponse } from "@/@types/category/category-response";
 import { ProductResponse } from "@/@types/product/product-response";
-import { useCategory } from "@/services/hooks/use-category";
+import { getAllCategories } from "@/services/categories";
 import { getAllProducts } from "@/services/products";
 import { ProductCard } from "./product-card";
 import { StoreCategoryTabs } from "./store-category-tabs";
@@ -14,8 +13,6 @@ interface StoreCatalogSectionProps {
 }
 
 export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
-  const { getAllCategories } = useCategory();
-
   const [products, setProducts] = useState<ProductResponse[]>([]);
   const [categories, setCategories] = useState<CategoryResponse[]>([]);
   const [activeCategoryId, setActiveCategoryId] = useState<string>("all");
@@ -36,7 +33,7 @@ export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
     } catch (err) {
       console.error(err);
     }
-  }, [storeId, getAllCategories]);
+  }, [storeId]);
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -54,12 +51,8 @@ export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
 
       setProducts(res.content);
       setTotalPages(res.totalPages);
-    } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message);
-      } else {
-        setError("Não foi possível carregar o catálogo de produtos.");
-      }
+    } catch {
+      setError("Não foi possível carregar o catálogo de produtos.");
     } finally {
       setIsLoading(false);
     }

@@ -11,7 +11,7 @@ import { ActionButton } from "@/components/buttons/action-button";
 import { ProductFormMediaGallery } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/products-dashboard/product/product-form/product-form-media-gallery";
 import { cn } from "@/lib/utils";
 import { ProductFormValues, productSchema } from "@/schemas/product.schema";
-import { useCategory } from "@/services/hooks/use-category";
+import { getAllCategories } from "@/services/categories";
 import { getStoreBySlug } from "@/services/stores";
 import { ProductFormCategorySelect } from "./product-form-category";
 import { ProductFormField } from "./product-form-field";
@@ -35,8 +35,6 @@ export const ProductForm = ({
   isSubmitting,
   storeSlug,
 }: ProductFormProps) => {
-  const { getAllCategories } = useCategory();
-
   const [storeId, setStoreId] = useState<string | null>(null);
   const [categories, setCategories] = useState<CategoryResponse[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
@@ -86,7 +84,7 @@ export const ProductForm = ({
     } finally {
       setIsLoadingData(false);
     }
-  }, [storeSlug, getAllCategories]);
+  }, [storeSlug]);
 
   useEffect(() => {
     if (initialData) {

@@ -10,13 +10,13 @@ import {
   useState,
 } from "react";
 
-import { ApiError } from "@/@types/api";
 import { CategoryResponse } from "@/@types/category/category-response";
+import { deleteCategory } from "@/app/actions/categories";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { DeleteConfirmationDialog } from "@/components/dialogs/delete-confirmation-dialog";
 import { SearchFilter } from "@/components/filters/search-filter";
 import { Pagination } from "@/components/pagination";
-import { useCategory } from "@/services/hooks/use-category";
+import { getAllCategories } from "@/services/categories";
 import { CategoryFormDialog } from "../category-form-dialog";
 import { CategoriesDashboardCard } from "./categories-dashboard-card";
 import { CategoriesDashboardError } from "./categories-dashboard-error";
@@ -34,8 +34,6 @@ export const CategoriesDashboard = forwardRef<
   CategoriesDashboardRef,
   CategoriesDashboardProps
 >(({ storeId }, ref) => {
-  const { getAllCategories, deleteCategory } = useCategory();
-
   const listTopRef = useRef<HTMLDivElement>(null);
 
   const [categories, setCategories] = useState<CategoryResponse[]>([]);
@@ -68,16 +66,12 @@ export const CategoriesDashboard = forwardRef<
 
       setCategories(data.content);
       setTotalPages(data.totalPages);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setError(error.message);
-      } else {
-        setError("Erro ao carregar as taxonomias da loja.");
-      }
+    } catch {
+      setError("Erro ao carregar as taxonomias da loja.");
     } finally {
       setIsLoading(false);
     }
-  }, [storeId, currentPage, searchTerm, getAllCategories]);
+  }, [storeId, currentPage, searchTerm]);
 
   useImperativeHandle(ref, () => ({
     refresh: fetchCategories,
@@ -131,21 +125,20 @@ export const CategoriesDashboard = forwardRef<
   const handleConfirmDelete = async () => {
     if (!selectedCategory) return;
 
-    try {
-      setIsDeleting(true);
+    setIsDeleting(true);
 
-      await deleteCategory(selectedCategory.id);
-      await fetchCategories();
+    const result = await deleteCategory(selectedCategory.id);
 
-      setIsSecondConfirmOpen(false);
-      setSelectedCategory(null);
-    } catch (error) {
-      alert(
-        error instanceof ApiError ? error.message : "Erro ao excluir categoria."
-      );
-    } finally {
-      setIsDeleting(false);
+    setIsDeleting(false);
+
+    if (!result.success) {
+      alert(result.error);
+      return;
     }
+
+    await fetchCategories();
+    setIsSecondConfirmOpen(false);
+    setSelectedCategory(null);
   };
 
   if (isLoading) return <CategoriesDashboardLoading />;
