@@ -6,10 +6,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
+import { updateMe } from "@/app/actions/users";
 import { Feedback } from "@/components/feedback";
 import { useAuthContext } from "@/contexts/auth-context";
 import { useFeedback } from "@/hooks/use-feedback";
-import { useUser } from "@/services/hooks/use-user";
 
 const settingsSchema = z.object({
   name: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
@@ -20,10 +20,7 @@ type SettingsFormValues = z.infer<typeof settingsSchema>;
 
 export const SettingsInfoForm = () => {
   const { feedback, showFeedback } = useFeedback();
-
   const { user, refreshUser } = useAuthContext();
-  const { updateMe } = useUser();
-
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<SettingsFormValues>({
@@ -35,22 +32,19 @@ export const SettingsInfoForm = () => {
   });
 
   const onSubmit = async (data: SettingsFormValues) => {
-    try {
-      setIsLoading(true);
+    setIsLoading(true);
 
-      await updateMe(data);
-      await refreshUser();
+    const result = await updateMe(data);
 
-      showFeedback("success", "Perfil atualizado com sucesso.");
-    } catch (error) {
-      if (error instanceof Error) {
-        showFeedback("error", error.message);
-      } else {
-        showFeedback("success", "Erro ao atualizar perfil.");
-      }
-    } finally {
+    if (!result.success) {
+      showFeedback("error", result.error);
       setIsLoading(false);
+      return;
     }
+
+    await refreshUser();
+    showFeedback("success", "Perfil atualizado com sucesso.");
+    setIsLoading(false);
   };
 
   return (

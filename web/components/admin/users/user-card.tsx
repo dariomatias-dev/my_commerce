@@ -15,10 +15,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { AdminUserResponse } from "@/@types/user/admin-user-response";
+import { deleteUser } from "@/app/actions/users";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { DeleteConfirmationDialog } from "@/components/dialogs/delete-confirmation-dialog";
 import { cn } from "@/lib/utils";
-import { useUser } from "@/services/hooks/use-user";
 
 interface UserCardProps {
   user: AdminUserResponse;
@@ -56,8 +56,6 @@ const roleStyles: Record<string, RoleStyle> = {
 export const UserCard = ({ user, onDeleteSuccess }: UserCardProps) => {
   const router = useRouter();
 
-  const { deleteUser } = useUser();
-
   const [isFirstConfirmOpen, setIsFirstConfirmOpen] = useState(false);
   const [isSecondConfirmOpen, setIsSecondConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -71,16 +69,15 @@ export const UserCard = ({ user, onDeleteSuccess }: UserCardProps) => {
   };
 
   const handleConfirmDelete = async () => {
-    try {
-      setIsDeleting(true);
+    setIsDeleting(true);
 
-      await deleteUser(user.id);
+    const result = await deleteUser(user.id);
 
+    setIsDeleting(false);
+    setIsSecondConfirmOpen(false);
+
+    if (result.success) {
       onDeleteSuccess();
-    } finally {
-      setIsDeleting(false);
-
-      setIsSecondConfirmOpen(false);
     }
   };
 

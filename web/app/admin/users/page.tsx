@@ -15,10 +15,10 @@ import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { Pagination } from "@/components/pagination";
 import { StatusFilter } from "@/enums/status-filter";
-import { useUser } from "@/services/hooks/use-user";
+import { getUsers } from "@/services/users";
 
 const UserManagementPage = () => {
-  const { getAllUsers } = useUser();
+
 
   const [users, setUsers] = useState<AdminUserResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -53,7 +53,7 @@ const UserManagementPage = () => {
         status: (statusFilter as StatusFilter) || undefined,
       };
 
-      const response = await getAllUsers(filters, currentPage, 10);
+      const response = await getUsers(filters, currentPage, 10);
 
       setUsers(response.content || []);
       setTotalPages(response.totalPages);
@@ -70,7 +70,6 @@ const UserManagementPage = () => {
       setIsLoading(false);
     }
   }, [
-    getAllUsers,
     currentPage,
     searchName,
     searchEmail,

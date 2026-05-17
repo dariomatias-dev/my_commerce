@@ -6,12 +6,11 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { ApiError } from "@/@types/api";
+import { changePassword } from "@/app/actions/users";
 import { Feedback } from "@/components/feedback";
 import { PasswordField } from "@/components/password-field";
 import { useFeedback } from "@/hooks/use-feedback";
 import { passwordSchema } from "@/schemas/password.schema";
-import { useUser } from "@/services/hooks/use-user";
 
 const changePasswordSchema = z
   .object({
@@ -28,9 +27,6 @@ type PasswordFormValues = z.infer<typeof changePasswordSchema>;
 
 export const SettingsSecurityForm = () => {
   const { feedback, showFeedback } = useFeedback();
-
-  const { changePassword } = useUser();
-
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<PasswordFormValues>({
@@ -43,26 +39,22 @@ export const SettingsSecurityForm = () => {
   });
 
   const onSubmit = async (data: PasswordFormValues) => {
-    try {
-      setIsLoading(true);
+    setIsLoading(true);
 
-      await changePassword({
-        currentPassword: data.currentPassword,
-        newPassword: data.newPassword,
-      });
+    const result = await changePassword({
+      currentPassword: data.currentPassword,
+      newPassword: data.newPassword,
+    });
 
-      form.reset();
-
-      showFeedback("success", "Senha alterada com sucesso.");
-    } catch (error) {
-      if (error instanceof ApiError) {
-        showFeedback("error", error.message);
-      } else {
-        showFeedback("error", "Erro ao alterar senha.");
-      }
-    } finally {
+    if (!result.success) {
+      showFeedback("error", result.error);
       setIsLoading(false);
+      return;
     }
+
+    form.reset();
+    showFeedback("success", "Senha alterada com sucesso.");
+    setIsLoading(false);
   };
 
   return (

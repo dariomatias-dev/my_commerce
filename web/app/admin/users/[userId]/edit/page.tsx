@@ -8,14 +8,13 @@ import { ApiError } from "@/@types/api";
 import { ErrorFeedback } from "@/components/error-feedback";
 import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
-import { useUser } from "@/services/hooks/use-user";
+import { updateUser } from "@/app/actions/users";
+import { getUserById } from "@/services/users";
 
 const AdminUserEditPage = () => {
   const router = useRouter();
 
   const { userId } = useParams() as { userId: string };
-
-  const { getUserById, updateUser } = useUser();
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -44,31 +43,28 @@ const AdminUserEditPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [userId, getUserById]);
+  }, [userId]);
 
   useEffect(() => {
     fetchProfile();
   }, [fetchProfile]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setIsSaving(true);
 
-    try {
-      await updateUser(userId, { name });
+    const result = await updateUser(userId, { name });
 
-      router.push("/admin/users");
-      router.refresh();
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage("Não foi possível atualizar o perfil do usuário.");
-      }
-    } finally {
+    if (!result.success) {
+      setErrorMessage(result.error);
       setIsSaving(false);
+      return;
     }
+
+    router.push("/admin/users");
+    router.refresh();
+    setIsSaving(false);
   };
 
   if (isLoading) {

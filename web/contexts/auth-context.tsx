@@ -13,7 +13,7 @@ import {
 import { SubscriptionResponse } from "@/@types/subscription/subscription-response";
 import { UserResponse } from "@/@types/user/user-response";
 import { useSubscription } from "@/services/hooks/use-subscription";
-import { useUser } from "@/services/hooks/use-user";
+import { getMe } from "@/services/users";
 
 interface AuthContextData {
   user: UserResponse | null;
@@ -35,7 +35,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  const { getMe } = useUser();
   const { getMyActiveSubscription } = useSubscription();
 
   const logout = () => {
@@ -71,7 +70,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [getMe, getMyActiveSubscription]);
+  }, [getMyActiveSubscription]);
 
   useEffect(() => {
     refreshUser();
