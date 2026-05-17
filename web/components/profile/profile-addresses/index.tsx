@@ -7,14 +7,13 @@ import { ApiError } from "@/@types/api";
 import { Feedback } from "@/components/feedback";
 import { useFeedback } from "@/hooks/use-feedback";
 import { AddressFormValues } from "@/schemas/address.schema";
-import { useUserAddress } from "@/services/hooks/use-user-address";
+import { createAddress, deleteAddress } from "@/app/actions/addresses";
+import { getAllAddresses } from "@/services/addresses";
 import { SettingsAddressAddForm } from "./settings-address-add-form";
 import { SettingsAddressesList } from "./settings-addresses-list";
 
 export const SettingsAddresses = () => {
   const { feedback, showFeedback, clearFeedback } = useFeedback();
-
-  const { getAllAddresses, deleteAddress, createAddress } = useUserAddress();
 
   const [addresses, setAddresses] = useState<UserAddressResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -37,55 +36,47 @@ export const SettingsAddresses = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [getAllAddresses]);
+  }, []);
 
   useEffect(() => {
     fetchAddresses();
   }, [fetchAddresses]);
 
   const handleAddAddress = async (formData: AddressFormValues) => {
-    try {
-      const requestData = {
-        label: formData.label,
-        street: formData.street,
-        number: formData.number,
-        complement: formData.complement || "",
-        neighborhood: formData.neighborhood,
-        city: formData.city,
-        state: formData.state,
-        zip: formData.cep,
-        latitude: formData.latitude ? Number(formData.latitude) : 0,
-        longitude: formData.longitude ? Number(formData.longitude) : 0,
-      };
+    const requestData = {
+      label: formData.label,
+      street: formData.street,
+      number: formData.number,
+      complement: formData.complement || "",
+      neighborhood: formData.neighborhood,
+      city: formData.city,
+      state: formData.state,
+      zip: formData.cep,
+      latitude: formData.latitude ? Number(formData.latitude) : 0,
+      longitude: formData.longitude ? Number(formData.longitude) : 0,
+    };
 
-      await createAddress(requestData);
+    const result = await createAddress(requestData);
 
-      showFeedback("success", "Endereço cadastrado com sucesso.");
-
-      await fetchAddresses();
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Erro ao cadastrar endereço.";
-
-      showFeedback("error", message);
-
-      throw new Error(message);
+    if (!result.success) {
+      showFeedback("error", result.error);
+      throw new Error(result.error);
     }
+
+    showFeedback("success", "Endereço cadastrado com sucesso.");
+    await fetchAddresses();
   };
 
   const handleDelete = async (id: string) => {
-    try {
-      await deleteAddress(id);
+    const result = await deleteAddress(id);
 
-      setAddresses((prev) => prev.filter((addr) => addr.id !== id));
-
-      showFeedback("success", "Endereço removido com sucesso.");
-    } catch (err) {
-      showFeedback(
-        "error",
-        err instanceof ApiError ? err.message : "Erro ao remover endereço."
-      );
+    if (!result.success) {
+      showFeedback("error", result.error);
+      return;
     }
+
+    setAddresses((prev) => prev.filter((addr) => addr.id !== id));
+    showFeedback("success", "Endereço removido com sucesso.");
   };
 
   return (

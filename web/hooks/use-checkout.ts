@@ -19,13 +19,13 @@ import { useFreight } from "@/services/hooks/use-freight";
 import { useOrder } from "@/services/hooks/use-order";
 import { getStoreBySlug } from "@/services/stores";
 import { getProductsByIds } from "@/services/products";
-import { useUserAddress } from "@/services/hooks/use-user-address";
+import { getAllAddresses } from "@/services/addresses";
+import { createAddress } from "@/app/actions/addresses";
 
 export const useCheckout = () => {
   const router = useRouter();
   const params = useParams();
   const { createOrder } = useOrder();
-  const { getAllAddresses, createAddress } = useUserAddress();
   const { calculateFreight } = useFreight();
 
   const [store, setStore] = useState<StoreResponse | null>(null);
@@ -114,7 +114,7 @@ export const useCheckout = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [slug, getAllAddresses, router, selectedAddressId]);
+  }, [slug, router, selectedAddressId]);
 
   useEffect(() => {
     fetchCheckoutData();
@@ -179,10 +179,12 @@ export const useCheckout = () => {
         latitude: formData.latitude ? Number(formData.latitude) : 0,
         longitude: formData.longitude ? Number(formData.longitude) : 0,
       };
-      const newAddress = await createAddress(requestData);
+      const result = await createAddress(requestData);
 
-      setAddresses((prev) => [newAddress, ...prev]);
-      setSelectedAddressId(newAddress.id);
+      if (!result.success) throw new Error(result.error);
+
+      setAddresses((prev) => [result.data, ...prev]);
+      setSelectedAddressId(result.data.id);
     } catch (error) {
       throw error;
     }
