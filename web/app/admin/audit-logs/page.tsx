@@ -3,7 +3,6 @@
 import { Filter, Search } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
-import { ApiError } from "@/@types/api";
 import { AuditLogResponse } from "@/@types/audit-log/audit-log-response";
 import { AuditLogTable } from "@/components/audit-log-table";
 import { Dropdown } from "@/components/dropdown";
@@ -12,13 +11,12 @@ import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { Pagination } from "@/components/pagination";
 import { AuditLogAction } from "@/enums/audit-action";
-import { useAuditLog } from "@/services/hooks/use-audit-log";
+import { getLogs } from "@/services/audit-logs";
 import { getAuditLogActionConfigs } from "@/utils/get-audit-log-action-config";
 
 const ITEMS_PER_PAGE = 10;
 
 const AdminAuditLogsPage = () => {
-  const { getLogs } = useAuditLog();
 
   const [logs, setLogs] = useState<AuditLogResponse[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
@@ -53,17 +51,13 @@ const AdminAuditLogsPage = () => {
 
         setLogs(response.content || []);
         setTotalPages(response.totalPages || 0);
-      } catch (error) {
-        if (error instanceof ApiError) {
-          setErrorMessage(error.message);
-        } else {
-          setErrorMessage("Falha ao sincronizar registros de auditoria.");
-        }
+      } catch {
+        setErrorMessage("Falha ao sincronizar registros de auditoria.");
       } finally {
         setIsLoading(false);
       }
     },
-    [getLogs],
+    [],
   );
 
   useEffect(() => {

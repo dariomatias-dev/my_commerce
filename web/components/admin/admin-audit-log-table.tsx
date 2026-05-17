@@ -4,13 +4,11 @@ import { ArrowRight, History } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
-import { ApiError } from "@/@types/api";
 import { AuditLogResponse } from "@/@types/audit-log/audit-log-response";
-import { useAuditLog } from "@/services/hooks/use-audit-log";
+import { getLogs } from "@/services/audit-logs";
 import { AuditLogTable } from "../audit-log-table";
 
 export const AdminAuditLogTable = () => {
-  const { getLogs } = useAuditLog();
   const [logs, setLogs] = useState<AuditLogResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,16 +20,12 @@ export const AdminAuditLogTable = () => {
     try {
       const response = await getLogs({}, 0, 8);
       setLogs(response.content || []);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setError(error.message);
-      } else {
-        setError("Erro ao carregar logs");
-      }
+    } catch {
+      setError("Erro ao carregar logs");
     } finally {
       setIsLoading(false);
     }
-  }, [getLogs]);
+  }, []);
 
   useEffect(() => {
     fetchLogs();
