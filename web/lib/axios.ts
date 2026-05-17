@@ -17,3 +17,9 @@ api.interceptors.request.use((config) => {
 
   return config;
 });
+
+export const internalApi = axios.create({
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
