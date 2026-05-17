@@ -12,7 +12,7 @@ import {
 
 import { SubscriptionResponse } from "@/@types/subscription/subscription-response";
 import { UserResponse } from "@/@types/user/user-response";
-import { useSubscription } from "@/services/hooks/use-subscription";
+import { getMyActiveSubscription } from "@/services/subscriptions";
 import { getMe } from "@/services/users";
 
 interface AuthContextData {
@@ -34,8 +34,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     null
   );
   const [isLoading, setIsLoading] = useState(true);
-
-  const { getMyActiveSubscription } = useSubscription();
 
   const logout = () => {
     Cookies.remove("token");
@@ -70,7 +68,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [getMyActiveSubscription]);
+  }, []);
 
   useEffect(() => {
     refreshUser();

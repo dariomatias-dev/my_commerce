@@ -3,17 +3,14 @@
 import { AlertTriangle, Loader2, RefreshCw, Zap } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
-import { ApiError } from "@/@types/api";
 import { SubscriptionPlanResponse } from "@/@types/subscription-plan/subscription-plan-response";
-import { useSubscription } from "@/services/hooks/use-subscription";
-import { useSubscriptionPlan } from "@/services/hooks/use-subscription-plan";
+import { getAllPlans } from "@/services/subscription-plans";
+import { getMyActiveSubscription } from "@/services/subscriptions";
 import { FeaturedPlanCard } from "./featured-plan-card";
 import { StandardPlanCard } from "./standard-plan-card";
 import { SubscriptionCheckoutModal } from "./subscription-checkout-modal";
 
 export const SubscriptionPlansSection = () => {
-  const { getAllPlans } = useSubscriptionPlan();
-  const { getMyActiveSubscription } = useSubscription();
 
   const [plans, setPlans] = useState<SubscriptionPlanResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,16 +42,12 @@ export const SubscriptionPlansSection = () => {
       if (activeSubData.status === "fulfilled") {
         setActiveSubscriptionId(activeSubData.value.planId);
       }
-    } catch (error: unknown) {
-      if (error instanceof ApiError) {
-        setApiError(error.message);
-      } else {
-        setApiError("Não foi possível carregar os planos no momento.");
-      }
+    } catch {
+      setApiError("Não foi possível carregar os planos no momento.");
     } finally {
       setIsLoading(false);
     }
-  }, [getAllPlans, getMyActiveSubscription]);
+  }, []);
 
   useEffect(() => {
     fetchData();

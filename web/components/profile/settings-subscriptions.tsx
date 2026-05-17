@@ -11,15 +11,13 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
-import { ApiError } from "@/@types/api";
 import { SubscriptionResponse } from "@/@types/subscription/subscription-response";
+import { cancelSubscription } from "@/app/actions/subscriptions";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { useAuthContext } from "@/contexts/auth-context";
-import { useSubscription } from "@/services/hooks/use-subscription";
+import { getMyActiveSubscription, getMySubscriptions } from "@/services/subscriptions";
 
 export const SettingsSubscriptions = () => {
-  const { getMySubscriptions, getMyActiveSubscription, cancelSubscription } =
-    useSubscription();
 
   const { refreshUser } = useAuthContext();
 
@@ -44,42 +42,34 @@ export const SettingsSubscriptions = () => {
 
       setSubscriptions(history.content || []);
       setActiveSub(active);
-    } catch (error: unknown) {
-      if (error instanceof ApiError) {
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage("Não foi possível carregar os dados das assinaturas.");
-      }
+    } catch {
+      setErrorMessage("Não foi possível carregar os dados das assinaturas.");
     } finally {
       setIsLoading(false);
     }
-  }, [getMySubscriptions, getMyActiveSubscription]);
+  }, []);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
   const handleCancelSubscription = async () => {
-    try {
-      setIsCancelling(true);
-      setErrorMessage(null);
+    setIsCancelling(true);
+    setErrorMessage(null);
 
-      await cancelSubscription();
-      await fetchData();
+    const result = await cancelSubscription();
 
-      refreshUser();
+    setIsCancelling(false);
 
+    if (!result.success) {
+      setErrorMessage(result.error);
       setIsCancelDialogOpen(false);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage("Ocorreu um erro ao tentar cancelar sua assinatura.");
-      }
-      setIsCancelDialogOpen(false);
-    } finally {
-      setIsCancelling(false);
+      return;
     }
+
+    await fetchData();
+    refreshUser();
+    setIsCancelDialogOpen(false);
   };
 
   if (isLoading) {

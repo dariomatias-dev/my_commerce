@@ -12,10 +12,13 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-import { ApiError } from "@/@types/api";
 import { SubscriptionPlanResponse } from "@/@types/subscription-plan/subscription-plan-response";
+import {
+  changeSubscriptionPlan,
+  createSubscription,
+} from "@/app/actions/subscriptions";
 import { useAuthContext } from "@/contexts/auth-context";
-import { useSubscription } from "@/services/hooks/use-subscription";
+import { getMyActiveSubscription } from "@/services/subscriptions";
 import { AuthRequiredDialog } from "./auth-required-dialog";
 
 interface SubscriptionCheckoutModalProps {
@@ -30,12 +33,6 @@ export const SubscriptionCheckoutModal = ({
   plan,
 }: SubscriptionCheckoutModalProps) => {
   const router = useRouter();
-
-  const {
-    createSubscription,
-    changeSubscriptionPlan,
-    getMyActiveSubscription,
-  } = useSubscription();
 
   const { refreshUser, isAuthenticated } = useAuthContext();
 
@@ -54,7 +51,7 @@ export const SubscriptionCheckoutModal = ({
     } catch {
       setActivePlanId(null);
     }
-  }, [isOpen, getMyActiveSubscription, isAuthenticated]);
+  }, [isOpen, isAuthenticated]);
 
   useEffect(() => {
     checkActiveSubscription();
@@ -75,31 +72,24 @@ export const SubscriptionCheckoutModal = ({
       return;
     }
 
-    try {
-      setIsProcessing(true);
-      setErrorMessage(null);
+    setIsProcessing(true);
+    setErrorMessage(null);
 
-      if (activePlanId) {
-        await changeSubscriptionPlan({ planId: plan.id });
-      } else {
-        await createSubscription({ planId: plan.id });
-      }
+    const result = activePlanId
+      ? await changeSubscriptionPlan({ planId: plan.id })
+      : await createSubscription({ planId: plan.id });
 
-      router.push("/dashboard");
-      router.refresh();
+    setIsProcessing(false);
 
-      refreshUser();
-
-      onClose();
-    } catch (error: unknown) {
-      if (error instanceof ApiError) {
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage("Não foi possível processar sua assinatura agora.");
-      }
-    } finally {
-      setIsProcessing(false);
+    if (!result.success) {
+      setErrorMessage(result.error);
+      return;
     }
+
+    router.push("/dashboard");
+    router.refresh();
+    refreshUser();
+    onClose();
   };
 
   if (!isOpen || !plan) return null;
