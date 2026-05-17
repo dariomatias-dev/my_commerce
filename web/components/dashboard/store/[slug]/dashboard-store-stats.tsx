@@ -1,4 +1,7 @@
-import { useAnalytics } from "@/services/hooks/use-analytics";
+import {
+  getTotalRevenueByStoreId,
+  getUniqueCustomersByStoreId,
+} from "@/services/analytics";
 import { getSuccessfulSalesCountByStoreId } from "@/services/orders";
 import { getActiveProductsCount } from "@/services/products";
 
@@ -13,9 +16,6 @@ interface DashboardStoreStatsProps {
 }
 
 export const DashboardStoreStats = ({ storeId }: DashboardStoreStatsProps) => {
-  const { getUniqueCustomersByStoreId, getTotalRevenueByStoreId } =
-    useAnalytics();
-
   return (
     <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
       <DashboardSuccessfulSalesStatCard

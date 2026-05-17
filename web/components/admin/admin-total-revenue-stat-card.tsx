@@ -3,12 +3,10 @@
 import { DollarSign } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
-import { ApiError } from "@/@types/api";
 import { DashboardStatCard } from "@/components/dashboard-stat-card";
-import { useAnalytics } from "@/services/hooks/use-analytics";
+import { getTotalRevenue } from "@/services/analytics";
 
 export const AdminTotalRevenueStatCard = () => {
-  const { getTotalRevenue } = useAnalytics();
 
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -21,16 +19,12 @@ export const AdminTotalRevenueStatCard = () => {
     try {
       const response = await getTotalRevenue();
       setTotalRevenue(response.total);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage("Erro ao carregar métricas de receita.");
-      }
+    } catch {
+      setErrorMessage("Erro ao carregar métricas de receita.");
     } finally {
       setIsLoading(false);
     }
-  }, [getTotalRevenue]);
+  }, []);
 
   useEffect(() => {
     fetchData();

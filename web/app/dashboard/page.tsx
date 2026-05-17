@@ -4,7 +4,6 @@ import { Plus, Store } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
-import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
 
 import { DashboardActiveProductsStatCard } from "@/components/dashboard-stats/dashboard-active-products-stat-card";
@@ -17,13 +16,11 @@ import { StoresList } from "@/components/stores-list";
 
 import { DashboardStatCard } from "@/components/dashboard-stat-card";
 import { ErrorFeedback } from "@/components/error-feedback";
-import { useAnalytics } from "@/services/hooks/use-analytics";
+import { getMyTotalRevenue, getUniqueCustomers } from "@/services/analytics";
 import { getUserActiveProductsCount } from "@/services/products";
 import { getMyStores } from "@/services/stores";
 
 const DashboardPage = () => {
-  const { getUniqueCustomers, getMyTotalRevenue } = useAnalytics();
-
   const [stores, setStores] = useState<StoreResponse[]>([]);
   const [totalStores, setTotalStores] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,12 +36,8 @@ const DashboardPage = () => {
 
       setStores(response.content);
       setTotalStores(response.totalElements);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage("Falha na sincronização dos dados do painel.");
-      }
+    } catch {
+      setErrorMessage("Falha na sincronização dos dados do painel.");
     } finally {
       setIsLoading(false);
     }
