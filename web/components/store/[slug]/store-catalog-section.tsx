@@ -5,7 +5,7 @@ import { ApiError } from "@/@types/api";
 import { CategoryResponse } from "@/@types/category/category-response";
 import { ProductResponse } from "@/@types/product/product-response";
 import { useCategory } from "@/services/hooks/use-category";
-import { useProduct } from "@/services/hooks/use-product";
+import { getAllProducts } from "@/services/products";
 import { ProductCard } from "./product-card";
 import { StoreCategoryTabs } from "./store-category-tabs";
 
@@ -14,7 +14,6 @@ interface StoreCatalogSectionProps {
 }
 
 export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
-  const { getAllProducts } = useProduct();
   const { getAllCategories } = useCategory();
 
   const [products, setProducts] = useState<ProductResponse[]>([]);
@@ -64,7 +63,7 @@ export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
     } finally {
       setIsLoading(false);
     }
-  }, [storeId, activeCategoryId, currentPage, getAllProducts]);
+  }, [storeId, activeCategoryId, currentPage]);
 
   useEffect(() => {
     fetchCategories();

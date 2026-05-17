@@ -17,14 +17,13 @@ import { OrderDetailsProducts } from "@/components/orders/[orderId]/order-detail
 import { OrderDetailsStoreInfo } from "@/components/orders/[orderId]/order-details-store-info";
 import { FreightType } from "@/enums/freight-type";
 import { useOrder } from "@/services/hooks/use-order";
-import { useProduct } from "@/services/hooks/use-product";
+import { getProductsByIds } from "@/services/products";
 
 const OrderDetailsPage = () => {
   const router = useRouter();
   const { orderId } = useParams() as { orderId: string };
 
   const { getOrderById } = useOrder();
-  const { getProductsByIds } = useProduct();
 
   const [order, setOrder] = useState<OrderDetailsResponse | null>(null);
   const [products, setProducts] = useState<Record<string, ProductResponse>>({});
@@ -64,7 +63,7 @@ const OrderDetailsPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [orderId, getOrderById, getProductsByIds]);
+  }, [orderId, getOrderById]);
 
   useEffect(() => {
     fetchOrderDetail();

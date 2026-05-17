@@ -9,12 +9,10 @@ import { StoreHero } from "@/components/store/[slug]/store-hero";
 import { StoreSpotlightSection } from "@/components/store/[slug]/store-spotlight-section";
 import { StoreStockHighlightsSection } from "@/components/store/[slug]/store-stock-highlights-section";
 import { useStoreContext } from "@/contexts/store-context";
-import { useProduct } from "@/services/hooks/use-product";
+import { getAllProducts } from "@/services/products";
 
 const StorePage = () => {
   const { store } = useStoreContext();
-
-  const { getAllProducts } = useProduct();
 
   const [spotlightProduct, setSpotlightProduct] =
     useState<ProductResponse | null>(null);
@@ -32,7 +30,7 @@ const StorePage = () => {
     } finally {
       setIsProductsLoading(false);
     }
-  }, [store.id, getAllProducts]);
+  }, [store.id]);
 
   useEffect(() => {
     fecthProducts();

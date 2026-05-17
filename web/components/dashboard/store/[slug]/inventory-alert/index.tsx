@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { ApiError } from "@/@types/api";
 import { PaginatedResponse } from "@/@types/paginated-response";
 import { ProductResponse } from "@/@types/product/product-response";
-import { useProduct } from "@/services/hooks/use-product";
+import { getAllProducts } from "@/services/products";
 import { InventoryItem } from "./inventory-alert-item";
 
 interface InventoryAlertProps {
@@ -26,8 +26,6 @@ export const InventoryAlert = ({
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const { getAllProducts } = useProduct();
 
   useEffect(() => {
     const fetchLowStock = async () => {
@@ -54,7 +52,7 @@ export const InventoryAlert = ({
     };
 
     fetchLowStock();
-  }, [storeId, threshold, pageSize, getAllProducts]);
+  }, [storeId, threshold, pageSize]);
 
   return (
     <aside className="lg:col-span-4">

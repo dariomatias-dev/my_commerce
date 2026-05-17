@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ProductCard } from "./product-card";
 
 import { ProductResponse } from "@/@types/product/product-response";
-import { useProduct } from "@/services/hooks/use-product";
+import { getAllProducts } from "@/services/products";
 
 interface StoreBestSellersSectionProps {
   storeId: string;
@@ -12,7 +12,6 @@ interface StoreBestSellersSectionProps {
 export const StoreBestSellersSection = ({
   storeId,
 }: StoreBestSellersSectionProps) => {
-  const { getAllProducts } = useProduct();
   const [products, setProducts] = useState<ProductResponse[]>([]);
 
   useEffect(() => {
@@ -21,7 +20,7 @@ export const StoreBestSellersSection = ({
       setProducts(data.content);
     };
     loadProducts();
-  }, [storeId, getAllProducts]);
+  }, [storeId]);
 
   if (products.length === 0) return null;
 

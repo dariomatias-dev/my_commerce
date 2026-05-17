@@ -15,7 +15,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useProduct } from "@/services/hooks/use-product";
+import { getProductsByIds } from "@/services/products";
 import { Item, StoreCartItem } from "./store-cart-item";
 
 interface StoreCartProps {
@@ -24,8 +24,6 @@ interface StoreCartProps {
 
 export const StoreCart = ({ store }: StoreCartProps) => {
   const router = useRouter();
-  const { getProductsByIds } = useProduct();
-
   const [items, setItems] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -96,7 +94,7 @@ export const StoreCart = ({ store }: StoreCartProps) => {
     } finally {
       setIsLoading(false);
     }
-  }, [store.id, getProductsByIds, getStorageCart]);
+  }, [store.id, getStorageCart]);
 
   useEffect(() => {
     syncBadgeCount();

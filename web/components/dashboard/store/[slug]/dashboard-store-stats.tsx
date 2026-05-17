@@ -1,6 +1,6 @@
 import { useAnalytics } from "@/services/hooks/use-analytics";
 import { useOrder } from "@/services/hooks/use-order";
-import { useProduct } from "@/services/hooks/use-product";
+import { getActiveProductsCount } from "@/services/products";
 
 import { DashboardActiveProductsStatCard } from "../../../dashboard-stats/dashboard-active-products-stat-card";
 import { DashboardSuccessfulSalesStatCard } from "../../../dashboard-stats/dashboard-successful-sales-stat-card";
@@ -13,7 +13,6 @@ interface DashboardStoreStatsProps {
 }
 
 export const DashboardStoreStats = ({ storeId }: DashboardStoreStatsProps) => {
-  const { getActiveProductsCount } = useProduct();
   const { getUniqueCustomersByStoreId, getTotalRevenueByStoreId } =
     useAnalytics();
   const { getSuccessfulSalesCountByStoreId } = useOrder();

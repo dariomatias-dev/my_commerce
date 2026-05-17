@@ -17,14 +17,13 @@ import { PaymentMethod } from "@/enums/payment-method";
 import { AddressFormValues } from "@/schemas/address.schema";
 import { useFreight } from "@/services/hooks/use-freight";
 import { useOrder } from "@/services/hooks/use-order";
-import { useProduct } from "@/services/hooks/use-product";
 import { getStoreBySlug } from "@/services/stores";
+import { getProductsByIds } from "@/services/products";
 import { useUserAddress } from "@/services/hooks/use-user-address";
 
 export const useCheckout = () => {
   const router = useRouter();
   const params = useParams();
-  const { getProductsByIds } = useProduct();
   const { createOrder } = useOrder();
   const { getAllAddresses, createAddress } = useUserAddress();
   const { calculateFreight } = useFreight();
@@ -115,13 +114,7 @@ export const useCheckout = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [
-    slug,
-    getProductsByIds,
-    getAllAddresses,
-    router,
-    selectedAddressId,
-  ]);
+  }, [slug, getAllAddresses, router, selectedAddressId]);
 
   useEffect(() => {
     fetchCheckoutData();

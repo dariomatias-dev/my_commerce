@@ -10,7 +10,8 @@ import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { ProductForm } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/products-dashboard/product/product-form";
 import { ProductFormValues } from "@/schemas/product.schema";
-import { useProduct } from "@/services/hooks/use-product";
+import { updateProduct } from "@/app/actions/products";
+import { getProductBySlug } from "@/services/products";
 
 interface ProductEditFormProps {
   storeSlug: string;
@@ -26,7 +27,6 @@ export const ProductEditForm = ({
   successPath,
 }: ProductEditFormProps) => {
   const router = useRouter();
-  const { getProductBySlug, updateProduct } = useProduct();
 
   const [product, setProduct] = useState<ProductResponse | undefined>(
     undefined
@@ -51,40 +51,46 @@ export const ProductEditForm = ({
     } finally {
       setIsLoading(false);
     }
-  }, [storeSlug, productSlug, getProductBySlug]);
+  }, [storeSlug, productSlug]);
 
   useEffect(() => {
     loadProduct();
   }, [loadProduct]);
 
-  const onSubmit = async (values: ProductFormValues) => {
+  const onSubmit = async (
+    values: ProductFormValues,
+    _storeId: string,
+    removedImages?: string[],
+  ) => {
     if (!product) return;
 
-    try {
-      setIsSubmitting(true);
-      setApiError(null);
+    setIsSubmitting(true);
+    setApiError(null);
 
-      const data: Partial<ProductRequest> = {
-        name: values.name,
-        description: values.description,
-        price: values.price,
-        stock: values.stock,
-        categoryId: values.categoryId,
-        active: values.active,
-      };
+    const data: Partial<ProductRequest> = {
+      name: values.name,
+      description: values.description,
+      price: values.price,
+      stock: values.stock,
+      categoryId: values.categoryId,
+      active: values.active,
+    };
 
-      await updateProduct(product.id, data, values.images);
+    const result = await updateProduct(
+      product.id,
+      data,
+      values.images,
+      removedImages,
+    );
 
-      router.push(successPath);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setApiError(error.message);
-      } else {
-        setApiError("Erro ao atualizar produto.");
-      }
-    } finally {
-      setIsSubmitting(false);
+    setIsSubmitting(false);
+
+    if (!result.success) {
+      setApiError(result.error);
+      return;
     }
+
+    router.push(successPath);
   };
 
   if (isLoading) {

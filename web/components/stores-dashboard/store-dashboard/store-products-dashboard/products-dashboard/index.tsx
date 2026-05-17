@@ -8,7 +8,8 @@ import { ProductResponse } from "@/@types/product/product-response";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { Pagination } from "@/components/pagination";
 import { StatusFilter } from "@/enums/status-filter";
-import { useProduct } from "@/services/hooks/use-product";
+import { deleteProduct } from "@/app/actions/products";
+import { getAllProducts } from "@/services/products";
 import { ProductsDashboardError } from "./products-dashboard-error";
 import { ProductsDashboardFilter } from "./products-dashboard-filter";
 import { ProductsDashboardTable } from "./products-dashboard-table";
@@ -19,7 +20,6 @@ interface ProductsDashboardProps {
 }
 
 export const ProductsDashboard = ({ storeId, basePath }: ProductsDashboardProps) => {
-  const { getAllProducts, deleteProduct } = useProduct();
   const listTopRef = useRef<HTMLDivElement>(null);
 
   const [products, setProducts] = useState<ProductResponse[]>([]);
@@ -61,7 +61,7 @@ export const ProductsDashboard = ({ storeId, basePath }: ProductsDashboardProps)
     } finally {
       setIsLoading(false);
     }
-  }, [storeId, currentPage, getAllProducts, appliedFilters]);
+  }, [storeId, currentPage, appliedFilters]);
 
   useEffect(() => {
     fetchProducts();
@@ -78,7 +78,11 @@ export const ProductsDashboard = ({ storeId, basePath }: ProductsDashboardProps)
   };
 
   const onDelete = async (productId: string) => {
-    await deleteProduct(productId);
+    const result = await deleteProduct(productId);
+    if (!result.success) {
+      setError(result.error);
+      return;
+    }
     fetchProducts();
   };
 

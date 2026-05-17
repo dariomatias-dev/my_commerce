@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { ProductResponse } from "@/@types/product/product-response";
-import { useProduct } from "@/services/hooks/use-product";
+import { getAllProducts } from "@/services/products";
 import { ProductCard } from "./product-card";
 
 interface StoreStockHighlightsSectionProps {
@@ -11,7 +11,6 @@ interface StoreStockHighlightsSectionProps {
 export const StoreStockHighlightsSection = ({
   storeId,
 }: StoreStockHighlightsSectionProps) => {
-  const { getAllProducts } = useProduct();
   const [products, setProducts] = useState<ProductResponse[]>([]);
 
   useEffect(() => {
@@ -24,7 +23,7 @@ export const StoreStockHighlightsSection = ({
       setProducts(data.content);
     };
     loadProducts();
-  }, [storeId, getAllProducts]);
+  }, [storeId]);
 
   if (products.length === 0) return null;
 

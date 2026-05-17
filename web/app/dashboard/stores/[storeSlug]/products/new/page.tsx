@@ -5,40 +5,33 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { ApiError } from "@/@types/api";
 import { ProductForm } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/products-dashboard/product/product-form";
 import { ProductFormValues } from "@/schemas/product.schema";
-import { useProduct } from "@/services/hooks/use-product";
+import { createProduct } from "@/app/actions/products";
 
 const NewProductPage = () => {
   const { storeSlug } = useParams() as { storeSlug: string };
 
   const router = useRouter();
 
-  const { createProduct } = useProduct();
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
   const handleSubmit = async (data: ProductFormValues, storeId: string) => {
-    try {
-      setIsSubmitting(true);
-      setApiError(null);
+    setIsSubmitting(true);
+    setApiError(null);
 
-      const payload = { ...data, storeId };
+    const payload = { ...data, storeId };
+    const result = await createProduct(payload, data.images || []);
 
-      await createProduct(payload, data.images || []);
+    setIsSubmitting(false);
 
-      router.push(`/dashboard/stores/${storeSlug}/products`);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setApiError(error.message);
-      } else {
-        setApiError("Erro ao registrar novo produto.");
-      }
-    } finally {
-      setIsSubmitting(false);
+    if (!result.success) {
+      setApiError(result.error);
+      return;
     }
+
+    router.push(`/dashboard/stores/${storeSlug}/products`);
   };
 
   return (

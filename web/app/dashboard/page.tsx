@@ -18,11 +18,10 @@ import { StoresList } from "@/components/stores-list";
 import { DashboardStatCard } from "@/components/dashboard-stat-card";
 import { ErrorFeedback } from "@/components/error-feedback";
 import { useAnalytics } from "@/services/hooks/use-analytics";
-import { useProduct } from "@/services/hooks/use-product";
+import { getUserActiveProductsCount } from "@/services/products";
 import { getMyStores } from "@/services/stores";
 
 const DashboardPage = () => {
-  const { getUserActiveProductsCount } = useProduct();
   const { getUniqueCustomers, getMyTotalRevenue } = useAnalytics();
 
   const [stores, setStores] = useState<StoreResponse[]>([]);
