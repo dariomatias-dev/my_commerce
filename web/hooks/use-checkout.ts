@@ -18,14 +18,13 @@ import { AddressFormValues } from "@/schemas/address.schema";
 import { useFreight } from "@/services/hooks/use-freight";
 import { useOrder } from "@/services/hooks/use-order";
 import { useProduct } from "@/services/hooks/use-product";
-import { useStore } from "@/services/hooks/use-store";
+import { getStoreBySlug } from "@/services/stores";
 import { useUserAddress } from "@/services/hooks/use-user-address";
 
 export const useCheckout = () => {
   const router = useRouter();
   const params = useParams();
   const { getProductsByIds } = useProduct();
-  const { getStoreBySlug } = useStore();
   const { createOrder } = useOrder();
   const { getAllAddresses, createAddress } = useUserAddress();
   const { calculateFreight } = useFreight();
@@ -118,7 +117,6 @@ export const useCheckout = () => {
     }
   }, [
     slug,
-    getStoreBySlug,
     getProductsByIds,
     getAllAddresses,
     router,

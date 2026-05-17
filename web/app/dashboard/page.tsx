@@ -19,10 +19,9 @@ import { DashboardStatCard } from "@/components/dashboard-stat-card";
 import { ErrorFeedback } from "@/components/error-feedback";
 import { useAnalytics } from "@/services/hooks/use-analytics";
 import { useProduct } from "@/services/hooks/use-product";
-import { useStore } from "@/services/hooks/use-store";
+import { getMyStores } from "@/services/stores";
 
 const DashboardPage = () => {
-  const { getMyStores } = useStore();
   const { getUserActiveProductsCount } = useProduct();
   const { getUniqueCustomers, getMyTotalRevenue } = useAnalytics();
 
@@ -38,6 +37,7 @@ const DashboardPage = () => {
     try {
       const response = await getMyStores(0, 3);
 
+
       setStores(response.content);
       setTotalStores(response.totalElements);
     } catch (error) {
@@ -49,7 +49,7 @@ const DashboardPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [getMyStores]);
+  }, []);
 
   useEffect(() => {
     fetchDashboardData();

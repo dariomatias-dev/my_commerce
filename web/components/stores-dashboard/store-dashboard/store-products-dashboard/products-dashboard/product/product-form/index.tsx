@@ -12,7 +12,7 @@ import { ProductFormMediaGallery } from "@/components/stores-dashboard/store-das
 import { cn } from "@/lib/utils";
 import { ProductFormValues, productSchema } from "@/schemas/product.schema";
 import { useCategory } from "@/services/hooks/use-category";
-import { useStore } from "@/services/hooks/use-store";
+import { getStoreBySlug } from "@/services/stores";
 import { ProductFormCategorySelect } from "./product-form-category";
 import { ProductFormField } from "./product-form-field";
 import { ProductFormSection } from "./product-form-section";
@@ -35,7 +35,6 @@ export const ProductForm = ({
   isSubmitting,
   storeSlug,
 }: ProductFormProps) => {
-  const { getStoreBySlug } = useStore();
   const { getAllCategories } = useCategory();
 
   const [storeId, setStoreId] = useState<string | null>(null);
@@ -87,7 +86,7 @@ export const ProductForm = ({
     } finally {
       setIsLoadingData(false);
     }
-  }, [storeSlug, getStoreBySlug, getAllCategories]);
+  }, [storeSlug, getAllCategories]);
 
   useEffect(() => {
     if (initialData) {

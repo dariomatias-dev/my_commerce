@@ -10,7 +10,7 @@ import { LoadingIndicator } from "@/components/loading-indicator";
 import { Footer } from "@/components/layout/footer";
 import { StoreHeader } from "@/components/layout/store-header";
 import { StoreProvider } from "@/contexts/store-context";
-import { useStore } from "@/services/hooks/use-store";
+import { getStoreBySlug } from "@/services/stores";
 
 interface StoreLayoutProps {
   children: React.ReactNode;
@@ -20,8 +20,6 @@ const StoreLayout = ({ children }: StoreLayoutProps) => {
   const router = useRouter();
 
   const { slug } = useParams() as { slug: string };
-
-  const { getStoreBySlug } = useStore();
 
   const [store, setStore] = useState<StoreResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -44,7 +42,7 @@ const StoreLayout = ({ children }: StoreLayoutProps) => {
     } finally {
       setIsLoading(false);
     }
-  }, [slug, getStoreBySlug]);
+  }, [slug]);
 
   useEffect(() => {
     loadStore();

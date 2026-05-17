@@ -12,7 +12,8 @@ import {
 } from "@/components/dashboard/store/store-form";
 import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
-import { useStore } from "@/services/hooks/use-store";
+import { updateStore } from "@/app/actions/stores";
+import { getStoreBySlug } from "@/services/stores";
 
 interface EditStoreFormProps {
   storeSlug: string;
@@ -26,7 +27,6 @@ export const EditStoreForm = ({
   successPath,
 }: EditStoreFormProps) => {
   const router = useRouter();
-  const { getStoreBySlug, updateStore } = useStore();
 
   const [store, setStore] = useState<StoreResponse | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
@@ -49,7 +49,7 @@ export const EditStoreForm = ({
     } finally {
       setIsLoading(false);
     }
-  }, [storeSlug, getStoreBySlug]);
+  }, [storeSlug]);
 
   useEffect(() => {
     loadStore();
@@ -58,27 +58,30 @@ export const EditStoreForm = ({
   const onSubmit = async (values: StoreFormValues) => {
     if (!store) return;
 
-    try {
-      setIsSubmitting(true);
-      setApiError(null);
+    setIsSubmitting(true);
+    setApiError(null);
 
-      const data: StoreRequest = {
-        name: values.name,
-        description: values.description,
-        themeColor: values.themeColor,
-        isActive: values.isActive,
-      };
+    const data: StoreRequest = {
+      name: values.name,
+      description: values.description,
+      themeColor: values.themeColor,
+      isActive: values.isActive,
+    };
 
-      await updateStore(store.id, data, values.logo?.[0], values.banner?.[0]);
+    const result = await updateStore(
+      store.id,
+      data,
+      values.logo?.[0],
+      values.banner?.[0],
+    );
 
-      router.push(successPath);
-    } catch (error) {
-      setApiError(
-        error instanceof ApiError ? error.message : "Erro ao atualizar loja."
-      );
-    } finally {
+    if (!result.success) {
+      setApiError(result.error);
       setIsSubmitting(false);
+      return;
     }
+
+    router.push(successPath);
   };
 
   if (isLoading) {

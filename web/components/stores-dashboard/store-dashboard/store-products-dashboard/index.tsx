@@ -12,7 +12,7 @@ import {
 } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/categories-dashboard";
 import { CategoryFormDialog } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/category-form-dialog";
 import { ProductsDashboard } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/products-dashboard";
-import { useStore } from "@/services/hooks/use-store";
+import { getStoreBySlug } from "@/services/stores";
 
 interface StoreProductsDashboardProps {
   storeSlug: string;
@@ -26,8 +26,6 @@ export const StoreProductsDashboard = ({
   canCreate = true,
 }: StoreProductsDashboardProps) => {
   const router = useRouter();
-
-  const { getStoreBySlug } = useStore();
 
   const [view, setView] = useState<"products" | "categories">("products");
   const [store, setStore] = useState<StoreResponse | null>(null);
@@ -48,7 +46,7 @@ export const StoreProductsDashboard = ({
     };
 
     fetchStore();
-  }, [storeSlug, getStoreBySlug]);
+  }, [storeSlug]);
 
   const handleRefresh = () => {
     categoryManagerRef.current?.refresh();

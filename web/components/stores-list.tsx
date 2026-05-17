@@ -3,12 +3,11 @@
 import { AlertCircle } from "lucide-react";
 import { useState } from "react";
 
-import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
+import { deleteStore } from "@/app/actions/stores";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { DeleteConfirmationDialog } from "@/components/dialogs/delete-confirmation-dialog";
 import { StoreCard } from "@/components/store-card";
-import { useStore } from "@/services/hooks/use-store";
 
 interface StoresListProps {
   stores: StoreResponse[];
@@ -17,12 +16,10 @@ interface StoresListProps {
 }
 
 export const StoresList = ({ stores, basePath, onRetry }: StoresListProps) => {
-  const { deleteStore } = useStore();
-
   const [isFirstConfirmOpen, setIsFirstConfirmOpen] = useState(false);
   const [isSecondConfirmOpen, setIsSecondConfirmOpen] = useState(false);
   const [storeToDelete, setStoreToDelete] = useState<StoreResponse | null>(
-    null
+    null,
   );
   const [isDeleting, setIsDeleting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -51,25 +48,22 @@ export const StoresList = ({ stores, basePath, onRetry }: StoresListProps) => {
   const handleConfirmDelete = async () => {
     if (!storeToDelete) return;
 
-    try {
-      setIsDeleting(true);
-      setActionError(null);
+    setIsDeleting(true);
+    setActionError(null);
 
-      await deleteStore(storeToDelete.id);
+    const result = await deleteStore(storeToDelete.id);
 
-      setIsSecondConfirmOpen(false);
+    setIsDeleting(false);
+    setIsSecondConfirmOpen(false);
+
+    if (!result.success) {
+      setActionError(result.error);
       setStoreToDelete(null);
-      onRetry();
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setActionError(error.message);
-      } else {
-        setActionError("Não foi possível remover a loja selecionada.");
-      }
-      setIsSecondConfirmOpen(false);
-    } finally {
-      setIsDeleting(false);
+      return;
     }
+
+    setStoreToDelete(null);
+    onRetry();
   };
 
   return (

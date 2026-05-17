@@ -14,7 +14,8 @@ import { DeleteConfirmationDialog } from "@/components/dialogs/delete-confirmati
 import { ErrorFeedback } from "@/components/error-feedback";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { ProductsDashboard } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/products-dashboard";
-import { useStore } from "@/services/hooks/use-store";
+import { deleteStore } from "@/app/actions/stores";
+import { getStoreBySlug } from "@/services/stores";
 import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 
 interface StoreDashboardProps {
@@ -31,7 +32,6 @@ export const StoreDashboard = ({
   canCreate = true,
 }: StoreDashboardProps) => {
   const router = useRouter();
-  const { deleteStore, getStoreBySlug } = useStore();
 
   const [store, setStore] = useState<StoreResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -58,7 +58,7 @@ export const StoreDashboard = ({
     } finally {
       setIsLoading(false);
     }
-  }, [storeSlug, getStoreBySlug]);
+  }, [storeSlug]);
 
   useEffect(() => {
     fetchStoreData();
@@ -74,28 +74,25 @@ export const StoreDashboard = ({
 
   const handleCloseSecondConfirm = () => {
     if (isDeleting) return;
-
     setIsSecondConfirmOpen(false);
   };
 
   const handleConfirmDeleteStore = async () => {
     if (!store) return;
 
-    try {
-      setIsDeleting(true);
+    setIsDeleting(true);
 
-      await deleteStore(store.id);
+    const result = await deleteStore(store.id);
 
-      router.push(basePath);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setError(error.message);
-      } else {
-        setError("Não foi possível excluir a loja.");
-      }
-    } finally {
-      setIsDeleting(false);
+    setIsDeleting(false);
+
+    if (!result.success) {
+      setError(result.error);
+      setIsSecondConfirmOpen(false);
+      return;
     }
+
+    router.push(basePath);
   };
 
   if (isLoading) {

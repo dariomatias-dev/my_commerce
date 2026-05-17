@@ -5,11 +5,9 @@ import { useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { DashboardStatCard } from "@/components/dashboard-stat-card";
-import { useStore } from "@/services/hooks/use-store";
+import { getTotalActiveStores } from "@/services/stores";
 
 export const AdminStoreStatsCard = () => {
-  const { getTotalActiveStores } = useStore();
-
   const [totalActive, setTotalActive] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -31,7 +29,7 @@ export const AdminStoreStatsCard = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [getTotalActiveStores]);
+  }, []);
 
   useEffect(() => {
     fetchData();

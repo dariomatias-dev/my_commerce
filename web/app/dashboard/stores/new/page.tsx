@@ -5,45 +5,39 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { ApiError } from "@/@types/api";
 import { StoreRequest } from "@/@types/store/store-request";
 import {
   StoreForm,
   StoreFormValues,
 } from "@/components/dashboard/store/store-form";
-import { useStore } from "@/services/hooks/use-store";
+import { createStore } from "@/app/actions/stores";
 
 const NewStorePage = () => {
   const router = useRouter();
-
-  const { createStore } = useStore();
 
   const [isLoading, setIsLoading] = useState(false);
   const [globalError, setGlobalError] = useState<string | null>(null);
 
   const onSubmit = async (values: StoreFormValues) => {
-    try {
-      setIsLoading(true);
-      setGlobalError(null);
+    setIsLoading(true);
+    setGlobalError(null);
 
-      const data: StoreRequest = {
-        name: values.name,
-        description: values.description,
-        themeColor: values.themeColor,
-        isActive: values.isActive,
-      };
+    const data: StoreRequest = {
+      name: values.name,
+      description: values.description,
+      themeColor: values.themeColor,
+      isActive: values.isActive,
+    };
 
-      await createStore(data, values.logo?.[0], values.banner?.[0]);
-      router.push("/dashboard");
-    } catch (error) {
-      setGlobalError(
-        error instanceof ApiError
-          ? error.message
-          : "Erro ao inicializar nova instância."
-      );
-    } finally {
+    const result = await createStore(data, values.logo![0], values.banner![0]);
+
+    if (!result.success) {
+      setGlobalError(result.error);
       setIsLoading(false);
+      return;
     }
+
+    router.push("/dashboard");
   };
 
   return (

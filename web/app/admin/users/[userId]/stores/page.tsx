@@ -3,12 +3,10 @@
 import { useParams } from "next/navigation";
 
 import { StoresDashboard } from "@/components/stores-dashboard";
-import { useStore } from "@/services/hooks/use-store";
+import { getAllByUser } from "@/services/stores";
 
 const AdminUserStoresPage = () => {
   const { userId } = useParams() as { userId: string };
-
-  const { getAllByUser } = useStore();
 
   return (
     <StoresDashboard
