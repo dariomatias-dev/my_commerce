@@ -2,13 +2,13 @@
 
 import { Save, UserCheck } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
+import { updateUser } from "@/app/actions/users";
 import { ErrorFeedback } from "@/components/error-feedback";
 import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
-import { updateUser } from "@/app/actions/users";
 import { getUserById } from "@/services/users";
 
 const AdminUserEditPage = () => {
@@ -19,35 +19,44 @@ const AdminUserEditPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
-  const fetchProfile = useCallback(async () => {
-    setIsLoading(true);
-    setErrorMessage(null);
-
-    try {
-      const user = await getUserById(userId);
-
-      setName(user.name);
-      setEmail(user.email);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage(
-          "Não foi possível carregar os dados do perfil do usuário.",
-        );
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [userId]);
-
   useEffect(() => {
+    let ignore = false;
+
+    async function fetchProfile() {
+      setIsLoading(true);
+      setErrorMessage(null);
+      try {
+        const user = await getUserById(userId);
+        if (!ignore) {
+          setName(user.name);
+          setEmail(user.email);
+        }
+      } catch (error) {
+        if (!ignore) {
+          if (error instanceof ApiError) {
+            setErrorMessage(error.message);
+          } else {
+            setErrorMessage(
+              "Não foi possível carregar os dados do perfil do usuário.",
+            );
+          }
+        }
+      } finally {
+        if (!ignore) setIsLoading(false);
+      }
+    }
+
     fetchProfile();
-  }, [fetchProfile]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [userId, refreshKey]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -59,11 +68,13 @@ const AdminUserEditPage = () => {
     if (!result.success) {
       setErrorMessage(result.error);
       setIsSaving(false);
+
       return;
     }
 
     router.push("/admin/users");
     router.refresh();
+
     setIsSaving(false);
   };
 
@@ -77,7 +88,7 @@ const AdminUserEditPage = () => {
         title="Perfil"
         highlightedTitle="Indisponível"
         errorMessage={errorMessage}
-        onRetry={fetchProfile}
+        onRetry={() => setRefreshKey((k) => k + 1)}
         backPath="/admin/users"
         backLabel="VOLTAR AO PAINEL"
       />

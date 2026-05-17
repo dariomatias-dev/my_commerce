@@ -1,18 +1,18 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { StoreRequest } from "@/@types/store/store-request";
 import { StoreResponse } from "@/@types/store/store-response";
+import { updateStore } from "@/app/actions/stores";
 import {
   StoreForm,
   StoreFormValues,
 } from "@/components/dashboard/store/store-form";
 import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
-import { updateStore } from "@/app/actions/stores";
 import { getStoreBySlug } from "@/services/stores";
 
 interface EditStoreFormProps {
@@ -33,27 +33,35 @@ export const EditStoreForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
-  const loadStore = useCallback(async () => {
-    try {
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadStore() {
       setIsLoading(true);
 
-      const data = await getStoreBySlug(storeSlug);
+      try {
+        const data = await getStoreBySlug(storeSlug);
 
-      setStore(data);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setApiError(error.message);
-      } else {
-        setApiError("Erro ao carregar loja.");
+        if (!ignore) setStore(data);
+      } catch (error) {
+        if (!ignore) {
+          if (error instanceof ApiError) {
+            setApiError(error.message);
+          } else {
+            setApiError("Erro ao carregar loja.");
+          }
+        }
+      } finally {
+        if (!ignore) setIsLoading(false);
       }
-    } finally {
-      setIsLoading(false);
     }
-  }, [storeSlug]);
 
-  useEffect(() => {
     loadStore();
-  }, [loadStore]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [storeSlug]);
 
   const onSubmit = async (values: StoreFormValues) => {
     if (!store) return;
@@ -78,6 +86,7 @@ export const EditStoreForm = ({
     if (!result.success) {
       setApiError(result.error);
       setIsSubmitting(false);
+
       return;
     }
 

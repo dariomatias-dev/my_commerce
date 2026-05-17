@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertTriangle, Loader2, RefreshCw, Zap } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { SubscriptionPlanResponse } from "@/@types/subscription-plan/subscription-plan-response";
 import { getAllPlans } from "@/services/subscription-plans";
@@ -11,47 +11,52 @@ import { StandardPlanCard } from "./standard-plan-card";
 import { SubscriptionCheckoutModal } from "./subscription-checkout-modal";
 
 export const SubscriptionPlansSection = () => {
-
   const [plans, setPlans] = useState<SubscriptionPlanResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [apiError, setApiError] = useState<string | null>(null);
   const [activeSubscriptionId, setActiveSubscriptionId] = useState<
     string | null
   >(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const [selectedPlan, setSelectedPlan] =
     useState<SubscriptionPlanResponse | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
-  const fetchData = useCallback(async () => {
-    try {
+  useEffect(() => {
+    let ignore = false;
+    async function fetchData() {
       setIsLoading(true);
       setApiError(null);
+      try {
+        const [plansData, activeSubData] = await Promise.allSettled([
+          getAllPlans(0, 3),
+          getMyActiveSubscription(),
+        ]);
 
-      const [plansData, activeSubData] = await Promise.allSettled([
-        getAllPlans(0, 3),
-        getMyActiveSubscription(),
-      ]);
+        if (plansData.status === "fulfilled") {
+          if (!ignore) setPlans(plansData.value.content);
+        } else {
+          throw plansData.reason;
+        }
 
-      if (plansData.status === "fulfilled") {
-        setPlans(plansData.value.content);
-      } else {
-        throw plansData.reason;
+        if (activeSubData.status === "fulfilled") {
+          if (!ignore) setActiveSubscriptionId(activeSubData.value.planId);
+        }
+      } catch {
+        if (!ignore)
+          setApiError("Não foi possível carregar os planos no momento.");
+      } finally {
+        if (!ignore) setIsLoading(false);
       }
-
-      if (activeSubData.status === "fulfilled") {
-        setActiveSubscriptionId(activeSubData.value.planId);
-      }
-    } catch {
-      setApiError("Não foi possível carregar os planos no momento.");
-    } finally {
-      setIsLoading(false);
     }
-  }, []);
 
-  useEffect(() => {
     fetchData();
-  }, [fetchData]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [refreshKey]);
 
   const handlePlanClick = (plan: SubscriptionPlanResponse) => {
     if (plan.id === activeSubscriptionId) return;
@@ -114,7 +119,7 @@ export const SubscriptionPlansSection = () => {
               {apiError}
             </p>
             <button
-              onClick={fetchData}
+              onClick={() => setRefreshKey((k) => k + 1)}
               className="flex items-center gap-2 rounded-xl bg-slate-950 px-6 py-3 text-[10px] font-black tracking-widest text-white uppercase transition-all hover:bg-indigo-600 active:scale-95"
             >
               <RefreshCw size={14} /> Tentar Novamente

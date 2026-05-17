@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { OrderDetailsResponse } from "@/@types/order/order-details-response";
 import { ProductResponse } from "@/@types/product/product-response";
@@ -26,41 +26,52 @@ const OrderDetailsPage = () => {
   const [products, setProducts] = useState<Record<string, ProductResponse>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const fetchOrderDetail = useCallback(async () => {
-    setIsLoading(true);
-    setErrorMessage(null);
-
-    try {
-      const orderResponse = await getOrderById(orderId);
-      setOrder(orderResponse);
-
-      if (orderResponse.items && orderResponse.items.length > 0) {
-        const productIds = orderResponse.items.map((item) => item.productId);
-        const productsResponse = await getProductsByIds(
-          orderResponse.store.id,
-          productIds,
-        );
-        const productsMap = (productsResponse.content || []).reduce(
-          (acc, product) => {
-            acc[product.id] = product;
-            return acc;
-          },
-          {} as Record<string, ProductResponse>,
-        );
-
-        setProducts(productsMap);
-      }
-    } catch {
-      setErrorMessage("Não foi possível carregar os detalhes do pedido.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [orderId]);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
+    let ignore = false;
+
+    async function fetchOrderDetail() {
+      setIsLoading(true);
+      setErrorMessage(null);
+
+      try {
+        const orderResponse = await getOrderById(orderId);
+
+        if (ignore) return;
+
+        setOrder(orderResponse);
+
+        if (orderResponse.items && orderResponse.items.length > 0) {
+          const productIds = orderResponse.items.map((item) => item.productId);
+          const productsResponse = await getProductsByIds(
+            orderResponse.store.id,
+            productIds,
+          );
+          const productsMap = (productsResponse.content || []).reduce(
+            (acc, product) => {
+              acc[product.id] = product;
+              return acc;
+            },
+            {} as Record<string, ProductResponse>,
+          );
+
+          if (!ignore) setProducts(productsMap);
+        }
+      } catch {
+        if (!ignore)
+          setErrorMessage("Não foi possível carregar os detalhes do pedido.");
+      } finally {
+        if (!ignore) setIsLoading(false);
+      }
+    }
+
     fetchOrderDetail();
-  }, [fetchOrderDetail]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [orderId, refreshKey]);
 
   if (isLoading) {
     return <LoadingIndicator message="Sincronizando detalhes do pedido..." />;
@@ -72,7 +83,7 @@ const OrderDetailsPage = () => {
         title="Pedido"
         highlightedTitle="Indisponível"
         errorMessage={errorMessage}
-        onRetry={fetchOrderDetail}
+        onRetry={() => setRefreshKey((k) => k + 1)}
         backPath="/dashboard/orders"
         backLabel="VOLTAR PARA PEDIDOS"
       />

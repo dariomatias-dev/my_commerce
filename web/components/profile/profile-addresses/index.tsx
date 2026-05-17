@@ -1,13 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { UserAddressResponse } from "@/@types/address/user-address-response";
 import { ApiError } from "@/@types/api";
+import { createAddress, deleteAddress } from "@/app/actions/addresses";
 import { Feedback } from "@/components/feedback";
 import { useFeedback } from "@/hooks/use-feedback";
 import { AddressFormValues } from "@/schemas/address.schema";
-import { createAddress, deleteAddress } from "@/app/actions/addresses";
 import { getAllAddresses } from "@/services/addresses";
 import { SettingsAddressAddForm } from "./settings-address-add-form";
 import { SettingsAddressesList } from "./settings-addresses-list";
@@ -18,29 +18,38 @@ export const SettingsAddresses = () => {
   const [addresses, setAddresses] = useState<UserAddressResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const fetchAddresses = useCallback(async () => {
-    try {
+  useEffect(() => {
+    let ignore = false;
+
+    async function fetchAddresses() {
       setIsLoading(true);
       setError(null);
 
-      const response = await getAllAddresses();
+      try {
+        const response = await getAllAddresses();
 
-      setAddresses(response);
-    } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message);
-      } else {
-        setError("Não foi possível carregar seus endereços.");
+        if (!ignore) setAddresses(response);
+      } catch (err) {
+        if (!ignore) {
+          if (err instanceof ApiError) {
+            setError(err.message);
+          } else {
+            setError("Não foi possível carregar seus endereços.");
+          }
+        }
+      } finally {
+        if (!ignore) setIsLoading(false);
       }
-    } finally {
-      setIsLoading(false);
     }
-  }, []);
 
-  useEffect(() => {
     fetchAddresses();
-  }, [fetchAddresses]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [refreshKey]);
 
   const handleAddAddress = async (formData: AddressFormValues) => {
     const requestData = {
@@ -60,11 +69,12 @@ export const SettingsAddresses = () => {
 
     if (!result.success) {
       showFeedback("error", result.error);
+
       throw new Error(result.error);
     }
 
     showFeedback("success", "Endereço cadastrado com sucesso.");
-    await fetchAddresses();
+    setRefreshKey((k) => k + 1);
   };
 
   const handleDelete = async (id: string) => {
@@ -72,6 +82,7 @@ export const SettingsAddresses = () => {
 
     if (!result.success) {
       showFeedback("error", result.error);
+
       return;
     }
 
@@ -96,7 +107,7 @@ export const SettingsAddresses = () => {
         isLoading={isLoading}
         error={error}
         onDelete={handleDelete}
-        onRetry={fetchAddresses}
+        onRetry={() => setRefreshKey((k) => k + 1)}
       />
 
       {feedback && (

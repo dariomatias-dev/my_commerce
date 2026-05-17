@@ -11,15 +11,15 @@ import {
 } from "@/@types/freight/freight-response";
 import { OrderRequest } from "@/@types/order/order-request";
 import { StoreResponse } from "@/@types/store/store-response";
+import { createAddress } from "@/app/actions/addresses";
+import { createOrder } from "@/app/actions/orders";
 import { Item } from "@/components/layout/store-header/store-cart/store-cart-item";
 import { PaymentMethod } from "@/enums/payment-method";
 import { AddressFormValues } from "@/schemas/address.schema";
-import { createOrder } from "@/app/actions/orders";
-import { calculateFreight } from "@/services/freight";
-import { getStoreBySlug } from "@/services/stores";
-import { getProductsByIds } from "@/services/products";
 import { getAllAddresses } from "@/services/addresses";
-import { createAddress } from "@/app/actions/addresses";
+import { calculateFreight } from "@/services/freight";
+import { getProductsByIds } from "@/services/products";
+import { getStoreBySlug } from "@/services/stores";
 
 export const useCheckout = () => {
   const router = useRouter();
@@ -31,19 +31,20 @@ export const useCheckout = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(
-    PaymentMethod.PIX
+    PaymentMethod.PIX,
   );
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
-    null
+    null,
   );
 
   const [freightOptions, setFreightOptions] = useState<FreightResponse | null>(
-    null
+    null,
   );
   const [selectedFreight, setSelectedFreight] = useState<FreightOption | null>(
-    null
+    null,
   );
   const [isFreightLoading, setIsFreightLoading] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const slug = params.slug as string;
 
@@ -57,60 +58,68 @@ export const useCheckout = () => {
       localStorage.setItem(storageKey, JSON.stringify(storageData));
       window.dispatchEvent(new Event("cart-updated"));
     },
-    []
+    [],
   );
 
-  const fetchCheckoutData = useCallback(async () => {
-    setIsLoading(true);
-    setErrorMessage(null);
-
-    try {
-      const [storeResponse, addressesResponse] = await Promise.all([
-        getStoreBySlug(slug),
-        getAllAddresses(),
-      ]);
-
-      setStore(storeResponse);
-      setAddresses(addressesResponse);
-
-      if (addressesResponse.length > 0 && !selectedAddressId) {
-        setSelectedAddressId(addressesResponse[0].id);
-      }
-
-      const storageKey = `cart-${storeResponse.id}`;
-      const stored = localStorage.getItem(storageKey);
-      const storageCart = stored ? JSON.parse(stored) : [];
-
-      if (storageCart.length === 0) {
-        router.push(`/store/${slug}`);
-
-        return;
-      }
-
-      const productIds = storageCart.map((i: CartStorage) => i.id);
-      const response = await getProductsByIds(storeResponse.id, productIds);
-      const products = response.content || [];
-      const mergedItems: Item[] = products.map((product) => ({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.images?.[0]?.url,
-        quantity:
-          storageCart.find((i: CartStorage) => i.id === product.id)?.quantity ||
-          1,
-      }));
-
-      setItems(mergedItems);
-    } catch {
-      setErrorMessage("Erro ao carregar dados do checkout.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [slug, router, selectedAddressId]);
-
   useEffect(() => {
+    let ignore = false;
+
+    async function fetchCheckoutData() {
+      setIsLoading(true);
+      setErrorMessage(null);
+
+      try {
+        const [storeResponse, addressesResponse] = await Promise.all([
+          getStoreBySlug(slug),
+          getAllAddresses(),
+        ]);
+
+        if (ignore) return;
+
+        setStore(storeResponse);
+        setAddresses(addressesResponse);
+
+        if (addressesResponse.length > 0) {
+          setSelectedAddressId((prev) => prev ?? addressesResponse[0].id);
+        }
+
+        const storageKey = `cart-${storeResponse.id}`;
+        const stored = localStorage.getItem(storageKey);
+        const storageCart = stored ? JSON.parse(stored) : [];
+
+        if (storageCart.length === 0) {
+          router.push(`/store/${slug}`);
+
+          return;
+        }
+
+        const productIds = storageCart.map((i: CartStorage) => i.id);
+        const response = await getProductsByIds(storeResponse.id, productIds);
+        const products = response.content || [];
+        const mergedItems: Item[] = products.map((product) => ({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          image: product.images?.[0]?.url,
+          quantity:
+            storageCart.find((i: CartStorage) => i.id === product.id)
+              ?.quantity || 1,
+        }));
+
+        if (!ignore) setItems(mergedItems);
+      } catch {
+        if (!ignore) setErrorMessage("Erro ao carregar dados do checkout.");
+      } finally {
+        if (!ignore) setIsLoading(false);
+      }
+    }
+
     fetchCheckoutData();
-  }, [fetchCheckoutData]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [slug, router, refreshKey]);
 
   useEffect(() => {
     const fetchFreight = async () => {
@@ -139,7 +148,7 @@ export const useCheckout = () => {
     const updated = items.map((item) =>
       item.id === id
         ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-        : item
+        : item,
     );
 
     setItems(updated);
@@ -209,17 +218,20 @@ export const useCheckout = () => {
     if (!result.success) {
       setErrorMessage(result.error);
       setIsSubmitting(false);
+
       return;
     }
 
     localStorage.removeItem(`cart-${store.id}`);
+
     window.dispatchEvent(new Event("cart-updated"));
+
     router.push(`/store/${slug}/success?orderId=${result.data.id}`);
   };
 
   const subtotal = items.reduce(
     (acc, item) => acc + item.price * item.quantity,
-    0
+    0,
   );
   const freightValue = selectedFreight?.value || 0;
   const total = subtotal + freightValue;
@@ -241,7 +253,7 @@ export const useCheckout = () => {
     subtotal,
     freightValue,
     total,
-    fetchCheckoutData,
+    refetchCheckoutData: () => setRefreshKey((k) => k + 1),
     handleQuantity,
     handleRemove,
     handleCreateAddress,

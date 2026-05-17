@@ -2,13 +2,13 @@
 
 import { AlertCircle, ArrowLeft, RefreshCcw, Store } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
-import { LoadingIndicator } from "@/components/loading-indicator";
 import { Footer } from "@/components/layout/footer";
 import { StoreHeader } from "@/components/layout/store-header";
+import { LoadingIndicator } from "@/components/loading-indicator";
 import { StoreProvider } from "@/contexts/store-context";
 import { getStoreBySlug } from "@/services/stores";
 
@@ -24,29 +24,38 @@ const StoreLayout = ({ children }: StoreLayoutProps) => {
   const [store, setStore] = useState<StoreResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorStatus, setErrorStatus] = useState<number | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const loadStore = useCallback(async () => {
-    try {
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadStore() {
       setIsLoading(true);
       setErrorStatus(null);
 
-      const storeData = await getStoreBySlug(slug);
+      try {
+        const storeData = await getStoreBySlug(slug);
 
-      setStore(storeData);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setErrorStatus(error.code);
-      } else {
-        setErrorStatus(500);
+        if (!ignore) setStore(storeData);
+      } catch (error) {
+        if (!ignore) {
+          if (error instanceof ApiError) {
+            setErrorStatus(error.code);
+          } else {
+            setErrorStatus(500);
+          }
+        }
+      } finally {
+        if (!ignore) setIsLoading(false);
       }
-    } finally {
-      setIsLoading(false);
     }
-  }, [slug]);
 
-  useEffect(() => {
     loadStore();
-  }, [loadStore]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [slug, refreshKey]);
 
   if (isLoading) {
     return (
@@ -118,7 +127,7 @@ const StoreLayout = ({ children }: StoreLayoutProps) => {
           </p>
 
           <button
-            onClick={loadStore}
+            onClick={() => setRefreshKey((k) => k + 1)}
             className="mt-8 flex items-center gap-2 rounded-xl bg-slate-100 px-8 py-4 text-[10px] font-black uppercase tracking-widest text-slate-950 transition-colors hover:bg-slate-200"
           >
             <RefreshCcw size={14} />

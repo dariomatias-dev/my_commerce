@@ -1,7 +1,7 @@
 "use client";
 
 import { Package, Tag } from "lucide-react";
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { OrderResponse } from "@/@types/order/order-response";
@@ -16,7 +16,7 @@ import { OrderCard } from "./orders/order-card";
 interface OrdersDashboardProps {
   fetchFn: (
     page: number,
-    size: number
+    size: number,
   ) => Promise<PaginatedResponse<OrderResponse>>;
   backHref?: string;
   emptyDescription: string;
@@ -35,31 +35,44 @@ export const OrdersDashboard = ({
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [totalElements, setTotalElements] = useState(0);
-
-  const fetchOrders = useCallback(async () => {
-    setIsLoading(true);
-    setErrorMessage(null);
-
-    try {
-      const response = await fetchFn(currentPage, 10);
-
-      setOrders(response.content || []);
-      setTotalPages(response.totalPages);
-      setTotalElements(response.totalElements);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage("Não foi possível carregar seu histórico de pedidos.");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [fetchFn, currentPage]);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
+    let ignore = false;
+
+    async function fetchOrders() {
+      setIsLoading(true);
+      setErrorMessage(null);
+
+      try {
+        const response = await fetchFn(currentPage, 10);
+
+        if (!ignore) {
+          setOrders(response.content || []);
+          setTotalPages(response.totalPages);
+          setTotalElements(response.totalElements);
+        }
+      } catch (error) {
+        if (!ignore) {
+          if (error instanceof ApiError) {
+            setErrorMessage(error.message);
+          } else {
+            setErrorMessage(
+              "Não foi possível carregar seu histórico de pedidos.",
+            );
+          }
+        }
+      } finally {
+        if (!ignore) setIsLoading(false);
+      }
+    }
+
     fetchOrders();
-  }, [fetchOrders]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [fetchFn, currentPage, refreshKey]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -77,7 +90,7 @@ export const OrdersDashboard = ({
         title="Histórico"
         highlightedTitle="Indisponível"
         errorMessage={errorMessage}
-        onRetry={fetchOrders}
+        onRetry={() => setRefreshKey((k) => k + 1)}
         backPath={backHref ?? ""}
         backLabel="VOLTAR"
       />

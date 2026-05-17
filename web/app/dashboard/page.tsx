@@ -2,7 +2,7 @@
 
 import { Plus, Store } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { StoreResponse } from "@/@types/store/store-response";
 
@@ -25,27 +25,36 @@ const DashboardPage = () => {
   const [totalStores, setTotalStores] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const fetchDashboardData = useCallback(async () => {
-    setIsLoading(true);
-    setErrorMessage(null);
-
-    try {
-      const response = await getMyStores(0, 3);
-
-
-      setStores(response.content);
-      setTotalStores(response.totalElements);
-    } catch {
-      setErrorMessage("Falha na sincronização dos dados do painel.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
+    let ignore = false;
+
+    async function fetchDashboardData() {
+      setIsLoading(true);
+      setErrorMessage(null);
+
+      try {
+        const response = await getMyStores(0, 3);
+
+        if (!ignore) {
+          setStores(response.content);
+          setTotalStores(response.totalElements);
+        }
+      } catch {
+        if (!ignore)
+          setErrorMessage("Falha na sincronização dos dados do painel.");
+      } finally {
+        if (!ignore) setIsLoading(false);
+      }
+    }
+
     fetchDashboardData();
-  }, [fetchDashboardData]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [refreshKey]);
 
   if (isLoading) {
     return <LoadingIndicator message="Carregando dados..." />;
@@ -57,7 +66,7 @@ const DashboardPage = () => {
         title="Painel"
         highlightedTitle="Indisponível"
         errorMessage={errorMessage}
-        onRetry={fetchDashboardData}
+        onRetry={() => setRefreshKey((k) => k + 1)}
         backPath="/dashboard"
         backLabel="VOLTAR AO INÍCIO"
       />
@@ -88,7 +97,7 @@ const DashboardPage = () => {
           icon={Store}
           isLoading={isLoading}
           errorMessage={errorMessage}
-          onRetry={fetchDashboardData}
+          onRetry={() => setRefreshKey((k) => k + 1)}
         />
 
         <DashboardActiveProductsStatCard request={getUserActiveProductsCount} />
@@ -118,7 +127,7 @@ const DashboardPage = () => {
         <StoresList
           stores={stores}
           basePath="/dashboard"
-          onRetry={fetchDashboardData}
+          onRetry={() => setRefreshKey((k) => k + 1)}
         />
       </section>
     </>

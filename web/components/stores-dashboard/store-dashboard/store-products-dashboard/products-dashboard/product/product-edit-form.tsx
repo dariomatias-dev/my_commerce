@@ -1,16 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { ProductRequest } from "@/@types/product/product-request";
 import { ProductResponse } from "@/@types/product/product-response";
+import { updateProduct } from "@/app/actions/products";
 import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { ProductForm } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/products-dashboard/product/product-form";
 import { ProductFormValues } from "@/schemas/product.schema";
-import { updateProduct } from "@/app/actions/products";
 import { getProductBySlug } from "@/services/products";
 
 interface ProductEditFormProps {
@@ -29,33 +29,41 @@ export const ProductEditForm = ({
   const router = useRouter();
 
   const [product, setProduct] = useState<ProductResponse | undefined>(
-    undefined
+    undefined,
   );
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
-  const loadProduct = useCallback(async () => {
-    try {
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadProduct() {
       setIsLoading(true);
 
-      const data = await getProductBySlug(storeSlug, productSlug);
+      try {
+        const data = await getProductBySlug(storeSlug, productSlug);
 
-      setProduct(data);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setApiError(error.message);
-      } else {
-        setApiError("Erro ao carregar produto.");
+        if (!ignore) setProduct(data);
+      } catch (error) {
+        if (!ignore) {
+          if (error instanceof ApiError) {
+            setApiError(error.message);
+          } else {
+            setApiError("Erro ao carregar produto.");
+          }
+        }
+      } finally {
+        if (!ignore) setIsLoading(false);
       }
-    } finally {
-      setIsLoading(false);
     }
-  }, [storeSlug, productSlug]);
 
-  useEffect(() => {
     loadProduct();
-  }, [loadProduct]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [storeSlug, productSlug]);
 
   const onSubmit = async (
     values: ProductFormValues,
@@ -87,6 +95,7 @@ export const ProductEditForm = ({
 
     if (!result.success) {
       setApiError(result.error);
+
       return;
     }
 

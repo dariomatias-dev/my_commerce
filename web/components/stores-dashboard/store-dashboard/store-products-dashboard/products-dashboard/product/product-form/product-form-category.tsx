@@ -2,11 +2,12 @@
 
 import { Layers } from "lucide-react";
 import {
+  Control,
   FieldValues,
   Path,
   PathValue,
   UseFormSetValue,
-  UseFormWatch,
+  useWatch,
 } from "react-hook-form";
 
 import { CategoryResponse } from "@/@types/category/category-response";
@@ -17,7 +18,7 @@ interface ProductFormCategorySelectProps<T extends FieldValues> {
   isLoading: boolean;
   error?: string;
   setValue: UseFormSetValue<T>;
-  watch: UseFormWatch<T>;
+  control: Control<T>;
   name: Path<T>;
 }
 
@@ -26,10 +27,10 @@ export const ProductFormCategorySelect = <T extends FieldValues>({
   isLoading,
   error,
   setValue,
-  watch,
+  control,
   name,
 }: ProductFormCategorySelectProps<T>) => {
-  const selectedValue = watch(name);
+  const selectedValue = useWatch({ control, name });
 
   const handleSelect = (id: string) => {
     setValue(name, id as PathValue<T, Path<T>>, {

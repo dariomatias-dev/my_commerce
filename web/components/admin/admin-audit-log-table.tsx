@@ -2,7 +2,7 @@
 
 import { ArrowRight, History } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { AuditLogResponse } from "@/@types/audit-log/audit-log-response";
 import { getLogs } from "@/services/audit-logs";
@@ -12,24 +12,32 @@ export const AdminAuditLogTable = () => {
   const [logs, setLogs] = useState<AuditLogResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const fetchLogs = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await getLogs({}, 0, 8);
-      setLogs(response.content || []);
-    } catch {
-      setError("Erro ao carregar logs");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
+    let ignore = false;
+
+    async function fetchLogs() {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const response = await getLogs({}, 0, 8);
+
+        if (!ignore) setLogs(response.content || []);
+      } catch {
+        if (!ignore) setError("Erro ao carregar logs");
+      } finally {
+        if (!ignore) setIsLoading(false);
+      }
+    }
+
     fetchLogs();
-  }, [fetchLogs]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [refreshKey]);
 
   return (
     <section>
@@ -60,7 +68,7 @@ export const AdminAuditLogTable = () => {
               {error}
             </p>
             <button
-              onClick={fetchLogs}
+              onClick={() => setRefreshKey((k) => k + 1)}
               className="text-[10px] font-black uppercase underline tracking-widest text-slate-950"
             >
               Tentar novamente

@@ -3,20 +3,20 @@
 import { Eye, List, PackagePlus, Settings, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { StoreResponse } from "@/@types/store/store-response";
+import { deleteStore } from "@/app/actions/stores";
 import { DashboardStoreStats } from "@/components/dashboard/store/[slug]/dashboard-store-stats";
 import { InventoryAlert } from "@/components/dashboard/store/[slug]/inventory-alert";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { DeleteConfirmationDialog } from "@/components/dialogs/delete-confirmation-dialog";
 import { ErrorFeedback } from "@/components/error-feedback";
+import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { ProductsDashboard } from "@/components/stores-dashboard/store-dashboard/store-products-dashboard/products-dashboard";
-import { deleteStore } from "@/app/actions/stores";
 import { getStoreBySlug } from "@/services/stores";
-import { DashboardPageHeader } from "@/components/layout/dashboard-page-header";
 
 interface StoreDashboardProps {
   storeSlug: string;
@@ -36,33 +36,42 @@ export const StoreDashboard = ({
   const [store, setStore] = useState<StoreResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const [isFirstConfirmOpen, setIsFirstConfirmOpen] = useState(false);
   const [isSecondConfirmOpen, setIsSecondConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const fetchStoreData = useCallback(async () => {
-    try {
+  useEffect(() => {
+    let ignore = false;
+
+    async function fetchStoreData() {
       setIsLoading(true);
       setError(null);
 
-      const data = await getStoreBySlug(storeSlug);
+      try {
+        const data = await getStoreBySlug(storeSlug);
 
-      setStore(data);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setError(error.message);
-      } else {
-        setError("Erro ao carregar dados do console.");
+        if (!ignore) setStore(data);
+      } catch (error) {
+        if (!ignore) {
+          if (error instanceof ApiError) {
+            setError(error.message);
+          } else {
+            setError("Erro ao carregar dados do console.");
+          }
+        }
+      } finally {
+        if (!ignore) setIsLoading(false);
       }
-    } finally {
-      setIsLoading(false);
     }
-  }, [storeSlug]);
 
-  useEffect(() => {
     fetchStoreData();
-  }, [fetchStoreData]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [storeSlug, refreshKey]);
 
   const handleOpenDelete = () => setIsFirstConfirmOpen(true);
   const handleCloseFirstConfirm = () => setIsFirstConfirmOpen(false);
@@ -105,7 +114,7 @@ export const StoreDashboard = ({
         title="Console"
         highlightedTitle="Indisponível"
         errorMessage={error}
-        onRetry={fetchStoreData}
+        onRetry={() => setRefreshKey((k) => k + 1)}
         backPath={basePath}
         backLabel={backLabel}
       />

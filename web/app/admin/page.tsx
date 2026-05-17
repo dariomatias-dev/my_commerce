@@ -1,7 +1,7 @@
 "use client";
 
 import { TrendingUp } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { AdminAuditLogTable } from "@/components/admin/admin-audit-log-table";
 import { AdminStoreStatsCard } from "@/components/admin/admin-store-stats-card";
@@ -14,29 +14,36 @@ import { LoadingIndicator } from "@/components/loading-indicator";
 import { getAllOrders } from "@/services/orders";
 
 const AdminDashboard = () => {
-
   const [totalOrders, setTotalOrders] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const fetchDashboardStats = useCallback(async () => {
-    setIsLoading(true);
-    setErrorMessage(null);
-
-    try {
-      const ordersRes = await getAllOrders(0, 1);
-
-      setTotalOrders(ordersRes.totalElements || 0);
-    } catch {
-      setErrorMessage("Falha na sincronização dos dados estatísticos.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
+    let ignore = false;
+
+    async function fetchDashboardStats() {
+      setIsLoading(true);
+      setErrorMessage(null);
+
+      try {
+        const ordersRes = await getAllOrders(0, 1);
+
+        if (!ignore) setTotalOrders(ordersRes.totalElements || 0);
+      } catch {
+        if (!ignore)
+          setErrorMessage("Falha na sincronização dos dados estatísticos.");
+      } finally {
+        if (!ignore) setIsLoading(false);
+      }
+    }
+
     fetchDashboardStats();
-  }, [fetchDashboardStats]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [refreshKey]);
 
   if (isLoading) {
     return <LoadingIndicator message="Carregando dados..." />;
@@ -48,7 +55,7 @@ const AdminDashboard = () => {
         title="Erro de"
         highlightedTitle="Sincronização"
         errorMessage={errorMessage}
-        onRetry={fetchDashboardStats}
+        onRetry={() => setRefreshKey((k) => k + 1)}
         backPath="/admin"
         backLabel="VOLTAR AO PAINEL"
       />

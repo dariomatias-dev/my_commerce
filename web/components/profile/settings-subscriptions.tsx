@@ -9,16 +9,18 @@ import {
   X,
   XCircle,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { SubscriptionResponse } from "@/@types/subscription/subscription-response";
 import { cancelSubscription } from "@/app/actions/subscriptions";
 import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
 import { useAuthContext } from "@/contexts/auth-context";
-import { getMyActiveSubscription, getMySubscriptions } from "@/services/subscriptions";
+import {
+  getMyActiveSubscription,
+  getMySubscriptions,
+} from "@/services/subscriptions";
 
 export const SettingsSubscriptions = () => {
-
   const { refreshUser } = useAuthContext();
 
   const [subscriptions, setSubscriptions] = useState<SubscriptionResponse[]>(
@@ -29,29 +31,41 @@ export const SettingsSubscriptions = () => {
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const fetchData = useCallback(async () => {
-    try {
+  useEffect(() => {
+    let ignore = false;
+
+    async function fetchData() {
       setIsLoading(true);
       setErrorMessage(null);
 
-      const [history, active] = await Promise.all([
-        getMySubscriptions(0, 10),
-        getMyActiveSubscription().catch(() => null),
-      ]);
+      try {
+        const [history, active] = await Promise.all([
+          getMySubscriptions(0, 10),
+          getMyActiveSubscription().catch(() => null),
+        ]);
 
-      setSubscriptions(history.content || []);
-      setActiveSub(active);
-    } catch {
-      setErrorMessage("Não foi possível carregar os dados das assinaturas.");
-    } finally {
-      setIsLoading(false);
+        if (!ignore) {
+          setSubscriptions(history.content || []);
+          setActiveSub(active);
+        }
+      } catch {
+        if (!ignore)
+          setErrorMessage(
+            "Não foi possível carregar os dados das assinaturas.",
+          );
+      } finally {
+        if (!ignore) setIsLoading(false);
+      }
     }
-  }, []);
 
-  useEffect(() => {
     fetchData();
-  }, [fetchData]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [refreshKey]);
 
   const handleCancelSubscription = async () => {
     setIsCancelling(true);
@@ -64,10 +78,11 @@ export const SettingsSubscriptions = () => {
     if (!result.success) {
       setErrorMessage(result.error);
       setIsCancelDialogOpen(false);
+
       return;
     }
 
-    await fetchData();
+    setRefreshKey((k) => k + 1);
     refreshUser();
     setIsCancelDialogOpen(false);
   };

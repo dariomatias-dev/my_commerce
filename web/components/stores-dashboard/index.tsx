@@ -1,7 +1,7 @@
 "use client";
 
 import { Store } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { PaginatedResponse } from "@/@types/paginated-response";
@@ -50,37 +50,47 @@ export const StoresDashboard = ({
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const [statusFilter, setStatusFilter] = useState<string>(StatusFilter.ALL);
+  const [refreshKey, setRefreshKey] = useState(0);
   const pageSize = 9;
 
-  const fetchStores = useCallback(async () => {
-    try {
+  useEffect(() => {
+    let ignore = false;
+
+    async function fetchStores() {
       setIsLoading(true);
       setError(null);
 
-      const filters: StoreFilter = {
-        userId: userId || "",
-        status: (statusFilter as StatusFilter) || undefined,
-      };
+      try {
+        const filters: StoreFilter = {
+          userId: userId || "",
+          status: (statusFilter as StatusFilter) || undefined,
+        };
+        const response = await fetchFunction(filters, currentPage, pageSize);
 
-      const response = await fetchFunction(filters, currentPage, pageSize);
-
-      setStores(response.content || []);
-      setTotalPages(response.totalPages || 0);
-      setTotalElements(response.totalElements || 0);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setError(error.message);
-      } else {
-        setError("Não foi possível carregar as informações das lojas.");
+        if (!ignore) {
+          setStores(response.content || []);
+          setTotalPages(response.totalPages || 0);
+          setTotalElements(response.totalElements || 0);
+        }
+      } catch (error) {
+        if (!ignore) {
+          if (error instanceof ApiError) {
+            setError(error.message);
+          } else {
+            setError("Não foi possível carregar as informações das lojas.");
+          }
+        }
+      } finally {
+        if (!ignore) setIsLoading(false);
       }
-    } finally {
-      setIsLoading(false);
     }
-  }, [fetchFunction, currentPage, pageSize, statusFilter, userId]);
 
-  useEffect(() => {
     fetchStores();
-  }, [fetchStores]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [fetchFunction, currentPage, pageSize, statusFilter, userId, refreshKey]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -136,7 +146,11 @@ export const StoresDashboard = ({
       )}
 
       {stores.length > 0 ? (
-        <StoresList stores={stores} basePath={basePath} onRetry={fetchStores} />
+        <StoresList
+          stores={stores}
+          basePath={basePath}
+          onRetry={() => setRefreshKey((k) => k + 1)}
+        />
       ) : (
         <div className="rounded-[3rem] border-2 border-dashed border-slate-100 py-32 text-center">
           <p className="text-xs font-black uppercase italic tracking-widest text-slate-300">

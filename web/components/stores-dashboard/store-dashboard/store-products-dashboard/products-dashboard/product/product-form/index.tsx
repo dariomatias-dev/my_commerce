@@ -2,8 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, DollarSign, Type } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+
+import { useForm, useWatch } from "react-hook-form";
 
 import { CategoryResponse } from "@/@types/category/category-response";
 import { ProductResponse } from "@/@types/product/product-response";
@@ -39,13 +40,15 @@ export const ProductForm = ({
   const [categories, setCategories] = useState<CategoryResponse[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [removedImages, setRemovedImages] = useState<string[]>([]);
-  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>(
+    () => initialData?.images?.map((image) => image.url) ?? [],
+  );
 
   const {
     register,
     handleSubmit,
     setValue,
-    watch,
+    control,
     reset,
     trigger,
     formState: { errors },
@@ -60,7 +63,7 @@ export const ProductForm = ({
     },
   });
 
-  const isActive = watch("active");
+  const isActive = useWatch({ control, name: "active" });
 
   useEffect(() => {
     setValue("existingCount", existingImages.length);
@@ -68,22 +71,38 @@ export const ProductForm = ({
     if (!isLoadingData) trigger("images");
   }, [existingImages, setValue, trigger, isLoadingData]);
 
-  const fetchDependencies = useCallback(async () => {
-    try {
-      setIsLoadingData(true);
+  useEffect(() => {
+    let ignore = false;
 
-      const storeData = await getStoreBySlug(storeSlug);
+    async function fetchDependencies() {
+      try {
+        setIsLoadingData(true);
 
-      setStoreId(storeData.id);
+        const storeData = await getStoreBySlug(storeSlug);
 
-      const catData = await getAllCategories({ storeId: storeData.id }, 0, 100);
+        if (ignore) return;
 
-      setCategories(catData.content);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoadingData(false);
+        setStoreId(storeData.id);
+
+        const catData = await getAllCategories(
+          { storeId: storeData.id },
+          0,
+          100,
+        );
+
+        if (!ignore) setCategories(catData.content);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        if (!ignore) setIsLoadingData(false);
+      }
     }
+
+    fetchDependencies();
+
+    return () => {
+      ignore = true;
+    };
   }, [storeSlug]);
 
   useEffect(() => {
@@ -98,18 +117,8 @@ export const ProductForm = ({
         images: [],
         existingCount: initialData.images.length,
       });
-
-      const images = initialData.images.map((image) => {
-        return image.url;
-      });
-
-      setExistingImages(images);
     }
   }, [initialData, reset]);
-
-  useEffect(() => {
-    fetchDependencies();
-  }, [fetchDependencies]);
 
   const handleRemoveExisting = (imageName: string) => {
     setExistingImages((prev) => prev.filter((img) => img !== imageName));
@@ -154,7 +163,7 @@ export const ProductForm = ({
             isLoading={isLoadingData}
             error={errors.categoryId?.message}
             setValue={setValue}
-            watch={watch}
+            control={control}
           />
 
           <ProductFormField
@@ -176,7 +185,7 @@ export const ProductForm = ({
       </ProductFormSection>
 
       <ProductFormMediaGallery
-        watch={watch}
+        control={control}
         setValue={setValue}
         error={errors.images?.message as string}
         existingImages={existingImages}

@@ -1,7 +1,7 @@
 "use client";
 
 import { Filter, Search } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { AuditLogResponse } from "@/@types/audit-log/audit-log-response";
 import { AuditLogTable } from "@/components/audit-log-table";
@@ -17,7 +17,6 @@ import { getAuditLogActionConfigs } from "@/utils/get-audit-log-action-config";
 const ITEMS_PER_PAGE = 10;
 
 const AdminAuditLogsPage = () => {
-
   const [logs, setLogs] = useState<AuditLogResponse[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -27,6 +26,7 @@ const AdminAuditLogsPage = () => {
   const [inputValue, setInputValue] = useState("");
   const [userIdSearch, setUserIdSearch] = useState("");
   const [actionFilter, setActionFilter] = useState("");
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const auditlogActionOptions = [
     { id: "", name: "Todas as Ações" },
@@ -36,33 +36,33 @@ const AdminAuditLogsPage = () => {
     })),
   ];
 
-  const fetchLogs = useCallback(
-    async (page: number, userId?: string, action?: string) => {
+  useEffect(() => {
+    let ignore = false;
+    async function fetchLogs() {
       setIsLoading(true);
       setErrorMessage(null);
-
       try {
         const filters = {
-          userId: userId || undefined,
-          action: action || undefined,
+          userId: userIdSearch || undefined,
+          action: actionFilter || undefined,
         };
-
-        const response = await getLogs(filters, page, ITEMS_PER_PAGE);
-
-        setLogs(response.content || []);
-        setTotalPages(response.totalPages || 0);
+        const response = await getLogs(filters, currentPage, ITEMS_PER_PAGE);
+        if (!ignore) {
+          setLogs(response.content || []);
+          setTotalPages(response.totalPages || 0);
+        }
       } catch {
-        setErrorMessage("Falha ao sincronizar registros de auditoria.");
+        if (!ignore)
+          setErrorMessage("Falha ao sincronizar registros de auditoria.");
       } finally {
-        setIsLoading(false);
+        if (!ignore) setIsLoading(false);
       }
-    },
-    [],
-  );
-
-  useEffect(() => {
-    fetchLogs(currentPage, userIdSearch, actionFilter);
-  }, [currentPage, fetchLogs, userIdSearch, actionFilter]);
+    }
+    fetchLogs();
+    return () => {
+      ignore = true;
+    };
+  }, [currentPage, userIdSearch, actionFilter, refreshKey]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -90,7 +90,7 @@ const AdminAuditLogsPage = () => {
         title="Erro de"
         highlightedTitle="Acesso"
         errorMessage={errorMessage}
-        onRetry={() => fetchLogs(currentPage, userIdSearch, actionFilter)}
+        onRetry={() => setRefreshKey((k) => k + 1)}
         backPath="/admin"
         backLabel="VOLTAR AO CONSOLE"
       />

@@ -3,12 +3,12 @@
 import { ImagePlus, X } from "lucide-react";
 import Image from "next/image";
 import { useMemo } from "react";
-import { UseFormSetValue, UseFormWatch } from "react-hook-form";
+import { Control, UseFormSetValue, useWatch } from "react-hook-form";
 
 import { ProductFormValues } from "@/schemas/product.schema";
 
 interface ProductFormMediaGalleryProps {
-  watch: UseFormWatch<ProductFormValues>;
+  control: Control<ProductFormValues>;
   setValue: UseFormSetValue<ProductFormValues>;
   error?: string;
   existingImages?: string[];
@@ -18,22 +18,22 @@ interface ProductFormMediaGalleryProps {
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/jpg"];
 
 export const ProductFormMediaGallery = ({
-  watch,
+  control,
   setValue,
   error,
   existingImages = [],
   onRemoveExisting,
 }: ProductFormMediaGalleryProps) => {
-  const selectedImages = watch("images");
+  const selectedImages = useWatch({ control, name: "images" });
 
   const previews = useMemo(
     () => selectedImages.map((file) => URL.createObjectURL(file)),
-    [selectedImages]
+    [selectedImages],
   );
 
   const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []).filter((file) =>
-      ALLOWED_TYPES.includes(file.type)
+      ALLOWED_TYPES.includes(file.type),
     );
 
     if (files.length > 0) {

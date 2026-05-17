@@ -33,7 +33,7 @@ const CheckoutPage = () => {
     subtotal,
     freightValue,
     total,
-    fetchCheckoutData,
+    refetchCheckoutData,
     handleQuantity,
     handleRemove,
     handleCreateAddress,
@@ -51,7 +51,7 @@ const CheckoutPage = () => {
         title="Erro de"
         highlightedTitle="Processamento"
         errorMessage={errorMessage}
-        onRetry={fetchCheckoutData}
+        onRetry={refetchCheckoutData}
         backPath={`/store/${slug}`}
         backLabel="VOLTAR PARA A LOJA"
       />

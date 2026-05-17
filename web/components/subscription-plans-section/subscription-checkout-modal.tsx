@@ -10,7 +10,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { SubscriptionPlanResponse } from "@/@types/subscription-plan/subscription-plan-response";
 import {
@@ -41,27 +41,32 @@ export const SubscriptionCheckoutModal = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showAuthAlert, setShowAuthAlert] = useState(false);
 
-  const checkActiveSubscription = useCallback(async () => {
+  const handleClose = () => {
+    setShowAuthAlert(false);
+    onClose();
+  };
+
+  useEffect(() => {
     if (!isOpen || !isAuthenticated) return;
 
-    try {
-      const activeSub = await getMyActiveSubscription();
+    let ignore = false;
 
-      if (activeSub) setActivePlanId(activeSub.planId);
-    } catch {
-      setActivePlanId(null);
+    async function checkActiveSubscription() {
+      try {
+        const activeSub = await getMyActiveSubscription();
+
+        if (!ignore && activeSub) setActivePlanId(activeSub.planId);
+      } catch {
+        if (!ignore) setActivePlanId(null);
+      }
     }
-  }, [isOpen, isAuthenticated]);
 
-  useEffect(() => {
     checkActiveSubscription();
-  }, [checkActiveSubscription]);
 
-  useEffect(() => {
-    if (!isOpen) {
-      setShowAuthAlert(false);
-    }
-  }, [isOpen]);
+    return () => {
+      ignore = true;
+    };
+  }, [isOpen, isAuthenticated]);
 
   const handleConfirmSubscription = async () => {
     if (!plan) return;
@@ -83,13 +88,16 @@ export const SubscriptionCheckoutModal = ({
 
     if (!result.success) {
       setErrorMessage(result.error);
+
       return;
     }
 
     router.push("/dashboard");
     router.refresh();
+
     refreshUser();
-    onClose();
+
+    handleClose();
   };
 
   if (!isOpen || !plan) return null;
@@ -109,12 +117,12 @@ export const SubscriptionCheckoutModal = ({
     <div className="fixed inset-0 z-300 flex items-center justify-center p-4">
       <div
         className="absolute inset-0 bg-slate-950/40 backdrop-blur-md animate-in fade-in duration-300"
-        onClick={onClose}
+        onClick={handleClose}
       />
 
       <div className="relative w-full max-w-xl overflow-hidden rounded-[2.5rem] bg-white shadow-2xl animate-in zoom-in-95 duration-300">
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="absolute right-6 top-6 z-10 flex h-10 w-10 items-center justify-center rounded-full text-slate-400 hover:bg-slate-50/10 hover:text-white transition-colors"
         >
           <X size={20} />

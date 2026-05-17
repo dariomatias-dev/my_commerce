@@ -1,5 +1,5 @@
 import { AlertCircle, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { CategoryResponse } from "@/@types/category/category-response";
 import { ProductResponse } from "@/@types/product/product-response";
@@ -22,53 +22,71 @@ export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
 
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const productsPerPage = 8;
 
-  const fetchCategories = useCallback(async () => {
-    try {
-      const res = await getAllCategories({ storeId }, 0, 100);
+  useEffect(() => {
+    let ignore = false;
 
-      setCategories(res.content);
-    } catch (err) {
-      console.error(err);
+    async function fetchCategories() {
+      try {
+        const res = await getAllCategories({ storeId }, 0, 100);
+
+        if (!ignore) setCategories(res.content);
+      } catch (err) {
+        console.error(err);
+      }
     }
+
+    fetchCategories();
+
+    return () => {
+      ignore = true;
+    };
   }, [storeId]);
 
-  const fetchProducts = useCallback(async () => {
-    try {
+  useEffect(() => {
+    let ignore = false;
+
+    async function fetchProducts() {
       setIsLoading(true);
       setError(null);
 
-      const res = await getAllProducts(
-        {
-          storeId,
-          categoryId: activeCategoryId === "all" ? undefined : activeCategoryId,
-        },
-        currentPage,
-        productsPerPage,
-      );
+      try {
+        const res = await getAllProducts(
+          {
+            storeId,
+            categoryId:
+              activeCategoryId === "all" ? undefined : activeCategoryId,
+          },
+          currentPage,
+          productsPerPage,
+        );
 
-      setProducts(res.content);
-      setTotalPages(res.totalPages);
-    } catch {
-      setError("Não foi possível carregar o catálogo de produtos.");
-    } finally {
-      setIsLoading(false);
+        if (!ignore) {
+          setProducts(res.content);
+          setTotalPages(res.totalPages);
+        }
+      } catch {
+        if (!ignore)
+          setError("Não foi possível carregar o catálogo de produtos.");
+      } finally {
+        if (!ignore) setIsLoading(false);
+      }
     }
-  }, [storeId, activeCategoryId, currentPage]);
 
-  useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
-
-  useEffect(() => {
     fetchProducts();
-  }, [fetchProducts]);
 
-  useEffect(() => {
+    return () => {
+      ignore = true;
+    };
+  }, [storeId, activeCategoryId, currentPage, refreshKey]);
+
+  const handleCategoryChange = (id: string) => {
+    setActiveCategoryId(id);
     setCurrentPage(0);
-  }, [activeCategoryId]);
+  };
 
   return (
     <section className="py-24" id="catalog">
@@ -80,7 +98,7 @@ export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
         <StoreCategoryTabs
           categories={categories}
           activeCategoryId={activeCategoryId}
-          onCategoryChange={setActiveCategoryId}
+          onCategoryChange={handleCategoryChange}
         />
       </div>
 
@@ -99,7 +117,7 @@ export const StoreCatalogSection = ({ storeId }: StoreCatalogSectionProps) => {
           </div>
 
           <button
-            onClick={fetchProducts}
+            onClick={() => setRefreshKey((k) => k + 1)}
             className="rounded-xl bg-slate-950 px-8 py-4 text-[10px] font-black tracking-[0.2em] text-white uppercase transition-all hover:bg-indigo-600 active:scale-95"
           >
             Tentar Novamente

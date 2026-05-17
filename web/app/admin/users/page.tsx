@@ -1,7 +1,7 @@
 "use client";
 
 import { Filter, Search, Users, UserX } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { AdminUserResponse } from "@/@types/user/admin-user-response";
@@ -18,8 +18,6 @@ import { StatusFilter } from "@/enums/status-filter";
 import { getUsers } from "@/services/users";
 
 const UserManagementPage = () => {
-
-
   const [users, setUsers] = useState<AdminUserResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -33,6 +31,7 @@ const UserManagementPage = () => {
   const [searchEmail, setSearchEmail] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>(StatusFilter.ALL);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const roleOptions = [
     { id: "", name: "Todos os Cargos" },
@@ -41,45 +40,56 @@ const UserManagementPage = () => {
     { id: "USER", name: "USUÁRIO" },
   ];
 
-  const fetchUsers = useCallback(async () => {
-    setIsLoading(true);
-    setErrorMessage(null);
+  useEffect(() => {
+    let ignore = false;
 
-    try {
-      const filters = {
-        name: searchName || undefined,
-        email: searchEmail || undefined,
-        role: (roleFilter as UserRole) || undefined,
-        status: (statusFilter as StatusFilter) || undefined,
-      };
+    async function fetchUsers() {
+      setIsLoading(true);
+      setErrorMessage(null);
 
-      const response = await getUsers(filters, currentPage, 10);
+      try {
+        const filters = {
+          name: searchName || undefined,
+          email: searchEmail || undefined,
+          role: (roleFilter as UserRole) || undefined,
+          status: (statusFilter as StatusFilter) || undefined,
+        };
 
-      setUsers(response.content || []);
-      setTotalPages(response.totalPages);
-      setTotalElements(response.totalElements);
+        const response = await getUsers(filters, currentPage, 10);
 
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage("Não foi possível carregar a base de usuários.");
+        if (!ignore) {
+          setUsers(response.content || []);
+          setTotalPages(response.totalPages);
+          setTotalElements(response.totalElements);
+
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      } catch (error) {
+        if (!ignore) {
+          if (error instanceof ApiError) {
+            setErrorMessage(error.message);
+          } else {
+            setErrorMessage("Não foi possível carregar a base de usuários.");
+          }
+        }
+      } finally {
+        if (!ignore) setIsLoading(false);
       }
-    } finally {
-      setIsLoading(false);
     }
+
+    fetchUsers();
+
+    return () => {
+      ignore = true;
+    };
   }, [
     currentPage,
     searchName,
     searchEmail,
     roleFilter,
     statusFilter,
+    refreshKey,
   ]);
-
-  useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -109,7 +119,7 @@ const UserManagementPage = () => {
         title="Gestão de"
         highlightedTitle="Usuários"
         errorMessage={errorMessage}
-        onRetry={fetchUsers}
+        onRetry={() => setRefreshKey((k) => k + 1)}
         backPath="/dashboard/admin"
         backLabel="VOLTAR AO CONSOLE"
       />
@@ -187,7 +197,11 @@ const UserManagementPage = () => {
         <div className="grid grid-cols-1 gap-4">
           {users.length > 0 ? (
             users.map((u) => (
-              <UserCard key={u.id} user={u} onDeleteSuccess={fetchUsers} />
+              <UserCard
+                key={u.id}
+                user={u}
+                onDeleteSuccess={() => setRefreshKey((k) => k + 1)}
+              />
             ))
           ) : (
             <div className="flex flex-col items-center justify-center rounded-[2.5rem] border-2 border-dashed border-slate-200 bg-slate-50/50 py-24 text-center">

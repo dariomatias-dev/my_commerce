@@ -51,7 +51,6 @@ export const CategoryFormDialog = ({
       reset({
         name: initialData?.name || "",
       });
-      setApiError(null);
     }
   }, [isOpen, initialData, reset]);
 

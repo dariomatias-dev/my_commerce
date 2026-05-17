@@ -2,7 +2,7 @@
 
 import { AlertCircle, Loader2, ShoppingBag, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ApiError } from "@/@types/api";
 import { CartStorage } from "@/@types/cart-storage";
@@ -24,27 +24,15 @@ interface StoreCartProps {
 
 export const StoreCart = ({ store }: StoreCartProps) => {
   const router = useRouter();
+
   const [items, setItems] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const storageKey = `cart-${store.id}`;
-
-  const getStorageCart = useCallback((): CartStorage[] => {
-    if (typeof window === "undefined") return [];
-
-    const stored = localStorage.getItem(storageKey);
-
-    return stored ? JSON.parse(stored) : [];
-  }, [storageKey]);
-
-  const syncBadgeCount = useCallback(() => {
-    const storageCart = getStorageCart();
-
-    setCartCount(storageCart.length);
-  }, [getStorageCart]);
 
   const updateStorage = (updatedItems: Item[]) => {
     const storageData: CartStorage[] = updatedItems.map((item) => ({
@@ -54,63 +42,83 @@ export const StoreCart = ({ store }: StoreCartProps) => {
 
     localStorage.setItem(storageKey, JSON.stringify(storageData));
 
-    syncBadgeCount();
+    setCartCount(updatedItems.length);
 
     window.dispatchEvent(new Event("cart-updated"));
   };
 
-  const fetchCartData = useCallback(async () => {
-    const storageCart = getStorageCart();
-    if (storageCart.length === 0) {
-      setItems([]);
-
-      return;
-    }
-
-    setIsLoading(true);
-    setErrorMessage(null);
-
-    try {
-      const productIds = storageCart.map((i) => i.id);
-      const response = await getProductsByIds(store.id, productIds);
-
-      const products = response.content || [];
-
-      const mergedItems: Item[] = products.map((product) => ({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.images?.[0]?.url,
-        quantity: storageCart.find((i) => i.id === product.id)?.quantity || 1,
-      }));
-
-      setItems(mergedItems);
-    } catch (err: unknown) {
-      if (err instanceof ApiError) {
-        setErrorMessage(err.message);
-      } else {
-        setErrorMessage("Erro ao carregar os itens do carrinho.");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [store.id, getStorageCart]);
-
   useEffect(() => {
+    function syncBadgeCount() {
+      if (typeof window === "undefined") return;
+
+      const stored = localStorage.getItem(storageKey);
+      const storageCart: CartStorage[] = stored ? JSON.parse(stored) : [];
+
+      setCartCount(storageCart.length);
+    }
+
     syncBadgeCount();
 
     window.addEventListener("cart-updated", syncBadgeCount);
 
     return () => window.removeEventListener("cart-updated", syncBadgeCount);
-  }, [syncBadgeCount]);
+  }, [storageKey]);
 
   useEffect(() => {
-    if (isOpen) fetchCartData();
-  }, [isOpen, fetchCartData]);
+    if (!isOpen) return;
+
+    let ignore = false;
+
+    async function fetchCartData() {
+      const stored =
+        typeof window !== "undefined" ? localStorage.getItem(storageKey) : null;
+      const storageCart: CartStorage[] = stored ? JSON.parse(stored) : [];
+
+      if (storageCart.length === 0) {
+        setItems([]);
+
+        return;
+      }
+
+      setIsLoading(true);
+      setErrorMessage(null);
+
+      try {
+        const productIds = storageCart.map((i) => i.id);
+        const response = await getProductsByIds(store.id, productIds);
+        const products = response.content || [];
+        const mergedItems: Item[] = products.map((product) => ({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          image: product.images?.[0]?.url,
+          quantity: storageCart.find((i) => i.id === product.id)?.quantity || 1,
+        }));
+
+        if (!ignore) setItems(mergedItems);
+      } catch (err: unknown) {
+        if (!ignore) {
+          if (err instanceof ApiError) {
+            setErrorMessage(err.message);
+          } else {
+            setErrorMessage("Erro ao carregar os itens do carrinho.");
+          }
+        }
+      } finally {
+        if (!ignore) setIsLoading(false);
+      }
+    }
+
+    fetchCartData();
+
+    return () => {
+      ignore = true;
+    };
+  }, [isOpen, store.id, refreshKey, storageKey]);
 
   const handleIncrease = (id: string) => {
     const updated = items.map((item) =>
-      item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+      item.id === id ? { ...item, quantity: item.quantity + 1 } : item,
     );
 
     setItems(updated);
@@ -121,7 +129,7 @@ export const StoreCart = ({ store }: StoreCartProps) => {
     const updated = items.map((item) =>
       item.id === id && item.quantity > 1
         ? { ...item, quantity: item.quantity - 1 }
-        : item
+        : item,
     );
 
     setItems(updated);
@@ -137,7 +145,7 @@ export const StoreCart = ({ store }: StoreCartProps) => {
 
   const total = items.reduce(
     (acc, item) => acc + item.price * item.quantity,
-    0
+    0,
   );
 
   return (
@@ -193,7 +201,7 @@ export const StoreCart = ({ store }: StoreCartProps) => {
               </p>
 
               <button
-                onClick={fetchCartData}
+                onClick={() => setRefreshKey((k) => k + 1)}
                 className="text-xs font-black uppercase underline text-indigo-600"
               >
                 Tentar novamente

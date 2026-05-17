@@ -31,7 +31,7 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserResponse | null>(null);
   const [subscription, setSubscription] = useState<SubscriptionResponse | null>(
-    null
+    null,
   );
   const [isLoading, setIsLoading] = useState(true);
 
@@ -71,8 +71,42 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    refreshUser();
-  }, [refreshUser]);
+    let ignore = false;
+
+    async function loadUser() {
+      const token = Cookies.get("token");
+
+      if (!token) {
+        setIsLoading(false);
+
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+
+        const [userData, subData] = await Promise.all([
+          getMe(),
+          getMyActiveSubscription().catch(() => null),
+        ]);
+
+        if (!ignore) {
+          setUser(userData);
+          setSubscription(subData);
+        }
+      } catch {
+        if (!ignore) logout();
+      } finally {
+        if (!ignore) setIsLoading(false);
+      }
+    }
+
+    loadUser();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   return (
     <AuthContext.Provider

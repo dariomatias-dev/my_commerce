@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ProductResponse } from "@/@types/product/product-response";
 import { StoreBestSellersSection } from "@/components/store/[slug]/store-best-sellers-section";
@@ -18,23 +18,29 @@ const StorePage = () => {
     useState<ProductResponse | null>(null);
   const [isProductsLoading, setIsProductsLoading] = useState(true);
 
-  const fecthProducts = useCallback(async () => {
-    try {
-      setIsProductsLoading(true);
-
-      const productsData = await getAllProducts({ storeId: store.id }, 0, 1);
-
-      setSpotlightProduct(productsData.content[0] || null);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsProductsLoading(false);
-    }
-  }, [store.id]);
-
   useEffect(() => {
-    fecthProducts();
-  }, [fecthProducts]);
+    let ignore = false;
+
+    async function fetchProducts() {
+      try {
+        setIsProductsLoading(true);
+
+        const productsData = await getAllProducts({ storeId: store.id }, 0, 1);
+
+        if (!ignore) setSpotlightProduct(productsData.content[0] || null);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        if (!ignore) setIsProductsLoading(false);
+      }
+    }
+
+    fetchProducts();
+
+    return () => {
+      ignore = true;
+    };
+  }, [store.id]);
 
   return (
     <main className="mx-auto max-w-400 pt-32 px-8 pb-20">

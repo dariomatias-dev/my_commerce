@@ -2,7 +2,7 @@
 
 import { AlertCircle, Package, RefreshCcw, Store } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { StoreResponse } from "@/@types/store/store-response";
 import { DashboardTotalBadge } from "@/components/dashboard-total-badge";
@@ -17,25 +17,35 @@ const OrdersPage = () => {
   const [stores, setStores] = useState<StoreResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const fetchStores = useCallback(async () => {
-    setIsLoading(true);
-    setErrorMessage(null);
-
-    try {
-      const response = await getMyOrderStores();
-
-      setStores(response.content || []);
-    } catch {
-      setErrorMessage("Não foi possível carregar seu histórico de compras.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
+    let ignore = false;
+
+    async function fetchStores() {
+      setIsLoading(true);
+      setErrorMessage(null);
+
+      try {
+        const response = await getMyOrderStores();
+
+        if (!ignore) setStores(response.content || []);
+      } catch {
+        if (!ignore)
+          setErrorMessage(
+            "Não foi possível carregar seu histórico de compras.",
+          );
+      } finally {
+        if (!ignore) setIsLoading(false);
+      }
+    }
+
     fetchStores();
-  }, [fetchStores]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [refreshKey]);
 
   if (isLoading) {
     return <LoadingIndicator message="Carregando lojas..." />;
@@ -57,7 +67,7 @@ const OrdersPage = () => {
         </p>
 
         <button
-          onClick={fetchStores}
+          onClick={() => setRefreshKey((k) => k + 1)}
           className="mt-10 flex items-center gap-3 rounded-2xl bg-slate-950 px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all hover:bg-indigo-600 active:scale-95"
         >
           <RefreshCcw size={16} />
