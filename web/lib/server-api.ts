@@ -34,6 +34,14 @@ export const serverApi = {
     });
   },
 
+  async put(path: string, body?: unknown) {
+    return fetch(`${getApiUrl()}${path}`, {
+      method: "PUT",
+      headers: { ...baseHeaders, ...(await getAuthHeaders()) },
+      body: JSON.stringify(body),
+    });
+  },
+
   async patch(path: string, body?: unknown) {
     return fetch(`${getApiUrl()}${path}`, {
       method: "PATCH",
