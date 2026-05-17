@@ -38,9 +38,16 @@ public class SubscriptionService {
     }
 
     public Subscription create(User user, SubscriptionRequestDTO request) {
-        subscriptionRepository.findActiveByUserId(user.getId()).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.BAD_REQUEST, "O usuário já possui uma assinatura ativa")
-        );
+        boolean hasActiveSubscription = subscriptionRepository
+                .findActiveByUserId(user.getId())
+                .isPresent();
+
+        if (hasActiveSubscription) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "O usuário já possui uma assinatura ativa"
+            );
+        }
 
         SubscriptionPlan plan = getPlanOrThrow(request.getPlanId());
 
