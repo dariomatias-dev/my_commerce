@@ -15,7 +15,7 @@ import { Item } from "@/components/layout/store-header/store-cart/store-cart-ite
 import { PaymentMethod } from "@/enums/payment-method";
 import { AddressFormValues } from "@/schemas/address.schema";
 import { createOrder } from "@/app/actions/orders";
-import { useFreight } from "@/services/hooks/use-freight";
+import { calculateFreight } from "@/services/freight";
 import { getStoreBySlug } from "@/services/stores";
 import { getProductsByIds } from "@/services/products";
 import { getAllAddresses } from "@/services/addresses";
@@ -24,8 +24,6 @@ import { createAddress } from "@/app/actions/addresses";
 export const useCheckout = () => {
   const router = useRouter();
   const params = useParams();
-  const { calculateFreight } = useFreight();
-
   const [store, setStore] = useState<StoreResponse | null>(null);
   const [items, setItems] = useState<Item[]>([]);
   const [addresses, setAddresses] = useState<UserAddressResponse[]>([]);
@@ -133,7 +131,7 @@ export const useCheckout = () => {
     };
 
     fetchFreight();
-  }, [selectedAddressId, calculateFreight]);
+  }, [selectedAddressId]);
 
   const handleQuantity = (id: string, delta: number) => {
     if (!store) return;
