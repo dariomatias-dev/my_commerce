@@ -10,22 +10,19 @@ interface StoreCardInfoProps {
 }
 
 export const StoreCardInfo = ({ store, basePath }: StoreCardInfoProps) => {
+  const isRemoved = store.deletedAt !== null;
+  const isActive = store.isActive && !isRemoved;
+  const statusText = isRemoved ? "Loja Removida" : isActive ? "Loja Online" : "Loja Desativada";
+  const statusColor = isRemoved ? "slate-400" : isActive ? "emerald-500" : "yellow-500";
+
   return (
     <div className="flex items-start justify-between">
       <div>
         <div className="mb-4 flex items-center gap-2">
-          <span
-            className={`flex h-2 w-2 rounded-full ${
-              store.isActive ? "bg-emerald-500" : "bg-slate-300"
-            }`}
-          />
+          <span className={`flex h-2 w-2 rounded-full bg-${statusColor}`} />
 
-          <span
-            className={`text-[10px] font-black tracking-widest uppercase ${
-              store.isActive ? "text-emerald-500" : "text-slate-400"
-            }`}
-          >
-            {store.isActive ? "Loja Online" : "Loja Removida"}
+          <span className={`text-[10px] font-black tracking-widest uppercase text-${statusColor}`}>
+            {statusText}
           </span>
         </div>
 
