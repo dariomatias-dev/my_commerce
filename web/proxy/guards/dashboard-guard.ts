@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export const dashboardGuard = (request: NextRequest) => {
+import { jwtVerify } from "jose";
+
+export const dashboardGuard = async (request: NextRequest): Promise<NextResponse | null> => {
   const token = request.cookies.get("token")?.value;
   if (!token) return NextResponse.redirect(new URL("/login", request.url));
 
-  const parts = token.split(".");
-  if (parts.length !== 3) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
+  const secret = process.env.JWT_SECRET;
+  if (!secret) return NextResponse.redirect(new URL("/login", request.url));
 
   try {
-    JSON.parse(Buffer.from(parts[1], "base64").toString());
+    await jwtVerify(token, new TextEncoder().encode(secret));
   } catch {
     return NextResponse.redirect(new URL("/login", request.url));
   }

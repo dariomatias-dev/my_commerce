@@ -47,7 +47,7 @@ export const StoreHeader = ({ store }: StoreHeaderProps) => {
                 <div className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl bg-slate-950 shadow-lg transition-transform group-hover:rotate-12">
                   {store ? (
                     <Image
-                      src={`${process.env.NEXT_PUBLIC_API_URL}/files/stores/${store.slug}/logo.png`}
+                      src={`${process.env.NEXT_PUBLIC_API_URL}/files/stores/${store.slug}/logo.jpeg`}
                       alt={store.name}
                       fill
                       unoptimized

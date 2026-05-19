@@ -6,11 +6,10 @@ import { FieldError } from "@/@types/api";
 import { AuthResponse } from "@/@types/auth/auth-response";
 import { LoginRequest } from "@/@types/auth/login-request";
 import { RecoverPasswordRequest } from "@/@types/auth/recover-password-request";
-import { RefreshTokenRequest } from "@/@types/auth/refresh-token-request";
-import { ResendEmailRequest } from "@/@types/auth/resend-email-request";
 import { ResetPasswordRequest } from "@/@types/auth/reset-password-request";
 import { SignupRequest } from "@/@types/auth/signup-request";
 import { VerifyEmailRequest } from "@/@types/auth/verify-email-request";
+import { ResendEmailRequest } from "@/@types/auth/resend-email-request";
 import { serverApi } from "@/lib/server-api";
 
 type ActionSuccess = { success: true };
@@ -29,6 +28,7 @@ async function setAuthCookies(authData: AuthResponse) {
   const cookieStore = await cookies();
 
   cookieStore.set("token", authData.accessToken, {
+    httpOnly: true,
     expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     secure: true,
     sameSite: "strict",
@@ -36,11 +36,27 @@ async function setAuthCookies(authData: AuthResponse) {
   });
 
   cookieStore.set("refreshToken", authData.refreshToken, {
+    httpOnly: true,
     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     secure: true,
     sameSite: "strict",
     path: "/",
   });
+
+  cookieStore.set("isLoggedIn", "1", {
+    httpOnly: false,
+    expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    secure: true,
+    sameSite: "strict",
+    path: "/",
+  });
+}
+
+export async function clearAuthCookies() {
+  const cookieStore = await cookies();
+  cookieStore.delete("token");
+  cookieStore.delete("refreshToken");
+  cookieStore.delete("isLoggedIn");
 }
 
 export async function login(data: LoginRequest): Promise<ActionResult> {
@@ -135,8 +151,15 @@ export async function resetPassword(data: ResetPasswordRequest): Promise<ActionR
   return { success: true };
 }
 
-export async function refreshToken(data: RefreshTokenRequest): Promise<ActionResult> {
-  const res = await serverApi.post("/auth/refresh-token", data);
+export async function refreshTokenAction(): Promise<ActionResult> {
+  const cookieStore = await cookies();
+  const refreshToken = cookieStore.get("refreshToken")?.value;
+
+  if (!refreshToken) {
+    return { success: false, error: "Sessão expirada." };
+  }
+
+  const res = await serverApi.post("/auth/refresh-token", { refreshToken });
   const body = await parseJson(res);
 
   if (!res.ok || body?.status === "error") {

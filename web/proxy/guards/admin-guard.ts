@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { jwtVerify } from "jose";
+
 import { UserRole } from "@/@types/user/user-response";
 
 interface JwtPayload {
@@ -9,29 +11,31 @@ interface JwtPayload {
   exp?: number;
 }
 
-export const adminGuard = (request: NextRequest): NextResponse | null => {
+export const adminGuard = async (request: NextRequest): Promise<NextResponse | null> => {
   const token = request.cookies.get("token")?.value;
 
   if (!token) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  const parts = token.split(".");
-
-  if (parts.length !== 3) {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
-
-  let payload: JwtPayload;
 
   try {
-    payload = JSON.parse(Buffer.from(parts[1], "base64").toString("utf-8")) as JwtPayload;
+    const { payload } = await jwtVerify(
+      token,
+      new TextEncoder().encode(secret),
+    );
+
+    const jwtPayload = payload as unknown as JwtPayload;
+
+    if (jwtPayload.role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
   } catch {
     return NextResponse.redirect(new URL("/login", request.url));
-  }
-
-  if (payload.role !== "ADMIN") {
-    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return null;

@@ -45,7 +45,7 @@ const StorePage = () => {
     <main className="mx-auto max-w-400 px-8 pt-32 pb-20">
       <StoreHero
         store={store}
-        bannerUrl={`${process.env.NEXT_PUBLIC_API_URL}/files/stores/${store.slug}/banner.png`}
+        bannerUrl={`${process.env.NEXT_PUBLIC_API_URL}/files/stores/${store.slug}/banner.jpeg`}
       />
 
       <StoreBestSellersSection storeId={store.id} />

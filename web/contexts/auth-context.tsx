@@ -4,6 +4,7 @@ import { ReactNode, createContext, useCallback, useContext, useEffect, useState 
 
 import Cookies from "js-cookie";
 
+import { clearAuthCookies } from "@/app/actions/auth";
 import { SubscriptionResponse } from "@/@types/subscription/subscription-response";
 import { UserResponse } from "@/@types/user/user-response";
 import { getMyActiveSubscription } from "@/services/subscriptions";
@@ -16,7 +17,7 @@ interface AuthContextData {
   isLoading: boolean;
   setUser: (user: UserResponse | null) => void;
   setSubscription: (subscription: SubscriptionResponse | null) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
 
@@ -27,21 +28,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [subscription, setSubscription] = useState<SubscriptionResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const logout = () => {
-    Cookies.remove("token");
-    Cookies.remove("refreshToken");
-
+  const logout = async () => {
+    Cookies.remove("isLoggedIn");
+    await clearAuthCookies();
     setUser(null);
     setSubscription(null);
-
     window.location.href = "/login";
   };
 
   const refreshUser = useCallback(async () => {
-    const token = Cookies.get("token");
-    if (!token) {
+    const sessionFlag = Cookies.get("isLoggedIn");
+    if (!sessionFlag) {
       setIsLoading(false);
-
       return;
     }
 
@@ -56,7 +54,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(userData);
       setSubscription(subData);
     } catch {
-      logout();
+      await logout();
     } finally {
       setIsLoading(false);
     }
@@ -66,11 +64,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     let ignore = false;
 
     async function loadUser() {
-      const token = Cookies.get("token");
+      const sessionFlag = Cookies.get("isLoggedIn");
 
-      if (!token) {
+      if (!sessionFlag) {
         setIsLoading(false);
-
         return;
       }
 
@@ -87,7 +84,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setSubscription(subData);
         }
       } catch {
-        if (!ignore) logout();
+        if (!ignore) await logout();
       } finally {
         if (!ignore) setIsLoading(false);
       }

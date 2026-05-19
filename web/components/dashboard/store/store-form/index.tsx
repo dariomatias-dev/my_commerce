@@ -51,9 +51,9 @@ export const StoreForm = ({ initialData, onSubmit, isLoading }: StoreFormProps) 
     ? `${process.env.NEXT_PUBLIC_API_URL}/files/stores/${initialData.slug}`
     : null;
 
-  const [existingLogo] = useState<string | null>(() => (baseUrl ? `${baseUrl}/logo.png` : null));
+  const [existingLogo] = useState<string | null>(() => (baseUrl ? `${baseUrl}/logo.jpeg` : null));
   const [existingBanner] = useState<string | null>(() =>
-    baseUrl ? `${baseUrl}/banner.png` : null,
+    baseUrl ? `${baseUrl}/banner.jpeg` : null,
   );
 
   const logoFile = useWatch({ control, name: "logo" });
