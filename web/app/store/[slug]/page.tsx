@@ -27,8 +27,7 @@ const StorePage = () => {
         const productsData = await getAllProducts({ storeId: store.id }, 0, 1);
 
         if (!ignore) setSpotlightProduct(productsData.content[0] || null);
-      } catch (error) {
-        console.error(error);
+      } catch {
       } finally {
         if (!ignore) setIsProductsLoading(false);
       }

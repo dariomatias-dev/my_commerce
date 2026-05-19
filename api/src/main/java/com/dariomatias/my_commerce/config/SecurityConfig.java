@@ -49,7 +49,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/stores/**").authenticated()
                         .requestMatchers("/api/subscription-plans/**").authenticated()
                         .requestMatchers("/api/subscriptions/**").authenticated()
-                        .requestMatchers("/api/transactions/**").authenticated()
                         .requestMatchers("/api/users/**").authenticated()
                         .anyRequest().authenticated()
                 )

@@ -76,7 +76,7 @@ const StoreLayout = ({ children }: StoreLayoutProps) => {
       <>
         <StoreHeader />
 
-        <main className="flex min-h-[60vh] flex-col items-center justify-center bg-slate-50 p-6 text-center">
+        <main className="flex min-h-screen flex-col items-center justify-center bg-slate-50 p-6 text-center">
           <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-[2.5rem] bg-white text-indigo-600 shadow-2xl shadow-indigo-100">
             <Store size={48} />
           </div>
@@ -108,7 +108,7 @@ const StoreLayout = ({ children }: StoreLayoutProps) => {
       <>
         <StoreHeader />
 
-        <main className="flex min-h-[60vh] flex-col items-center justify-center bg-white p-6 text-center">
+        <main className="flex min-h-screen flex-col items-center justify-center bg-white p-6 text-center">
           <div className="mb-8 text-red-500">
             <AlertCircle size={64} />
           </div>
