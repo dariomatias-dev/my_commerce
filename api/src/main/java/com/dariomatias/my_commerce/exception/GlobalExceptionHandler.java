@@ -25,8 +25,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ApiResult<String> handleResponseStatusException(ResponseStatusException ex) {
-        return ApiResult.error(ex.getStatusCode().value(), ex.getReason());
+    public ResponseEntity<ApiResult<String>> handleResponseStatusException(ResponseStatusException ex) {
+        return ResponseEntity.status(ex.getStatusCode())
+                .body(ApiResult.error(ex.getStatusCode().value(), ex.getReason()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -60,12 +61,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ApiResult<String> handleRuntimeException(RuntimeException ex) {
-        return ApiResult.error(400, ex.getMessage());
+    public ResponseEntity<ApiResult<String>> handleRuntimeException(RuntimeException ex) {
+        return ResponseEntity.badRequest()
+                .body(ApiResult.error(400, "Erro na requisição"));
     }
 
     @ExceptionHandler(Exception.class)
-    public ApiResult<String> handleException(Exception ex) {
-        return ApiResult.error(500, "Ocorreu um erro interno: " + ex.getMessage());
+    public ResponseEntity<ApiResult<String>> handleException(Exception ex) {
+        return ResponseEntity.internalServerError()
+                .body(ApiResult.error(500, "Erro interno do servidor"));
     }
 }

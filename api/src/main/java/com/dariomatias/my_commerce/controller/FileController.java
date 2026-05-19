@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.InputStream;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/files")
@@ -22,6 +23,8 @@ import java.io.InputStream;
         description = "Endpoints for serving files stored in object storage"
 )
 public class FileController {
+
+    private static final Set<String> ALLOWED_BUCKETS = Set.of("stores", "products");
 
     private final MinioClient minioClient;
 
@@ -48,11 +51,21 @@ public class FileController {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
+        if (!ALLOWED_BUCKETS.contains(bucket)) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
         try {
             String requestUri = request.getRequestURI();
 
             String prefix = "/api/files/" + bucket + "/";
             String objectName = requestUri.substring(prefix.length());
+
+            if (objectName.contains("..") || objectName.startsWith("/")) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
 
             StatObjectResponse stat = minioClient.statObject(
                     StatObjectArgs.builder()

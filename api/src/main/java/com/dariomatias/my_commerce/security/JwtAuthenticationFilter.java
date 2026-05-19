@@ -37,35 +37,43 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        String token = null;
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-
-            if (jwtService.validateToken(token)) {
-                String userId = jwtService.getIdFromToken(token);
-                User user = userRepository.findById(UUID.fromString(userId)).orElse(null);
-
-                if (user == null) {
-                    response.setContentType("application/json");
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.getWriter().write(
-                            objectMapper.writeValueAsString(
-                                    ApiResult.error(401, "Token inválido ou usuário deletado")
-                            )
-                    );
-                    return;
+            token = authHeader.substring(7);
+        } else if (request.getCookies() != null) {
+            for (jakarta.servlet.http.Cookie cookie : request.getCookies()) {
+                if ("token".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    break;
                 }
-
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        user,
-                        null,
-                        List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
-                );
-
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
+        }
+
+        if (token != null && jwtService.validateToken(token)) {
+            String userId = jwtService.getIdFromToken(token);
+            User user = userRepository.findById(UUID.fromString(userId)).orElse(null);
+
+            if (user == null) {
+                response.setContentType("application/json");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write(
+                        objectMapper.writeValueAsString(
+                                ApiResult.error(401, "Token inválido ou usuário deletado")
+                        )
+                );
+                return;
+            }
+
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    user,
+                    null,
+                    List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
+            );
+
+            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authToken);
         }
 
         filterChain.doFilter(request, response);

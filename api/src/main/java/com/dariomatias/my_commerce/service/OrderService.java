@@ -132,7 +132,14 @@ public class OrderService {
         return orderRepository.findAllByUserId(userId, pageable);
     }
 
-    public Page<Order> getAllByStore(UUID storeId, Pageable pageable) {
+    public Page<Order> getAllByStore(UUID storeId, User user, Pageable pageable) {
+        if (!UserRole.ADMIN.equals(user.getRole())) {
+            Store store = storeRepository.findById(storeId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
+            if (!store.getUserId().equals(user.getId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
+            }
+        }
         return orderRepository.findAllByStoreId(storeId, pageable);
     }
 
@@ -155,7 +162,14 @@ public class OrderService {
         return OrderDetailsResponseDTO.from(order);
     }
 
-    public long getSuccessfulSalesCount(UUID storeId) {
+    public long getSuccessfulSalesCount(UUID storeId, User user) {
+        if (!UserRole.ADMIN.equals(user.getRole())) {
+            Store store = storeRepository.findById(storeId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
+            if (!store.getUserId().equals(user.getId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
+            }
+        }
         return orderRepository.countByStoreIdAndStatus(storeId, Status.COMPLETED);
     }
 

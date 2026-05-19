@@ -101,12 +101,13 @@ public class AnalyticsController {
     @GetMapping("/store/{storeId}/stats/unique-customers")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResult<UniqueCustomersResponseDTO>> getUniqueCustomersByStore(
+            @AuthenticationPrincipal User user,
             @PathVariable UUID storeId
     ) {
         return ResponseEntity.ok(
                 ApiResult.success(
                         "Store unique customers retrieved successfully.",
-                        service.getUniqueCustomersByStore(storeId)
+                        service.getUniqueCustomersByStore(storeId, user)
                 )
         );
     }
@@ -127,12 +128,13 @@ public class AnalyticsController {
     @GetMapping("/store/{storeId}/stats/total-revenue")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResult<TotalRevenueResponseDTO>> getTotalRevenueByStore(
+            @AuthenticationPrincipal User user,
             @PathVariable UUID storeId
     ) {
         return ResponseEntity.ok(
                 ApiResult.success(
                         "Store total revenue retrieved successfully.",
-                        service.getTotalRevenueByStore(storeId)
+                        service.getTotalRevenueByStore(storeId, user)
                 )
         );
     }

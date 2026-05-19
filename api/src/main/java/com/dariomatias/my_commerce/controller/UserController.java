@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -90,7 +91,7 @@ public class UserController {
     public ResponseEntity<ApiResult<AdminUserResponse>> updateUser(
             @AuthenticationPrincipal User authenticatedUser,
             @PathVariable UUID id,
-            @RequestBody UserRequest updatedUser
+            @Valid @RequestBody UserRequest updatedUser
     ) {
         User user = userService.update(authenticatedUser, id, updatedUser);
 
@@ -152,7 +153,7 @@ public class UserController {
     @PatchMapping("/me")
     public ResponseEntity<ApiResult<UserResponse>> updateCurrentUser(
             @AuthenticationPrincipal User authenticatedUser,
-            @RequestBody UserRequest updatedUser
+            @Valid @RequestBody UserRequest updatedUser
     ) {
         User updated = userService.update(authenticatedUser, authenticatedUser.getId(), updatedUser);
 
@@ -168,7 +169,7 @@ public class UserController {
     @PostMapping("/me/change-password")
     public ResponseEntity<ApiResult<Void>> changePassword(
             @AuthenticationPrincipal User authenticatedUser,
-            @RequestBody PasswordUpdateRequest request
+            @Valid @RequestBody PasswordUpdateRequest request
     ) {
         userService.changePassword(authenticatedUser, authenticatedUser.getId(), request);
 

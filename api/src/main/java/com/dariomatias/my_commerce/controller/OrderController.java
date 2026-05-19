@@ -147,6 +147,7 @@ public class OrderController {
     @GetMapping("/store/{storeId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResult<Page<OrderResponseDTO>>> getAllByStore(
+            @AuthenticationPrincipal User user,
             @PathVariable UUID storeId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -158,7 +159,7 @@ public class OrderController {
         );
 
         Page<OrderResponseDTO> orders =
-                service.getAllByStore(storeId, pageable)
+                service.getAllByStore(storeId, user, pageable)
                         .map(OrderResponseDTO::from);
 
         return ResponseEntity.ok(
@@ -292,9 +293,10 @@ public class OrderController {
     @GetMapping("/store/{storeId}/stats/successful-sales")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResult<Long>> getSuccessfulSalesCount(
+            @AuthenticationPrincipal User user,
             @PathVariable UUID storeId
     ) {
-        long count = service.getSuccessfulSalesCount(storeId);
+        long count = service.getSuccessfulSalesCount(storeId, user);
 
         return ResponseEntity.ok(
                 ApiResult.success("Total de vendas bem-sucedidas", count)

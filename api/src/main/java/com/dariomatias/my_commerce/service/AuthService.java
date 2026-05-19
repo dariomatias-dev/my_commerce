@@ -114,24 +114,22 @@ public class AuthService {
     }
 
     public void resendVerificationEmail(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+        userRepository.findByEmail(email).ifPresent(user -> {
+            if (user.isEnabled()) {
+                auditLogService.log(user.getId().toString(), AuditLogAction.RESEND_VERIFICATION, "failure",
+                        Map.of("email", email, "reason", "email already verified"));
+                return;
+            }
 
-        if (user.isEnabled()) {
-            auditLogService.log(user.getId().toString(), AuditLogAction.RESEND_VERIFICATION, "failure",
-                    Map.of("email", email, "reason", "email already verified"));
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "E-mail já verificado");
-        }
-
-        try {
-            sendVerificationEmail(user);
-            auditLogService.log(user.getId().toString(), AuditLogAction.RESEND_VERIFICATION, "success",
-                    Map.of("email", email));
-        } catch (MessagingException e) {
-            auditLogService.log(user.getId().toString(), AuditLogAction.RESEND_VERIFICATION, "failure",
-                    Map.of("email", email, "reason", "email sending failed"));
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao enviar e-mail de verificação");
-        }
+            try {
+                sendVerificationEmail(user);
+                auditLogService.log(user.getId().toString(), AuditLogAction.RESEND_VERIFICATION, "success",
+                        Map.of("email", email));
+            } catch (MessagingException e) {
+                auditLogService.log(user.getId().toString(), AuditLogAction.RESEND_VERIFICATION, "failure",
+                        Map.of("email", email, "reason", "email sending failed"));
+            }
+        });
     }
 
     private void sendVerificationEmail(User user) throws MessagingException {
@@ -141,21 +139,19 @@ public class AuthService {
     }
 
     public void recoverPassword(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+        userRepository.findByEmail(email).ifPresent(user -> {
+            String token = UUID.randomUUID().toString();
+            redisTemplate.opsForValue().set(PASSWORD_RECOVERY_PREFIX + token, user.getId().toString(), 1, TimeUnit.HOURS);
 
-        String token = UUID.randomUUID().toString();
-        redisTemplate.opsForValue().set(PASSWORD_RECOVERY_PREFIX + token, user.getId().toString(), 1, TimeUnit.HOURS);
-
-        try {
-            emailService.sendPasswordRecoveryEmail(user.getEmail(), token);
-            auditLogService.log(user.getId().toString(), AuditLogAction.RECOVER_PASSWORD, "success",
-                    Map.of("email", email));
-        } catch (MessagingException e) {
-            auditLogService.log(user.getId().toString(), AuditLogAction.RECOVER_PASSWORD, "failure",
-                    Map.of("email", email, "reason", "email sending failed"));
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao enviar e-mail de recuperação");
-        }
+            try {
+                emailService.sendPasswordRecoveryEmail(user.getEmail(), token);
+                auditLogService.log(user.getId().toString(), AuditLogAction.RECOVER_PASSWORD, "success",
+                        Map.of("email", email));
+            } catch (MessagingException e) {
+                auditLogService.log(user.getId().toString(), AuditLogAction.RECOVER_PASSWORD, "failure",
+                        Map.of("email", email, "reason", "email sending failed"));
+            }
+        });
     }
 
     public void resetPassword(ResetPasswordRequest request) {

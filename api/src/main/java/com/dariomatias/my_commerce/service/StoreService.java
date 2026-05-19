@@ -88,14 +88,10 @@ public class StoreService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Filtro obrigatório");
         }
 
-        if (filter.getStatus() == StatusFilter.DELETED || filter.getStatus() == StatusFilter.ALL) {
-            if (!authUser.getRole().equals(UserRole.ADMIN)
-                    && !authUser.getRole().equals(UserRole.SUBSCRIBER)) {
-                throw new ResponseStatusException(
-                        HttpStatus.FORBIDDEN,
-                        "Acesso negado para filtragem por status"
-                );
-            }
+        boolean isAdmin = UserRole.ADMIN.equals(authUser.getRole());
+
+        if (!isAdmin) {
+            filter.setUserId(authUser.getId());
         }
 
         return storeRepository.findAll(filter, pageable);
@@ -105,20 +101,24 @@ public class StoreService {
         Store store = getStoreById(id);
         checkAccess(user, store.getUser().getId());
 
+        boolean isOwner = store.getUser().getId().equals(user.getId());
+        boolean isAdmin = UserRole.ADMIN.equals(user.getRole());
+
+        if (!isAdmin && !isOwner && (!store.getIsActive() || store.getDeletedAt() != null)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada");
+        }
+
         return store;
     }
 
     public Store getBySlug(String slug, User authenticatedUser) {
         Store store = storeRepository.findBySlug(slug)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada")
-                );
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada"));
 
-        if (store.isDeleted()) {
-            if (authenticatedUser.getRole() == UserRole.ADMIN) {
-                return store;
-            }
+        boolean isAdmin = authenticatedUser != null && UserRole.ADMIN.equals(authenticatedUser.getRole());
+        boolean isOwner = authenticatedUser != null && store.getUser().getId().equals(authenticatedUser.getId());
 
+        if (!isAdmin && !isOwner && (!store.getIsActive() || store.getDeletedAt() != null)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Loja não encontrada");
         }
 
@@ -151,6 +151,10 @@ public class StoreService {
 
             if (request.getThemeColor() != null) {
                 store.setThemeColor(request.getThemeColor());
+            }
+
+            if (request.getIsActive() != null) {
+                store.setIsActive(request.getIsActive());
             }
         }
 

@@ -1,7 +1,7 @@
 package com.dariomatias.my_commerce.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +13,9 @@ public class PasswordUpdateRequest {
     private String currentPassword;
 
     @NotBlank(message = "A nova senha é obrigatória")
-    @Size(min = 6, max = 100, message = "A nova senha deve ter no mínimo 6 caracteres")
+    @Pattern(
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,100}$",
+            message = "A nova senha deve ter pelo menos 8 caracteres, uma maiúscula, uma minúscula, um número e um caractere especial"
+    )
     private String newPassword;
 }

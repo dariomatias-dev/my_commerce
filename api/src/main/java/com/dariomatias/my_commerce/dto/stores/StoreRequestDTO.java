@@ -1,6 +1,7 @@
 package com.dariomatias.my_commerce.dto.stores;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,8 @@ public class StoreRequestDTO {
     @Size(max = 7, message = "A cor tema deve ser no formato hexadecimal (#RRGGBB)")
     private String themeColor;
 
-    public StoreRequestDTO() {}
+    @NotNull(message = "O status da loja é obrigatório")
+    private Boolean isActive;
 
+    public StoreRequestDTO() {}
 }

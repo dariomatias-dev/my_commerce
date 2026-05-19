@@ -9,11 +9,17 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
 public class MinioService {
+
+    private static final Set<String> ALLOWED_IMAGE_TYPES = Set.of(
+            "image/jpeg", "image/jpg", "image/png", "image/webp"
+    );
+    private static final long MAX_FILE_SIZE = 5L * 1024 * 1024;
 
     private final MinioClient minioClient;
 
@@ -159,13 +165,19 @@ public class MinioService {
     }
 
     public void uploadFile(String bucketName, String objectName, MultipartFile file) {
+        if (file.getSize() > MAX_FILE_SIZE) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Arquivo muito grande. Tamanho máximo: 5MB.");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !ALLOWED_IMAGE_TYPES.contains(contentType.toLowerCase())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Tipo de arquivo não permitido. Use JPEG, PNG ou WebP.");
+        }
+
         try {
             createBucket(bucketName);
-
-            String contentType = file.getContentType();
-            if (contentType == null || contentType.isBlank()) {
-                contentType = "application/octet-stream";
-            }
 
             try (InputStream inputStream = file.getInputStream()) {
                 minioClient.putObject(

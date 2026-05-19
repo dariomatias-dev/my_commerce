@@ -94,7 +94,7 @@ public class ProductService {
                 : StatusFilter.ACTIVE;
 
         if ((status == StatusFilter.DELETED || status == StatusFilter.ALL)
-                && !EnumSet.of(UserRole.ADMIN, UserRole.SUBSCRIBER).contains(user.getRole())) {
+                && (user == null || !EnumSet.of(UserRole.ADMIN, UserRole.SUBSCRIBER).contains(user.getRole()))) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
                     "Acesso negado para filtragem por status"
@@ -135,7 +135,7 @@ public class ProductService {
     }
 
     public Product getById(User user, UUID id) {
-        if (user.getRole().equals(UserRole.ADMIN)) {
+        if (user != null && user.getRole().equals(UserRole.ADMIN)) {
             return productRepository.findById(id)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado"));
         } else {
