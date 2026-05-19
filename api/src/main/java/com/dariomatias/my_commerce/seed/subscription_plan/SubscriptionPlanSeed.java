@@ -47,10 +47,10 @@ public class SubscriptionPlanSeed implements Seed {
         SubscriptionPlan pro = new SubscriptionPlan();
         pro.setName("Pro");
         pro.setMaxStores(3);
-        pro.setMaxProducts(Integer.MAX_VALUE);
+        pro.setMaxProducts(-1);
         pro.setFeatures(
                 "Gestão de 3 Lojas; " +
-                "Criação Imitada de Produtos; " +
+                "Criação Ilimitada de Produtos; " +
                 "Relatórios avançados; " +
                 "Cupons de desconto; " +
                 "Suporte avançado; " +
@@ -60,11 +60,11 @@ public class SubscriptionPlanSeed implements Seed {
 
         SubscriptionPlan business = new SubscriptionPlan();
         business.setName("Business");
-        business.setMaxStores(Integer.MAX_VALUE);
-        business.setMaxProducts(Integer.MAX_VALUE);
+        business.setMaxStores(-1);
+        business.setMaxProducts(-1);
         business.setFeatures(
                 "Criação Ilimitada de Lojas; " +
-                "Criação Imitada de Produtos; " +
+                "Criação Ilimitada de Produtos; " +
                 "Múltiplos administradores; " +
                 "Exportação de relatórios; " +
                 "Integração com meios de pagamento; " +
