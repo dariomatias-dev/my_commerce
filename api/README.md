@@ -27,22 +27,23 @@
 
 - [Sobre o Projeto](#sobre-o-projeto)
 - [Funcionalidades](#funcionalidades)
-- [Contruído com](#contruído-com)
+- [Construído com](#construído-com)
 - [Liquibase e Versionamento de Banco de Dados](#liquibase-e-versionamento-de-banco-de-dados)
 - [Como Começar](#como-começar)
   - [Pré-requisitos](#pré-requisitos)
   - [Instalação](#instalação)
+  - [Variáveis de Ambiente](#variáveis-de-ambiente)
   - [Configuração do Banco de Dados com Docker](#configuração-do-banco-de-dados-com-docker)
   - [Rodando o Projeto](#rodando-o-projeto)
   - [Documentação da API (Swagger)](#documentação-da-api-swagger)
   - [Populando o Banco de Dados](#populando-o-banco-de-dados)
-  - [Uso de Repositórios JDBC](#uso-de-repositórios-jdbc)
+  - [Repositórios JPA e JDBC](#repositórios-jpa-e-jdbc)
 - [Licença](#licença)
 - [Autor](#autor)
 
 ## Sobre o Projeto
 
-Este repositório contém o código-fonte do backend do Sistema SaaS de Lojas Virtuais. Desenvolvida como uma API RESTful utilizando Spring Boot e Java, esta parte do sistema é responsável por toda a lógica de negócio, persistência de dados e comunicação entre o frontend web, o aplicativo mobile e o banco de dados.
+Este repositório contém o código-fonte do backend do Sistema SaaS de Lojas Virtuais. Desenvolvida como uma API RESTful utilizando Spring Boot e Java, esta parte do sistema é responsável por toda a lógica de negócio, persistência de dados e comunicação com o frontend web.
 
 O backend gerencia autenticação, controle de acesso, gestão de usuários e assinaturas, operações CRUD para lojas e produtos, processamento de pedidos e geração de relatórios. Ele foi projetado para ser robusto, escalável e seguro, garantindo a integridade e a disponibilidade das informações da plataforma.
 
@@ -50,7 +51,7 @@ O backend gerencia autenticação, controle de acesso, gestão de usuários e as
 
 As principais funcionalidades expostas por esta API incluem:
 
-- **Gestão de Usuários e Assinaturas**: CRUD completo para usuários e controle de seus respectivos planos de assinatura (Gratuito, Pro, Business).
+- **Gestão de Usuários e Assinaturas**: CRUD completo para usuários e controle de seus respectivos planos de assinatura (Starter, Pro, Business), com limites de lojas e produtos por plano.
 - **Autenticação e Autorização**: Mecanismos de segurança para garantir acesso restrito a endpoints com base em perfis (User, Subscriber, Admin).
 - **Gestão de Lojas Virtuais**: Operações para criar, ler, atualizar e excluir lojas, incluindo configuração de dados básicos e personalização.
 - **Gestão de Produtos e Categorias**: APIs para gerenciar o catálogo de produtos de cada loja, incluindo nome, descrição, preço, estoque, status e imagens.
@@ -68,8 +69,9 @@ Este projeto foi desenvolvido utilizando as seguintes tecnologias e bibliotecas:
 - **[PostgreSQL](https://www.postgresql.org/)** – Banco de dados relacional poderoso e confiável para armazenamento de dados.
 - **[PL/pgSQL](https://www.postgresql.org/docs/current/plpgsql.html)** – Linguagem procedural do PostgreSQL para criar funções, triggers e lógica no banco de dados.
 - **[Liquibase](https://www.liquibase.org/)** – Ferramenta para versionamento e gerenciamento de mudanças no banco de dados.
-- **[Redis](https://redis.io/)** – Banco de dados em memória, ultra-rápido, usado para caching, filas e armazenamento temporário.
-- **[MinIO](https://min.io/)** – Sistema de armazenamento de objetos compatível com S3, ideal para arquivos e mídias.
+- **[Redis](https://redis.io/)** – Banco de dados em memória usado para caching de tokens e dados temporários.
+- **[MinIO](https://min.io/)** – Sistema de armazenamento de objetos compatível com S3, usado para armazenar imagens de lojas e produtos.
+- **[MongoDB](https://www.mongodb.com/)** – Banco de dados NoSQL orientado a documentos, usado para logs de auditoria e dados analíticos.
 - **[Docker](https://www.docker.com/)** – Plataforma de conteinerização para padronização de ambientes e deploy simplificado.
 
 ## Liquibase e Versionamento de Banco de Dados
@@ -108,32 +110,52 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
    cd api
    ```
 
+### Variáveis de Ambiente
+
+Crie um arquivo `.env` na raiz de `api/` baseando-se no `.env.example`. As variáveis disponíveis são:
+
+| Variável | Descrição |
+|---|---|
+| `DB_NAME` | Nome do banco de dados PostgreSQL |
+| `DB_USER` | Usuário do banco de dados |
+| `DB_PASSWORD` | Senha do banco de dados |
+| `DB_HOST` | Host do banco de dados (padrão: `localhost`) |
+| `DB_PORT` | Porta do banco de dados (padrão: `1213`) |
+| `JWT_SECRET` | Segredo para geração e validação de tokens JWT |
+| `JWT_ACCESS_EXPIRATION_MS` | Tempo de expiração do access token em ms (ex: `86400000` = 24h) |
+| `JWT_REFRESH_EXPIRATION_MS` | Tempo de expiração do refresh token em ms (ex: `604800000` = 7d) |
+| `MAIL_HOST` | Host do servidor SMTP |
+| `MAIL_PORT` | Porta do servidor SMTP |
+| `MAIL_USERNAME` | Endereço de e-mail para envio |
+| `MAIL_PASSWORD` | Senha ou app password do e-mail |
+| `ADMIN_PASSWORD` | Senha do usuário administrador criado no boot |
+| `MINIO_URL` | URL do servidor MinIO (padrão: `http://localhost:9000`) |
+| `MINIO_ACCESS_KEY` | Chave de acesso do MinIO |
+| `MINIO_SECRET_KEY` | Chave secreta do MinIO |
+| `MONGO_USER` | Usuário do MongoDB |
+| `MONGO_PASSWORD` | Senha do MongoDB |
+| `MONGO_DB` | Nome do banco de dados MongoDB |
+
 ### Configuração do Banco de Dados com Docker
 
-O banco de dados PostgreSQL é configurado e executado através do Docker Compose.
+O Docker Compose sobe todos os serviços necessários para o backend:
 
-1. **Crie um arquivo `.env`**
+| Serviço | Porta | Descrição |
+|---|---|---|
+| PostgreSQL | `1213` | Banco de dados relacional principal |
+| Redis | `6379` | Cache e armazenamento de tokens |
+| MinIO | `9000` / `9001` | Armazenamento de objetos (API / Console web) |
+| MongoDB | `27017` | Logs de auditoria e dados analíticos |
 
-   Acesse o arquivo `.env.example` e remova `.example`.
-   Altere os valores conforme necessário.
+1. **Crie o arquivo `.env`** conforme descrito na seção [Variáveis de Ambiente](#variáveis-de-ambiente).
 
-2. Inicie o Contêiner do Banco de Dados
+2. **Inicie os contêineres:**
 
-Para criar e iniciar o contêiner do PostgreSQL usando o Docker Compose, siga as instruções conforme o seu sistema operacional:
+   ```bash
+   docker compose up -d
+   ```
 
-- **Windows**
-  Abra o terminal ou PowerShell e execute:
-
-  ```bash
-  docker-compose up -d
-  ```
-
-- **Linux**
-  Abra o terminal e execute:
-
-  ```bash
-  docker compose up -d
-  ```
+   > O console web do MinIO está disponível em `http://localhost:9001`.
 
 **Observação:** O parâmetro `-d` executa o contêiner em **segundo plano**, permitindo que você continue usando o terminal normalmente.
 
@@ -265,7 +287,7 @@ docker compose up -d --force-recreate
 
 A API fornece documentação interativa via **Swagger**, permitindo testar endpoints diretamente no navegador.
 
-- **URL da documentação:** `http://localhost:8080/swagger-ui.html` ou `http://localhost:8080/swagger-ui/index.html`
+- **URL da documentação:** `http://localhost:8080/swagger-ui/index.html`
 - Permite visualizar todos os endpoints disponíveis, parâmetros, tipos de retorno e exemplos de requisições e respostas.
 
 ### Populando o Banco de Dados
@@ -295,23 +317,33 @@ seed/
 Cada seed é executada de forma independente e utiliza o contexto do **Spring Boot**, permitindo acesso a repositórios, serviços e demais componentes configurados no projeto.
 O arquivo `Run<ClassName>Seed.java` é responsável por chamar a seed correspondente.
 
-#### Executando uma Seed
+#### Executando as Seeds
 
-1. Certifique-se de que o **banco de dados PostgreSQL** esteja em execução.
+1. Certifique-se de que os contêineres Docker estejam em execução.
 2. Navegue até o diretório `api`.
-3. Execute a seed desejado com o comando:
+3. Para popular **todas as tabelas** de uma vez:
 
    ```bash
-   ./mvnw exec:java -Dexec.mainClass="com.dariomatias.my_commerce.seed.<nome_da_tabela>.Run<ClassName>Seed"
+   ./mvnw exec:java -Dexec.mainClass="com.dariomatias.my_commerce.seed.RunAllSeeds"
    ```
 
-   **Exemplo:**
+4. Para executar uma seed individualmente:
 
    ```bash
+   ./mvnw exec:java -Dexec.mainClass="com.dariomatias.my_commerce.seed.<pasta>.Run<Nome>Seed"
+   ```
+
+   **Exemplos:**
+
+   ```bash
+   ./mvnw exec:java -Dexec.mainClass="com.dariomatias.my_commerce.seed.subscription_plan.RunSubscriptionPlanSeed"
    ./mvnw exec:java -Dexec.mainClass="com.dariomatias.my_commerce.seed.user.RunUserSeed"
+   ./mvnw exec:java -Dexec.mainClass="com.dariomatias.my_commerce.seed.store.RunStoreSeed"
    ```
 
-### Repositórios
+   Seeds disponíveis: `admin_user`, `category`, `order`, `product`, `store`, `subscription`, `subscription_plan`, `user`, `user_address`.
+
+### Repositórios JPA e JDBC
 
 O projeto oferece suporte tanto a **JPA** quanto a **JDBC** para acessar o banco de dados. Por padrão, a aplicação utiliza **JPA**, mas é possível alternar para JDBC.
 

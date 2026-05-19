@@ -94,8 +94,9 @@ Para facilitar a navegação e consulta, utilize os links abaixo:
 - **[PostgreSQL](https://www.postgresql.org/)** – Banco de dados relacional poderoso e confiável para armazenamento de dados.
 - **[PL/pgSQL](https://www.postgresql.org/docs/current/plpgsql.html)** – Linguagem procedural do PostgreSQL para criar funções, triggers e lógica no banco de dados.
 - **[Liquibase](https://www.liquibase.org/)** – Ferramenta para versionamento e gerenciamento de mudanças no banco de dados.
-- **[Redis](https://redis.io/)** – Banco de dados em memória, ultra-rápido, usado para caching, filas e armazenamento temporário.
-- **[MinIO](https://min.io/)** – Sistema de armazenamento de objetos compatível com S3, ideal para arquivos e mídias.
+- **[Redis](https://redis.io/)** – Banco de dados em memória, ultra-rápido, usado para caching e armazenamento temporário de tokens.
+- **[MinIO](https://min.io/)** – Sistema de armazenamento de objetos compatível com S3, usado para armazenar imagens de lojas e produtos.
+- **[MongoDB](https://www.mongodb.com/)** – Banco de dados NoSQL orientado a documentos, usado para logs e dados analíticos.
 - **[Docker](https://www.docker.com/)** – Plataforma de conteinerização para padronização de ambientes e deploy simplificado.
 
 ## Controle de Acesso
@@ -212,7 +213,16 @@ http://localhost:3000
 #### 4. Populando o Banco de Dados (Opcional)
 
 O projeto conta com **seeds** para geração automática de dados de desenvolvimento e teste.
-Para gerar registros em todas as tabelas, acesse a pasta `seeds` no backend e execute a classe `RunAllSeeds`.
+As seeds estão localizadas em `api/src/main/java/com/dariomatias/my_commerce/seed`.
+
+Para popular todas as tabelas de uma vez, execute:
+
+```bash
+cd api
+./mvnw exec:java -Dexec.mainClass="com.dariomatias.my_commerce.seed.RunAllSeeds"
+```
+
+Para executar seeds individualmente, veja as instruções no [README do Backend](./api/README.md#populando-o-banco-de-dados).
 
 </br>
 

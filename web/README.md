@@ -32,6 +32,7 @@ A interface administrativa e dashboard do Sistema SaaS, construída com Next.js,
   - [Instalação](#instalação)
   - [Variáveis de Ambiente](#variáveis-de-ambiente)
   - [Rodando o Projeto](#rodando-o-projeto)
+  - [Scripts Disponíveis](#scripts-disponíveis)
 - [Licença](#licença)
 - [Autor](#autor)
 
@@ -62,15 +63,22 @@ O frontend utiliza as tecnologias mais modernas do ecossistema React:
 - **[Shadcn/UI](https://ui.shadcn.com/)** – Conjunto de componentes acessíveis e personalizáveis para criação de interfaces modernas.
 - **[React Hook Form](https://react-hook-form.com/)** – Biblioteca performática para gerenciamento de formulários com validação simples e eficiente.
 - **[Zod](https://zod.dev/)** – Biblioteca de validação de esquemas com tipagem forte e validação em tempo de execução.
+- **[Axios](https://axios-http.com/)** – Cliente HTTP usado nas chamadas à API do backend.
 - **[Lucide React](https://lucide.dev/)** – Biblioteca de ícones SVG leves, consistentes e facilmente customizáveis.
+- **[React Icons](https://react-icons.github.io/react-icons/)** – Coleção adicional de ícones de diversas bibliotecas populares.
+- **[jose](https://github.com/panva/jose)** – Biblioteca para criação e verificação de tokens JWT no servidor (middleware).
+- **[js-cookie](https://github.com/js-cookie/js-cookie)** – Utilitário para leitura e escrita de cookies no cliente.
+- **[AWS SDK S3](https://aws.amazon.com/sdk-for-javascript/)** – Usado para gerar URLs pré-assinadas de upload direto ao MinIO.
 
 ## Arquitetura e Padrões
 
 O projeto segue padrões de organização que visam a escalabilidade:
 
-- **Hooks Customizados**: Lógica de consumo da API isolada em hooks para reutilização e limpeza de código.
-- **Services Layer**: Camada dedicada para chamadas HTTP utilizando Axios.
-- **Middleware**: Controle de rotas protegidas baseado nos perfis de acesso (User, Subscriber, Admin).
+- **App Router (Next.js 16)**: Roteamento baseado em sistema de arquivos com layouts aninhados e Server Components.
+- **Proxy / Middleware**: Arquivo `proxy.ts` intercepta rotas protegidas (`/dashboard`, `/admin`) e valida o token JWT via `jose` antes de permitir acesso.
+- **Server Actions**: Operações de autenticação (login, signup, logout) são tratadas como Server Actions do Next.js.
+- **Services Layer**: Chamadas HTTP ao backend centralizadas em `services/`, utilizando Axios com interceptors configurados em `lib/axios.ts`.
+- **Contexts**: Estado global de autenticação (`AuthContext`) e dados da loja (`StoreContext`) gerenciados via React Context.
 
 ## Como Começar
 
@@ -105,7 +113,18 @@ pnpm install
 
 ### Variáveis de Ambiente
 
-Crie um arquivo `.env` na raiz do diretório `web` baseando-se no arquivo `.env.example`.
+Crie um arquivo `.env` na raiz do diretório `web/` baseando-se no `.env.example`:
+
+| Variável | Descrição |
+|---|---|
+| `NEXT_PUBLIC_API_URL` | URL pública da API (usada no browser), ex: `http://127.0.0.1:8080/api` |
+| `API_URL` | URL da API usada no servidor Next.js (Server Actions / Route Handlers) |
+| `JWT_SECRET` | Segredo JWT para verificação de tokens no middleware (deve ser igual ao do backend) |
+| `S3_REGION` | Região do bucket S3/MinIO (ex: `us-east-1`) |
+| `S3_ENDPOINT` | Endpoint do MinIO (ex: `http://localhost:9000`) |
+| `S3_ACCESS_KEY` | Chave de acesso do MinIO |
+| `S3_SECRET_KEY` | Chave secreta do MinIO |
+| `S3_FORCE_PATH_STYLE` | Deve ser `true` para uso com MinIO |
 
 ### Rodando o Projeto
 
@@ -116,6 +135,19 @@ pnpm run dev
 ```
 
 A aplicação estará disponível em `http://localhost:3000`.
+
+### Scripts Disponíveis
+
+| Comando | Descrição |
+|---|---|
+| `pnpm dev` | Inicia o servidor de desenvolvimento |
+| `pnpm build` | Gera o build de produção |
+| `pnpm start` | Inicia o servidor de produção (requer `build`) |
+| `pnpm lint` | Executa o ESLint |
+| `pnpm format` | Formata o código com Prettier |
+| `pnpm format:check` | Verifica a formatação sem alterar arquivos |
+
+> Os scripts acima devem ser executados dentro de `web/` ou via `pnpm --filter web <script>` na raiz do monorepo.
 
 ## Licença
 
