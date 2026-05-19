@@ -5,10 +5,13 @@ import com.dariomatias.my_commerce.dto.stores.StoreRequestDTO;
 import com.dariomatias.my_commerce.enums.StatusFilter;
 import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.Store;
+import com.dariomatias.my_commerce.model.Subscription;
+import com.dariomatias.my_commerce.model.SubscriptionPlan;
 import com.dariomatias.my_commerce.model.User;
 import com.dariomatias.my_commerce.repository.contract.ProductContract;
 import com.dariomatias.my_commerce.repository.contract.StoreContract;
 import com.dariomatias.my_commerce.repository.contract.SubscriptionContract;
+import com.dariomatias.my_commerce.repository.contract.SubscriptionPlanContract;
 import com.dariomatias.my_commerce.repository.contract.UserContract;
 import com.dariomatias.my_commerce.util.SlugUtil;
 import org.springframework.data.domain.Page;
@@ -28,6 +31,7 @@ public class StoreService {
     private final StoreContract storeRepository;
     private final ProductContract productRepository;
     private final SubscriptionContract subscriptionRepository;
+    private final SubscriptionPlanContract subscriptionPlanRepository;
     private final UserContract userRepository;
     private final MinioService minioService;
 
@@ -37,19 +41,35 @@ public class StoreService {
             StoreContract storeRepository,
             ProductContract productRepository,
             SubscriptionContract subscriptionRepository,
+            SubscriptionPlanContract subscriptionPlanRepository,
             UserContract userRepository,
             MinioService minioService
     ) {
         this.storeRepository = storeRepository;
         this.productRepository = productRepository;
         this.subscriptionRepository = subscriptionRepository;
+        this.subscriptionPlanRepository = subscriptionPlanRepository;
         this.userRepository = userRepository;
         this.minioService = minioService;
     }
 
     public Store create(User user, StoreRequestDTO request, MultipartFile logo, MultipartFile banner) {
-        if (!subscriptionRepository.existsActiveSubscriptionByUserId(user.getId())) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O usuário não possue uma assinatura ativa");
+        Subscription subscription = subscriptionRepository
+                .findActiveByUserId(user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "O usuário não possue uma assinatura ativa"));
+
+        SubscriptionPlan plan = subscriptionPlanRepository
+                .findById(subscription.getPlanId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Plano de assinatura não encontrado"));
+
+        if (plan.getMaxStores() != -1) {
+            long currentStores = storeRepository.countByUserIdAndDeletedAtIsNull(user.getId());
+            if (currentStores >= plan.getMaxStores()) {
+                throw new ResponseStatusException(
+                        HttpStatus.UNPROCESSABLE_ENTITY,
+                        "Limite de lojas do seu plano atingido (" + plan.getMaxStores() + ")"
+                );
+            }
         }
 
         String slug = SlugUtil.generateSlug(request.getName());

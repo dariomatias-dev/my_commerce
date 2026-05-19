@@ -36,6 +36,8 @@ public interface ProductRepository
 
     boolean existsBySlug(String slug);
 
+    long countByStore_User_IdAndDeletedAtIsNull(UUID userId);
+
     long countByStore_User_IdAndActiveTrueAndDeletedAtIsNull(UUID userId);
 
     long countByStore_IdAndActiveTrue(UUID storeId);

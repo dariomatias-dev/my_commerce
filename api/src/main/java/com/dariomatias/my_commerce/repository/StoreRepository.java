@@ -24,6 +24,8 @@ public interface StoreRepository
 
     boolean existsBySlug(String slug);
 
+    long countByUser_IdAndDeletedAtIsNull(UUID userId);
+
     long countByIsActiveTrueAndDeletedAtIsNull();
 
     @Modifying

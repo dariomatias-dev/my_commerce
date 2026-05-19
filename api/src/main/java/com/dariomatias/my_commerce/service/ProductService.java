@@ -8,6 +8,8 @@ import com.dariomatias.my_commerce.model.*;
 import com.dariomatias.my_commerce.repository.contract.CategoryContract;
 import com.dariomatias.my_commerce.repository.contract.ProductContract;
 import com.dariomatias.my_commerce.repository.contract.StoreContract;
+import com.dariomatias.my_commerce.repository.contract.SubscriptionContract;
+import com.dariomatias.my_commerce.repository.contract.SubscriptionPlanContract;
 import com.dariomatias.my_commerce.util.SlugUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,17 +32,23 @@ public class ProductService {
     private final StoreContract storeRepository;
     private final CategoryContract categoryRepository;
     private final ProductImageService productImageService;
+    private final SubscriptionContract subscriptionRepository;
+    private final SubscriptionPlanContract subscriptionPlanRepository;
 
     public ProductService(
             ProductContract productRepository,
             StoreContract storeRepository,
             CategoryContract categoryRepository,
-            ProductImageService productImageService
+            ProductImageService productImageService,
+            SubscriptionContract subscriptionRepository,
+            SubscriptionPlanContract subscriptionPlanRepository
     ) {
         this.productRepository = productRepository;
         this.storeRepository = storeRepository;
         this.categoryRepository = categoryRepository;
         this.productImageService = productImageService;
+        this.subscriptionRepository = subscriptionRepository;
+        this.subscriptionPlanRepository = subscriptionPlanRepository;
     }
 
     public Product create(User user, ProductRequestDTO request, MultipartFile[] images) {
@@ -49,6 +57,26 @@ public class ProductService {
 
         if (!user.getRole().equals(UserRole.ADMIN) && !store.getUserId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "A loja não pertence ao usuário");
+        }
+
+        if (!user.getRole().equals(UserRole.ADMIN)) {
+            Subscription subscription = subscriptionRepository
+                    .findActiveByUserId(user.getId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Assinatura ativa não encontrada"));
+
+            SubscriptionPlan plan = subscriptionPlanRepository
+                    .findById(subscription.getPlanId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Plano de assinatura não encontrado"));
+
+            if (plan.getMaxProducts() != -1) {
+                long currentProducts = productRepository.countByStoreUserIdAndDeletedAtIsNull(user.getId());
+                if (currentProducts >= plan.getMaxProducts()) {
+                    throw new ResponseStatusException(
+                            HttpStatus.UNPROCESSABLE_ENTITY,
+                            "Limite de produtos do seu plano atingido (" + plan.getMaxProducts() + ")"
+                    );
+                }
+            }
         }
 
         Category category = categoryRepository.findById(request.getCategoryId())

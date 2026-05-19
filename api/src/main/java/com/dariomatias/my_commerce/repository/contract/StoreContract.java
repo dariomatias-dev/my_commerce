@@ -23,6 +23,8 @@ public interface StoreContract {
 
     Optional<Store> findBySlug(String slug);
 
+    long countByUserIdAndDeletedAtIsNull(UUID userId);
+
     long countByIsActiveTrueAndDeletedAtIsNull();
 
     Store update(Store store);

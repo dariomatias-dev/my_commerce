@@ -161,6 +161,13 @@ public class StoreJdbcRepository implements StoreContract {
     }
 
     @Override
+    public long countByUserIdAndDeletedAtIsNull(UUID userId) {
+        String sql = "SELECT COUNT(*) FROM stores WHERE user_id = :userId AND deleted_at IS NULL";
+
+        return jdbc.queryForObject(sql, new MapSqlParameterSource("userId", userId), Long.class);
+    }
+
+    @Override
     public long countByIsActiveTrueAndDeletedAtIsNull() {
         String sql = "SELECT COUNT(*) FROM stores WHERE is_active = true AND deleted_at IS NULL";
 

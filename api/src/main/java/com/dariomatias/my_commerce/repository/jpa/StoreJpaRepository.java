@@ -70,6 +70,11 @@ public class StoreJpaRepository implements StoreContract {
     }
 
     @Override
+    public long countByUserIdAndDeletedAtIsNull(UUID userId) {
+        return repository.countByUser_IdAndDeletedAtIsNull(userId);
+    }
+
+    @Override
     public long countByIsActiveTrueAndDeletedAtIsNull() {
         return repository.countByIsActiveTrueAndDeletedAtIsNull();
     }
