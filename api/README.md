@@ -7,6 +7,8 @@
   <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" alt="Redis">
   <img src="https://img.shields.io/badge/MinIO-005A9C?style=for-the-badge&logo=minio&logoColor=white" alt="MinIO">
   <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
+  <img src="https://img.shields.io/badge/JUnit5-25A162?style=for-the-badge&logo=junit5&logoColor=white" alt="JUnit 5">
+  <img src="https://img.shields.io/badge/JaCoCo-C71585?style=for-the-badge&logoColor=white" alt="JaCoCo">
 </div>
 <br>
 
@@ -38,6 +40,11 @@
   - [Documentação da API (Swagger)](#documentação-da-api-swagger)
   - [Populando o Banco de Dados](#populando-o-banco-de-dados)
   - [Repositórios JPA e JDBC](#repositórios-jpa-e-jdbc)
+- [Testes](#testes)
+  - [Arquitetura dos Testes](#arquitetura-dos-testes)
+  - [Controllers Testados](#controllers-testados)
+  - [Cobertura Mínima (JaCoCo)](#cobertura-mínima-jacoco)
+  - [Executando os Testes](#executando-os-testes)
 - [Licença](#licença)
 - [Autor](#autor)
 
@@ -114,38 +121,38 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
 
 Crie um arquivo `.env` na raiz de `api/` baseando-se no `.env.example`. As variáveis disponíveis são:
 
-| Variável | Descrição |
-|---|---|
-| `DB_NAME` | Nome do banco de dados PostgreSQL |
-| `DB_USER` | Usuário do banco de dados |
-| `DB_PASSWORD` | Senha do banco de dados |
-| `DB_HOST` | Host do banco de dados (padrão: `localhost`) |
-| `DB_PORT` | Porta do banco de dados (padrão: `1213`) |
-| `JWT_SECRET` | Segredo para geração e validação de tokens JWT |
-| `JWT_ACCESS_EXPIRATION_MS` | Tempo de expiração do access token em ms (ex: `86400000` = 24h) |
+| Variável                    | Descrição                                                        |
+| --------------------------- | ---------------------------------------------------------------- |
+| `DB_NAME`                   | Nome do banco de dados PostgreSQL                                |
+| `DB_USER`                   | Usuário do banco de dados                                        |
+| `DB_PASSWORD`               | Senha do banco de dados                                          |
+| `DB_HOST`                   | Host do banco de dados (padrão: `localhost`)                     |
+| `DB_PORT`                   | Porta do banco de dados (padrão: `1213`)                         |
+| `JWT_SECRET`                | Segredo para geração e validação de tokens JWT                   |
+| `JWT_ACCESS_EXPIRATION_MS`  | Tempo de expiração do access token em ms (ex: `86400000` = 24h)  |
 | `JWT_REFRESH_EXPIRATION_MS` | Tempo de expiração do refresh token em ms (ex: `604800000` = 7d) |
-| `MAIL_HOST` | Host do servidor SMTP |
-| `MAIL_PORT` | Porta do servidor SMTP |
-| `MAIL_USERNAME` | Endereço de e-mail para envio |
-| `MAIL_PASSWORD` | Senha ou app password do e-mail |
-| `ADMIN_PASSWORD` | Senha do usuário administrador criado no boot |
-| `MINIO_URL` | URL do servidor MinIO (padrão: `http://localhost:9000`) |
-| `MINIO_ACCESS_KEY` | Chave de acesso do MinIO |
-| `MINIO_SECRET_KEY` | Chave secreta do MinIO |
-| `MONGO_USER` | Usuário do MongoDB |
-| `MONGO_PASSWORD` | Senha do MongoDB |
-| `MONGO_DB` | Nome do banco de dados MongoDB |
+| `MAIL_HOST`                 | Host do servidor SMTP                                            |
+| `MAIL_PORT`                 | Porta do servidor SMTP                                           |
+| `MAIL_USERNAME`             | Endereço de e-mail para envio                                    |
+| `MAIL_PASSWORD`             | Senha ou app password do e-mail                                  |
+| `ADMIN_PASSWORD`            | Senha do usuário administrador criado no boot                    |
+| `MINIO_URL`                 | URL do servidor MinIO (padrão: `http://localhost:9000`)          |
+| `MINIO_ACCESS_KEY`          | Chave de acesso do MinIO                                         |
+| `MINIO_SECRET_KEY`          | Chave secreta do MinIO                                           |
+| `MONGO_USER`                | Usuário do MongoDB                                               |
+| `MONGO_PASSWORD`            | Senha do MongoDB                                                 |
+| `MONGO_DB`                  | Nome do banco de dados MongoDB                                   |
 
 ### Configuração do Banco de Dados com Docker
 
 O Docker Compose sobe todos os serviços necessários para o backend:
 
-| Serviço | Porta | Descrição |
-|---|---|---|
-| PostgreSQL | `1213` | Banco de dados relacional principal |
-| Redis | `6379` | Cache e armazenamento de tokens |
-| MinIO | `9000` / `9001` | Armazenamento de objetos (API / Console web) |
-| MongoDB | `27017` | Logs de auditoria e dados analíticos |
+| Serviço    | Porta           | Descrição                                    |
+| ---------- | --------------- | -------------------------------------------- |
+| PostgreSQL | `1213`          | Banco de dados relacional principal          |
+| Redis      | `6379`          | Cache e armazenamento de tokens              |
+| MinIO      | `9000` / `9001` | Armazenamento de objetos (API / Console web) |
+| MongoDB    | `27017`         | Logs de auditoria e dados analíticos         |
 
 1. **Crie o arquivo `.env`** conforme descrito na seção [Variáveis de Ambiente](#variáveis-de-ambiente).
 
@@ -372,6 +379,96 @@ app.persistence=jdbc
 
 - Certifique-se de que todas as tabelas e colunas estejam devidamente configuradas no PostgreSQL, pois os repositórios JDBC dependem da estrutura exata do banco.
 - Ao alternar entre JPA e JDBC, não é necessário alterar a lógica dos controllers ou services, pois a aplicação seleciona automaticamente a implementação com base na propriedade `app.persistence`.
+
+## Testes
+
+O projeto conta com testes de unidade da camada de **controller**, escritos com **JUnit 5** e **Mockito**, utilizando `@WebMvcTest` para isolar a camada web sem necessidade de banco de dados ou outros serviços externos.
+
+### Arquitetura dos Testes
+
+A annotation `@ControllerTest` (localizada em `src/test/java/.../annotation/`) encapsula a configuração padrão de todos os testes de controller:
+
+- Carrega apenas a camada web (`@WebMvcTest`)
+- Exclui a auto-configuração do Spring Security (`SecurityAutoConfiguration`, `SecurityFilterAutoConfiguration`) para isolar o controller
+- Exclui o `JwtAuthenticationFilter` do slice de teste
+- Permite injetar `MockMvc` e mockar services com `@MockitoBean`
+
+A classe `TestWebMvcConfig` (localizada em `src/test/java/.../config/`) é uma `@TestConfiguration` compartilhada que registra o `AuthenticationPrincipalArgumentResolver`. Controllers que utilizam `@AuthenticationPrincipal` importam essa configuração via `@Import(TestWebMvcConfig.class)` e configuram o `SecurityContextHolder` no `@BeforeEach` com um usuário fictício via `UsernamePasswordAuthenticationToken`.
+
+Os testes seguem os seguintes padrões:
+
+- **`@Nested` por endpoint**: cada endpoint do controller possui uma classe interna `@Nested` com `@DisplayName` indicando o método HTTP e o path (ex.: `POST /api/auth/login`), agrupando o cenário de sucesso e os cenários de erro daquele endpoint
+- **`verify()` obrigatório**: todo teste que configura um mock com `when(...)` ou `doNothing()` finaliza com `verify(service).método(...)` para confirmar que o serviço foi invocado com os argumentos corretos
+- **Testes de validação**: endpoints anotados com `@Valid` possuem testes adicionais que enviam payloads inválidos e verificam resposta `400 Bad Request` com `verifyNoInteractions(service)`, garantindo que o serviço não é chamado quando a entrada é inválida
+
+### Controllers Testados
+
+| Controller                   | Testes | Endpoints cobertos                                                                                                                                                                                                                                                                                                                                 |
+| ---------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AuthController`             | 16     | `POST /api/auth/login`, `POST /api/auth/signup`, `POST /api/auth/verify-email`, `POST /api/auth/resend-verification-email`, `POST /api/auth/recover-password`, `POST /api/auth/reset-password`, `POST /api/auth/refresh-token`                                                                                                                     |
+| `UserController`             | 14     | `GET /api/users`, `GET /api/users/{id}`, `PATCH /api/users/{id}`, `DELETE /api/users/{id}`, `GET /api/users/stats/active-users`, `GET /api/users/me`, `PATCH /api/users/me`, `POST /api/users/me/change-password`, `DELETE /api/users/me`                                                                                                          |
+| `OrderController`            | 12     | `POST /api/orders`, `GET /api/orders`, `GET /api/orders/user/{userId}`, `GET /api/orders/store/{storeId}`, `GET /api/orders/me`, `GET /api/orders/me/stores`, `GET /api/orders/me/store/{storeId}`, `GET /api/orders/{id}`, `GET /api/orders/store/{storeId}/stats/successful-sales`, `DELETE /api/orders/{id}`                                    |
+| `ProductController`          | 9      | `POST /api/products`, `GET /api/products`, `POST /api/products/store/products-by-ids`, `GET /api/products/store/{storeSlug}/product/{productSlug}`, `GET /api/products/{id}`, `GET /api/products/stores/stats/active-products`, `GET /api/products/store/{storeId}/stats/active-products`, `PATCH /api/products/{id}`, `DELETE /api/products/{id}` |
+| `StoreController`            | 8      | `POST /api/stores`, `GET /api/stores`, `GET /api/stores/me`, `GET /api/stores/{id}`, `GET /api/stores/slug/{slug}`, `GET /api/stores/active/count`, `PATCH /api/stores/{id}`, `DELETE /api/stores/{id}`                                                                                                                                            |
+| `SubscriptionController`     | 8      | `POST /api/subscriptions`, `GET /api/subscriptions`, `GET /api/subscriptions/user/{userId}`, `GET /api/subscriptions/user/me`, `GET /api/subscriptions/me/active`, `GET /api/subscriptions/{id}`, `PATCH /api/subscriptions/change-plan`, `PATCH /api/subscriptions/cancel`                                                                        |
+| `AnalyticsController`        | 5      | `GET /api/analytics/me/stats/unique-customers`, `GET /api/analytics/me/stats/total-revenue`, `GET /api/analytics/store/{storeId}/stats/unique-customers`, `GET /api/analytics/store/{storeId}/stats/total-revenue`, `GET /api/analytics/total-revenue`                                                                                             |
+| `CategoryController`         | 5      | `POST /api/categories`, `GET /api/categories`, `GET /api/categories/{id}`, `PATCH /api/categories/{id}`, `DELETE /api/categories/{id}`                                                                                                                                                                                                             |
+| `SubscriptionPlanController` | 5      | `POST /api/subscription-plans`, `GET /api/subscription-plans`, `GET /api/subscription-plans/{id}`, `PATCH /api/subscription-plans/{id}`, `DELETE /api/subscription-plans/{id}`                                                                                                                                                                     |
+| `FileController`             | 4      | `GET /api/files/{bucket}/**` (bucket inválido, erro MinIO, path traversal, arquivo válido)                                                                                                                                                                                                                                                         |
+| `UserAddressController`      | 4      | `POST /api/addresses`, `GET /api/addresses`, `PUT /api/addresses/{id}`, `DELETE /api/addresses/{id}`                                                                                                                                                                                                                                               |
+| `AuditLogController`         | 2      | `GET /api/audit-logs`, `GET /api/audit-logs/{id}`                                                                                                                                                                                                                                                                                                  |
+| `FreightController`          | 1      | `GET /api/freight/{userAddressId}`                                                                                                                                                                                                                                                                                                                 |
+
+**Total: 93 testes**, cobrindo os seguintes padrões de requisição:
+
+| Tipo                               | Exemplos                                                              |
+| ---------------------------------- | --------------------------------------------------------------------- |
+| GET com payload na resposta        | `getAll`, `getById` em todos os controllers                           |
+| POST/PATCH/PUT com payload no body | `create`, `update`, `login`, `signup`                                 |
+| Path params                        | `/{id}`, `/user/{userId}`, `/store/{storeId}`                         |
+| Query params                       | `?page=0&size=10`, `?storeId=...`                                     |
+| Multipart                          | upload de imagens em `StoreController` e `ProductController`          |
+| Validação de entrada (`@Valid`)    | cenários 400 em `AuthController`, `UserController`, `OrderController` |
+
+### Cobertura Mínima (JaCoCo)
+
+O JaCoCo está configurado no `pom.xml` para validar automaticamente a cobertura dos 13 controllers monitorados:
+
+| Métrica                                  | Mínimo exigido |
+| ---------------------------------------- | -------------- |
+| Cobertura de linha (_line coverage_)     | 90%            |
+| Cobertura de decisão (_branch coverage_) | 80%            |
+
+### Executando os Testes
+
+**Rodar todos os testes de controller:**
+
+```bash
+./mvnw test
+```
+
+**Rodar apenas um controller específico:**
+
+```bash
+./mvnw test -Dtest="AuthControllerTest"
+```
+
+**Rodar todos os testes com verificação de cobertura JaCoCo:**
+
+```bash
+./mvnw clean jacoco:prepare-agent package jacoco:check -Dmaven.test.failure.ignore=true
+```
+
+- `BUILD SUCCESS` → cobertura mínima atingida.
+- `BUILD FAILURE` com mensagem `Rule violated` → cobertura abaixo do mínimo exigido.
+
+**Gerar relatório HTML detalhado de cobertura:**
+
+```bash
+./mvnw test jacoco:report
+```
+
+O relatório é gerado em `target/site/jacoco/index.html`.
 
 ## Licença
 
