@@ -31,18 +31,20 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ApiResult<?> handleValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ApiResult<?>> handleValidationException(MethodArgumentNotValidException ex) {
         List<FieldError> fieldErrors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(error -> new FieldError(error.getField(), error.getDefaultMessage()))
                 .collect(Collectors.toList());
 
-        return ApiResult.error(400, "Erro de validação", fieldErrors);
+        return ResponseEntity
+                .badRequest()
+                .body(ApiResult.error(400, "Erro de validação", fieldErrors));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ApiResult<String> handleJsonParseError(HttpMessageNotReadableException ex) {
+    public ResponseEntity<ApiResult<String>> handleJsonParseError(HttpMessageNotReadableException ex) {
         String message = ex.getMostSpecificCause().getMessage();
 
         if (message != null && message.contains("not one of the values accepted for Enum class")) {
@@ -51,13 +53,16 @@ public class GlobalExceptionHandler {
 
             if (matcher.find()) {
                 String allowedValues = matcher.group(1);
-                return ApiResult.error(400, "Valor inválido para um método de pagamento. Valores permitidos: " + allowedValues);
+                return ResponseEntity.badRequest()
+                        .body(ApiResult.error(400, "Valor inválido para um método de pagamento. Valores permitidos: " + allowedValues));
             }
 
-            return ApiResult.error(400, "Valor inválido para um campo enum.");
+            return ResponseEntity.badRequest()
+                    .body(ApiResult.error(400, "Valor inválido para um campo enum."));
         }
 
-        return ApiResult.error(400, "Erro ao interpretar o corpo da requisição: verifique os dados enviados.");
+        return ResponseEntity.badRequest()
+                .body(ApiResult.error(400, "Erro ao interpretar o corpo da requisição: verifique os dados enviados."));
     }
 
     @ExceptionHandler(RuntimeException.class)
