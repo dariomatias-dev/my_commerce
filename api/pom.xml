@@ -152,7 +152,38 @@
 				<version>${jacoco.version}</version>
 				<configuration>
 					<haltOnFailure>true</haltOnFailure>
-					<rules></rules>
+					<rules>
+						<rule>
+							<element>CLASS</element>
+							<includes>
+								<include>com.dariomatias.my_commerce.controller.AnalyticsController</include>
+								<include>com.dariomatias.my_commerce.controller.AuditLogController</include>
+								<include>com.dariomatias.my_commerce.controller.AuthController</include>
+								<include>com.dariomatias.my_commerce.controller.CategoryController</include>
+								<include>com.dariomatias.my_commerce.controller.FileController</include>
+								<include>com.dariomatias.my_commerce.controller.FreightController</include>
+								<include>com.dariomatias.my_commerce.controller.OrderController</include>
+								<include>com.dariomatias.my_commerce.controller.ProductController</include>
+								<include>com.dariomatias.my_commerce.controller.StoreController</include>
+								<include>com.dariomatias.my_commerce.controller.SubscriptionController</include>
+								<include>com.dariomatias.my_commerce.controller.SubscriptionPlanController</include>
+								<include>com.dariomatias.my_commerce.controller.UserAddressController</include>
+								<include>com.dariomatias.my_commerce.controller.UserController</include>
+							</includes>
+							<limits>
+								<limit>
+									<counter>LINE</counter>
+									<value>COVEREDRATIO</value>
+									<minimum>0.90</minimum>
+								</limit>
+								<limit>
+									<counter>BRANCH</counter>
+									<value>COVEREDRATIO</value>
+									<minimum>0.80</minimum>
+								</limit>
+							</limits>
+						</rule>
+					</rules>
 				</configuration>
 			</plugin>
 			<plugin>
