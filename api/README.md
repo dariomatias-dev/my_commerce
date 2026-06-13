@@ -42,6 +42,7 @@
   - [Repositórios JPA e JDBC](#repositórios-jpa-e-jdbc)
 - [Testes](#testes)
   - [Arquitetura dos Testes](#arquitetura-dos-testes)
+  - [Services Testados](#services-testados)
   - [Controllers Testados](#controllers-testados)
   - [Cobertura Mínima (JaCoCo)](#cobertura-mínima-jacoco)
   - [Executando os Testes](#executando-os-testes)
@@ -382,7 +383,7 @@ app.persistence=jdbc
 
 ## Testes
 
-O projeto conta com testes de unidade da camada de **controller**, escritos com **JUnit 5** e **Mockito**, utilizando `@WebMvcTest` para isolar a camada web sem necessidade de banco de dados ou outros serviços externos.
+O projeto conta com testes de unidade para as camadas de **service** e **controller**, escritos com **JUnit 5** e **Mockito**. Os testes de service usam `@ExtendWith(MockitoExtension.class)` com injeção via `@InjectMocks` e dependências mockadas com `@Mock`. Os testes de controller usam `@WebMvcTest` para isolar a camada web sem necessidade de banco de dados ou outros serviços externos.
 
 ### Arquitetura dos Testes
 
@@ -397,9 +398,24 @@ A classe `TestWebMvcConfig` (localizada em `src/test/java/.../config/`) é uma `
 
 Os testes seguem os seguintes padrões:
 
-- **`@Nested` por endpoint**: cada endpoint do controller possui uma classe interna `@Nested` com `@DisplayName` indicando o método HTTP e o path (ex.: `POST /api/auth/login`), agrupando o cenário de sucesso e os cenários de erro daquele endpoint
-- **`verify()` obrigatório**: todo teste que configura um mock com `when(...)` ou `doNothing()` finaliza com `verify(service).método(...)` para confirmar que o serviço foi invocado com os argumentos corretos
-- **Testes de validação**: endpoints anotados com `@Valid` possuem testes adicionais que enviam payloads inválidos e verificam resposta `400 Bad Request` com `verifyNoInteractions(service)`, garantindo que o serviço não é chamado quando a entrada é inválida
+- **`@Nested` por endpoint/método**: cada endpoint (controller) ou método público (service) possui uma classe interna `@Nested` com `@DisplayName`, agrupando o cenário de sucesso e os cenários de erro
+- **`verify()` obrigatório**: todo teste que configura um mock com `when(...)` ou `doNothing()` finaliza com `verify(...)` para confirmar que a dependência foi invocada com os argumentos corretos
+- **`verifyNoInteractions()`**: cenários de erro que devem abortar antes de chamar dependências verificam isso explicitamente
+- **Testes de validação (controllers)**: endpoints com `@Valid` possuem testes adicionais que enviam payloads inválidos e verificam `400 Bad Request` com `verifyNoInteractions(service)`
+
+### Services Testados
+
+Testes de unidade pura com `@ExtendWith(MockitoExtension.class)`. Todas as dependências são mockadas; nenhum contexto Spring é carregado.
+
+| Service           | Testes | Cenários cobertos                                                                                                                                                       |
+| ----------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `JwtService`      | 6      | `generateAccessToken` e `generateRefreshToken` (subject correto), `validateToken` (válido → true, expirado → false, inválido → false), `getIdFromToken` (parse correto) |
+| `FreightService`  | 6      | Endereço não encontrado → 404, distância null → 400, distância ≤ 5 km → frete zero (< 5 km e = 5 km), distância > 5 km → cálculo econômico e express                   |
+| `AuthService`     | 8      | Login (email não encontrado → 401, senha errada → 401 + audit, e-mail não verificado → 403 + audit, sucesso), Register (email duplicado → 409 + audit, dados válidos), RefreshToken (token inválido → 401 + audit, token válido) |
+| `UserService`     | 6      | `getById` (não encontrado → 404, deletado + ADMIN → retorna, deletado + USER → 404), `changePassword` (senha errada → 400, senha correta → atualiza), `delete` (cascata stores/products/MinIO) |
+| `CategoryService` | 7      | `create` (loja não encontrada → 404, loja encontrada → cria), `getAll` (filtro null → 400, loja não encontrada → 404, filtro válido → página), `update` (name null → não altera, name preenchido → altera) |
+
+**Total: 33 testes de service.**
 
 ### Controllers Testados
 
@@ -419,7 +435,7 @@ Os testes seguem os seguintes padrões:
 | `AuditLogController`         | 2      | `GET /api/audit-logs`, `GET /api/audit-logs/{id}`                                                                                                                                                                                                                                                                                                  |
 | `FreightController`          | 1      | `GET /api/freight/{userAddressId}`                                                                                                                                                                                                                                                                                                                 |
 
-**Total: 93 testes**, cobrindo os seguintes padrões de requisição:
+**Total: 93 testes de controller**, cobrindo os seguintes padrões de requisição:
 
 | Tipo                               | Exemplos                                                              |
 | ---------------------------------- | --------------------------------------------------------------------- |
@@ -441,16 +457,23 @@ O JaCoCo está configurado no `pom.xml` para validar automaticamente a cobertura
 
 ### Executando os Testes
 
-**Rodar todos os testes de controller:**
+**Rodar todos os testes (service + controller):**
 
 ```bash
 ./mvnw test
 ```
 
-**Rodar apenas um controller específico:**
+**Rodar apenas um teste específico:**
 
 ```bash
+./mvnw test -Dtest="AuthServiceTest"
 ./mvnw test -Dtest="AuthControllerTest"
+```
+
+**Rodar todos os testes de service:**
+
+```bash
+./mvnw test -Dtest="JwtServiceTest,FreightServiceTest,AuthServiceTest,UserServiceTest,CategoryServiceTest"
 ```
 
 **Rodar todos os testes com verificação de cobertura JaCoCo:**
