@@ -418,8 +418,11 @@ Testes de unidade pura com `@ExtendWith(MockitoExtension.class)`. Todas as depen
 | `OrderService`        | 7  | `create` (itens vazios → 400, endereço de outro usuário → 400, dados válidos → status COMPLETED verificado via ArgumentCaptor), `getById` (404, não-dono com USER → 403, dono retorna DTO, ADMIN acessa pedido de qualquer usuário) |
 | `StoreService`        | 10 | `create` (sem assinatura → 404, limite de lojas → 422, slug duplicado → 409, com logo/banner → upload MinIO, sem imagens → sem upload), `update` (slug duplicado → 409, com imagens → upload MinIO), `getBySlug` (não encontrada → 404, inativa + anônimo → 404, ativa → retorna) |
 | `UserAddressService`  | 5  | `update` (não encontrado → `IllegalArgumentException`, endereço de outro usuário → `IllegalArgumentException`, dono → atualiza e retorna DTO), `delete` (outro usuário → `IllegalArgumentException`, dono → soft delete) |
+| `AnalyticsService`    | 7  | `getTotalRevenue(userId)` (null → ZERO, valor → encapsula), `getTotalRevenue()` global (null → ZERO, valor → retorna), `verifyStoreAccess` via `getUniqueCustomersByStore` (ADMIN bypassa, loja não encontrada → 404, não-proprietário → 403) |
+| `AuditLogService`     | 4  | `log` (salva campos corretos + timestamp), `getById` (id existente → retorna, id inexistente → null), `getLogs` (delega count e find ao MongoTemplate e retorna página) |
+| `SubscriptionPlanService` | 10 | `create` (nome duplicado → 400, nome único → salva), `getById` (inexistente → 404, existente → retorna), `update` (não encontrado → 404, nome conflitante → 400, campos null → preserva valores, mesmo nome → sem check de conflito), `delete` (inexistente → 404, existente → deleteById) |
 
-**Total: 60 testes de service.**
+**Total: 81 testes de service.**
 
 ### Controllers Testados
 
@@ -477,7 +480,7 @@ O JaCoCo está configurado no `pom.xml` para validar automaticamente a cobertura
 **Rodar todos os testes de service:**
 
 ```bash
-./mvnw test -Dtest="JwtServiceTest,FreightServiceTest,AuthServiceTest,UserServiceTest,CategoryServiceTest,SubscriptionServiceTest,OrderServiceTest,StoreServiceTest,UserAddressServiceTest"
+./mvnw test -Dtest="JwtServiceTest,FreightServiceTest,AuthServiceTest,UserServiceTest,CategoryServiceTest,SubscriptionServiceTest,OrderServiceTest,StoreServiceTest,UserAddressServiceTest,AnalyticsServiceTest,AuditLogServiceTest,SubscriptionPlanServiceTest"
 ```
 
 **Rodar todos os testes com verificação de cobertura JaCoCo:**
