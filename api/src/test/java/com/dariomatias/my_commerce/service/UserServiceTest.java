@@ -1,6 +1,8 @@
 package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.PasswordUpdateRequest;
+import com.dariomatias.my_commerce.dto.user.UserFilterDTO;
+import com.dariomatias.my_commerce.dto.user.UserRequest;
 import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.Store;
 import com.dariomatias.my_commerce.model.User;
@@ -19,6 +21,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Collections;
 import java.util.List;
@@ -76,6 +81,92 @@ class UserServiceTest {
         targetUser.setRole(UserRole.USER);
         targetUser.setEnabled(true);
         targetUser.setPassword("encoded-password");
+    }
+
+    @Nested
+    @DisplayName("getAll")
+    class GetAll {
+
+        @Test
+        @DisplayName("should delegate to repository with filter and pageable")
+        void shouldDelegateToRepository() {
+            UserFilterDTO filter = new UserFilterDTO();
+            Pageable pageable = Pageable.ofSize(10);
+            @SuppressWarnings("unchecked")
+            Page<User> page = mock(Page.class);
+            when(userRepository.findAll(filter, pageable)).thenReturn(page);
+
+            Page<User> result = userService.getAll(filter, pageable);
+
+            assertEquals(page, result);
+            verify(userRepository).findAll(filter, pageable);
+        }
+    }
+
+    @Nested
+    @DisplayName("getActiveUsersCount")
+    class GetActiveUsersCount {
+
+        @Test
+        @DisplayName("should delegate count to repository")
+        void shouldDelegateCountToRepository() {
+            when(userRepository.countByEnabledTrueAndDeletedAtIsNull()).thenReturn(42L);
+
+            long count = userService.getActiveUsersCount();
+
+            assertEquals(42L, count);
+            verify(userRepository).countByEnabledTrueAndDeletedAtIsNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("update")
+    class Update {
+
+        @Test
+        @DisplayName("user not found should throw 404")
+        void userNotFound_shouldThrow404() {
+            when(userRepository.findById(targetId)).thenReturn(Optional.empty());
+
+            UserRequest request = new UserRequest();
+            request.setName("New Name");
+
+            ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                    () -> userService.update(adminUser, targetId, request));
+
+            assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+            verify(userRepository, never()).update(any());
+        }
+
+        @Test
+        @DisplayName("valid name in request should update user name")
+        void validName_shouldUpdateUserName() {
+            when(userRepository.findById(targetId)).thenReturn(Optional.of(targetUser));
+            when(userRepository.update(targetUser)).thenReturn(targetUser);
+
+            UserRequest request = new UserRequest();
+            request.setName("Updated Name");
+
+            userService.update(adminUser, targetId, request);
+
+            assertEquals("Updated Name", targetUser.getName());
+            verify(userRepository).update(targetUser);
+        }
+
+        @Test
+        @DisplayName("null name in request should not change user name")
+        void nullName_shouldNotChangeUserName() {
+            targetUser.setName("Original Name");
+            when(userRepository.findById(targetId)).thenReturn(Optional.of(targetUser));
+            when(userRepository.update(targetUser)).thenReturn(targetUser);
+
+            UserRequest request = new UserRequest();
+            request.setName(null);
+
+            userService.update(adminUser, targetId, request);
+
+            assertEquals("Original Name", targetUser.getName());
+        }
     }
 
     @Nested

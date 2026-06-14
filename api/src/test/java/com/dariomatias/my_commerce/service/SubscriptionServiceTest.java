@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -64,6 +65,156 @@ class SubscriptionServiceTest {
         activeSubscription.setUser(user);
         activeSubscription.setPlanId(currentPlanId);
         activeSubscription.setIsActive(true);
+    }
+
+    @Nested
+    @DisplayName("create")
+    class Create {
+
+        private SubscriptionRequestDTO request;
+
+        @BeforeEach
+        void setUp() {
+            request = new SubscriptionRequestDTO();
+            request.setPlanId(newPlanId);
+        }
+
+        @Test
+        @DisplayName("user with active subscription should throw 400")
+        void userWithActiveSubscription_shouldThrow400() {
+            when(subscriptionRepository.findActiveByUserId(user.getId())).thenReturn(Optional.of(activeSubscription));
+
+            ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                    () -> subscriptionService.create(user, request));
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            verify(subscriptionRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("plan not found should throw 404")
+        void planNotFound_shouldThrow404() {
+            when(subscriptionRepository.findActiveByUserId(user.getId())).thenReturn(Optional.empty());
+            when(subscriptionPlanRepository.findById(newPlanId)).thenReturn(Optional.empty());
+
+            ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                    () -> subscriptionService.create(user, request));
+
+            assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+        }
+
+        @Test
+        @DisplayName("valid request should create subscription and set user role to SUBSCRIBER")
+        void validRequest_shouldCreateSubscriptionAndSetSubscriberRole() {
+            SubscriptionPlan plan = new SubscriptionPlan();
+            plan.setId(newPlanId);
+
+            Subscription saved = new Subscription();
+            saved.setId(UUID.randomUUID());
+            saved.setIsActive(true);
+
+            when(subscriptionRepository.findActiveByUserId(user.getId())).thenReturn(Optional.empty());
+            when(subscriptionPlanRepository.findById(newPlanId)).thenReturn(Optional.of(plan));
+            when(subscriptionRepository.save(any(Subscription.class))).thenReturn(saved);
+
+            Subscription result = subscriptionService.create(user, request);
+
+            assertEquals(UserRole.SUBSCRIBER, user.getRole());
+            verify(userRepository).update(user);
+            verify(subscriptionRepository).save(any(Subscription.class));
+            assertNotNull(result);
+        }
+    }
+
+    @Nested
+    @DisplayName("getAll")
+    class GetAll {
+
+        @Test
+        @DisplayName("should delegate to repository with pageable")
+        void shouldDelegateToRepository() {
+            Pageable pageable = Pageable.ofSize(10);
+            Page<Subscription> page = new PageImpl<>(List.of(activeSubscription));
+            when(subscriptionRepository.findAll(pageable)).thenReturn(page);
+
+            Page<Subscription> result = subscriptionService.getAll(pageable);
+
+            assertEquals(page, result);
+            verify(subscriptionRepository).findAll(pageable);
+        }
+    }
+
+    @Nested
+    @DisplayName("getAllByUser")
+    class GetAllByUser {
+
+        @Test
+        @DisplayName("should delegate to repository with userId and pageable")
+        void shouldDelegateToRepository() {
+            UUID userId = UUID.randomUUID();
+            Pageable pageable = Pageable.ofSize(10);
+            Page<Subscription> page = new PageImpl<>(List.of(activeSubscription));
+            when(subscriptionRepository.findAllByUser_Id(userId, pageable)).thenReturn(page);
+
+            Page<Subscription> result = subscriptionService.getAllByUser(userId, pageable);
+
+            assertEquals(page, result);
+            verify(subscriptionRepository).findAllByUser_Id(userId, pageable);
+        }
+    }
+
+    @Nested
+    @DisplayName("getActiveByUser")
+    class GetActiveByUser {
+
+        @Test
+        @DisplayName("no active subscription should throw 404")
+        void noActiveSubscription_shouldThrow404() {
+            when(subscriptionRepository.findActiveByUserId(user.getId())).thenReturn(Optional.empty());
+
+            ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                    () -> subscriptionService.getActiveByUser(user.getId()));
+
+            assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+        }
+
+        @Test
+        @DisplayName("active subscription found should return it")
+        void activeSubscriptionFound_shouldReturn() {
+            when(subscriptionRepository.findActiveByUserId(user.getId())).thenReturn(Optional.of(activeSubscription));
+
+            Subscription result = subscriptionService.getActiveByUser(user.getId());
+
+            assertEquals(activeSubscription, result);
+        }
+    }
+
+    @Nested
+    @DisplayName("getById")
+    class GetById {
+
+        @Test
+        @DisplayName("subscription not found should throw 404")
+        void subscriptionNotFound_shouldThrow404() {
+            UUID id = UUID.randomUUID();
+            when(subscriptionRepository.findById(id)).thenReturn(Optional.empty());
+
+            ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                    () -> subscriptionService.getById(id));
+
+            assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+        }
+
+        @Test
+        @DisplayName("subscription found should return it")
+        void subscriptionFound_shouldReturn() {
+            UUID id = activeSubscription.getId();
+            when(subscriptionRepository.findById(id)).thenReturn(Optional.of(activeSubscription));
+
+            Subscription result = subscriptionService.getById(id);
+
+            assertEquals(activeSubscription, result);
+        }
     }
 
     @Nested

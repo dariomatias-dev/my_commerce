@@ -1,9 +1,11 @@
 package com.dariomatias.my_commerce.service;
 
 import com.dariomatias.my_commerce.dto.LoginRequest;
+import com.dariomatias.my_commerce.dto.ResetPasswordRequest;
 import com.dariomatias.my_commerce.dto.SignupRequest;
 import com.dariomatias.my_commerce.dto.refresh_token.RefreshTokenResponse;
 import com.dariomatias.my_commerce.dto.user.UserResponse;
+import jakarta.mail.MessagingException;
 import com.dariomatias.my_commerce.enums.AuditLogAction;
 import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.User;
@@ -207,6 +209,176 @@ class AuthServiceTest {
             assertEquals("test@example.com", result.getEmail());
             assertFalse(result.isEnabled());
             verify(auditLogService).log(anyString(), eq(AuditLogAction.SIGNUP), eq("success"), anyMap());
+        }
+    }
+
+    @Nested
+    @DisplayName("verifyEmail")
+    class VerifyEmail {
+
+        @Test
+        @DisplayName("invalid token should throw 400 and log validation failure")
+        void invalidToken_shouldThrow400() {
+            @SuppressWarnings("unchecked")
+            ValueOperations<String, Object> ops = mock(ValueOperations.class);
+            when(redisTemplate.opsForValue()).thenReturn(ops);
+            when(ops.get("email_verification:bad-token")).thenReturn(null);
+
+            ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                    () -> authService.verifyEmail("bad-token"));
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            verify(auditLogService).log(eq("unknown"), eq(AuditLogAction.VALIDATE_TOKEN), eq("failure"), anyMap());
+        }
+
+        @Test
+        @DisplayName("valid token should enable user, save and log success")
+        void validToken_shouldEnableUserAndLogSuccess() {
+            user.setEnabled(false);
+            @SuppressWarnings("unchecked")
+            ValueOperations<String, Object> ops = mock(ValueOperations.class);
+            when(redisTemplate.opsForValue()).thenReturn(ops);
+            when(ops.get("email_verification:valid-token")).thenReturn(user.getId().toString());
+            when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+            authService.verifyEmail("valid-token");
+
+            assertTrue(user.isEnabled());
+            verify(userRepository).save(user);
+            verify(redisTemplate).delete("email_verification:valid-token");
+        }
+    }
+
+    @Nested
+    @DisplayName("resendVerificationEmail")
+    class ResendVerificationEmail {
+
+        @Test
+        @DisplayName("email not registered should do nothing")
+        void emailNotRegistered_shouldDoNothing() {
+            when(userRepository.findByEmail("ghost@example.com")).thenReturn(Optional.empty());
+
+            authService.resendVerificationEmail("ghost@example.com");
+
+            verifyNoInteractions(emailService, auditLogService);
+        }
+
+        @Test
+        @DisplayName("already verified email should log resend verification failure")
+        void alreadyVerifiedEmail_shouldLogFailure() {
+            user.setEnabled(true);
+            when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+
+            authService.resendVerificationEmail(user.getEmail());
+
+            verify(auditLogService).log(
+                    eq(user.getId().toString()),
+                    eq(AuditLogAction.RESEND_VERIFICATION),
+                    eq("failure"),
+                    anyMap()
+            );
+            verifyNoInteractions(emailService);
+        }
+
+        @Test
+        @DisplayName("unverified email should send verification email and log success")
+        void unverifiedEmail_shouldSendEmailAndLogSuccess() throws MessagingException {
+            user.setEnabled(false);
+            @SuppressWarnings("unchecked")
+            ValueOperations<String, Object> ops = mock(ValueOperations.class);
+            when(redisTemplate.opsForValue()).thenReturn(ops);
+            when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+            doNothing().when(emailService).sendVerificationEmail(anyString(), anyString());
+
+            authService.resendVerificationEmail(user.getEmail());
+
+            verify(emailService).sendVerificationEmail(eq(user.getEmail()), anyString());
+            verify(auditLogService).log(
+                    eq(user.getId().toString()),
+                    eq(AuditLogAction.RESEND_VERIFICATION),
+                    eq("success"),
+                    anyMap()
+            );
+        }
+    }
+
+    @Nested
+    @DisplayName("recoverPassword")
+    class RecoverPassword {
+
+        @Test
+        @DisplayName("email not registered should do nothing")
+        void emailNotRegistered_shouldDoNothing() {
+            when(userRepository.findByEmail("ghost@example.com")).thenReturn(Optional.empty());
+
+            authService.recoverPassword("ghost@example.com");
+
+            verifyNoInteractions(emailService, auditLogService);
+        }
+
+        @Test
+        @DisplayName("registered email should store token in redis and send recovery email")
+        void registeredEmail_shouldStoreTokenAndSendRecoveryEmail() throws MessagingException {
+            @SuppressWarnings("unchecked")
+            ValueOperations<String, Object> ops = mock(ValueOperations.class);
+            when(redisTemplate.opsForValue()).thenReturn(ops);
+            when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+            doNothing().when(emailService).sendPasswordRecoveryEmail(anyString(), anyString());
+
+            authService.recoverPassword(user.getEmail());
+
+            verify(ops).set(anyString(), eq(user.getId().toString()), anyLong(), any());
+            verify(emailService).sendPasswordRecoveryEmail(eq(user.getEmail()), anyString());
+            verify(auditLogService).log(
+                    eq(user.getId().toString()),
+                    eq(AuditLogAction.RECOVER_PASSWORD),
+                    eq("success"),
+                    anyMap()
+            );
+        }
+    }
+
+    @Nested
+    @DisplayName("resetPassword")
+    class ResetPassword {
+
+        @Test
+        @DisplayName("invalid token should throw 400")
+        void invalidToken_shouldThrow400() {
+            @SuppressWarnings("unchecked")
+            ValueOperations<String, Object> ops = mock(ValueOperations.class);
+            when(redisTemplate.opsForValue()).thenReturn(ops);
+            when(ops.get("password_recovery:bad-token")).thenReturn(null);
+
+            ResetPasswordRequest request = new ResetPasswordRequest();
+            request.setToken("bad-token");
+            request.setNewPassword("NewPass@123");
+
+            ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                    () -> authService.resetPassword(request));
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+        }
+
+        @Test
+        @DisplayName("valid token should update password and delete redis key")
+        void validToken_shouldUpdatePasswordAndDeleteRedisKey() {
+            @SuppressWarnings("unchecked")
+            ValueOperations<String, Object> ops = mock(ValueOperations.class);
+            when(redisTemplate.opsForValue()).thenReturn(ops);
+            when(ops.get("password_recovery:valid-token")).thenReturn(user.getId().toString());
+            when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+            when(passwordEncoder.encode("NewPass@123")).thenReturn("new-encoded-password");
+
+            ResetPasswordRequest request = new ResetPasswordRequest();
+            request.setToken("valid-token");
+            request.setNewPassword("NewPass@123");
+
+            authService.resetPassword(request);
+
+            assertEquals("new-encoded-password", user.getPassword());
+            verify(userRepository).save(user);
+            verify(redisTemplate).delete("password_recovery:valid-token");
         }
     }
 

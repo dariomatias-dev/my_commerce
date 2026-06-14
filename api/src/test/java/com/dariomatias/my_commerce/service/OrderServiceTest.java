@@ -12,6 +12,8 @@ import com.dariomatias.my_commerce.enums.UserRole;
 import com.dariomatias.my_commerce.model.*;
 import com.dariomatias.my_commerce.repository.contract.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -178,6 +180,221 @@ class OrderServiceTest {
             verify(orderItemRepository).addItemToOrder(
                     eq(savedOrder.getId()), eq(productId), eq(2), eq(new BigDecimal("10.00"))
             );
+        }
+    }
+
+    @Nested
+    @DisplayName("getAll")
+    class GetAll {
+
+        @Test
+        @DisplayName("should delegate to repository with pageable")
+        void shouldDelegateToRepository() {
+            Pageable pageable = Pageable.ofSize(10);
+            @SuppressWarnings("unchecked")
+            Page<Order> page = mock(Page.class);
+            when(orderRepository.findAll(pageable)).thenReturn(page);
+
+            Page<Order> result = orderService.getAll(pageable);
+
+            assertEquals(page, result);
+            verify(orderRepository).findAll(pageable);
+        }
+    }
+
+    @Nested
+    @DisplayName("getAllByUser")
+    class GetAllByUser {
+
+        @Test
+        @DisplayName("should delegate to repository with userId and pageable")
+        void shouldDelegateToRepository() {
+            UUID userId = UUID.randomUUID();
+            Pageable pageable = Pageable.ofSize(10);
+            @SuppressWarnings("unchecked")
+            Page<Order> page = mock(Page.class);
+            when(orderRepository.findAllByUserId(userId, pageable)).thenReturn(page);
+
+            Page<Order> result = orderService.getAllByUser(userId, pageable);
+
+            assertEquals(page, result);
+            verify(orderRepository).findAllByUserId(userId, pageable);
+        }
+    }
+
+    @Nested
+    @DisplayName("getAllByStore")
+    class GetAllByStore {
+
+        @Test
+        @DisplayName("ADMIN should bypass store ownership check and return orders")
+        void admin_shouldBypassOwnershipCheck() {
+            Pageable pageable = Pageable.ofSize(10);
+            @SuppressWarnings("unchecked")
+            Page<Order> page = mock(Page.class);
+            when(orderRepository.findAllByStoreId(storeId, pageable)).thenReturn(page);
+
+            Page<Order> result = orderService.getAllByStore(storeId, adminUser, pageable);
+
+            assertEquals(page, result);
+            verifyNoInteractions(storeRepository);
+        }
+
+        @Test
+        @DisplayName("USER with store not found should throw 404")
+        void userStoreNotFound_shouldThrow404() {
+            when(storeRepository.findById(storeId)).thenReturn(Optional.empty());
+
+            ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                    () -> orderService.getAllByStore(storeId, user, Pageable.unpaged()));
+
+            assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+        }
+
+        @Test
+        @DisplayName("USER not owner of store should throw 403")
+        void userNotOwner_shouldThrow403() {
+            Store store = new Store();
+            store.setId(storeId);
+            store.setUserId(UUID.randomUUID());
+
+            when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
+
+            ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                    () -> orderService.getAllByStore(storeId, user, Pageable.unpaged()));
+
+            assertEquals(HttpStatus.FORBIDDEN, ex.getStatusCode());
+        }
+
+        @Test
+        @DisplayName("USER owner of store should return orders")
+        void userOwner_shouldReturnOrders() {
+            Store store = new Store();
+            store.setId(storeId);
+            store.setUserId(user.getId());
+
+            Pageable pageable = Pageable.ofSize(10);
+            @SuppressWarnings("unchecked")
+            Page<Order> page = mock(Page.class);
+
+            when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
+            when(orderRepository.findAllByStoreId(storeId, pageable)).thenReturn(page);
+
+            Page<Order> result = orderService.getAllByStore(storeId, user, pageable);
+
+            assertEquals(page, result);
+        }
+    }
+
+    @Nested
+    @DisplayName("getMyOrderStores")
+    class GetMyOrderStores {
+
+        @Test
+        @DisplayName("should delegate to repository")
+        void shouldDelegateToRepository() {
+            UUID userId = UUID.randomUUID();
+            Pageable pageable = Pageable.ofSize(10);
+            @SuppressWarnings("unchecked")
+            Page<Store> page = mock(Page.class);
+            when(orderRepository.findStoresWithOrdersByUserId(userId, pageable)).thenReturn(page);
+
+            Page<Store> result = orderService.getMyOrderStores(userId, pageable);
+
+            assertEquals(page, result);
+            verify(orderRepository).findStoresWithOrdersByUserId(userId, pageable);
+        }
+    }
+
+    @Nested
+    @DisplayName("getMyOrdersByStore")
+    class GetMyOrdersByStore {
+
+        @Test
+        @DisplayName("should delegate to repository")
+        void shouldDelegateToRepository() {
+            UUID userId = UUID.randomUUID();
+            Pageable pageable = Pageable.ofSize(10);
+            @SuppressWarnings("unchecked")
+            Page<Order> page = mock(Page.class);
+            when(orderRepository.findAllByUserIdAndStoreId(userId, storeId, pageable)).thenReturn(page);
+
+            Page<Order> result = orderService.getMyOrdersByStore(userId, storeId, pageable);
+
+            assertEquals(page, result);
+            verify(orderRepository).findAllByUserIdAndStoreId(userId, storeId, pageable);
+        }
+    }
+
+    @Nested
+    @DisplayName("getSuccessfulSalesCount")
+    class GetSuccessfulSalesCount {
+
+        @Test
+        @DisplayName("ADMIN should bypass ownership check and return count")
+        void admin_shouldBypassOwnershipCheck() {
+            when(orderRepository.countByStoreIdAndStatus(storeId, Status.COMPLETED)).thenReturn(5L);
+
+            long count = orderService.getSuccessfulSalesCount(storeId, adminUser);
+
+            assertEquals(5L, count);
+            verifyNoInteractions(storeRepository);
+        }
+
+        @Test
+        @DisplayName("USER with store not found should throw 404")
+        void userStoreNotFound_shouldThrow404() {
+            when(storeRepository.findById(storeId)).thenReturn(Optional.empty());
+
+            ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                    () -> orderService.getSuccessfulSalesCount(storeId, user));
+
+            assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+        }
+
+        @Test
+        @DisplayName("USER not owner of store should throw 403")
+        void userNotOwner_shouldThrow403() {
+            Store store = new Store();
+            store.setId(storeId);
+            store.setUserId(UUID.randomUUID());
+
+            when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
+
+            ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                    () -> orderService.getSuccessfulSalesCount(storeId, user));
+
+            assertEquals(HttpStatus.FORBIDDEN, ex.getStatusCode());
+        }
+
+        @Test
+        @DisplayName("USER owner of store should return completed order count")
+        void userOwner_shouldReturnCount() {
+            Store store = new Store();
+            store.setId(storeId);
+            store.setUserId(user.getId());
+
+            when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
+            when(orderRepository.countByStoreIdAndStatus(storeId, Status.COMPLETED)).thenReturn(3L);
+
+            long count = orderService.getSuccessfulSalesCount(storeId, user);
+
+            assertEquals(3L, count);
+        }
+    }
+
+    @Nested
+    @DisplayName("delete")
+    class Delete {
+
+        @Test
+        @DisplayName("should delegate deleteById to repository")
+        void shouldDelegateDeleteById() {
+            UUID orderId = UUID.randomUUID();
+
+            orderService.delete(orderId);
+
+            verify(orderRepository).deleteById(orderId);
         }
     }
 
