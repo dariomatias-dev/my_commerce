@@ -85,9 +85,9 @@ class ProductControllerTest {
         product.setId(productId);
         product.setStoreId(storeId);
         product.setCategoryId(categoryId);
-        product.setName("Produto Teste");
-        product.setSlug("produto-teste");
-        product.setDescription("Descrição do produto");
+        product.setName("Test Product");
+        product.setSlug("test-product");
+        product.setDescription("Product description");
         product.setPrice(BigDecimal.valueOf(99.90));
         product.setStock(10);
         product.setActive(true);
@@ -97,8 +97,8 @@ class ProductControllerTest {
         productRequest = new ProductRequestDTO();
         productRequest.setStoreId(storeId);
         productRequest.setCategoryId(categoryId);
-        productRequest.setName("Produto Teste");
-        productRequest.setDescription("Descrição do produto");
+        productRequest.setName("Test Product");
+        productRequest.setDescription("Product description");
         productRequest.setPrice(BigDecimal.valueOf(99.90));
         productRequest.setStock(10);
         productRequest.setActive(true);
@@ -114,8 +114,8 @@ class ProductControllerTest {
     class Create {
 
         @Test
-        @DisplayName("deve criar produto com multipart (data + images)")
-        void deveCriarProduto() throws Exception {
+        @DisplayName("should create product with multipart (data + images)")
+        void shouldCreateProduct() throws Exception {
             when(service.create(any(User.class), any(ProductRequestDTO.class), any())).thenReturn(product);
 
             MockMultipartFile dataPart = new MockMultipartFile(
@@ -132,7 +132,7 @@ class ProductControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
                     .andExpect(jsonPath("$.data.id").value(productId.toString()))
-                    .andExpect(jsonPath("$.data.name").value("Produto Teste"));
+                    .andExpect(jsonPath("$.data.name").value("Test Product"));
 
             verify(service).create(any(User.class), any(ProductRequestDTO.class), any());
         }
@@ -143,8 +143,8 @@ class ProductControllerTest {
     class GetAll {
 
         @Test
-        @DisplayName("deve retornar página de produtos com query params")
-        void deveRetornarPaginaDeProdutos() throws Exception {
+        @DisplayName("should return product page with query params")
+        void shouldReturnProductPage() throws Exception {
             Page<Product> page = new PageImpl<>(List.of(product));
             when(service.getAllByStore(nullable(User.class), any(), any(Pageable.class))).thenReturn(page);
 
@@ -166,8 +166,8 @@ class ProductControllerTest {
     class GetByIds {
 
         @Test
-        @DisplayName("deve retornar produtos por IDs")
-        void deveRetornarProdutosPorIds() throws Exception {
+        @DisplayName("should return products by IDs")
+        void shouldReturnProductsByIds() throws Exception {
             ProductIdsRequestDTO request = new ProductIdsRequestDTO();
             request.setStoreId(storeId);
             request.setProductIds(List.of(productId));
@@ -193,17 +193,17 @@ class ProductControllerTest {
     class GetBySlug {
 
         @Test
-        @DisplayName("deve retornar produto por storeSlug e productSlug")
-        void deveRetornarProdutoPorSlug() throws Exception {
-            when(service.getByStoreSlugAndProductSlug("loja-teste", "produto-teste")).thenReturn(product);
+        @DisplayName("should return product by storeSlug and productSlug")
+        void shouldReturnProductBySlug() throws Exception {
+            when(service.getByStoreSlugAndProductSlug("test-store", "test-product")).thenReturn(product);
 
             mockMvc.perform(get("/api/products/store/{storeSlug}/product/{productSlug}",
-                            "loja-teste", "produto-teste"))
+                            "test-store", "test-product"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
-                    .andExpect(jsonPath("$.data.slug").value("produto-teste"));
+                    .andExpect(jsonPath("$.data.slug").value("test-product"));
 
-            verify(service).getByStoreSlugAndProductSlug("loja-teste", "produto-teste");
+            verify(service).getByStoreSlugAndProductSlug("test-store", "test-product");
         }
     }
 
@@ -212,8 +212,8 @@ class ProductControllerTest {
     class GetById {
 
         @Test
-        @DisplayName("deve retornar produto por ID")
-        void deveRetornarProdutoPorId() throws Exception {
+        @DisplayName("should return product by ID")
+        void shouldReturnProductById() throws Exception {
             when(service.getById(nullable(User.class), eq(productId))).thenReturn(product);
 
             mockMvc.perform(get("/api/products/{id}", productId))
@@ -231,8 +231,8 @@ class ProductControllerTest {
     class GetUserActiveProductsCount {
 
         @Test
-        @DisplayName("deve retornar contagem de produtos ativos do usuário")
-        void deveRetornarContagemDeProdutosAtivosDoUsuario() throws Exception {
+        @DisplayName("should return active product count for user")
+        void shouldReturnUserActiveProductCount() throws Exception {
             when(service.getUserActiveProductsCount(any(User.class))).thenReturn(15L);
 
             mockMvc.perform(get("/api/products/stores/stats/active-products"))
@@ -249,8 +249,8 @@ class ProductControllerTest {
     class GetActiveProductsCount {
 
         @Test
-        @DisplayName("deve retornar contagem de produtos ativos na loja")
-        void deveRetornarContagemDeProdutosAtivosNaLoja() throws Exception {
+        @DisplayName("should return active product count in store")
+        void shouldReturnActiveProductCountInStore() throws Exception {
             when(service.getActiveProductsCount(eq(storeId))).thenReturn(8L);
 
             mockMvc.perform(get("/api/products/store/{storeId}/stats/active-products", storeId))
@@ -267,9 +267,9 @@ class ProductControllerTest {
     class Update {
 
         @Test
-        @DisplayName("deve atualizar produto com multipart opcional")
-        void deveAtualizarProduto() throws Exception {
-            product.setName("Produto Atualizado");
+        @DisplayName("should update product with optional multipart")
+        void shouldUpdateProduct() throws Exception {
+            product.setName("Updated Product");
             when(service.update(any(User.class), eq(productId), any(), any())).thenReturn(product);
 
             MockMultipartFile dataPart = new MockMultipartFile(
@@ -281,7 +281,7 @@ class ProductControllerTest {
                             .file(dataPart))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
-                    .andExpect(jsonPath("$.data.name").value("Produto Atualizado"));
+                    .andExpect(jsonPath("$.data.name").value("Updated Product"));
 
             verify(service).update(any(User.class), eq(productId), any(), any());
         }
@@ -292,8 +292,8 @@ class ProductControllerTest {
     class Delete {
 
         @Test
-        @DisplayName("deve excluir produto por ID")
-        void deveExcluirProduto() throws Exception {
+        @DisplayName("should delete product by ID")
+        void shouldDeleteProduct() throws Exception {
             doNothing().when(service).delete(any(User.class), eq(productId));
 
             mockMvc.perform(delete("/api/products/{id}", productId))

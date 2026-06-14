@@ -43,12 +43,12 @@ class UserAddressServiceTest {
         addressId = UUID.randomUUID();
 
         request = new UserAddressRequestDTO(
-                "Casa",
-                "Rua das Flores",
+                "Home",
+                "Flower Street",
                 "123",
                 null,
-                "Centro",
-                "São Paulo",
+                "Downtown",
+                "Sao Paulo",
                 "SP",
                 "01310-100",
                 -23.5505,
@@ -61,8 +61,8 @@ class UserAddressServiceTest {
     class Update {
 
         @Test
-        @DisplayName("endereço não encontrado deve lançar IllegalArgumentException")
-        void enderecoNaoEncontrado_deveLancarException() {
+        @DisplayName("address not found should throw IllegalArgumentException")
+        void addressNotFound_shouldThrowException() {
             when(repository.findById(addressId)).thenReturn(Optional.empty());
 
             assertThrows(IllegalArgumentException.class,
@@ -70,8 +70,8 @@ class UserAddressServiceTest {
         }
 
         @Test
-        @DisplayName("endereço pertencente a outro usuário deve lançar IllegalArgumentException")
-        void enderecoDeOutroUsuario_deveLancarException() {
+        @DisplayName("address belonging to another user should throw IllegalArgumentException")
+        void addressBelongsToOtherUser_shouldThrowException() {
             User otherUser = new User();
             otherUser.setId(UUID.randomUUID());
 
@@ -88,8 +88,8 @@ class UserAddressServiceTest {
         }
 
         @Test
-        @DisplayName("proprietário atualiza endereço e retorna DTO")
-        void proprietarioAtualiza_deveRetornarDTO() {
+        @DisplayName("owner should update address and return DTO")
+        void owner_shouldUpdateAndReturnDTO() {
             UserAddress address = new UserAddress();
             address.setId(addressId);
             address.setUser(user);
@@ -99,8 +99,8 @@ class UserAddressServiceTest {
             UserAddressResponseDTO result = userAddressService.update(user, addressId, request);
 
             assertNotNull(result);
-            assertEquals("Casa", result.getLabel());
-            assertEquals("São Paulo", result.getCity());
+            assertEquals("Home", result.getLabel());
+            assertEquals("Sao Paulo", result.getCity());
             verify(repository).update(address);
         }
     }
@@ -110,8 +110,8 @@ class UserAddressServiceTest {
     class Delete {
 
         @Test
-        @DisplayName("endereço pertencente a outro usuário deve lançar IllegalArgumentException")
-        void enderecoDeOutroUsuario_deveLancarException() {
+        @DisplayName("address belonging to another user should throw IllegalArgumentException")
+        void addressBelongsToOtherUser_shouldThrowException() {
             User otherUser = new User();
             otherUser.setId(UUID.randomUUID());
 
@@ -128,8 +128,8 @@ class UserAddressServiceTest {
         }
 
         @Test
-        @DisplayName("proprietário deleta endereço com soft delete")
-        void proprietarioDeletaComSoftDelete() {
+        @DisplayName("owner should soft delete address")
+        void owner_shouldSoftDelete() {
             UserAddress address = new UserAddress();
             address.setId(addressId);
             address.setUser(user);

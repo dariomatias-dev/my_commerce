@@ -77,8 +77,8 @@ class SubscriptionPlanControllerTest {
     class Create {
 
         @Test
-        @DisplayName("deve criar plano de assinatura")
-        void deveRetornarPlanoAoCriarComSucesso() throws Exception {
+        @DisplayName("should create subscription plan")
+        void shouldCreateSubscriptionPlan() throws Exception {
             when(service.create(any(SubscriptionPlanRequestDTO.class))).thenReturn(plan);
 
             mockMvc.perform(post("/api/subscription-plans")
@@ -99,8 +99,8 @@ class SubscriptionPlanControllerTest {
     class GetAll {
 
         @Test
-        @DisplayName("deve retornar página de planos de assinatura")
-        void deveRetornarPaginaDePlanos() throws Exception {
+        @DisplayName("should return subscription plan page")
+        void shouldReturnSubscriptionPlanPage() throws Exception {
             Page<SubscriptionPlan> page = new PageImpl<>(List.of(plan));
             when(service.getAll(any(Pageable.class))).thenReturn(page);
 
@@ -121,8 +121,8 @@ class SubscriptionPlanControllerTest {
     class GetById {
 
         @Test
-        @DisplayName("deve retornar plano por ID")
-        void deveRetornarPlanoQuandoIdValido() throws Exception {
+        @DisplayName("should return plan by ID")
+        void shouldReturnPlanById() throws Exception {
             when(service.getById(planId)).thenReturn(plan);
 
             mockMvc.perform(get("/api/subscription-plans/{id}", planId))
@@ -141,8 +141,8 @@ class SubscriptionPlanControllerTest {
     class Update {
 
         @Test
-        @DisplayName("deve atualizar plano de assinatura")
-        void deveRetornarPlanoAtualizadoComSucesso() throws Exception {
+        @DisplayName("should update subscription plan")
+        void shouldUpdateSubscriptionPlan() throws Exception {
             SubscriptionPlanRequestDTO updateRequest = new SubscriptionPlanRequestDTO();
             updateRequest.setName("Premium");
             updateRequest.setMaxStores(5);
@@ -173,8 +173,8 @@ class SubscriptionPlanControllerTest {
     class Delete {
 
         @Test
-        @DisplayName("deve excluir plano de assinatura por ID")
-        void deveRetornarSucessoAoExcluirPlano() throws Exception {
+        @DisplayName("should delete subscription plan by ID")
+        void shouldDeleteSubscriptionPlan() throws Exception {
             doNothing().when(service).delete(planId);
 
             mockMvc.perform(delete("/api/subscription-plans/{id}", planId))

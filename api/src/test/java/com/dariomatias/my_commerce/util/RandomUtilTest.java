@@ -12,60 +12,60 @@ import static org.junit.jupiter.api.Assertions.*;
 class RandomUtilTest {
 
     @Test
-    @DisplayName("chance(0) deve retornar sempre false")
-    void chance_comZeroPorcento_deveRetornarSempreFalse() {
+    @DisplayName("chance(0) should always return false")
+    void chance_withZeroPercent_shouldAlwaysReturnFalse() {
         assertFalse(RandomUtil.chance(0));
     }
 
     @Test
-    @DisplayName("chance(100) deve retornar sempre true")
-    void chance_com100Porcento_deveRetornarSempreTrue() {
+    @DisplayName("chance(100) should always return true")
+    void chance_with100Percent_shouldAlwaysReturnTrue() {
         assertTrue(RandomUtil.chance(100));
     }
 
     @Test
-    @DisplayName("chance negativo deve retornar false")
-    void chance_comNegativo_deveRetornarFalse() {
+    @DisplayName("negative chance should return false")
+    void chance_withNegative_shouldReturnFalse() {
         assertFalse(RandomUtil.chance(-10));
     }
 
     @Test
-    @DisplayName("chance acima de 100 deve retornar true")
-    void chance_comAcimaDe100_deveRetornarTrue() {
+    @DisplayName("chance above 100 should return true")
+    void chance_above100_shouldReturnTrue() {
         assertTrue(RandomUtil.chance(101));
     }
 
     @Test
-    @DisplayName("randomPastDate(0) deve retornar data de hoje")
-    void randomPastDate_comZeroDias_deveRetornarHoje() {
-        LocalDateTime resultado = RandomUtil.randomPastDate(0);
-        assertNotNull(resultado);
-        assertEquals(LocalDateTime.now().toLocalDate(), resultado.toLocalDate());
+    @DisplayName("randomPastDate(0) should return today's date")
+    void randomPastDate_withZeroDays_shouldReturnToday() {
+        LocalDateTime result = RandomUtil.randomPastDate(0);
+        assertNotNull(result);
+        assertEquals(LocalDateTime.now().toLocalDate(), result.toLocalDate());
     }
 
     @Test
-    @DisplayName("randomPastDate deve retornar data dentro do intervalo")
-    void randomPastDate_comIntervalo_deveRetornarDentroDoIntervalo() {
-        int maxDias = 30;
-        LocalDateTime resultado = RandomUtil.randomPastDate(maxDias);
-        LocalDateTime limite = LocalDateTime.now().minusDays(maxDias).minusMinutes(1);
-        assertTrue(resultado.isAfter(limite));
-        assertTrue(resultado.isBefore(LocalDateTime.now().plusMinutes(1)));
+    @DisplayName("randomPastDate should return date within interval")
+    void randomPastDate_withInterval_shouldReturnWithinRange() {
+        int maxDays = 30;
+        LocalDateTime result = RandomUtil.randomPastDate(maxDays);
+        LocalDateTime lowerBound = LocalDateTime.now().minusDays(maxDays).minusMinutes(1);
+        assertTrue(result.isAfter(lowerBound));
+        assertTrue(result.isBefore(LocalDateTime.now().plusMinutes(1)));
     }
 
     @Test
-    @DisplayName("randomDeletion com 0% nunca deve marcar como deletado")
-    void randomDeletion_comZeroPorcento_nuncaDeveMarcarComoDeletedo() {
-        RandomUtil.RandomResult resultado = RandomUtil.randomDeletion(0, 30);
-        assertFalse(resultado.isDeleted());
-        assertNull(resultado.getDeletedAt());
+    @DisplayName("randomDeletion with 0% should never mark as deleted")
+    void randomDeletion_withZeroPercent_shouldNeverMarkAsDeleted() {
+        RandomUtil.RandomResult result = RandomUtil.randomDeletion(0, 30);
+        assertFalse(result.isDeleted());
+        assertNull(result.getDeletedAt());
     }
 
     @Test
-    @DisplayName("randomDeletion com 100% sempre deve marcar como deletado com data")
-    void randomDeletion_com100Porcento_sempreDeveMarcarComoDeletedoComData() {
-        RandomUtil.RandomResult resultado = RandomUtil.randomDeletion(100, 30);
-        assertTrue(resultado.isDeleted());
-        assertNotNull(resultado.getDeletedAt());
+    @DisplayName("randomDeletion with 100% should always mark as deleted with date")
+    void randomDeletion_with100Percent_shouldAlwaysMarkAsDeletedWithDate() {
+        RandomUtil.RandomResult result = RandomUtil.randomDeletion(100, 30);
+        assertTrue(result.isDeleted());
+        assertNotNull(result.getDeletedAt());
     }
 }

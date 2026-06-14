@@ -33,15 +33,15 @@ class FileControllerTest {
     class GetFile {
 
         @Test
-        @DisplayName("deve retornar 404 quando bucket for inválido")
-        void deveRetornar404ComBucketInvalido() throws Exception {
+        @DisplayName("should return 404 when bucket is invalid")
+        void shouldReturn404WithInvalidBucket() throws Exception {
             mockMvc.perform(get("/api/files/invalid-bucket/image.jpg"))
                     .andExpect(status().isNotFound());
         }
 
         @Test
-        @DisplayName("deve retornar 404 quando arquivo não for encontrado no MinIO")
-        void deveRetornar404ComErroNoMinio() throws Exception {
+        @DisplayName("should return 404 when file is not found in MinIO")
+        void shouldReturn404WithMinIOError() throws Exception {
             when(minioClient.statObject(any(StatObjectArgs.class)))
                     .thenThrow(new RuntimeException("MinIO error"));
 
@@ -50,15 +50,15 @@ class FileControllerTest {
         }
 
         @Test
-        @DisplayName("deve retornar 400 quando path contiver traversal (..)")
-        void deveRetornar400ComPathTraversal() throws Exception {
+        @DisplayName("should return 400 when path contains traversal (..)")
+        void shouldReturn400WithPathTraversal() throws Exception {
             mockMvc.perform(get("/api/files/stores/image..jpg"))
                     .andExpect(status().isBadRequest());
         }
 
         @Test
-        @DisplayName("deve retornar 200 quando bucket e arquivo forem válidos")
-        void deveRetornar200ComBucketValidoEArquivoExistente() throws Exception {
+        @DisplayName("should return 200 when bucket and file are valid")
+        void shouldReturn200WithValidBucketAndExistingFile() throws Exception {
             StatObjectResponse statResponse = mock(StatObjectResponse.class);
             when(statResponse.contentType()).thenReturn("image/jpeg");
             when(statResponse.size()).thenReturn(100L);

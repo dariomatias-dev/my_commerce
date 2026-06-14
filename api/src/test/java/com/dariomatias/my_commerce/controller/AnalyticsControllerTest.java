@@ -67,8 +67,8 @@ class AnalyticsControllerTest {
     class GetUniqueCustomers {
 
         @Test
-        @DisplayName("deve retornar clientes únicos do usuário autenticado")
-        void deveRetornarClientesUnicosDoUsuario() throws Exception {
+        @DisplayName("should return unique customers for authenticated user")
+        void shouldReturnUniqueCustomersForUser() throws Exception {
             UniqueCustomersResponseDTO response = new UniqueCustomersResponseDTO(25L);
             when(service.getUniqueCustomers(eq(userId))).thenReturn(response);
 
@@ -86,8 +86,8 @@ class AnalyticsControllerTest {
     class GetTotalRevenue {
 
         @Test
-        @DisplayName("deve retornar receita total do usuário autenticado")
-        void deveRetornarReceitaTotalDoUsuario() throws Exception {
+        @DisplayName("should return total revenue for authenticated user")
+        void shouldReturnTotalRevenueForUser() throws Exception {
             TotalRevenueResponseDTO response = new TotalRevenueResponseDTO(BigDecimal.valueOf(1500.00));
             when(service.getTotalRevenue(eq(userId))).thenReturn(response);
 
@@ -105,8 +105,8 @@ class AnalyticsControllerTest {
     class GetUniqueCustomersByStore {
 
         @Test
-        @DisplayName("deve retornar clientes únicos da loja")
-        void deveRetornarClientesUnicosDaLoja() throws Exception {
+        @DisplayName("should return unique customers for store")
+        void shouldReturnUniqueCustomersForStore() throws Exception {
             UniqueCustomersResponseDTO response = new UniqueCustomersResponseDTO(10L);
             when(service.getUniqueCustomersByStore(eq(storeId), any(User.class))).thenReturn(response);
 
@@ -124,8 +124,8 @@ class AnalyticsControllerTest {
     class GetTotalRevenueByStore {
 
         @Test
-        @DisplayName("deve retornar receita total da loja")
-        void deveRetornarReceitaTotalDaLoja() throws Exception {
+        @DisplayName("should return total revenue for store")
+        void shouldReturnTotalRevenueForStore() throws Exception {
             TotalRevenueResponseDTO response = new TotalRevenueResponseDTO(BigDecimal.valueOf(3200.50));
             when(service.getTotalRevenueByStore(eq(storeId), any(User.class))).thenReturn(response);
 
@@ -143,8 +143,8 @@ class AnalyticsControllerTest {
     class GetTotalRevenueGlobal {
 
         @Test
-        @DisplayName("deve retornar receita total global")
-        void deveRetornarReceitaTotalGlobal() throws Exception {
+        @DisplayName("should return global total revenue")
+        void shouldReturnGlobalTotalRevenue() throws Exception {
             when(service.getTotalRevenue()).thenReturn(BigDecimal.valueOf(99999.99));
 
             mockMvc.perform(get("/api/analytics/total-revenue"))

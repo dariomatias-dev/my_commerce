@@ -40,7 +40,7 @@ class SubscriptionPlanServiceTest {
         planId = UUID.randomUUID();
 
         request = new SubscriptionPlanRequestDTO();
-        request.setName("Plano Pro");
+        request.setName("Pro Plan");
         request.setMaxStores(5);
         request.setMaxProducts(100);
         request.setFeatures("Feature A, Feature B");
@@ -52,9 +52,9 @@ class SubscriptionPlanServiceTest {
     class Create {
 
         @Test
-        @DisplayName("nome já existente deve lançar 400")
-        void nomeJaExistente_deveLancar400() {
-            when(subscriptionPlanRepository.existsByName("Plano Pro")).thenReturn(true);
+        @DisplayName("existing name should throw 400")
+        void existingName_shouldThrow400() {
+            when(subscriptionPlanRepository.existsByName("Pro Plan")).thenReturn(true);
 
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
                     () -> subscriptionPlanService.create(request));
@@ -64,19 +64,19 @@ class SubscriptionPlanServiceTest {
         }
 
         @Test
-        @DisplayName("nome único deve salvar e retornar o plano criado")
-        void nomeUnico_deveSalvar() {
+        @DisplayName("unique name should save and return created plan")
+        void uniqueName_shouldSave() {
             SubscriptionPlan saved = new SubscriptionPlan();
             saved.setId(planId);
-            saved.setName("Plano Pro");
+            saved.setName("Pro Plan");
 
-            when(subscriptionPlanRepository.existsByName("Plano Pro")).thenReturn(false);
+            when(subscriptionPlanRepository.existsByName("Pro Plan")).thenReturn(false);
             when(subscriptionPlanRepository.save(any(SubscriptionPlan.class))).thenReturn(saved);
 
             SubscriptionPlan result = subscriptionPlanService.create(request);
 
             assertNotNull(result);
-            assertEquals("Plano Pro", result.getName());
+            assertEquals("Pro Plan", result.getName());
             verify(subscriptionPlanRepository).save(any(SubscriptionPlan.class));
         }
     }
@@ -86,8 +86,8 @@ class SubscriptionPlanServiceTest {
     class GetById {
 
         @Test
-        @DisplayName("id inexistente deve lançar 404")
-        void idInexistente_deveLancar404() {
+        @DisplayName("non-existing id should throw 404")
+        void nonExistingId_shouldThrow404() {
             when(subscriptionPlanRepository.findById(planId)).thenReturn(Optional.empty());
 
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
@@ -97,8 +97,8 @@ class SubscriptionPlanServiceTest {
         }
 
         @Test
-        @DisplayName("id existente deve retornar o plano")
-        void idExistente_deveRetornarPlano() {
+        @DisplayName("existing id should return plan")
+        void existingId_shouldReturnPlan() {
             SubscriptionPlan plan = new SubscriptionPlan();
             plan.setId(planId);
             when(subscriptionPlanRepository.findById(planId)).thenReturn(Optional.of(plan));
@@ -120,14 +120,14 @@ class SubscriptionPlanServiceTest {
         void setUp() {
             existing = new SubscriptionPlan();
             existing.setId(planId);
-            existing.setName("Plano Pro");
+            existing.setName("Pro Plan");
             existing.setMaxStores(5);
             existing.setPrice(new BigDecimal("49.90"));
         }
 
         @Test
-        @DisplayName("plano não encontrado deve lançar 404")
-        void planoNaoEncontrado_deveLancar404() {
+        @DisplayName("plan not found should throw 404")
+        void planNotFound_shouldThrow404() {
             when(subscriptionPlanRepository.findById(planId)).thenReturn(Optional.empty());
 
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
@@ -137,12 +137,12 @@ class SubscriptionPlanServiceTest {
         }
 
         @Test
-        @DisplayName("nome conflitante com outro plano deve lançar 400")
-        void nomeConflitante_deveLancar400() {
-            request.setName("Plano Enterprise");
+        @DisplayName("conflicting name with another plan should throw 400")
+        void conflictingName_shouldThrow400() {
+            request.setName("Enterprise Plan");
 
             when(subscriptionPlanRepository.findById(planId)).thenReturn(Optional.of(existing));
-            when(subscriptionPlanRepository.existsByName("Plano Enterprise")).thenReturn(true);
+            when(subscriptionPlanRepository.existsByName("Enterprise Plan")).thenReturn(true);
 
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
                     () -> subscriptionPlanService.update(planId, request));
@@ -152,8 +152,8 @@ class SubscriptionPlanServiceTest {
         }
 
         @Test
-        @DisplayName("campos null não devem sobrescrever valores existentes")
-        void camposNull_naoDevemSobrescrever() {
+        @DisplayName("null fields should not overwrite existing values")
+        void nullFields_shouldNotOverwriteExistingValues() {
             SubscriptionPlanRequestDTO partialRequest = new SubscriptionPlanRequestDTO();
             partialRequest.setName(null);
             partialRequest.setMaxStores(null);
@@ -166,14 +166,14 @@ class SubscriptionPlanServiceTest {
 
             SubscriptionPlan result = subscriptionPlanService.update(planId, partialRequest);
 
-            assertEquals("Plano Pro", result.getName());
+            assertEquals("Pro Plan", result.getName());
             assertEquals(5, result.getMaxStores());
         }
 
         @Test
-        @DisplayName("mesmo nome que o próprio plano não deve checar conflito")
-        void mesmoNome_naoDeveChecarConflito() {
-            request.setName("Plano Pro"); // mesmo nome
+        @DisplayName("same name as own plan should not check for conflict")
+        void sameName_shouldNotCheckConflict() {
+            request.setName("Pro Plan");
 
             when(subscriptionPlanRepository.findById(planId)).thenReturn(Optional.of(existing));
             when(subscriptionPlanRepository.update(existing)).thenReturn(existing);
@@ -189,8 +189,8 @@ class SubscriptionPlanServiceTest {
     class Delete {
 
         @Test
-        @DisplayName("id inexistente deve lançar 404")
-        void idInexistente_deveLancar404() {
+        @DisplayName("non-existing id should throw 404")
+        void nonExistingId_shouldThrow404() {
             when(subscriptionPlanRepository.findById(planId)).thenReturn(Optional.empty());
 
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
@@ -201,8 +201,8 @@ class SubscriptionPlanServiceTest {
         }
 
         @Test
-        @DisplayName("id existente deve chamar deleteById")
-        void idExistente_deveDeletar() {
+        @DisplayName("existing id should call deleteById")
+        void existingId_shouldDelete() {
             SubscriptionPlan plan = new SubscriptionPlan();
             plan.setId(planId);
             when(subscriptionPlanRepository.findById(planId)).thenReturn(Optional.of(plan));

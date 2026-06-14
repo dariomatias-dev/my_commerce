@@ -9,50 +9,50 @@ import static org.junit.jupiter.api.Assertions.*;
 class SlugUtilTest {
 
     @Test
-    @DisplayName("texto simples deve virar slug minúsculo com hífens")
-    void generateSlug_comTextoSimples_deveGerarSlugMinusculo() {
-        assertEquals("minha-loja", SlugUtil.generateSlug("Minha Loja"));
+    @DisplayName("simple text should become lowercase slug with hyphens")
+    void generateSlug_withSimpleText_shouldGenerateLowercaseSlug() {
+        assertEquals("my-store", SlugUtil.generateSlug("My Store"));
     }
 
     @Test
-    @DisplayName("texto com acentos deve ser normalizado sem acentos")
-    void generateSlug_comAcentos_deveRemoverAcentos() {
-        assertEquals("cafe-especial", SlugUtil.generateSlug("Café Especial"));
+    @DisplayName("text with accents should be normalized without accents")
+    void generateSlug_withAccents_shouldRemoveAccents() {
+        assertEquals("cafe-special", SlugUtil.generateSlug("Café Special"));
     }
 
     @Test
-    @DisplayName("texto com caracteres especiais deve remover símbolos")
-    void generateSlug_comCaracteresEspeciais_deveRemoverSimbolos() {
-        assertEquals("produto-top", SlugUtil.generateSlug("Produto #Top!"));
+    @DisplayName("text with special characters should remove symbols")
+    void generateSlug_withSpecialCharacters_shouldRemoveSymbols() {
+        assertEquals("product-top", SlugUtil.generateSlug("Product #Top!"));
     }
 
     @Test
-    @DisplayName("null deve retornar string vazia")
-    void generateSlug_comNull_deveRetornarStringVazia() {
+    @DisplayName("null should return empty string")
+    void generateSlug_withNull_shouldReturnEmptyString() {
         assertEquals("", SlugUtil.generateSlug(null));
     }
 
     @Test
-    @DisplayName("string em branco deve retornar string vazia")
-    void generateSlug_comStringVazia_deveRetornarStringVazia() {
+    @DisplayName("blank string should return empty string")
+    void generateSlug_withBlankString_shouldReturnEmptyString() {
         assertEquals("", SlugUtil.generateSlug("   "));
     }
 
     @Test
-    @DisplayName("hífens extras no início e fim devem ser removidos")
-    void generateSlug_comHifensNasExtremidades_deveRemoverHifensExtras() {
-        assertEquals("produto", SlugUtil.generateSlug("--Produto--"));
+    @DisplayName("extra hyphens at start and end should be removed")
+    void generateSlug_withEdgeHyphens_shouldRemoveExtraHyphens() {
+        assertEquals("product", SlugUtil.generateSlug("--Product--"));
     }
 
     @Test
-    @DisplayName("números devem ser preservados no slug")
-    void generateSlug_comNumeros_devePreservarNumeros() {
-        assertEquals("produto-123", SlugUtil.generateSlug("Produto 123"));
+    @DisplayName("numbers should be preserved in slug")
+    void generateSlug_withNumbers_shouldPreserveNumbers() {
+        assertEquals("product-123", SlugUtil.generateSlug("Product 123"));
     }
 
     @Test
-    @DisplayName("múltiplos espaços devem virar um único hífen")
-    void generateSlug_comMultiplosEspacos_deveGerarUmHifen() {
-        assertEquals("minha-loja", SlugUtil.generateSlug("Minha   Loja"));
+    @DisplayName("multiple spaces should become a single hyphen")
+    void generateSlug_withMultipleSpaces_shouldGenerateSingleHyphen() {
+        assertEquals("my-store", SlugUtil.generateSlug("My   Store"));
     }
 }

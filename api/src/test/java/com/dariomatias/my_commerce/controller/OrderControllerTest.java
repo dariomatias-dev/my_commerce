@@ -114,8 +114,8 @@ class OrderControllerTest {
     class Create {
 
         @Test
-        @DisplayName("deve criar pedido com payload válido")
-        void deveRetornarPedidoCriado() throws Exception {
+        @DisplayName("should create order with valid payload")
+        void shouldCreateOrder() throws Exception {
             when(service.create(nullable(User.class), any(OrderRequestDTO.class))).thenReturn(order);
 
             mockMvc.perform(post("/api/orders")
@@ -130,18 +130,18 @@ class OrderControllerTest {
         }
 
         @Test
-        @DisplayName("deve retornar 400 quando lista de itens estiver vazia")
-        void deveRetornar400QuandoSemItens() throws Exception {
-            OrderRequestDTO requestSemItens = new OrderRequestDTO();
-            requestSemItens.setStoreId(storeId);
-            requestSemItens.setAddressId(UUID.randomUUID());
-            requestSemItens.setPaymentMethod(PaymentMethod.PIX);
-            requestSemItens.setFreightType(FreightType.ECONOMICAL);
-            requestSemItens.setItems(List.of());
+        @DisplayName("should return 400 when item list is empty")
+        void shouldReturn400WhenNoItems() throws Exception {
+            OrderRequestDTO requestWithNoItems = new OrderRequestDTO();
+            requestWithNoItems.setStoreId(storeId);
+            requestWithNoItems.setAddressId(UUID.randomUUID());
+            requestWithNoItems.setPaymentMethod(PaymentMethod.PIX);
+            requestWithNoItems.setFreightType(FreightType.ECONOMICAL);
+            requestWithNoItems.setItems(List.of());
 
             mockMvc.perform(post("/api/orders")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(requestSemItens)))
+                            .content(objectMapper.writeValueAsString(requestWithNoItems)))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value("error"))
                     .andExpect(jsonPath("$.code").value(400));
@@ -150,17 +150,17 @@ class OrderControllerTest {
         }
 
         @Test
-        @DisplayName("deve retornar 400 quando storeId estiver ausente")
-        void deveRetornar400QuandoStoreIdAusente() throws Exception {
-            OrderRequestDTO requestSemLoja = new OrderRequestDTO();
-            requestSemLoja.setAddressId(UUID.randomUUID());
-            requestSemLoja.setPaymentMethod(PaymentMethod.PIX);
-            requestSemLoja.setFreightType(FreightType.ECONOMICAL);
-            requestSemLoja.setItems(List.of(orderRequest.getItems().get(0)));
+        @DisplayName("should return 400 when storeId is missing")
+        void shouldReturn400WhenStoreIdMissing() throws Exception {
+            OrderRequestDTO requestWithNoStore = new OrderRequestDTO();
+            requestWithNoStore.setAddressId(UUID.randomUUID());
+            requestWithNoStore.setPaymentMethod(PaymentMethod.PIX);
+            requestWithNoStore.setFreightType(FreightType.ECONOMICAL);
+            requestWithNoStore.setItems(List.of(orderRequest.getItems().get(0)));
 
             mockMvc.perform(post("/api/orders")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(requestSemLoja)))
+                            .content(objectMapper.writeValueAsString(requestWithNoStore)))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value("error"));
 
@@ -173,8 +173,8 @@ class OrderControllerTest {
     class GetAll {
 
         @Test
-        @DisplayName("deve retornar página de pedidos")
-        void deveRetornarPaginaDePedidos() throws Exception {
+        @DisplayName("should return order page")
+        void shouldReturnOrderPage() throws Exception {
             Page<Order> page = new PageImpl<>(List.of(order));
             when(service.getAll(any(Pageable.class))).thenReturn(page);
 
@@ -195,8 +195,8 @@ class OrderControllerTest {
     class GetAllByUser {
 
         @Test
-        @DisplayName("deve retornar pedidos por usuário")
-        void deveRetornarPedidosPorUsuario() throws Exception {
+        @DisplayName("should return orders by user")
+        void shouldReturnOrdersByUser() throws Exception {
             Page<Order> page = new PageImpl<>(List.of(order));
             when(service.getAllByUser(eq(userId), any(Pageable.class))).thenReturn(page);
 
@@ -216,8 +216,8 @@ class OrderControllerTest {
     class GetAllByStore {
 
         @Test
-        @DisplayName("deve retornar pedidos da loja")
-        void deveRetornarPedidosDaLoja() throws Exception {
+        @DisplayName("should return store orders")
+        void shouldReturnStoreOrders() throws Exception {
             Page<Order> page = new PageImpl<>(List.of(order));
             when(service.getAllByStore(eq(storeId), nullable(User.class), any(Pageable.class))).thenReturn(page);
 
@@ -237,8 +237,8 @@ class OrderControllerTest {
     class GetMyOrders {
 
         @Test
-        @DisplayName("deve retornar pedidos do usuário autenticado")
-        void deveRetornarPedidosDoUsuarioAutenticado() throws Exception {
+        @DisplayName("should return authenticated user orders")
+        void shouldReturnAuthenticatedUserOrders() throws Exception {
             Page<Order> page = new PageImpl<>(List.of(order));
             when(service.getAllByUser(eq(userId), any(Pageable.class))).thenReturn(page);
 
@@ -258,15 +258,15 @@ class OrderControllerTest {
     class GetMyOrderStores {
 
         @Test
-        @DisplayName("deve retornar lojas dos pedidos do usuário autenticado")
-        void deveRetornarLojasDosMyPedidos() throws Exception {
+        @DisplayName("should return stores from authenticated user orders")
+        void shouldReturnStoresFromMyOrders() throws Exception {
             AuditMetadata storeAudit = new AuditMetadata();
             storeAudit.setCreatedAt(LocalDateTime.now());
             storeAudit.setUpdatedAt(LocalDateTime.now());
 
             Store store = new Store();
             store.setId(storeId);
-            store.setName("Minha Loja");
+            store.setName("My Store");
             store.setUserId(userId);
             store.setAudit(storeAudit);
 
@@ -289,8 +289,8 @@ class OrderControllerTest {
     class GetMyOrdersByStore {
 
         @Test
-        @DisplayName("deve retornar pedidos da loja do usuário autenticado")
-        void deveRetornarPedidosDaLojaDoUsuario() throws Exception {
+        @DisplayName("should return authenticated user orders for store")
+        void shouldReturnUserOrdersByStore() throws Exception {
             Page<Order> page = new PageImpl<>(List.of(order));
             when(service.getMyOrdersByStore(eq(userId), eq(storeId), any(Pageable.class))).thenReturn(page);
 
@@ -310,8 +310,8 @@ class OrderControllerTest {
     class GetById {
 
         @Test
-        @DisplayName("deve retornar detalhes do pedido por ID")
-        void deveRetornarDetalhesDoPedido() throws Exception {
+        @DisplayName("should return order details by ID")
+        void shouldReturnOrderDetails() throws Exception {
             OrderDetailsResponseDTO details = new OrderDetailsResponseDTO(
                     orderId, null, userId, PaymentMethod.PIX, FreightType.ECONOMICAL,
                     BigDecimal.TEN, BigDecimal.valueOf(60.0), Status.PENDING, null,
@@ -334,8 +334,8 @@ class OrderControllerTest {
     class GetSuccessfulSalesCount {
 
         @Test
-        @DisplayName("deve retornar contagem de vendas bem-sucedidas")
-        void deveRetornarContagemDeVendas() throws Exception {
+        @DisplayName("should return successful sales count")
+        void shouldReturnSuccessfulSalesCount() throws Exception {
             when(service.getSuccessfulSalesCount(eq(storeId), nullable(User.class))).thenReturn(42L);
 
             mockMvc.perform(get("/api/orders/store/{storeId}/stats/successful-sales", storeId))
@@ -352,8 +352,8 @@ class OrderControllerTest {
     class Delete {
 
         @Test
-        @DisplayName("deve excluir pedido por ID")
-        void deveExcluirPedido() throws Exception {
+        @DisplayName("should delete order by ID")
+        void shouldDeleteOrder() throws Exception {
             doNothing().when(service).delete(orderId);
 
             mockMvc.perform(delete("/api/orders/{id}", orderId))

@@ -230,8 +230,8 @@ class SubscriptionServiceTest {
         }
 
         @Test
-        @DisplayName("sem assinatura ativa deve lançar 400")
-        void semAssinaturaAtiva_deveLancar400() {
+        @DisplayName("no active subscription should throw 400")
+        void noActiveSubscription_shouldThrow400() {
             when(subscriptionRepository.findActiveByUserId(user.getId())).thenReturn(Optional.empty());
 
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
@@ -241,8 +241,8 @@ class SubscriptionServiceTest {
         }
 
         @Test
-        @DisplayName("mesmo plano deve lançar 400")
-        void mesmoPlano_deveLancar400() {
+        @DisplayName("same plan should throw 400")
+        void samePlan_shouldThrow400() {
             request.setPlanId(currentPlanId);
             when(subscriptionRepository.findActiveByUserId(user.getId())).thenReturn(Optional.of(activeSubscription));
 
@@ -254,8 +254,8 @@ class SubscriptionServiceTest {
         }
 
         @Test
-        @DisplayName("plano diferente deve desativar atual e criar nova assinatura")
-        void planoDiferente_deveDesativarAtualECriarNova() {
+        @DisplayName("different plan should deactivate current and create new subscription")
+        void differentPlan_shouldDeactivateCurrentAndCreateNew() {
             SubscriptionPlan newPlan = new SubscriptionPlan();
             newPlan.setId(newPlanId);
 
@@ -282,8 +282,8 @@ class SubscriptionServiceTest {
     class CancelActiveSubscription {
 
         @Test
-        @DisplayName("sem assinatura ativa deve lançar 400")
-        void semAssinaturaAtiva_deveLancar400() {
+        @DisplayName("no active subscription should throw 400")
+        void noActiveSubscription_shouldThrow400() {
             when(subscriptionRepository.findAllByUser_Id(user.getId(), Pageable.unpaged()))
                     .thenReturn(new PageImpl<>(List.of()));
 
@@ -294,8 +294,8 @@ class SubscriptionServiceTest {
         }
 
         @Test
-        @DisplayName("com assinatura ativa deve cancelar e reverter role do usuário para USER")
-        void comAssinaturaAtiva_deveCancelarEAlterarRoleParaUser() {
+        @DisplayName("with active subscription should cancel and revert user role to USER")
+        void withActiveSubscription_shouldCancelAndRevertRoleToUser() {
             when(subscriptionRepository.findAllByUser_Id(user.getId(), Pageable.unpaged()))
                     .thenReturn(new PageImpl<>(List.of(activeSubscription)));
             when(subscriptionRepository.update(activeSubscription)).thenReturn(activeSubscription);

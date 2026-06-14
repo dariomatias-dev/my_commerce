@@ -59,7 +59,7 @@ class CategoryServiceTest {
         category = new Category();
         category.setId(categoryId);
         category.setStore(store);
-        category.setName("Eletrônicos");
+        category.setName("Electronics");
 
         pageable = PageRequest.of(0, 10);
     }
@@ -69,11 +69,11 @@ class CategoryServiceTest {
     class Create {
 
         @Test
-        @DisplayName("loja não encontrada deve lançar 404")
-        void lojaNaoEncontrada_deveLancar404() {
+        @DisplayName("store not found should throw 404")
+        void storeNotFound_shouldThrow404() {
             CategoryRequestDTO request = new CategoryRequestDTO();
             request.setStoreId(storeId);
-            request.setName("Eletrônicos");
+            request.setName("Electronics");
 
             when(storeRepository.findById(storeId)).thenReturn(Optional.empty());
 
@@ -85,11 +85,11 @@ class CategoryServiceTest {
         }
 
         @Test
-        @DisplayName("loja encontrada deve criar e retornar categoria")
-        void lojaEncontrada_deveCriarCategoria() {
+        @DisplayName("store found should create and return category")
+        void storeFound_shouldCreateCategory() {
             CategoryRequestDTO request = new CategoryRequestDTO();
             request.setStoreId(storeId);
-            request.setName("Eletrônicos");
+            request.setName("Electronics");
 
             when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
             when(categoryRepository.save(any(Category.class))).thenReturn(category);
@@ -97,7 +97,7 @@ class CategoryServiceTest {
             Category result = categoryService.create(request);
 
             assertNotNull(result);
-            assertEquals("Eletrônicos", result.getName());
+            assertEquals("Electronics", result.getName());
             verify(categoryRepository).save(any(Category.class));
         }
     }
@@ -107,8 +107,8 @@ class CategoryServiceTest {
     class GetAll {
 
         @Test
-        @DisplayName("filtro null deve lançar 400")
-        void filtroNull_deveLancar400() {
+        @DisplayName("null filter should throw 400")
+        void nullFilter_shouldThrow400() {
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
                     () -> categoryService.getAll(null, pageable));
 
@@ -117,8 +117,8 @@ class CategoryServiceTest {
         }
 
         @Test
-        @DisplayName("loja não encontrada deve lançar 404")
-        void lojaNaoEncontrada_deveLancar404() {
+        @DisplayName("store not found should throw 404")
+        void storeNotFound_shouldThrow404() {
             CategoryFilterDTO filter = new CategoryFilterDTO();
             filter.setStoreId(storeId);
 
@@ -132,8 +132,8 @@ class CategoryServiceTest {
         }
 
         @Test
-        @DisplayName("filtro válido deve retornar página de categorias")
-        void filtroValido_deveRetornarPagina() {
+        @DisplayName("valid filter should return category page")
+        void validFilter_shouldReturnPage() {
             CategoryFilterDTO filter = new CategoryFilterDTO();
             filter.setStoreId(storeId);
             Page<Category> page = new PageImpl<>(List.of(category));
@@ -144,7 +144,7 @@ class CategoryServiceTest {
             Page<Category> result = categoryService.getAll(filter, pageable);
 
             assertEquals(1, result.getTotalElements());
-            assertEquals("Eletrônicos", result.getContent().get(0).getName());
+            assertEquals("Electronics", result.getContent().get(0).getName());
         }
     }
 
@@ -153,8 +153,8 @@ class CategoryServiceTest {
     class Update {
 
         @Test
-        @DisplayName("name null não deve alterar o nome da categoria")
-        void nameNull_naoDeveAlterarNome() {
+        @DisplayName("null name should not change category name")
+        void nullName_shouldNotChangeName() {
             CategoryRequestDTO request = new CategoryRequestDTO();
             request.setStoreId(storeId);
             request.setName(null);
@@ -164,13 +164,13 @@ class CategoryServiceTest {
 
             Category result = categoryService.update(categoryId, request);
 
-            assertEquals("Eletrônicos", result.getName());
+            assertEquals("Electronics", result.getName());
             verify(categoryRepository).update(category);
         }
 
         @Test
-        @DisplayName("name preenchido deve alterar o nome da categoria")
-        void namePreenchido_deveAlterarNome() {
+        @DisplayName("filled name should change category name")
+        void filledName_shouldChangeName() {
             CategoryRequestDTO request = new CategoryRequestDTO();
             request.setStoreId(storeId);
             request.setName("Games");

@@ -34,8 +34,8 @@ class FreightControllerTest {
     class CalculateFreight {
 
         @Test
-        @DisplayName("deve retornar opções de frete para endereço válido")
-        void deveRetornarOpcoesDeFreteParaEndereco() throws Exception {
+        @DisplayName("should return freight options for valid address")
+        void shouldReturnFreightOptionsForAddress() throws Exception {
             UUID addressId = UUID.randomUUID();
 
             FreightOptionDTO economical = new FreightOptionDTO(BigDecimal.valueOf(15.00), 7, FreightType.ECONOMICAL);

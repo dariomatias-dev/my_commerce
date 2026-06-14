@@ -64,8 +64,8 @@ class StoreServiceTest {
         storeId = UUID.randomUUID();
 
         request = new StoreRequestDTO();
-        request.setName("Minha Loja");
-        request.setDescription("Descrição da loja");
+        request.setName("My Store");
+        request.setDescription("Store description");
         request.setThemeColor("#FF5733");
         request.setIsActive(true);
     }
@@ -75,8 +75,8 @@ class StoreServiceTest {
     class Create {
 
         @Test
-        @DisplayName("sem assinatura ativa deve lançar 404")
-        void semAssinaturaAtiva_deveLancar404() {
+        @DisplayName("no active subscription should throw 404")
+        void noActiveSubscription_shouldThrow404() {
             when(subscriptionRepository.findActiveByUserId(user.getId())).thenReturn(Optional.empty());
 
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
@@ -87,8 +87,8 @@ class StoreServiceTest {
         }
 
         @Test
-        @DisplayName("limite de lojas do plano atingido deve lançar 422")
-        void limiteDeLojaAtingido_deveLancarUnprocessable() {
+        @DisplayName("store limit reached should throw 422")
+        void storeLimitReached_shouldThrowUnprocessable() {
             SubscriptionPlan plan = planWithMaxStores(2);
             Subscription subscription = subscriptionWithPlan(plan);
 
@@ -103,15 +103,15 @@ class StoreServiceTest {
         }
 
         @Test
-        @DisplayName("slug duplicado deve lançar 409")
-        void slugDuplicado_deveLancar409() {
+        @DisplayName("duplicate slug should throw 409")
+        void duplicateSlug_shouldThrow409() {
             SubscriptionPlan plan = planWithMaxStores(-1);
             Subscription subscription = subscriptionWithPlan(plan);
 
             when(subscriptionRepository.findActiveByUserId(user.getId())).thenReturn(Optional.of(subscription));
             when(subscriptionPlanRepository.findById(plan.getId())).thenReturn(Optional.of(plan));
-            // SlugUtil.generateSlug("Minha Loja") → "minha-loja"
-            when(storeRepository.existsBySlugAndDeletedAtIsNull("minha-loja")).thenReturn(true);
+            // SlugUtil.generateSlug("My Store") -> "my-store"
+            when(storeRepository.existsBySlugAndDeletedAtIsNull("my-store")).thenReturn(true);
 
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
                     () -> storeService.create(user, request, null, null));
@@ -120,8 +120,8 @@ class StoreServiceTest {
         }
 
         @Test
-        @DisplayName("com logo e banner deve realizar upload no MinIO")
-        void comLogoEBanner_deveUploadParaMinIO() {
+        @DisplayName("with logo and banner should upload to MinIO")
+        void withLogoAndBanner_shouldUploadToMinIO() {
             SubscriptionPlan plan = planWithMaxStores(-1);
             Subscription subscription = subscriptionWithPlan(plan);
 
@@ -135,20 +135,20 @@ class StoreServiceTest {
 
             when(subscriptionRepository.findActiveByUserId(user.getId())).thenReturn(Optional.of(subscription));
             when(subscriptionPlanRepository.findById(plan.getId())).thenReturn(Optional.of(plan));
-            when(storeRepository.existsBySlugAndDeletedAtIsNull("minha-loja")).thenReturn(false);
+            when(storeRepository.existsBySlugAndDeletedAtIsNull("my-store")).thenReturn(false);
             when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
             when(storeRepository.save(any(Store.class))).thenReturn(saved);
 
             storeService.create(user, request, logo, banner);
 
             verify(minioService).createBucket("stores");
-            verify(minioService).uploadFile("stores", "minha-loja/logo.jpeg", logo);
-            verify(minioService).uploadFile("stores", "minha-loja/banner.jpeg", banner);
+            verify(minioService).uploadFile("stores", "my-store/logo.jpeg", logo);
+            verify(minioService).uploadFile("stores", "my-store/banner.jpeg", banner);
         }
 
         @Test
-        @DisplayName("sem imagens não deve chamar uploadFile")
-        void semImagens_naoDeveUpload() {
+        @DisplayName("without images should not call uploadFile")
+        void withoutImages_shouldNotUpload() {
             SubscriptionPlan plan = planWithMaxStores(-1);
             Subscription subscription = subscriptionWithPlan(plan);
             Store saved = new Store();
@@ -156,7 +156,7 @@ class StoreServiceTest {
 
             when(subscriptionRepository.findActiveByUserId(user.getId())).thenReturn(Optional.of(subscription));
             when(subscriptionPlanRepository.findById(plan.getId())).thenReturn(Optional.of(plan));
-            when(storeRepository.existsBySlugAndDeletedAtIsNull("minha-loja")).thenReturn(false);
+            when(storeRepository.existsBySlugAndDeletedAtIsNull("my-store")).thenReturn(false);
             when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
             when(storeRepository.save(any(Store.class))).thenReturn(saved);
 
@@ -177,19 +177,19 @@ class StoreServiceTest {
         void setUp() {
             existingStore = new Store();
             existingStore.setId(storeId);
-            existingStore.setName("Nome Antigo");
-            existingStore.setSlug("nome-antigo");
+            existingStore.setName("Old Name");
+            existingStore.setSlug("old-name");
             existingStore.setUser(user);
         }
 
         @Test
-        @DisplayName("nome com slug já existente deve lançar 409")
-        void slugDuplicadoNoUpdate_deveLancar409() {
-            request.setName("Outra Loja");
+        @DisplayName("name with existing slug should throw 409")
+        void duplicateSlugOnUpdate_shouldThrow409() {
+            request.setName("Other Store");
 
             when(storeRepository.findById(storeId)).thenReturn(Optional.of(existingStore));
-            // SlugUtil.generateSlug("Outra Loja") → "outra-loja"
-            when(storeRepository.existsBySlugAndDeletedAtIsNull("outra-loja")).thenReturn(true);
+            // SlugUtil.generateSlug("Other Store") -> "other-store"
+            when(storeRepository.existsBySlugAndDeletedAtIsNull("other-store")).thenReturn(true);
 
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
                     () -> storeService.update(storeId, request, user, null, null));
@@ -199,8 +199,8 @@ class StoreServiceTest {
         }
 
         @Test
-        @DisplayName("com logo e banner deve realizar upload no MinIO")
-        void comLogoEBanner_deveUploadParaMinIO() {
+        @DisplayName("with logo and banner should upload to MinIO")
+        void withLogoAndBanner_shouldUploadToMinIO() {
             MultipartFile logo = mock(MultipartFile.class);
             MultipartFile banner = mock(MultipartFile.class);
             when(logo.isEmpty()).thenReturn(false);
@@ -211,9 +211,9 @@ class StoreServiceTest {
 
             storeService.update(storeId, null, user, logo, banner);
 
-            // existing slug is "nome-antigo"
-            verify(minioService).uploadFile("stores", "nome-antigo/logo.jpeg", logo);
-            verify(minioService).uploadFile("stores", "nome-antigo/banner.jpeg", banner);
+            // existing slug is "old-name"
+            verify(minioService).uploadFile("stores", "old-name/logo.jpeg", logo);
+            verify(minioService).uploadFile("stores", "old-name/banner.jpeg", banner);
         }
     }
 
@@ -222,43 +222,43 @@ class StoreServiceTest {
     class GetBySlug {
 
         @Test
-        @DisplayName("loja não encontrada deve lançar 404")
-        void lojaNaoEncontrada_deveLancar404() {
-            when(storeRepository.findBySlug("slug-invalido")).thenReturn(Optional.empty());
+        @DisplayName("store not found should throw 404")
+        void storeNotFound_shouldThrow404() {
+            when(storeRepository.findBySlug("invalid-slug")).thenReturn(Optional.empty());
 
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                    () -> storeService.getBySlug("slug-invalido", null));
+                    () -> storeService.getBySlug("invalid-slug", null));
 
             assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
         }
 
         @Test
-        @DisplayName("loja inativa acessada por usuário anônimo deve lançar 404")
-        void lojaInativaParaAnonimo_deveLancar404() {
+        @DisplayName("inactive store accessed by anonymous user should throw 404")
+        void inactiveStoreForAnonymousUser_shouldThrow404() {
             Store inactiveStore = new Store();
             inactiveStore.setId(storeId);
             inactiveStore.setIsActive(false);
             inactiveStore.setUser(user);
 
-            when(storeRepository.findBySlug("minha-loja")).thenReturn(Optional.of(inactiveStore));
+            when(storeRepository.findBySlug("my-store")).thenReturn(Optional.of(inactiveStore));
 
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                    () -> storeService.getBySlug("minha-loja", null));
+                    () -> storeService.getBySlug("my-store", null));
 
             assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
         }
 
         @Test
-        @DisplayName("loja ativa deve retornar para qualquer usuário")
-        void lojaAtiva_deveRetornar() {
+        @DisplayName("active store should be returned to any user")
+        void activeStore_shouldReturn() {
             Store activeStore = new Store();
             activeStore.setId(storeId);
             activeStore.setIsActive(true);
             activeStore.setUser(user);
 
-            when(storeRepository.findBySlug("minha-loja")).thenReturn(Optional.of(activeStore));
+            when(storeRepository.findBySlug("my-store")).thenReturn(Optional.of(activeStore));
 
-            Store result = storeService.getBySlug("minha-loja", null);
+            Store result = storeService.getBySlug("my-store", null);
 
             assertNotNull(result);
             assertEquals(storeId, result.getId());

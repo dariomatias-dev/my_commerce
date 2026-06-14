@@ -23,7 +23,7 @@ public class StubExceptionController {
 
     @GetMapping("/not-found")
     public ResponseEntity<Void> notFound() {
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Recurso não encontrado");
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found");
     }
 
     @PostMapping("/validate")
@@ -38,11 +38,11 @@ public class StubExceptionController {
 
     @GetMapping("/runtime")
     public ResponseEntity<Void> runtime() {
-        throw new RuntimeException("erro interno");
+        throw new RuntimeException("internal error");
     }
 
     @GetMapping("/server-error")
     public ResponseEntity<Void> serverError() throws Exception {
-        throw new Exception("erro do servidor");
+        throw new Exception("server error");
     }
 }

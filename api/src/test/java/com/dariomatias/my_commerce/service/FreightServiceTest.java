@@ -47,8 +47,8 @@ class FreightServiceTest {
     class CalculateFreight {
 
         @Test
-        @DisplayName("endereço não encontrado deve lançar 404")
-        void enderecoNaoEncontrado_deveLancar404() {
+        @DisplayName("address not found should throw 404")
+        void addressNotFound_shouldThrow404() {
             when(userAddressRepository.findById(addressId)).thenReturn(Optional.empty());
 
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
@@ -58,8 +58,8 @@ class FreightServiceTest {
         }
 
         @Test
-        @DisplayName("distância null deve lançar 400")
-        void distanciaNull_deveLancar400() {
+        @DisplayName("null distance should throw 400")
+        void nullDistance_shouldThrow400() {
             when(userAddressRepository.findById(addressId)).thenReturn(Optional.of(address));
             when(userAddressRepository.calculateDistanceFromPoint(eq(addressId), anyDouble(), anyDouble()))
                     .thenReturn(null);
@@ -71,8 +71,8 @@ class FreightServiceTest {
         }
 
         @Test
-        @DisplayName("distância menor que 5km deve retornar frete zero")
-        void distanciaMenorQue5km_deveRetornarFreteZero() {
+        @DisplayName("distance less than 5km should return zero freight")
+        void distanceLessThan5km_shouldReturnZeroFreight() {
             when(userAddressRepository.findById(addressId)).thenReturn(Optional.of(address));
             when(userAddressRepository.calculateDistanceFromPoint(eq(addressId), anyDouble(), anyDouble()))
                     .thenReturn(4000.0);
@@ -84,8 +84,8 @@ class FreightServiceTest {
         }
 
         @Test
-        @DisplayName("distância exatamente 5km deve retornar frete zero")
-        void distanciaExatamente5km_deveRetornarFreteZero() {
+        @DisplayName("distance exactly 5km should return zero freight")
+        void distanceExactly5km_shouldReturnZeroFreight() {
             when(userAddressRepository.findById(addressId)).thenReturn(Optional.of(address));
             when(userAddressRepository.calculateDistanceFromPoint(eq(addressId), anyDouble(), anyDouble()))
                     .thenReturn(5000.0);
@@ -97,10 +97,10 @@ class FreightServiceTest {
         }
 
         @Test
-        @DisplayName("distância > 5km deve calcular frete econômico: (km - 5) × 0.05")
-        void distanciaMaiorQue5km_deveCalcularFreteEconomico() {
+        @DisplayName("distance > 5km should calculate economical freight: (km - 5) x 0.05")
+        void distanceOver5km_shouldCalculateEconomicalFreight() {
             when(userAddressRepository.findById(addressId)).thenReturn(Optional.of(address));
-            // 15km → 10km cobráveis → econômico = 10 × 0.05 = 0.50
+            // 15km -> 10km billable -> economical = 10 x 0.05 = 0.50
             when(userAddressRepository.calculateDistanceFromPoint(eq(addressId), anyDouble(), anyDouble()))
                     .thenReturn(15000.0);
 
@@ -112,10 +112,10 @@ class FreightServiceTest {
         }
 
         @Test
-        @DisplayName("distância > 5km deve calcular frete express: (km - 5) × 0.15")
-        void distanciaMaiorQue5km_deveCalcularFreteExpress() {
+        @DisplayName("distance > 5km should calculate express freight: (km - 5) x 0.15")
+        void distanceOver5km_shouldCalculateExpressFreight() {
             when(userAddressRepository.findById(addressId)).thenReturn(Optional.of(address));
-            // 15km → 10km cobráveis → express = 10 × 0.15 = 1.50
+            // 15km -> 10km billable -> express = 10 x 0.15 = 1.50
             when(userAddressRepository.calculateDistanceFromPoint(eq(addressId), anyDouble(), anyDouble()))
                     .thenReturn(15000.0);
 

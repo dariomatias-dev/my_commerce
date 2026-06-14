@@ -63,8 +63,8 @@ class AnalyticsServiceTest {
     class GetTotalRevenueByUser {
 
         @Test
-        @DisplayName("repository retorna null deve retornar ZERO")
-        void repositoryRetornaNullDeveRetornarZero() {
+        @DisplayName("repository returns null should return ZERO")
+        void repositoryReturnsNull_shouldReturnZero() {
             when(orderRepository.sumTotalRevenueByUserIdAndStatus(userId, Status.COMPLETED)).thenReturn(null);
 
             TotalRevenueResponseDTO result = analyticsService.getTotalRevenue(userId);
@@ -73,8 +73,8 @@ class AnalyticsServiceTest {
         }
 
         @Test
-        @DisplayName("repository retorna valor deve encapsulá-lo no DTO")
-        void repositoryRetornaValorDeveEncapsular() {
+        @DisplayName("repository returns value should wrap it in DTO")
+        void repositoryReturnsValue_shouldWrapInDTO() {
             BigDecimal revenue = new BigDecimal("1500.00");
             when(orderRepository.sumTotalRevenueByUserIdAndStatus(userId, Status.COMPLETED)).thenReturn(revenue);
 
@@ -89,8 +89,8 @@ class AnalyticsServiceTest {
     class GetTotalRevenueGlobal {
 
         @Test
-        @DisplayName("repository retorna null deve retornar ZERO")
-        void repositoryRetornaNullDeveRetornarZero() {
+        @DisplayName("repository returns null should return ZERO")
+        void repositoryReturnsNull_shouldReturnZero() {
             when(orderRepository.sumTotalRevenueByStatus(Status.COMPLETED)).thenReturn(null);
 
             BigDecimal result = analyticsService.getTotalRevenue();
@@ -99,8 +99,8 @@ class AnalyticsServiceTest {
         }
 
         @Test
-        @DisplayName("repository retorna valor deve retorná-lo diretamente")
-        void repositoryRetornaValorDeveRetornar() {
+        @DisplayName("repository returns value should return it directly")
+        void repositoryReturnsValue_shouldReturnDirectly() {
             BigDecimal revenue = new BigDecimal("9999.99");
             when(orderRepository.sumTotalRevenueByStatus(Status.COMPLETED)).thenReturn(revenue);
 
@@ -115,8 +115,8 @@ class AnalyticsServiceTest {
     class VerifyStoreAccess {
 
         @Test
-        @DisplayName("ADMIN bypassa verificação de propriedade")
-        void adminBypassaVerificacao() {
+        @DisplayName("ADMIN should bypass ownership check")
+        void admin_shouldBypassOwnershipCheck() {
             when(orderRepository.countDistinctCustomersByStoreIdAndStatus(storeId, Status.COMPLETED)).thenReturn(5L);
 
             UniqueCustomersResponseDTO result = analyticsService.getUniqueCustomersByStore(storeId, adminUser);
@@ -126,8 +126,8 @@ class AnalyticsServiceTest {
         }
 
         @Test
-        @DisplayName("loja não encontrada deve lançar 404")
-        void lojaNaoEncontrada_deveLancar404() {
+        @DisplayName("store not found should throw 404")
+        void storeNotFound_shouldThrow404() {
             when(storeRepository.findById(storeId)).thenReturn(Optional.empty());
 
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
@@ -137,11 +137,11 @@ class AnalyticsServiceTest {
         }
 
         @Test
-        @DisplayName("usuário não proprietário da loja deve lançar 403")
-        void naoProprietario_deveLancar403() {
+        @DisplayName("user not owner of store should throw 403")
+        void notOwner_shouldThrow403() {
             Store store = new Store();
             store.setId(storeId);
-            store.setUser(adminUser); // dono é outro
+            store.setUser(adminUser); // owned by another user
 
             when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
 

@@ -42,8 +42,8 @@ class AuditLogServiceTest {
     class Log {
 
         @Test
-        @DisplayName("salva AuditLog com todos os campos preenchidos")
-        void salvaAuditLogComCamposCorretos() {
+        @DisplayName("saves AuditLog with all fields populated")
+        void savesAuditLogWithCorrectFields() {
             String userId = "user-123";
             AuditLogAction action = AuditLogAction.LOGIN;
             String result = "success";
@@ -68,8 +68,8 @@ class AuditLogServiceTest {
     class GetById {
 
         @Test
-        @DisplayName("id existente deve retornar o log")
-        void idExistente_deveRetornarLog() {
+        @DisplayName("existing id should return log")
+        void existingId_shouldReturnLog() {
             AuditLog log = new AuditLog();
             log.setId("abc-123");
             when(repository.findById("abc-123")).thenReturn(Optional.of(log));
@@ -81,11 +81,11 @@ class AuditLogServiceTest {
         }
 
         @Test
-        @DisplayName("id inexistente deve retornar null")
-        void idInexistente_deveRetornarNull() {
-            when(repository.findById("nao-existe")).thenReturn(Optional.empty());
+        @DisplayName("non-existing id should return null")
+        void nonExistingId_shouldReturnNull() {
+            when(repository.findById("not-found")).thenReturn(Optional.empty());
 
-            AuditLog result = auditLogService.getById("nao-existe");
+            AuditLog result = auditLogService.getById("not-found");
 
             assertNull(result);
         }
@@ -96,8 +96,8 @@ class AuditLogServiceTest {
     class GetLogs {
 
         @Test
-        @DisplayName("delega contagem e busca ao MongoTemplate e retorna página")
-        void delegaParaMongoTemplateERetornaPagina() {
+        @DisplayName("delegates count and search to MongoTemplate and returns page")
+        void delegatesToMongoTemplateAndReturnsPage() {
             AuditLogFilterDTO filters = new AuditLogFilterDTO();
             filters.setUserId("user-abc");
             Pageable pageable = PageRequest.of(0, 10);

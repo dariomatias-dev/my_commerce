@@ -47,8 +47,8 @@ class AuthControllerTest {
 
         userResponse = new UserResponse(
                 UUID.randomUUID(),
-                "João Silva",
-                "joao@example.com",
+                "John Silva",
+                "john@example.com",
                 UserRole.USER,
                 false,
                 LocalDateTime.now(),
@@ -62,11 +62,11 @@ class AuthControllerTest {
     class Login {
 
         @Test
-        @DisplayName("deve retornar tokens ao autenticar com credenciais válidas")
-        void deveRetornarTokensAoAutenticar() throws Exception {
+        @DisplayName("should return tokens when authenticating with valid credentials")
+        void shouldReturnTokensOnAuthentication() throws Exception {
             LoginRequest request = new LoginRequest();
-            request.setEmail("joao@example.com");
-            request.setPassword("senha123");
+            request.setEmail("john@example.com");
+            request.setPassword("pass123");
 
             when(authService.login(any(LoginRequest.class))).thenReturn(tokens);
 
@@ -82,11 +82,11 @@ class AuthControllerTest {
         }
 
         @Test
-        @DisplayName("deve retornar 400 quando email for inválido")
-        void deveRetornar400QuandoEmailInvalido() throws Exception {
+        @DisplayName("should return 400 when email is invalid")
+        void shouldReturn400WhenEmailInvalid() throws Exception {
             LoginRequest request = new LoginRequest();
-            request.setEmail("email-invalido");
-            request.setPassword("senha123");
+            request.setEmail("invalid-email");
+            request.setPassword("pass123");
 
             mockMvc.perform(post("/api/auth/login")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -99,11 +99,11 @@ class AuthControllerTest {
         }
 
         @Test
-        @DisplayName("deve retornar 400 quando email estiver em branco")
-        void deveRetornar400QuandoEmailEmBranco() throws Exception {
+        @DisplayName("should return 400 when email is blank")
+        void shouldReturn400WhenEmailBlank() throws Exception {
             LoginRequest request = new LoginRequest();
             request.setEmail("");
-            request.setPassword("senha123");
+            request.setPassword("pass123");
 
             mockMvc.perform(post("/api/auth/login")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -115,10 +115,10 @@ class AuthControllerTest {
         }
 
         @Test
-        @DisplayName("deve retornar 400 quando senha for muito curta")
-        void deveRetornar400QuandoSenhaCurta() throws Exception {
+        @DisplayName("should return 400 when password is too short")
+        void shouldReturn400WhenPasswordTooShort() throws Exception {
             LoginRequest request = new LoginRequest();
-            request.setEmail("joao@example.com");
+            request.setEmail("john@example.com");
             request.setPassword("abc");
 
             mockMvc.perform(post("/api/auth/login")
@@ -136,12 +136,12 @@ class AuthControllerTest {
     class Signup {
 
         @Test
-        @DisplayName("deve registrar novo usuário e retornar 201")
-        void deveRegistrarNovoUsuario() throws Exception {
+        @DisplayName("should register new user and return 201")
+        void shouldRegisterNewUser() throws Exception {
             SignupRequest request = new SignupRequest();
-            request.setName("João Silva");
-            request.setEmail("joao@example.com");
-            request.setPassword("Senha@123");
+            request.setName("John Silva");
+            request.setEmail("john@example.com");
+            request.setPassword("Pass@123");
 
             when(authService.register(any(SignupRequest.class))).thenReturn(userResponse);
 
@@ -151,18 +151,18 @@ class AuthControllerTest {
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.status").value("success"))
                     .andExpect(jsonPath("$.code").value(201))
-                    .andExpect(jsonPath("$.data.email").value("joao@example.com"));
+                    .andExpect(jsonPath("$.data.email").value("john@example.com"));
 
             verify(authService).register(any(SignupRequest.class));
         }
 
         @Test
-        @DisplayName("deve retornar 400 quando nome for muito curto")
-        void deveRetornar400QuandoNomeCurto() throws Exception {
+        @DisplayName("should return 400 when name is too short")
+        void shouldReturn400WhenNameTooShort() throws Exception {
             SignupRequest request = new SignupRequest();
             request.setName("J");
-            request.setEmail("joao@example.com");
-            request.setPassword("Senha@123");
+            request.setEmail("john@example.com");
+            request.setPassword("Pass@123");
 
             mockMvc.perform(post("/api/auth/signup")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -174,12 +174,12 @@ class AuthControllerTest {
         }
 
         @Test
-        @DisplayName("deve retornar 400 quando senha não atender requisitos de complexidade")
-        void deveRetornar400QuandoSenhaFraca() throws Exception {
+        @DisplayName("should return 400 when password does not meet complexity requirements")
+        void shouldReturn400WhenPasswordTooWeak() throws Exception {
             SignupRequest request = new SignupRequest();
-            request.setName("João Silva");
-            request.setEmail("joao@example.com");
-            request.setPassword("senhasimples");
+            request.setName("John Silva");
+            request.setEmail("john@example.com");
+            request.setPassword("simplepassword");
 
             mockMvc.perform(post("/api/auth/signup")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -196,10 +196,10 @@ class AuthControllerTest {
     class VerifyEmail {
 
         @Test
-        @DisplayName("deve verificar email com token válido")
-        void deveVerificarEmailComToken() throws Exception {
+        @DisplayName("should verify email with valid token")
+        void shouldVerifyEmailWithToken() throws Exception {
             VerifyEmailRequest request = new VerifyEmailRequest();
-            request.setToken("token-verificacao-abc");
+            request.setToken("token-verification-abc");
 
             doNothing().when(authService).verifyEmail(anyString());
 
@@ -210,12 +210,12 @@ class AuthControllerTest {
                     .andExpect(jsonPath("$.status").value("success"))
                     .andExpect(jsonPath("$.message").value("Email verified successfully."));
 
-            verify(authService).verifyEmail("token-verificacao-abc");
+            verify(authService).verifyEmail("token-verification-abc");
         }
 
         @Test
-        @DisplayName("deve retornar 400 quando token estiver em branco")
-        void deveRetornar400QuandoTokenEmBranco() throws Exception {
+        @DisplayName("should return 400 when token is blank")
+        void shouldReturn400WhenTokenBlank() throws Exception {
             VerifyEmailRequest request = new VerifyEmailRequest();
             request.setToken("");
 
@@ -234,10 +234,10 @@ class AuthControllerTest {
     class ResendVerificationEmail {
 
         @Test
-        @DisplayName("deve reenviar email de verificação")
-        void deveReenviarEmailDeVerificacao() throws Exception {
+        @DisplayName("should resend verification email")
+        void shouldResendVerificationEmail() throws Exception {
             ResendVerificationEmailRequest request = new ResendVerificationEmailRequest();
-            request.setEmail("joao@example.com");
+            request.setEmail("john@example.com");
 
             doNothing().when(authService).resendVerificationEmail(anyString());
 
@@ -248,14 +248,14 @@ class AuthControllerTest {
                     .andExpect(jsonPath("$.status").value("success"))
                     .andExpect(jsonPath("$.message").value("Verification email resent successfully."));
 
-            verify(authService).resendVerificationEmail("joao@example.com");
+            verify(authService).resendVerificationEmail("john@example.com");
         }
 
         @Test
-        @DisplayName("deve retornar 400 quando email for inválido")
-        void deveRetornar400QuandoEmailInvalido() throws Exception {
+        @DisplayName("should return 400 when email is invalid")
+        void shouldReturn400WhenEmailInvalid() throws Exception {
             ResendVerificationEmailRequest request = new ResendVerificationEmailRequest();
-            request.setEmail("nao-e-email");
+            request.setEmail("not-an-email");
 
             mockMvc.perform(post("/api/auth/resend-verification-email")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -272,10 +272,10 @@ class AuthControllerTest {
     class RecoverPassword {
 
         @Test
-        @DisplayName("deve enviar email de recuperação")
-        void deveEnviarEmailDeRecuperacao() throws Exception {
+        @DisplayName("should send password recovery email")
+        void shouldSendPasswordRecoveryEmail() throws Exception {
             RecoverPasswordRequest request = new RecoverPasswordRequest();
-            request.setEmail("joao@example.com");
+            request.setEmail("john@example.com");
 
             doNothing().when(authService).recoverPassword(anyString());
 
@@ -286,12 +286,12 @@ class AuthControllerTest {
                     .andExpect(jsonPath("$.status").value("success"))
                     .andExpect(jsonPath("$.message").value("Password recovery email sent successfully."));
 
-            verify(authService).recoverPassword("joao@example.com");
+            verify(authService).recoverPassword("john@example.com");
         }
 
         @Test
-        @DisplayName("deve retornar 400 quando email estiver em branco")
-        void deveRetornar400QuandoEmailEmBranco() throws Exception {
+        @DisplayName("should return 400 when email is blank")
+        void shouldReturn400WhenEmailBlank() throws Exception {
             RecoverPasswordRequest request = new RecoverPasswordRequest();
             request.setEmail("");
 
@@ -310,11 +310,11 @@ class AuthControllerTest {
     class ResetPassword {
 
         @Test
-        @DisplayName("deve redefinir senha com token e senha válidos")
-        void deveRedefinirSenha() throws Exception {
+        @DisplayName("should reset password with valid token and new password")
+        void shouldResetPassword() throws Exception {
             ResetPasswordRequest request = new ResetPasswordRequest();
             request.setToken("token-reset-xyz");
-            request.setNewPassword("NovaSenha@123");
+            request.setNewPassword("NewPass@123");
 
             doNothing().when(authService).resetPassword(any(ResetPasswordRequest.class));
 
@@ -329,11 +329,11 @@ class AuthControllerTest {
         }
 
         @Test
-        @DisplayName("deve retornar 400 quando nova senha não atender requisitos de complexidade")
-        void deveRetornar400QuandoNovaSenhaFraca() throws Exception {
+        @DisplayName("should return 400 when new password does not meet complexity requirements")
+        void shouldReturn400WhenNewPasswordTooWeak() throws Exception {
             ResetPasswordRequest request = new ResetPasswordRequest();
             request.setToken("token-reset-xyz");
-            request.setNewPassword("senhasimples");
+            request.setNewPassword("simplepassword");
 
             mockMvc.perform(post("/api/auth/reset-password")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -350,8 +350,8 @@ class AuthControllerTest {
     class RefreshToken {
 
         @Test
-        @DisplayName("deve retornar novos tokens com refresh token válido")
-        void deveRetornarNovosTokens() throws Exception {
+        @DisplayName("should return new tokens with valid refresh token")
+        void shouldReturnNewTokens() throws Exception {
             RefreshTokenRequest request = new RefreshTokenRequest();
             request.setRefreshToken("refresh-token-xyz");
 

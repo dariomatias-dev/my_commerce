@@ -20,8 +20,8 @@ class GlobalExceptionHandlerTest {
     private MockMvc mockMvc;
 
     @Test
-    @DisplayName("AccessDeniedException deve retornar 403 com mensagem de acesso negado")
-    void handleAccessDeniedException_deveRetornar403() throws Exception {
+    @DisplayName("AccessDeniedException should return 403 with access denied message")
+    void handleAccessDeniedException_shouldReturn403() throws Exception {
         mockMvc.perform(get("/stub/access-denied"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.status").value("error"))
@@ -30,18 +30,18 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    @DisplayName("ResponseStatusException deve retornar o status e mensagem configurados")
-    void handleResponseStatusException_deveRetornarStatusEMensagemConfigurados() throws Exception {
+    @DisplayName("ResponseStatusException should return configured status and message")
+    void handleResponseStatusException_shouldReturnConfiguredStatusAndMessage() throws Exception {
         mockMvc.perform(get("/stub/not-found"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value("error"))
                 .andExpect(jsonPath("$.code").value(404))
-                .andExpect(jsonPath("$.message").value("Recurso não encontrado"));
+                .andExpect(jsonPath("$.message").value("Resource not found"));
     }
 
     @Test
-    @DisplayName("MethodArgumentNotValidException deve retornar 400 com lista de erros de campo")
-    void handleValidationException_deveRetornar400ComErrosDeCampo() throws Exception {
+    @DisplayName("MethodArgumentNotValidException should return 400 with field error list")
+    void handleValidationException_shouldReturn400WithFieldErrors() throws Exception {
         mockMvc.perform(post("/stub/validate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"name\": \"\"}"))
@@ -53,8 +53,8 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    @DisplayName("HttpMessageNotReadableException com enum inválido deve retornar 400 com valores permitidos")
-    void handleJsonParseError_comEnumInvalido_deveRetornar400ComValoresPermitidos() throws Exception {
+    @DisplayName("HttpMessageNotReadableException with invalid enum should return 400 with allowed values")
+    void handleJsonParseError_withInvalidEnum_shouldReturn400WithAllowedValues() throws Exception {
         mockMvc.perform(post("/stub/enum")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"paymentMethod\": \"INVALIDO\"}"))
@@ -65,8 +65,8 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    @DisplayName("HttpMessageNotReadableException com JSON malformado deve retornar 400 com mensagem genérica")
-    void handleJsonParseError_comJsonMalformado_deveRetornar400() throws Exception {
+    @DisplayName("HttpMessageNotReadableException with malformed JSON should return 400 with generic message")
+    void handleJsonParseError_withMalformedJson_shouldReturn400() throws Exception {
         mockMvc.perform(post("/stub/validate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{invalid json}"))
@@ -77,8 +77,8 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    @DisplayName("RuntimeException deve retornar 400 com mensagem de erro na requisição")
-    void handleRuntimeException_deveRetornar400() throws Exception {
+    @DisplayName("RuntimeException should return 400 with request error message")
+    void handleRuntimeException_shouldReturn400() throws Exception {
         mockMvc.perform(get("/stub/runtime"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("error"))
@@ -87,8 +87,8 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    @DisplayName("Exception genérica deve retornar 500 com mensagem de erro interno")
-    void handleException_deveRetornar500() throws Exception {
+    @DisplayName("Generic Exception should return 500 with internal error message")
+    void handleException_shouldReturn500() throws Exception {
         mockMvc.perform(get("/stub/server-error"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.status").value("error"))

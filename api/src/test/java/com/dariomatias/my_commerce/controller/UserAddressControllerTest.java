@@ -62,14 +62,14 @@ class UserAddressControllerTest {
         );
 
         addressResponse = new UserAddressResponseDTO(
-                addressId, "Casa", "Rua das Flores", "123", null,
-                "Centro", "João Pessoa", "PB", "58000-000",
+                addressId, "Home", "Flower Street", "123", null,
+                "Downtown", "Joao Pessoa", "PB", "58000-000",
                 -7.1195, -34.8450, LocalDateTime.now(), LocalDateTime.now()
         );
 
         addressRequest = new UserAddressRequestDTO(
-                "Casa", "Rua das Flores", "123", null,
-                "Centro", "João Pessoa", "PB", "58000-000",
+                "Home", "Flower Street", "123", null,
+                "Downtown", "Joao Pessoa", "PB", "58000-000",
                 -7.1195, -34.8450
         );
     }
@@ -84,8 +84,8 @@ class UserAddressControllerTest {
     class Create {
 
         @Test
-        @DisplayName("deve criar endereço")
-        void deveCriarEndereco() throws Exception {
+        @DisplayName("should create address")
+        void shouldCreateAddress() throws Exception {
             when(service.create(any(User.class), any(UserAddressRequestDTO.class))).thenReturn(addressResponse);
 
             mockMvc.perform(post("/api/addresses")
@@ -94,8 +94,8 @@ class UserAddressControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
                     .andExpect(jsonPath("$.data.id").value(addressId.toString()))
-                    .andExpect(jsonPath("$.data.label").value("Casa"))
-                    .andExpect(jsonPath("$.data.city").value("João Pessoa"));
+                    .andExpect(jsonPath("$.data.label").value("Home"))
+                    .andExpect(jsonPath("$.data.city").value("Joao Pessoa"));
 
             verify(service).create(any(User.class), any(UserAddressRequestDTO.class));
         }
@@ -106,15 +106,15 @@ class UserAddressControllerTest {
     class GetAll {
 
         @Test
-        @DisplayName("deve retornar lista de endereços do usuário autenticado")
-        void deveRetornarListaDeEnderecos() throws Exception {
+        @DisplayName("should return address list for authenticated user")
+        void shouldReturnAddressListForUser() throws Exception {
             when(service.getAllByUser(any(User.class))).thenReturn(List.of(addressResponse));
 
             mockMvc.perform(get("/api/addresses"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
                     .andExpect(jsonPath("$.data[0].id").value(addressId.toString()))
-                    .andExpect(jsonPath("$.data[0].street").value("Rua das Flores"));
+                    .andExpect(jsonPath("$.data[0].street").value("Flower Street"));
 
             verify(service).getAllByUser(any(User.class));
         }
@@ -125,16 +125,16 @@ class UserAddressControllerTest {
     class Update {
 
         @Test
-        @DisplayName("deve atualizar endereço por ID")
-        void deveAtualizarEndereco() throws Exception {
+        @DisplayName("should update address by ID")
+        void shouldUpdateAddress() throws Exception {
             UserAddressRequestDTO updateRequest = new UserAddressRequestDTO(
-                    "Trabalho", "Av. Epitácio Pessoa", "1000", "Sala 5",
-                    "Tambaú", "João Pessoa", "PB", "58039-000",
+                    "Work", "Av. Epitacio Pessoa", "1000", "Room 5",
+                    "Tambau", "Joao Pessoa", "PB", "58039-000",
                     -7.1120, -34.8370
             );
             UserAddressResponseDTO updatedResponse = new UserAddressResponseDTO(
-                    addressId, "Trabalho", "Av. Epitácio Pessoa", "1000", "Sala 5",
-                    "Tambaú", "João Pessoa", "PB", "58039-000",
+                    addressId, "Work", "Av. Epitacio Pessoa", "1000", "Room 5",
+                    "Tambau", "Joao Pessoa", "PB", "58039-000",
                     -7.1120, -34.8370, LocalDateTime.now(), LocalDateTime.now()
             );
 
@@ -145,8 +145,8 @@ class UserAddressControllerTest {
                             .content(objectMapper.writeValueAsString(updateRequest)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
-                    .andExpect(jsonPath("$.data.label").value("Trabalho"))
-                    .andExpect(jsonPath("$.data.street").value("Av. Epitácio Pessoa"));
+                    .andExpect(jsonPath("$.data.label").value("Work"))
+                    .andExpect(jsonPath("$.data.street").value("Av. Epitacio Pessoa"));
 
             verify(service).update(any(User.class), eq(addressId), any(UserAddressRequestDTO.class));
         }
@@ -157,8 +157,8 @@ class UserAddressControllerTest {
     class Delete {
 
         @Test
-        @DisplayName("deve excluir endereço por ID")
-        void deveExcluirEndereco() throws Exception {
+        @DisplayName("should delete address by ID")
+        void shouldDeleteAddress() throws Exception {
             doNothing().when(service).delete(any(User.class), eq(addressId));
 
             mockMvc.perform(delete("/api/addresses/{id}", addressId))

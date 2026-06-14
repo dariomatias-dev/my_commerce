@@ -52,8 +52,8 @@ class AuditLogControllerTest {
     class GetAll {
 
         @Test
-        @DisplayName("deve retornar página de audit logs com query params")
-        void deveRetornarPaginaDeAuditLogs() throws Exception {
+        @DisplayName("should return audit log page with query params")
+        void shouldReturnAuditLogPage() throws Exception {
             Page<AuditLog> page = new PageImpl<>(List.of(log));
             when(service.getLogs(any(AuditLogFilterDTO.class), any(Pageable.class))).thenReturn(page);
 
@@ -74,8 +74,8 @@ class AuditLogControllerTest {
     class GetById {
 
         @Test
-        @DisplayName("deve retornar audit log por ID")
-        void deveRetornarAuditLogPorId() throws Exception {
+        @DisplayName("should return audit log by ID")
+        void shouldReturnAuditLogById() throws Exception {
             when(service.getById("abc123")).thenReturn(log);
 
             mockMvc.perform(get("/api/audit-logs/{id}", "abc123"))

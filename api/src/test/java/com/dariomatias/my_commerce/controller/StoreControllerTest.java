@@ -75,17 +75,17 @@ class StoreControllerTest {
 
         store = new Store();
         store.setId(storeId);
-        store.setName("Minha Loja");
-        store.setSlug("minha-loja");
-        store.setDescription("Loja de teste");
+        store.setName("My Store");
+        store.setSlug("my-store");
+        store.setDescription("Test store");
         store.setThemeColor("#FF5733");
         store.setIsActive(true);
         store.setUserId(userId);
         store.setAudit(audit);
 
         storeRequest = new StoreRequestDTO();
-        storeRequest.setName("Minha Loja");
-        storeRequest.setDescription("Loja de teste");
+        storeRequest.setName("My Store");
+        storeRequest.setDescription("Test store");
         storeRequest.setThemeColor("#FF5733");
         storeRequest.setIsActive(true);
     }
@@ -100,8 +100,8 @@ class StoreControllerTest {
     class Create {
 
         @Test
-        @DisplayName("deve criar loja com multipart (data + logo + banner)")
-        void deveCriarLoja() throws Exception {
+        @DisplayName("should create store with multipart (data + logo + banner)")
+        void shouldCreateStore() throws Exception {
             when(service.create(any(User.class), any(StoreRequestDTO.class), any(), any())).thenReturn(store);
 
             MockMultipartFile dataPart = new MockMultipartFile(
@@ -118,7 +118,7 @@ class StoreControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
                     .andExpect(jsonPath("$.data.id").value(storeId.toString()))
-                    .andExpect(jsonPath("$.data.name").value("Minha Loja"));
+                    .andExpect(jsonPath("$.data.name").value("My Store"));
 
             verify(service).create(any(User.class), any(StoreRequestDTO.class), any(), any());
         }
@@ -129,8 +129,8 @@ class StoreControllerTest {
     class GetAll {
 
         @Test
-        @DisplayName("deve retornar página de lojas com query params")
-        void deveRetornarPaginaDeLojas() throws Exception {
+        @DisplayName("should return store page with query params")
+        void shouldReturnStorePage() throws Exception {
             Page<Store> page = new PageImpl<>(List.of(store));
             when(service.getAllStores(any(User.class), any(), any(Pageable.class))).thenReturn(page);
 
@@ -152,8 +152,8 @@ class StoreControllerTest {
     class GetMyStores {
 
         @Test
-        @DisplayName("deve retornar lojas do usuário autenticado")
-        void deveRetornarLojasDoUsuarioAutenticado() throws Exception {
+        @DisplayName("should return stores for authenticated user")
+        void shouldReturnAuthenticatedUserStores() throws Exception {
             Page<Store> page = new PageImpl<>(List.of(store));
             when(service.getAllStores(any(User.class), any(), any(Pageable.class))).thenReturn(page);
 
@@ -162,7 +162,7 @@ class StoreControllerTest {
                             .param("size", "10"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
-                    .andExpect(jsonPath("$.data.content[0].slug").value("minha-loja"));
+                    .andExpect(jsonPath("$.data.content[0].slug").value("my-store"));
 
             verify(service).getAllStores(any(User.class), any(), any(Pageable.class));
         }
@@ -173,15 +173,15 @@ class StoreControllerTest {
     class GetById {
 
         @Test
-        @DisplayName("deve retornar loja por ID")
-        void deveRetornarLojaPorId() throws Exception {
+        @DisplayName("should return store by ID")
+        void shouldReturnStoreById() throws Exception {
             when(service.getById(eq(storeId), any(User.class))).thenReturn(store);
 
             mockMvc.perform(get("/api/stores/{id}", storeId))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
                     .andExpect(jsonPath("$.data.id").value(storeId.toString()))
-                    .andExpect(jsonPath("$.data.name").value("Minha Loja"));
+                    .andExpect(jsonPath("$.data.name").value("My Store"));
 
             verify(service).getById(eq(storeId), any(User.class));
         }
@@ -192,16 +192,16 @@ class StoreControllerTest {
     class GetBySlug {
 
         @Test
-        @DisplayName("deve retornar loja por slug")
-        void deveRetornarLojaPorSlug() throws Exception {
-            when(service.getBySlug(eq("minha-loja"), nullable(User.class))).thenReturn(store);
+        @DisplayName("should return store by slug")
+        void shouldReturnStoreBySlug() throws Exception {
+            when(service.getBySlug(eq("my-store"), nullable(User.class))).thenReturn(store);
 
-            mockMvc.perform(get("/api/stores/slug/{slug}", "minha-loja"))
+            mockMvc.perform(get("/api/stores/slug/{slug}", "my-store"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
-                    .andExpect(jsonPath("$.data.slug").value("minha-loja"));
+                    .andExpect(jsonPath("$.data.slug").value("my-store"));
 
-            verify(service).getBySlug(eq("minha-loja"), nullable(User.class));
+            verify(service).getBySlug(eq("my-store"), nullable(User.class));
         }
     }
 
@@ -210,8 +210,8 @@ class StoreControllerTest {
     class GetActiveStoresCount {
 
         @Test
-        @DisplayName("deve retornar contagem de lojas ativas")
-        void deveRetornarContagemDeLojas() throws Exception {
+        @DisplayName("should return active store count")
+        void shouldReturnActiveStoreCount() throws Exception {
             when(service.getActiveStoresCount()).thenReturn(5L);
 
             mockMvc.perform(get("/api/stores/active/count"))
@@ -228,10 +228,10 @@ class StoreControllerTest {
     class Update {
 
         @Test
-        @DisplayName("deve atualizar loja com multipart opcional")
-        void deveAtualizarLoja() throws Exception {
-            storeRequest.setName("Loja Atualizada");
-            store.setName("Loja Atualizada");
+        @DisplayName("should update store with optional multipart")
+        void shouldUpdateStore() throws Exception {
+            storeRequest.setName("Updated Store");
+            store.setName("Updated Store");
 
             when(service.update(eq(storeId), any(), any(User.class), any(), any())).thenReturn(store);
 
@@ -244,7 +244,7 @@ class StoreControllerTest {
                             .file(dataPart))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
-                    .andExpect(jsonPath("$.data.name").value("Loja Atualizada"));
+                    .andExpect(jsonPath("$.data.name").value("Updated Store"));
 
             verify(service).update(eq(storeId), any(), any(User.class), any(), any());
         }
@@ -255,8 +255,8 @@ class StoreControllerTest {
     class Delete {
 
         @Test
-        @DisplayName("deve excluir loja por ID")
-        void deveExcluirLoja() throws Exception {
+        @DisplayName("should delete store by ID")
+        void shouldDeleteStore() throws Exception {
             doNothing().when(service).delete(eq(storeId), any(User.class));
 
             mockMvc.perform(delete("/api/stores/{id}", storeId))

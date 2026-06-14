@@ -79,12 +79,12 @@ class AuthServiceTest {
         void setUp() {
             request = new LoginRequest();
             request.setEmail("test@example.com");
-            request.setPassword("senha123");
+            request.setPassword("pass123");
         }
 
         @Test
-        @DisplayName("email não encontrado deve lançar 401")
-        void emailNaoEncontrado_deveLancar401() {
+        @DisplayName("email not found should throw 401")
+        void emailNotFound_shouldThrow401() {
             when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.empty());
 
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
@@ -95,10 +95,10 @@ class AuthServiceTest {
         }
 
         @Test
-        @DisplayName("senha incorreta deve lançar 401 e registrar audit log de falha")
-        void senhaIncorreta_deveLancar401ERegistrarAudit() {
+        @DisplayName("wrong password should throw 401 and log audit failure")
+        void wrongPassword_shouldThrow401AndLogAudit() {
             when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
-            when(passwordEncoder.matches("senha123", "encoded-password")).thenReturn(false);
+            when(passwordEncoder.matches("pass123", "encoded-password")).thenReturn(false);
 
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
                     () -> authService.login(request));
@@ -113,11 +113,11 @@ class AuthServiceTest {
         }
 
         @Test
-        @DisplayName("email não verificado deve lançar 403 e registrar audit log de falha")
-        void emailNaoVerificado_deveLancar403ERegistrarAudit() {
+        @DisplayName("unverified email should throw 403 and log audit failure")
+        void unverifiedEmail_shouldThrow403AndLogAudit() {
             user.setEnabled(false);
             when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
-            when(passwordEncoder.matches("senha123", "encoded-password")).thenReturn(true);
+            when(passwordEncoder.matches("pass123", "encoded-password")).thenReturn(true);
 
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
                     () -> authService.login(request));
@@ -132,10 +132,10 @@ class AuthServiceTest {
         }
 
         @Test
-        @DisplayName("credenciais válidas deve retornar tokens e registrar audit log de sucesso")
-        void credenciaisValidas_deveRetornarTokens() {
+        @DisplayName("valid credentials should return tokens and log audit success")
+        void validCredentials_shouldReturnTokens() {
             when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
-            when(passwordEncoder.matches("senha123", "encoded-password")).thenReturn(true);
+            when(passwordEncoder.matches("pass123", "encoded-password")).thenReturn(true);
             when(jwtService.generateAccessToken(user)).thenReturn("access-token");
             when(jwtService.generateRefreshToken(user)).thenReturn("refresh-token");
 
@@ -165,14 +165,14 @@ class AuthServiceTest {
         @BeforeEach
         void setUp() {
             request = new SignupRequest();
-            request.setName("João Silva");
+            request.setName("John Silva");
             request.setEmail("test@example.com");
-            request.setPassword("Senha@123");
+            request.setPassword("Pass@123");
         }
 
         @Test
-        @DisplayName("email duplicado deve lançar 409 e registrar audit log de falha")
-        void emailDuplicado_deveLancar409ERegistrarAudit() {
+        @DisplayName("duplicate email should throw 409 and log audit failure")
+        void duplicateEmail_shouldThrow409AndLogAudit() {
             when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
 
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
@@ -188,10 +188,10 @@ class AuthServiceTest {
         }
 
         @Test
-        @DisplayName("dados válidos deve criar usuário e retornar UserResponse")
-        void dadosValidos_deveCriarUsuarioERetornarResponse() throws Exception {
+        @DisplayName("valid data should create user and return UserResponse")
+        void validData_shouldCreateUserAndReturnResponse() throws Exception {
             when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.empty());
-            when(passwordEncoder.encode("Senha@123")).thenReturn("encoded-password");
+            when(passwordEncoder.encode("Pass@123")).thenReturn("encoded-password");
             when(userRepository.save(any(User.class))).thenAnswer(inv -> {
                 User saved = inv.getArgument(0);
                 saved.setId(UUID.randomUUID());
@@ -387,8 +387,8 @@ class AuthServiceTest {
     class RefreshToken {
 
         @Test
-        @DisplayName("token inválido deve lançar 401 e registrar audit log de falha")
-        void tokenInvalido_deveLancar401ERegistrarAudit() {
+        @DisplayName("invalid token should throw 401 and log audit failure")
+        void invalidToken_shouldThrow401AndLogAudit() {
             @SuppressWarnings("unchecked")
             ValueOperations<String, Object> ops = mock(ValueOperations.class);
             when(redisTemplate.opsForValue()).thenReturn(ops);
@@ -407,8 +407,8 @@ class AuthServiceTest {
         }
 
         @Test
-        @DisplayName("token válido deve retornar novos tokens e registrar audit log de sucesso")
-        void tokenValido_deveRetornarNovosTokens() {
+        @DisplayName("valid token should return new tokens and log audit success")
+        void validToken_shouldReturnNewTokens() {
             String refreshToken = "valid-refresh-token";
 
             @SuppressWarnings("unchecked")

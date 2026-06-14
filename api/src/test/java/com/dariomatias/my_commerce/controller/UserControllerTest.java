@@ -63,8 +63,8 @@ class UserControllerTest {
 
         mockUser = new User();
         mockUser.setId(userId);
-        mockUser.setName("João Silva");
-        mockUser.setEmail("joao@example.com");
+        mockUser.setName("John Silva");
+        mockUser.setEmail("john@example.com");
         mockUser.setPassword("hashedpassword");
         mockUser.setRole(UserRole.USER);
         mockUser.setEnabled(true);
@@ -85,8 +85,8 @@ class UserControllerTest {
     class GetAll {
 
         @Test
-        @DisplayName("deve retornar página de usuários")
-        void deveRetornarPaginaDeUsuarios() throws Exception {
+        @DisplayName("should return user page")
+        void shouldReturnUserPage() throws Exception {
             Page<User> page = new PageImpl<>(List.of(mockUser));
             when(userService.getAll(any(UserFilterDTO.class), any(Pageable.class))).thenReturn(page);
 
@@ -107,15 +107,15 @@ class UserControllerTest {
     class GetById {
 
         @Test
-        @DisplayName("deve retornar usuário por ID")
-        void deveRetornarUsuarioPorId() throws Exception {
+        @DisplayName("should return user by ID")
+        void shouldReturnUserById() throws Exception {
             when(userService.getById(nullable(User.class), eq(userId))).thenReturn(mockUser);
 
             mockMvc.perform(get("/api/users/{id}", userId))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
                     .andExpect(jsonPath("$.data.id").value(userId.toString()))
-                    .andExpect(jsonPath("$.data.email").value("joao@example.com"));
+                    .andExpect(jsonPath("$.data.email").value("john@example.com"));
 
             verify(userService).getById(nullable(User.class), eq(userId));
         }
@@ -126,12 +126,12 @@ class UserControllerTest {
     class UpdateUser {
 
         @Test
-        @DisplayName("deve atualizar usuário por ID")
-        void deveAtualizarUsuarioPorId() throws Exception {
+        @DisplayName("should update user by ID")
+        void shouldUpdateUserById() throws Exception {
             UserRequest request = new UserRequest();
-            request.setName("João Atualizado");
+            request.setName("John Updated");
 
-            mockUser.setName("João Atualizado");
+            mockUser.setName("John Updated");
             when(userService.update(nullable(User.class), eq(userId), any(UserRequest.class))).thenReturn(mockUser);
 
             mockMvc.perform(patch("/api/users/{id}", userId)
@@ -139,14 +139,14 @@ class UserControllerTest {
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
-                    .andExpect(jsonPath("$.data.name").value("João Atualizado"));
+                    .andExpect(jsonPath("$.data.name").value("John Updated"));
 
             verify(userService).update(nullable(User.class), eq(userId), any(UserRequest.class));
         }
 
         @Test
-        @DisplayName("deve retornar 400 quando nome estiver em branco")
-        void deveRetornar400QuandoNomeEmBranco() throws Exception {
+        @DisplayName("should return 400 when name is blank")
+        void shouldReturn400WhenNameBlank() throws Exception {
             UserRequest request = new UserRequest();
             request.setName("");
 
@@ -161,8 +161,8 @@ class UserControllerTest {
         }
 
         @Test
-        @DisplayName("deve retornar 400 quando nome for muito curto")
-        void deveRetornar400QuandoNomeCurto() throws Exception {
+        @DisplayName("should return 400 when name is too short")
+        void shouldReturn400WhenNameTooShort() throws Exception {
             UserRequest request = new UserRequest();
             request.setName("AB");
 
@@ -181,8 +181,8 @@ class UserControllerTest {
     class DeleteUser {
 
         @Test
-        @DisplayName("deve excluir usuário por ID")
-        void deveExcluirUsuarioPorId() throws Exception {
+        @DisplayName("should delete user by ID")
+        void shouldDeleteUserById() throws Exception {
             doNothing().when(userService).delete(nullable(User.class), eq(userId));
 
             mockMvc.perform(delete("/api/users/{id}", userId))
@@ -199,8 +199,8 @@ class UserControllerTest {
     class GetActiveUsersCount {
 
         @Test
-        @DisplayName("deve retornar contagem de usuários ativos")
-        void deveRetornarContagemDeUsuariosAtivos() throws Exception {
+        @DisplayName("should return active user count")
+        void shouldReturnActiveUserCount() throws Exception {
             when(userService.getActiveUsersCount()).thenReturn(42L);
 
             mockMvc.perform(get("/api/users/stats/active-users"))
@@ -217,15 +217,15 @@ class UserControllerTest {
     class GetCurrentUser {
 
         @Test
-        @DisplayName("deve retornar usuário autenticado")
-        void deveRetornarUsuarioAutenticado() throws Exception {
+        @DisplayName("should return authenticated user")
+        void shouldReturnAuthenticatedUser() throws Exception {
             when(userService.getById(any(User.class), eq(userId))).thenReturn(mockUser);
 
             mockMvc.perform(get("/api/users/me"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
                     .andExpect(jsonPath("$.data.id").value(userId.toString()))
-                    .andExpect(jsonPath("$.data.email").value("joao@example.com"));
+                    .andExpect(jsonPath("$.data.email").value("john@example.com"));
 
             verify(userService).getById(any(User.class), eq(userId));
         }
@@ -236,12 +236,12 @@ class UserControllerTest {
     class UpdateCurrentUser {
 
         @Test
-        @DisplayName("deve atualizar usuário autenticado")
-        void deveAtualizarUsuarioAutenticado() throws Exception {
+        @DisplayName("should update authenticated user")
+        void shouldUpdateAuthenticatedUser() throws Exception {
             UserRequest request = new UserRequest();
-            request.setName("Nome Novo");
+            request.setName("New Name");
 
-            mockUser.setName("Nome Novo");
+            mockUser.setName("New Name");
             when(userService.update(any(User.class), eq(userId), any(UserRequest.class))).thenReturn(mockUser);
 
             mockMvc.perform(patch("/api/users/me")
@@ -249,14 +249,14 @@ class UserControllerTest {
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("success"))
-                    .andExpect(jsonPath("$.data.name").value("Nome Novo"));
+                    .andExpect(jsonPath("$.data.name").value("New Name"));
 
             verify(userService).update(any(User.class), eq(userId), any(UserRequest.class));
         }
 
         @Test
-        @DisplayName("deve retornar 400 quando nome estiver em branco")
-        void deveRetornar400QuandoNomeEmBranco() throws Exception {
+        @DisplayName("should return 400 when name is blank")
+        void shouldReturn400WhenNameBlank() throws Exception {
             UserRequest request = new UserRequest();
             request.setName("  ");
 
@@ -275,11 +275,11 @@ class UserControllerTest {
     class ChangePassword {
 
         @Test
-        @DisplayName("deve alterar senha do usuário autenticado")
-        void deveAlterarSenhaDoUsuarioAutenticado() throws Exception {
+        @DisplayName("should change authenticated user password")
+        void shouldChangeAuthenticatedUserPassword() throws Exception {
             PasswordUpdateRequest request = new PasswordUpdateRequest();
-            request.setCurrentPassword("SenhaAtual@1");
-            request.setNewPassword("NovaSenha@123");
+            request.setCurrentPassword("CurrentPass@1");
+            request.setNewPassword("NewPass@123");
 
             doNothing().when(userService).changePassword(any(User.class), eq(userId), any(PasswordUpdateRequest.class));
 
@@ -294,11 +294,11 @@ class UserControllerTest {
         }
 
         @Test
-        @DisplayName("deve retornar 400 quando nova senha não atender requisitos de complexidade")
-        void deveRetornar400QuandoNovaSenhaFraca() throws Exception {
+        @DisplayName("should return 400 when new password does not meet complexity requirements")
+        void shouldReturn400WhenNewPasswordTooWeak() throws Exception {
             PasswordUpdateRequest request = new PasswordUpdateRequest();
-            request.setCurrentPassword("SenhaAtual@1");
-            request.setNewPassword("senhasimples");
+            request.setCurrentPassword("CurrentPass@1");
+            request.setNewPassword("simplepassword");
 
             mockMvc.perform(post("/api/users/me/change-password")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -310,11 +310,11 @@ class UserControllerTest {
         }
 
         @Test
-        @DisplayName("deve retornar 400 quando senha atual estiver em branco")
-        void deveRetornar400QuandoSenhaAtualEmBranco() throws Exception {
+        @DisplayName("should return 400 when current password is blank")
+        void shouldReturn400WhenCurrentPasswordBlank() throws Exception {
             PasswordUpdateRequest request = new PasswordUpdateRequest();
             request.setCurrentPassword("");
-            request.setNewPassword("NovaSenha@123");
+            request.setNewPassword("NewPass@123");
 
             mockMvc.perform(post("/api/users/me/change-password")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -331,8 +331,8 @@ class UserControllerTest {
     class DeleteCurrentUser {
 
         @Test
-        @DisplayName("deve excluir usuário autenticado")
-        void deveExcluirUsuarioAutenticado() throws Exception {
+        @DisplayName("should delete authenticated user")
+        void shouldDeleteAuthenticatedUser() throws Exception {
             doNothing().when(userService).delete(any(User.class), eq(userId));
 
             mockMvc.perform(delete("/api/users/me"))

@@ -46,29 +46,29 @@ class JwtServiceTest {
     }
 
     @Test
-    @DisplayName("generateAccessToken deve conter subject igual ao ID do usuário")
-    void generateAccessToken_deveConterSubjectCorreto() {
+    @DisplayName("generateAccessToken should contain subject equal to user ID")
+    void generateAccessToken_shouldContainCorrectSubject() {
         String token = jwtService.generateAccessToken(user);
         assertEquals(user.getId().toString(), jwtService.getIdFromToken(token));
     }
 
     @Test
-    @DisplayName("generateRefreshToken deve conter subject igual ao ID do usuário")
-    void generateRefreshToken_deveConterSubjectCorreto() {
+    @DisplayName("generateRefreshToken should contain subject equal to user ID")
+    void generateRefreshToken_shouldContainCorrectSubject() {
         String token = jwtService.generateRefreshToken(user);
         assertEquals(user.getId().toString(), jwtService.getIdFromToken(token));
     }
 
     @Test
-    @DisplayName("validateToken com token válido deve retornar true")
-    void validateToken_comTokenValido_deveRetornarTrue() {
+    @DisplayName("validateToken with valid token should return true")
+    void validateToken_withValidToken_shouldReturnTrue() {
         String token = jwtService.generateAccessToken(user);
         assertTrue(jwtService.validateToken(token));
     }
 
     @Test
-    @DisplayName("validateToken com token expirado deve retornar false")
-    void validateToken_comTokenExpirado_deveRetornarFalse() {
+    @DisplayName("validateToken with expired token should return false")
+    void validateToken_withExpiredToken_shouldReturnFalse() {
         String expiredToken = Jwts.builder()
                 .setSubject(user.getId().toString())
                 .setIssuedAt(new Date(System.currentTimeMillis() - 3600000))
@@ -80,14 +80,14 @@ class JwtServiceTest {
     }
 
     @Test
-    @DisplayName("validateToken com string inválida deve retornar false")
-    void validateToken_comTokenInvalido_deveRetornarFalse() {
+    @DisplayName("validateToken with invalid string should return false")
+    void validateToken_withInvalidToken_shouldReturnFalse() {
         assertFalse(jwtService.validateToken("not.a.valid.token"));
     }
 
     @Test
-    @DisplayName("getIdFromToken deve parsear o ID do usuário corretamente")
-    void getIdFromToken_deveParsearIdCorreto() {
+    @DisplayName("getIdFromToken should parse user ID correctly")
+    void getIdFromToken_shouldParseIdCorrectly() {
         String token = jwtService.generateAccessToken(user);
         assertEquals(user.getId().toString(), jwtService.getIdFromToken(token));
     }

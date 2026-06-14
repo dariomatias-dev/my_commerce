@@ -73,8 +73,8 @@ class CategoryControllerTest {
     class Create {
 
         @Test
-        @DisplayName("deve criar categoria")
-        void deveRetornarCategoriaAoCriarComSucesso() throws Exception {
+        @DisplayName("should create category")
+        void shouldCreateCategory() throws Exception {
             when(service.create(any(CategoryRequestDTO.class))).thenReturn(category);
 
             mockMvc.perform(post("/api/categories")
@@ -94,8 +94,8 @@ class CategoryControllerTest {
     class GetAll {
 
         @Test
-        @DisplayName("deve retornar página de categorias com query params")
-        void deveRetornarPaginaDeCategorias() throws Exception {
+        @DisplayName("should return category page with query params")
+        void shouldReturnCategoryPage() throws Exception {
             Page<Category> page = new PageImpl<>(List.of(category));
             when(service.getAll(any(CategoryFilterDTO.class), any(Pageable.class))).thenReturn(page);
 
@@ -117,8 +117,8 @@ class CategoryControllerTest {
     class GetById {
 
         @Test
-        @DisplayName("deve retornar categoria por ID")
-        void deveRetornarCategoriaQuandoIdValido() throws Exception {
+        @DisplayName("should return category by ID")
+        void shouldReturnCategoryById() throws Exception {
             when(service.getById(categoryId)).thenReturn(category);
 
             mockMvc.perform(get("/api/categories/{id}", categoryId))
@@ -136,8 +136,8 @@ class CategoryControllerTest {
     class Update {
 
         @Test
-        @DisplayName("deve atualizar categoria")
-        void deveRetornarCategoriaAtualizadaComSucesso() throws Exception {
+        @DisplayName("should update category")
+        void shouldUpdateCategory() throws Exception {
             CategoryRequestDTO updateRequest = new CategoryRequestDTO();
             updateRequest.setStoreId(storeId);
             updateRequest.setName("Updated Electronics");
@@ -161,8 +161,8 @@ class CategoryControllerTest {
     class Delete {
 
         @Test
-        @DisplayName("deve excluir categoria por ID")
-        void deveRetornarSucessoAoExcluirCategoria() throws Exception {
+        @DisplayName("should delete category by ID")
+        void shouldDeleteCategory() throws Exception {
             doNothing().when(service).delete(categoryId);
 
             mockMvc.perform(delete("/api/categories/{id}", categoryId))

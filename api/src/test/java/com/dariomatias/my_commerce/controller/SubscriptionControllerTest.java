@@ -96,8 +96,8 @@ class SubscriptionControllerTest {
     class Create {
 
         @Test
-        @DisplayName("deve criar assinatura")
-        void deveCriarAssinatura() throws Exception {
+        @DisplayName("should create subscription")
+        void shouldCreateSubscription() throws Exception {
             when(service.create(nullable(User.class), any(SubscriptionRequestDTO.class))).thenReturn(subscription);
 
             mockMvc.perform(post("/api/subscriptions")
@@ -117,8 +117,8 @@ class SubscriptionControllerTest {
     class GetAll {
 
         @Test
-        @DisplayName("deve retornar página de assinaturas")
-        void deveRetornarPaginaDeAssinaturas() throws Exception {
+        @DisplayName("should return subscription page")
+        void shouldReturnSubscriptionPage() throws Exception {
             Page<Subscription> page = new PageImpl<>(List.of(subscription));
             when(service.getAll(any(Pageable.class))).thenReturn(page);
 
@@ -139,8 +139,8 @@ class SubscriptionControllerTest {
     class GetAllByUser {
 
         @Test
-        @DisplayName("deve retornar assinaturas por usuário")
-        void deveRetornarAssinaturasPorUsuario() throws Exception {
+        @DisplayName("should return subscriptions by user")
+        void shouldReturnSubscriptionsByUser() throws Exception {
             Page<Subscription> page = new PageImpl<>(List.of(subscription));
             when(service.getAllByUser(eq(userId), any(Pageable.class))).thenReturn(page);
 
@@ -160,8 +160,8 @@ class SubscriptionControllerTest {
     class GetAllByMe {
 
         @Test
-        @DisplayName("deve retornar assinaturas do usuário autenticado")
-        void deveRetornarAssinaturasDoUsuarioAutenticado() throws Exception {
+        @DisplayName("should return subscriptions for authenticated user")
+        void shouldReturnSubscriptionsForAuthenticatedUser() throws Exception {
             Page<Subscription> page = new PageImpl<>(List.of(subscription));
             when(service.getAllByUser(eq(userId), any(Pageable.class))).thenReturn(page);
 
@@ -181,8 +181,8 @@ class SubscriptionControllerTest {
     class GetActiveByMe {
 
         @Test
-        @DisplayName("deve retornar assinatura ativa do usuário autenticado")
-        void deveRetornarAssinaturaAtiva() throws Exception {
+        @DisplayName("should return active subscription for authenticated user")
+        void shouldReturnActiveSubscription() throws Exception {
             when(service.getActiveByUser(eq(userId))).thenReturn(subscription);
 
             mockMvc.perform(get("/api/subscriptions/me/active"))
@@ -200,8 +200,8 @@ class SubscriptionControllerTest {
     class GetById {
 
         @Test
-        @DisplayName("deve retornar assinatura por ID")
-        void deveRetornarAssinaturaPorId() throws Exception {
+        @DisplayName("should return subscription by ID")
+        void shouldReturnSubscriptionById() throws Exception {
             when(service.getById(eq(subscriptionId))).thenReturn(subscription);
 
             mockMvc.perform(get("/api/subscriptions/{id}", subscriptionId))
@@ -219,8 +219,8 @@ class SubscriptionControllerTest {
     class ChangePlan {
 
         @Test
-        @DisplayName("deve alterar plano de assinatura")
-        void deveAlterarPlanoDeAssinatura() throws Exception {
+        @DisplayName("should change subscription plan")
+        void shouldChangeSubscriptionPlan() throws Exception {
             UUID newPlanId = UUID.randomUUID();
             SubscriptionRequestDTO changePlanRequest = new SubscriptionRequestDTO();
             changePlanRequest.setPlanId(newPlanId);
@@ -244,8 +244,8 @@ class SubscriptionControllerTest {
     class CancelActive {
 
         @Test
-        @DisplayName("deve cancelar assinatura ativa")
-        void deveCancelarAssinaturaAtiva() throws Exception {
+        @DisplayName("should cancel active subscription")
+        void shouldCancelActiveSubscription() throws Exception {
             subscription.setIsActive(false);
             when(service.cancelActiveSubscription(nullable(User.class))).thenReturn(subscription);
 

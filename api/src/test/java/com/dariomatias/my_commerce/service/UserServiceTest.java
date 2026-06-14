@@ -174,8 +174,8 @@ class UserServiceTest {
     class GetById {
 
         @Test
-        @DisplayName("usuário não encontrado deve lançar 404")
-        void usuarioNaoEncontrado_deveLancar404() {
+        @DisplayName("user not found should throw 404")
+        void userNotFound_shouldThrow404() {
             when(userRepository.findById(targetId)).thenReturn(Optional.empty());
 
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
@@ -185,8 +185,8 @@ class UserServiceTest {
         }
 
         @Test
-        @DisplayName("usuário deletado com role ADMIN deve retornar usuário")
-        void usuarioDeletadoComAdmin_deveRetornarUsuario() {
+        @DisplayName("deleted user with ADMIN role should return user")
+        void deletedUserWithAdminRole_shouldReturnUser() {
             targetUser.delete();
             when(userRepository.findById(targetId)).thenReturn(Optional.of(targetUser));
 
@@ -198,8 +198,8 @@ class UserServiceTest {
         }
 
         @Test
-        @DisplayName("usuário deletado com role USER deve lançar 404")
-        void usuarioDeletadoComUser_deveLancar404() {
+        @DisplayName("deleted user with USER role should throw 404")
+        void deletedUserWithUserRole_shouldThrow404() {
             targetUser.delete();
             when(userRepository.findById(targetId)).thenReturn(Optional.of(targetUser));
 
@@ -224,8 +224,8 @@ class UserServiceTest {
         }
 
         @Test
-        @DisplayName("senha atual incorreta deve lançar 400")
-        void senhaAtualIncorreta_deveLancar400() {
+        @DisplayName("wrong current password should throw 400")
+        void wrongCurrentPassword_shouldThrow400() {
             when(userRepository.findById(targetId)).thenReturn(Optional.of(targetUser));
             when(passwordEncoder.matches("wrong-password", "encoded-password")).thenReturn(false);
 
@@ -237,8 +237,8 @@ class UserServiceTest {
         }
 
         @Test
-        @DisplayName("senha atual correta deve atualizar senha do usuário")
-        void senhaAtualCorreta_deveAtualizarSenha() {
+        @DisplayName("correct current password should update user password")
+        void correctCurrentPassword_shouldUpdatePassword() {
             request.setCurrentPassword("correct-password");
             when(userRepository.findById(targetId)).thenReturn(Optional.of(targetUser));
             when(passwordEncoder.matches("correct-password", "encoded-password")).thenReturn(true);
@@ -257,15 +257,15 @@ class UserServiceTest {
     class Delete {
 
         @Test
-        @DisplayName("deve deletar stores, products e pasta MinIO em cascata")
-        void deveDeletarCascataStoresProductsMinIO() {
+        @DisplayName("should cascade delete stores, products and MinIO folder")
+        void shouldCascadeDeleteStoresProductsAndMinIO() {
             Store store1 = new Store();
             store1.setId(UUID.randomUUID());
-            store1.setSlug("loja-um");
+            store1.setSlug("store-one");
 
             Store store2 = new Store();
             store2.setId(UUID.randomUUID());
-            store2.setSlug("loja-dois");
+            store2.setSlug("store-two");
 
             when(userRepository.findById(targetId)).thenReturn(Optional.of(targetUser));
             when(storeRepository.findAllByUserId(targetId)).thenReturn(List.of(store1, store2));
@@ -274,8 +274,8 @@ class UserServiceTest {
 
             userService.delete(adminUser, targetId);
 
-            verify(minioService).deleteFolder("stores", "loja-um/");
-            verify(minioService).deleteFolder("stores", "loja-dois/");
+            verify(minioService).deleteFolder("stores", "store-one/");
+            verify(minioService).deleteFolder("stores", "store-two/");
             verify(productRepository).deleteByStoreId(store1.getId());
             verify(productRepository).deleteByStoreId(store2.getId());
             verify(storeRepository).deleteByUserId(targetId);

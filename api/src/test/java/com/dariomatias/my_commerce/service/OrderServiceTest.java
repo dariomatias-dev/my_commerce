@@ -109,8 +109,8 @@ class OrderServiceTest {
         }
 
         @Test
-        @DisplayName("lista de itens vazia deve lançar 400")
-        void listaItensVazia_deveLancar400() {
+        @DisplayName("empty item list should throw 400")
+        void emptyItemList_shouldThrow400() {
             request.setItems(List.of());
 
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
@@ -121,8 +121,8 @@ class OrderServiceTest {
         }
 
         @Test
-        @DisplayName("endereço pertencente a outro usuário deve lançar 400")
-        void enderecoDeOutroUsuario_deveLancar400() {
+        @DisplayName("address belonging to another user should throw 400")
+        void addressBelongingToOtherUser_shouldThrow400() {
             User otherUser = new User();
             otherUser.setId(UUID.randomUUID());
 
@@ -140,8 +140,8 @@ class OrderServiceTest {
         }
 
         @Test
-        @DisplayName("dados válidos deve salvar pedido com status COMPLETED")
-        void dadosValidos_deveSalvarComStatusCompleted() {
+        @DisplayName("valid data should save order with status COMPLETED")
+        void validData_shouldSaveWithStatusCompleted() {
             UserAddress userAddress = new UserAddress();
             userAddress.setId(addressId);
             userAddress.setUser(user);
@@ -410,8 +410,8 @@ class OrderServiceTest {
         }
 
         @Test
-        @DisplayName("pedido não encontrado deve lançar 404")
-        void pedidoNaoEncontrado_deveLancar404() {
+        @DisplayName("order not found should throw 404")
+        void orderNotFound_shouldThrow404() {
             when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
 
             ResponseStatusException ex = assertThrows(ResponseStatusException.class,
@@ -421,8 +421,8 @@ class OrderServiceTest {
         }
 
         @Test
-        @DisplayName("usuário não proprietário com role USER deve lançar 403")
-        void naoProprietarioComRoleUser_deveLancar403() {
+        @DisplayName("non-owner user with USER role should throw 403")
+        void nonOwnerWithUserRole_shouldThrow403() {
             User otherUser = new User();
             otherUser.setId(UUID.randomUUID());
 
@@ -437,8 +437,8 @@ class OrderServiceTest {
         }
 
         @Test
-        @DisplayName("proprietário deve acessar o pedido e receber DTO")
-        void proprietarioAcessa_deveRetornarDTO() {
+        @DisplayName("owner should access order and receive DTO")
+        void owner_shouldAccessAndReturnDTO() {
             Order order = mock(Order.class);
             when(order.getUser()).thenReturn(user);
             when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
@@ -456,8 +456,8 @@ class OrderServiceTest {
         }
 
         @Test
-        @DisplayName("ADMIN deve acessar pedido de outro usuário sem 403")
-        void adminAcessaPedidoDeOutroUsuario_deveRetornarDTO() {
+        @DisplayName("ADMIN should access another user's order without 403")
+        void admin_shouldAccessOtherUserOrderWithout403() {
             User otherUser = new User();
             otherUser.setId(UUID.randomUUID());
 
