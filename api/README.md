@@ -409,13 +409,17 @@ Testes de unidade pura com `@ExtendWith(MockitoExtension.class)`. Todas as depen
 
 | Service           | Testes | Cenários cobertos                                                                                                                                                       |
 | ----------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `JwtService`      | 6      | `generateAccessToken` e `generateRefreshToken` (subject correto), `validateToken` (válido → true, expirado → false, inválido → false), `getIdFromToken` (parse correto) |
-| `FreightService`  | 6      | Endereço não encontrado → 404, distância null → 400, distância ≤ 5 km → frete zero (< 5 km e = 5 km), distância > 5 km → cálculo econômico e express                   |
-| `AuthService`     | 8      | Login (email não encontrado → 401, senha errada → 401 + audit, e-mail não verificado → 403 + audit, sucesso), Register (email duplicado → 409 + audit, dados válidos), RefreshToken (token inválido → 401 + audit, token válido) |
-| `UserService`     | 6      | `getById` (não encontrado → 404, deletado + ADMIN → retorna, deletado + USER → 404), `changePassword` (senha errada → 400, senha correta → atualiza), `delete` (cascata stores/products/MinIO) |
-| `CategoryService` | 7      | `create` (loja não encontrada → 404, loja encontrada → cria), `getAll` (filtro null → 400, loja não encontrada → 404, filtro válido → página), `update` (name null → não altera, name preenchido → altera) |
+| `JwtService`          | 6  | `generateAccessToken` e `generateRefreshToken` (subject correto), `validateToken` (válido → true, expirado → false, inválido → false), `getIdFromToken` (parse correto) |
+| `FreightService`      | 6  | Endereço não encontrado → 404, distância null → 400, distância ≤ 5 km → frete zero (< 5 km e = 5 km), distância > 5 km → cálculo econômico e express |
+| `AuthService`         | 8  | Login (email não encontrado → 401, senha errada → 401 + audit, e-mail não verificado → 403 + audit, sucesso), Register (email duplicado → 409 + audit, dados válidos), RefreshToken (token inválido → 401 + audit, token válido) |
+| `UserService`         | 6  | `getById` (não encontrado → 404, deletado + ADMIN → retorna, deletado + USER → 404), `changePassword` (senha errada → 400, senha correta → atualiza), `delete` (cascata stores/products/MinIO) |
+| `CategoryService`     | 7  | `create` (loja não encontrada → 404, loja encontrada → cria), `getAll` (filtro null → 400, loja não encontrada → 404, filtro válido → página), `update` (name null → não altera, name preenchido → altera) |
+| `SubscriptionService` | 5  | `changePlan` (sem assinatura ativa → 400, mesmo plano → 400, plano diferente → desativa atual e cria nova), `cancelActiveSubscription` (sem ativa → 400, com ativa → cancela e reverte role para USER) |
+| `OrderService`        | 7  | `create` (itens vazios → 400, endereço de outro usuário → 400, dados válidos → status COMPLETED verificado via ArgumentCaptor), `getById` (404, não-dono com USER → 403, dono retorna DTO, ADMIN acessa pedido de qualquer usuário) |
+| `StoreService`        | 10 | `create` (sem assinatura → 404, limite de lojas → 422, slug duplicado → 409, com logo/banner → upload MinIO, sem imagens → sem upload), `update` (slug duplicado → 409, com imagens → upload MinIO), `getBySlug` (não encontrada → 404, inativa + anônimo → 404, ativa → retorna) |
+| `UserAddressService`  | 5  | `update` (não encontrado → `IllegalArgumentException`, endereço de outro usuário → `IllegalArgumentException`, dono → atualiza e retorna DTO), `delete` (outro usuário → `IllegalArgumentException`, dono → soft delete) |
 
-**Total: 33 testes de service.**
+**Total: 60 testes de service.**
 
 ### Controllers Testados
 
@@ -473,7 +477,7 @@ O JaCoCo está configurado no `pom.xml` para validar automaticamente a cobertura
 **Rodar todos os testes de service:**
 
 ```bash
-./mvnw test -Dtest="JwtServiceTest,FreightServiceTest,AuthServiceTest,UserServiceTest,CategoryServiceTest"
+./mvnw test -Dtest="JwtServiceTest,FreightServiceTest,AuthServiceTest,UserServiceTest,CategoryServiceTest,SubscriptionServiceTest,OrderServiceTest,StoreServiceTest,UserAddressServiceTest"
 ```
 
 **Rodar todos os testes com verificação de cobertura JaCoCo:**
