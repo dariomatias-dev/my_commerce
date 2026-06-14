@@ -421,8 +421,12 @@ Testes de unidade pura com `@ExtendWith(MockitoExtension.class)`. Todas as depen
 | `AnalyticsService`    | 7  | `getTotalRevenue(userId)` (null → ZERO, valor → encapsula), `getTotalRevenue()` global (null → ZERO, valor → retorna), `verifyStoreAccess` via `getUniqueCustomersByStore` (ADMIN bypassa, loja não encontrada → 404, não-proprietário → 403) |
 | `AuditLogService`     | 4  | `log` (salva campos corretos + timestamp), `getById` (id existente → retorna, id inexistente → null), `getLogs` (delega count e find ao MongoTemplate e retorna página) |
 | `SubscriptionPlanService` | 10 | `create` (nome duplicado → 400, nome único → salva), `getById` (inexistente → 404, existente → retorna), `update` (não encontrado → 404, nome conflitante → 400, campos null → preserva valores, mesmo nome → sem check de conflito), `delete` (inexistente → 404, existente → deleteById) |
+| `EmailService`            | 4  | `sendVerificationEmail` (envia MimeMessage, propaga MailSendException), `sendPasswordRecoveryEmail` (envia MimeMessage, propaga MailSendException) |
+| `MinioService`            | 18 | `uploadFile` (> 5MB → 400, tipo inválido → 400, tipo null → 400, JPEG válido → putObject, PNG válido → putObject), `deleteFile` (sucesso, erro MinIO → 500), `listObjects` (retorna nomes, pasta vazia), `copyFile` (sucesso, erro → 500), `createBucket` (bucket existente → sem makeBucket, inexistente → cria + política, erro → 500), `deleteFolder` (remove objetos, pasta vazia → sem removeObject), `uploadImage` (sucesso, erro → 500) |
+| `ProductImageService`     | 12 | `upload` (null → vazio, array vazio → vazio, imagens válidas → upload + save, posições continuam após existentes, objectName contém slugs no path), `removeImages` (null → nada, vazio → nada, URL correspondente → deleta MinIO + remove produto, URL não correspondente → nada, posições reordenadas após remoção), `rename` (copia + deleta cada objeto, pasta vazia → sem cópia nem delete) |
+| `ProductService`          | 43 | `create` (loja 404, loja de outro usuário 403, sem assinatura 404, limite plano 422, plano ilimitado sem contagem, categoria 404, categoria de outra loja 400, slug duplicado 409, dados válidos → salva + upload, ADMIN pula assinatura), `getAllByStore` (null filter+user → ACTIVE sem erro, DELETED+USER → 403, ALL+null → 403, DELETED+ADMIN → página, ACTIVE+null → página), `getActiveProductsByStoreAndIds` (loja 404, loja deletada 404, IDs null → empty, IDs vazios → empty, válido → página), `getByStoreSlugAndProductSlug` (loja 404, produto 404, válido → retorna), `getById` (ADMIN: 404, retorna deletado; USER: 404, retorna ativo), `getUserActiveProductsCount` (delega ao repositório), `getActiveProductsCount` (loja 404, retorna contagem), `update` (produto 404, loja 404, não dono 403, categoria 404, categoria outra loja 400, slug duplicado 409, mudança de nome → rename + update, campos null preserva valores), `delete` (produto 404, loja 404, não dono 403, válido → remove imagens + delete, ADMIN deleta de qualquer loja) |
 
-**Total: 81 testes de service.**
+**Total: 158 testes de service.**
 
 ### Controllers Testados
 
@@ -480,7 +484,7 @@ O JaCoCo está configurado no `pom.xml` para validar automaticamente a cobertura
 **Rodar todos os testes de service:**
 
 ```bash
-./mvnw test -Dtest="JwtServiceTest,FreightServiceTest,AuthServiceTest,UserServiceTest,CategoryServiceTest,SubscriptionServiceTest,OrderServiceTest,StoreServiceTest,UserAddressServiceTest,AnalyticsServiceTest,AuditLogServiceTest,SubscriptionPlanServiceTest"
+./mvnw test -Dtest="JwtServiceTest,FreightServiceTest,AuthServiceTest,UserServiceTest,CategoryServiceTest,SubscriptionServiceTest,OrderServiceTest,StoreServiceTest,UserAddressServiceTest,AnalyticsServiceTest,AuditLogServiceTest,SubscriptionPlanServiceTest,EmailServiceTest,MinioServiceTest,ProductImageServiceTest,ProductServiceTest"
 ```
 
 **Rodar todos os testes com verificação de cobertura JaCoCo:**
