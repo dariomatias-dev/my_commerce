@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,7 +49,7 @@ public class ProductController {
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResult<ProductResponseDTO>> create(
             @AuthenticationPrincipal User user,
-            @RequestPart("data") ProductRequestDTO request,
+            @Valid @RequestPart("data") ProductRequestDTO request,
             @RequestPart("images") MultipartFile[] images
     ) {
 
@@ -100,7 +101,7 @@ public class ProductController {
     })
     @PostMapping("/store/products-by-ids")
     public ResponseEntity<ApiResult<Page<ProductResponseDTO>>> getByIds(
-            @RequestBody ProductIdsRequestDTO request,
+            @Valid @RequestBody ProductIdsRequestDTO request,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
@@ -222,7 +223,7 @@ public class ProductController {
     public ResponseEntity<ApiResult<ProductResponseDTO>> update(
             @AuthenticationPrincipal User user,
             @PathVariable UUID id,
-            @RequestPart(value = "data", required = false) ProductRequestDTO request,
+            @Valid @RequestPart(value = "data", required = false) ProductRequestDTO request,
             @RequestPart(value = "images", required = false) MultipartFile[] images
     ) {
 

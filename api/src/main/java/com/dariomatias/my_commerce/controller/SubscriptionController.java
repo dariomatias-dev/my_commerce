@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -43,7 +44,7 @@ public class SubscriptionController {
     @PostMapping
     public ResponseEntity<ApiResult<SubscriptionResponseDTO>> create(
             @AuthenticationPrincipal User user,
-            @RequestBody SubscriptionRequestDTO request
+            @Valid @RequestBody SubscriptionRequestDTO request
     ) {
 
         Subscription subscription = service.create(user, request);
@@ -178,7 +179,7 @@ public class SubscriptionController {
     @PreAuthorize("hasAnyRole('ADMIN', 'SUBSCRIBER')")
     public ResponseEntity<ApiResult<SubscriptionResponseDTO>> changePlan(
             @AuthenticationPrincipal User user,
-            @RequestBody SubscriptionRequestDTO request
+            @Valid @RequestBody SubscriptionRequestDTO request
     ) {
 
         Subscription subscription = service.changePlan(user, request);

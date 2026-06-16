@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -47,7 +48,7 @@ public class StoreController {
     @PreAuthorize("hasRole('SUBSCRIBER')")
     public ResponseEntity<ApiResult<StoreResponseDTO>> create(
             @AuthenticationPrincipal User user,
-            @RequestPart("data") StoreRequestDTO request,
+            @Valid @RequestPart("data") StoreRequestDTO request,
             @RequestPart("logo") MultipartFile logo,
             @RequestPart("banner") MultipartFile banner
     ) {
@@ -202,7 +203,7 @@ public class StoreController {
     public ResponseEntity<ApiResult<StoreResponseDTO>> update(
             @AuthenticationPrincipal User user,
             @PathVariable UUID id,
-            @RequestPart(value = "data", required = false) StoreRequestDTO request,
+            @Valid @RequestPart(value = "data", required = false) StoreRequestDTO request,
             @RequestPart(value = "logo", required = false) MultipartFile logo,
             @RequestPart(value = "banner", required = false) MultipartFile banner
     ) {

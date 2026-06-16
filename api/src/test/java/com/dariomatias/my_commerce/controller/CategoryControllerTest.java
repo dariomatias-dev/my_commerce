@@ -87,6 +87,15 @@ class CategoryControllerTest {
 
             verify(service).create(any(CategoryRequestDTO.class));
         }
+
+        @Test
+        @DisplayName("should return 400 when request is invalid")
+        void shouldReturn400WhenCreateRequestInvalid() throws Exception {
+            mockMvc.perform(post("/api/categories")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{}"))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Nested
@@ -153,6 +162,15 @@ class CategoryControllerTest {
                     .andExpect(jsonPath("$.data.name").value("Updated Electronics"));
 
             verify(service).update(eq(categoryId), any(CategoryRequestDTO.class));
+        }
+
+        @Test
+        @DisplayName("should return 400 when request is invalid")
+        void shouldReturn400WhenUpdateRequestInvalid() throws Exception {
+            mockMvc.perform(patch("/api/categories/{id}", categoryId)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{}"))
+                    .andExpect(status().isBadRequest());
         }
     }
 

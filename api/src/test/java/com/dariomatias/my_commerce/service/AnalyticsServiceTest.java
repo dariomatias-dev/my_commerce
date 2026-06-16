@@ -111,6 +111,58 @@ class AnalyticsServiceTest {
     }
 
     @Nested
+    @DisplayName("getUniqueCustomers(userId)")
+    class GetUniqueCustomersByUser {
+
+        @Test
+        @DisplayName("should return unique customers count for user")
+        void shouldReturnUniqueCustomersCount() {
+            when(orderRepository.countDistinctCustomersByUserIdAndStatus(userId, Status.COMPLETED)).thenReturn(3L);
+
+            UniqueCustomersResponseDTO result = analyticsService.getUniqueCustomers(userId);
+
+            assertEquals(3L, result.total());
+        }
+    }
+
+    @Nested
+    @DisplayName("getTotalRevenueByStore")
+    class GetTotalRevenueByStore {
+
+        @Test
+        @DisplayName("owner with null revenue should return ZERO")
+        void ownerNullRevenue_shouldReturnZero() {
+            Store store = new Store();
+            store.setId(storeId);
+            store.setUser(user);
+
+            when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
+            when(orderRepository.sumTotalRevenueByStoreIdAndStatus(storeId, Status.COMPLETED)).thenReturn(null);
+
+            TotalRevenueResponseDTO result = analyticsService.getTotalRevenueByStore(storeId, user);
+
+            assertEquals(BigDecimal.ZERO, result.total());
+        }
+
+        @Test
+        @DisplayName("owner with revenue should return wrapped value")
+        void ownerWithRevenue_shouldReturnValue() {
+            Store store = new Store();
+            store.setId(storeId);
+            store.setUser(user);
+
+            BigDecimal revenue = new BigDecimal("500.00");
+
+            when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
+            when(orderRepository.sumTotalRevenueByStoreIdAndStatus(storeId, Status.COMPLETED)).thenReturn(revenue);
+
+            TotalRevenueResponseDTO result = analyticsService.getTotalRevenueByStore(storeId, user);
+
+            assertEquals(revenue, result.total());
+        }
+    }
+
+    @Nested
     @DisplayName("verifyStoreAccess (via getUniqueCustomersByStore)")
     class VerifyStoreAccess {
 

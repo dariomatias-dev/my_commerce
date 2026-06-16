@@ -136,6 +136,22 @@ class ProductControllerTest {
 
             verify(service).create(any(User.class), any(ProductRequestDTO.class), any());
         }
+
+        @Test
+        @DisplayName("should return 400 when request data is invalid")
+        void shouldReturn400WhenCreateRequestInvalid() throws Exception {
+            MockMultipartFile invalidDataPart = new MockMultipartFile(
+                    "data", "data", "application/json", "{}".getBytes()
+            );
+            MockMultipartFile imagesPart = new MockMultipartFile(
+                    "images", "img.jpg", "image/jpeg", "fake-image".getBytes()
+            );
+
+            mockMvc.perform(multipart("/api/products")
+                            .file(invalidDataPart)
+                            .file(imagesPart))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Nested
@@ -185,6 +201,15 @@ class ProductControllerTest {
                     .andExpect(jsonPath("$.data.content[0].id").value(productId.toString()));
 
             verify(service).getActiveProductsByStoreAndIds(eq(storeId), anyList(), any(Pageable.class));
+        }
+
+        @Test
+        @DisplayName("should return 400 when request is invalid")
+        void shouldReturn400WhenGetByIdsRequestInvalid() throws Exception {
+            mockMvc.perform(post("/api/products/store/products-by-ids")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{}"))
+                    .andExpect(status().isBadRequest());
         }
     }
 
@@ -284,6 +309,18 @@ class ProductControllerTest {
                     .andExpect(jsonPath("$.data.name").value("Updated Product"));
 
             verify(service).update(any(User.class), eq(productId), any(), any());
+        }
+
+        @Test
+        @DisplayName("should return 400 when request data is invalid")
+        void shouldReturn400WhenUpdateRequestInvalid() throws Exception {
+            MockMultipartFile invalidDataPart = new MockMultipartFile(
+                    "data", "data", "application/json", "{}".getBytes()
+            );
+
+            mockMvc.perform(multipart(HttpMethod.PATCH, "/api/products/{id}", productId)
+                            .file(invalidDataPart))
+                    .andExpect(status().isBadRequest());
         }
     }
 

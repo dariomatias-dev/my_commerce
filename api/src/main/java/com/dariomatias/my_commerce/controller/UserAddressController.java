@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +39,7 @@ public class UserAddressController {
     @PostMapping
     public ResponseEntity<ApiResult<UserAddressResponseDTO>> create(
             @AuthenticationPrincipal User user,
-            @RequestBody UserAddressRequestDTO request
+            @Valid @RequestBody UserAddressRequestDTO request
     ) {
 
         UserAddressResponseDTO userAddress = service.create(user, request);
@@ -74,7 +75,7 @@ public class UserAddressController {
     public ResponseEntity<ApiResult<UserAddressResponseDTO>> update(
             @AuthenticationPrincipal User user,
             @PathVariable UUID id,
-            @RequestBody UserAddressRequestDTO request
+            @Valid @RequestBody UserAddressRequestDTO request
     ) {
 
         UserAddressResponseDTO userAddress = service.update(user, id, request);

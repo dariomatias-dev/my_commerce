@@ -10,10 +10,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -54,6 +59,71 @@ class UserAddressServiceTest {
                 -23.5505,
                 -46.6333
         );
+    }
+
+    @Nested
+    @DisplayName("create")
+    class Create {
+
+        @Test
+        @DisplayName("should save address and return DTO")
+        void shouldSaveAndReturnDTO() {
+            GeometryFactory gf = new GeometryFactory(new PrecisionModel(), 4326);
+            Point location = gf.createPoint(new Coordinate(-46.6333, -23.5505));
+
+            UserAddress saved = new UserAddress();
+            saved.setId(addressId);
+            saved.setLabel("Home");
+            saved.setCity("Sao Paulo");
+            saved.setLocation(location);
+            saved.setUser(user);
+
+            when(repository.save(any(UserAddress.class))).thenReturn(saved);
+
+            UserAddressResponseDTO result = userAddressService.create(user, request);
+
+            assertNotNull(result);
+            assertEquals("Home", result.getLabel());
+            assertEquals("Sao Paulo", result.getCity());
+            verify(repository).save(any(UserAddress.class));
+        }
+    }
+
+    @Nested
+    @DisplayName("getAllByUser")
+    class GetAllByUser {
+
+        @Test
+        @DisplayName("no addresses should return empty list")
+        void noAddresses_shouldReturnEmpty() {
+            when(repository.findAllByUserId(user.getId())).thenReturn(List.of());
+
+            List<UserAddressResponseDTO> result = userAddressService.getAllByUser(user);
+
+            assertTrue(result.isEmpty());
+        }
+
+        @Test
+        @DisplayName("with addresses should return mapped DTOs")
+        void withAddresses_shouldReturnMappedDTOs() {
+            GeometryFactory gf = new GeometryFactory(new PrecisionModel(), 4326);
+            Point location = gf.createPoint(new Coordinate(-46.6333, -23.5505));
+
+            UserAddress address = new UserAddress();
+            address.setId(addressId);
+            address.setLabel("Home");
+            address.setCity("Sao Paulo");
+            address.setLocation(location);
+            address.setUser(user);
+
+            when(repository.findAllByUserId(user.getId())).thenReturn(List.of(address));
+
+            List<UserAddressResponseDTO> result = userAddressService.getAllByUser(user);
+
+            assertEquals(1, result.size());
+            assertEquals("Home", result.get(0).getLabel());
+            assertEquals("Sao Paulo", result.get(0).getCity());
+        }
     }
 
     @Nested

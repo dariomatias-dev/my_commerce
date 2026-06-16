@@ -99,6 +99,15 @@ class UserAddressControllerTest {
 
             verify(service).create(any(User.class), any(UserAddressRequestDTO.class));
         }
+
+        @Test
+        @DisplayName("should return 400 when request is invalid")
+        void shouldReturn400WhenCreateRequestInvalid() throws Exception {
+            mockMvc.perform(post("/api/addresses")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{}"))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Nested
@@ -149,6 +158,15 @@ class UserAddressControllerTest {
                     .andExpect(jsonPath("$.data.street").value("Av. Epitacio Pessoa"));
 
             verify(service).update(any(User.class), eq(addressId), any(UserAddressRequestDTO.class));
+        }
+
+        @Test
+        @DisplayName("should return 400 when request is invalid")
+        void shouldReturn400WhenUpdateRequestInvalid() throws Exception {
+            mockMvc.perform(put("/api/addresses/{id}", addressId)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{}"))
+                    .andExpect(status().isBadRequest());
         }
     }
 

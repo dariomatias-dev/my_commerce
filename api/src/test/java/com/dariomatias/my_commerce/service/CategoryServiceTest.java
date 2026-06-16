@@ -149,6 +149,33 @@ class CategoryServiceTest {
     }
 
     @Nested
+    @DisplayName("getById")
+    class GetById {
+
+        @Test
+        @DisplayName("not found should throw 404")
+        void notFound_shouldThrow404() {
+            when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
+
+            ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                    () -> categoryService.getById(categoryId));
+
+            assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+        }
+
+        @Test
+        @DisplayName("found should return category")
+        void found_shouldReturnCategory() {
+            when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+
+            Category result = categoryService.getById(categoryId);
+
+            assertEquals(categoryId, result.getId());
+            assertEquals("Electronics", result.getName());
+        }
+    }
+
+    @Nested
     @DisplayName("update")
     class Update {
 
@@ -182,6 +209,33 @@ class CategoryServiceTest {
 
             assertEquals("Games", result.getName());
             verify(categoryRepository).update(category);
+        }
+    }
+
+    @Nested
+    @DisplayName("delete")
+    class Delete {
+
+        @Test
+        @DisplayName("category not found should throw 404")
+        void notFound_shouldThrow404() {
+            when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
+
+            ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                    () -> categoryService.delete(categoryId));
+
+            assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+            verify(categoryRepository, never()).deleteById(any());
+        }
+
+        @Test
+        @DisplayName("category found should delete it")
+        void found_shouldDelete() {
+            when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+
+            categoryService.delete(categoryId);
+
+            verify(categoryRepository).deleteById(categoryId);
         }
     }
 }

@@ -110,6 +110,15 @@ class SubscriptionControllerTest {
 
             verify(service).create(nullable(User.class), any(SubscriptionRequestDTO.class));
         }
+
+        @Test
+        @DisplayName("should return 400 when request is invalid")
+        void shouldReturn400WhenCreateRequestInvalid() throws Exception {
+            mockMvc.perform(post("/api/subscriptions")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{}"))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Nested
@@ -236,6 +245,15 @@ class SubscriptionControllerTest {
                     .andExpect(jsonPath("$.data.planId").value(newPlanId.toString()));
 
             verify(service).changePlan(nullable(User.class), any(SubscriptionRequestDTO.class));
+        }
+
+        @Test
+        @DisplayName("should return 400 when request is invalid")
+        void shouldReturn400WhenChangePlanRequestInvalid() throws Exception {
+            mockMvc.perform(patch("/api/subscriptions/change-plan")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{}"))
+                    .andExpect(status().isBadRequest());
         }
     }
 

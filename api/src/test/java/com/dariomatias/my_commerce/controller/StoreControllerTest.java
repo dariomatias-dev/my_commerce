@@ -122,6 +122,22 @@ class StoreControllerTest {
 
             verify(service).create(any(User.class), any(StoreRequestDTO.class), any(), any());
         }
+
+        @Test
+        @DisplayName("should return 400 when request data is invalid")
+        void shouldReturn400WhenCreateRequestInvalid() throws Exception {
+            MockMultipartFile invalidDataPart = new MockMultipartFile(
+                    "data", "data", "application/json", "{}".getBytes()
+            );
+            MockMultipartFile logoPart = new MockMultipartFile("logo", "logo.jpg", "image/jpeg", "logo".getBytes());
+            MockMultipartFile bannerPart = new MockMultipartFile("banner", "banner.jpg", "image/jpeg", "banner".getBytes());
+
+            mockMvc.perform(multipart("/api/stores")
+                            .file(invalidDataPart)
+                            .file(logoPart)
+                            .file(bannerPart))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Nested
@@ -247,6 +263,18 @@ class StoreControllerTest {
                     .andExpect(jsonPath("$.data.name").value("Updated Store"));
 
             verify(service).update(eq(storeId), any(), any(User.class), any(), any());
+        }
+
+        @Test
+        @DisplayName("should return 400 when request data is invalid")
+        void shouldReturn400WhenUpdateRequestInvalid() throws Exception {
+            MockMultipartFile invalidDataPart = new MockMultipartFile(
+                    "data", "data", "application/json", "{}".getBytes()
+            );
+
+            mockMvc.perform(multipart(HttpMethod.PATCH, "/api/stores/{id}", storeId)
+                            .file(invalidDataPart))
+                    .andExpect(status().isBadRequest());
         }
     }
 
